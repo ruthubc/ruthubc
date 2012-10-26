@@ -6,6 +6,7 @@
 
 
 
+
 ##anova for group size
 
 averages <- read.csv("D:/Dropbox/kinshipEvolution/DataAnalysis/averages.csv")

@@ -138,15 +138,15 @@ anova(lm1)
 anv1<-as.data.frame(anova(lm1))
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
 
-### (11) removing Beta
+### (12) removing Beta removed as I got a bit carried away and continued when I should have stopped
 
-lm1<-lm(relTrans~ C +R+ I(R^2) )
+#lm1<-lm(relTrans~ C +R+ I(R^2) )
 
 
-anova(lm1)
+#anova(lm1)
 
-anv1<-as.data.frame(anova(lm1))
-rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
+#anv1<-as.data.frame(anova(lm1))
+#rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
 
 write.csv(as.matrix(anova(lm1)), file = "D:/Dropbox/kinshipEvolution/ANOVAandStatsTests/MyANOVA.csv", na = "") #output final model
 

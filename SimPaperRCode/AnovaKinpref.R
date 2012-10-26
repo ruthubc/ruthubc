@@ -57,7 +57,7 @@ anv1<-as.data.frame(anova(lm1))
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
 
 
-##(4) Removing R:I(Beta^3)
+##(5) Removing R:I(Beta^3)
 
 lm1<-lm(KinPrefTrans~(R+ Beta+C)^3 + I(R^2) +I(R^3)  + I(Beta^2) +   I(Beta^3)+ C*I(Beta^2) +C*I(Beta^3) + C*I(R^2)  +R*I(Beta^2) )
 
@@ -66,7 +66,7 @@ anova(lm1)
 anv1<-as.data.frame(anova(lm1))
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
 
-##(5) removing C:I(R^2)
+##(6) removing C:I(R^2)
 
 lm1<-lm(KinPrefTrans~(R+ Beta+C)^3 + I(R^2) +I(R^3)  + I(Beta^2) +   I(Beta^3)+ C*I(Beta^2) +C*I(Beta^3)  +R*I(Beta^2) )
 
@@ -75,7 +75,7 @@ anova(lm1)
 anv1<-as.data.frame(anova(lm1))
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
 
-## (6) removing I(R^3)
+## (7) removing I(R^3)
 
 lm1<-lm(KinPrefTrans~(R+ Beta+C)^3 + I(R^2) + I(Beta^2) +   I(Beta^3)+ C*I(Beta^2) +C*I(Beta^3)  +R*I(Beta^2) )
 
@@ -85,7 +85,7 @@ anv1<-as.data.frame(anova(lm1))
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
 
 
-## (7) removing C:I(Beta^3)
+## (8) removing C:I(Beta^3)
 
 lm1<-lm(KinPrefTrans~(R+ Beta+C)^3 + I(R^2) + I(Beta^2) +   I(Beta^3)+ C*I(Beta^2) +R*I(Beta^2) )
 
@@ -94,7 +94,7 @@ anova(lm1)
 anv1<-as.data.frame(anova(lm1))
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
 
-##(8) removing I(Beta^3)
+##(9) removing I(Beta^3)
 
 
 lm1<-lm(KinPrefTrans~(R+ Beta+C)^3 + I(R^2) + I(Beta^2) + C*I(Beta^2) +R*I(Beta^2) )
@@ -105,9 +105,20 @@ anv1<-as.data.frame(anova(lm1))
 
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
 
-### (9) removing C and all terms with C in
+### (10) C has the smallest sum of squares but can't remove that so removing R:C instead
 
-lm1<-lm(KinPrefTrans~(R+ Beta)^3 + I(R^2) + I(Beta^2)  +R*I(Beta^2) )
+lm1<-lm(KinPrefTrans~(R+ Beta)^2 + (C+Beta)^2 + I(R^2) + I(Beta^2) + C*I(Beta^2) +R*I(Beta^2) )
+
+anova(lm1)
+
+anv1<-as.data.frame(anova(lm1))
+
+rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
+
+
+### (10) C has the smallest sum of squares but can't remove that so removing C:I(Beta^2) instead
+
+lm1<-lm(KinPrefTrans~(R+ Beta)^2 + (C+Beta)^2 + I(R^2) + I(Beta^2) +R*I(Beta^2) )
 
 anova(lm1)
 
