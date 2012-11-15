@@ -1,28 +1,58 @@
-# TODO: Add comment
+###trying to test for correlation or counter-correlatoin between things
 # 
 # Author: Ruth
 ###############################################################################
 
-
-##trying to test for correlation or counter-correlatoin between things
 library(tseries) # loading the package time series
 
+crsCrl<-function(A, B){
+	
+	
+	tsA=ts(data.frame(A)[which(file$tick>x),], start=0)
+	tsB=ts(data.frame(B)[which(file$tick>x),], start=0)
+	ccfOut<-ccf(tsA, tsB, lag.max = 0, type =  "correlation", plot = F)
+	
+	return(ccfOut)
+	
+}
+
+fileNames<-read.csv("D:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
 
 
-file <- read.delim("D:/Dropbox/kinshipEvolution/NewSimulations2010-2011/r0.10c0.02b0.6/r0.1c0.02b0.6_RPT.pf.csv.series")
+file<-read.delim(as.character(fileNames[1,]))
 
-x=2000 # number of runs to remove before testing
+#file <- read.delim("D:/Dropbox/kinshipEvolution/NewSimulations2010-2011/r0.10c0.06b0.2/r0.1c0.06b0.2_RPT.pf.csv.series")
 
-gpTime<-data.frame(file$avgGrSize, file$rel)[which(file$tick>x),]
-
-tsGrSize=ts(gpTime$file.avgGrSize, start=0)
-
-tsCoop=ts(gpTime$file.rel, start=0)
+x=10000 # number of runs to remove before testing
 
 
-ccf(tsGrSize, tsCoop, lag.max = 20000, type = c("correlation", "covariance"), plot = T)
+#gpTime<-data.frame(file$kinPref, file$avgGrSize)[which(file$tick>x),]
 
-gpTime$file.avgGrSize
+
+
+
+crsCrl(file$kinPref, file$avgGrSize)
+crsCrl(file$kinPref, file$avgCoop)
+crsCrl(file$kinPref, file$rel)
+
+crsCrl(file$avgGrSize, file$avgCoop)
+crsCrl(file$avgGrSize, file$rel)
+
+crsCrl(file$rel, file$avgCoop)
+
+
+
+##plotting CCF function
+A<- file$avgCoop
+B<- file$kinPref
+tsA=ts(data.frame(A)[which(file$tick>x),], start=0)
+tsB=ts(data.frame(B)[which(file$tick>x),], start=0)
+ccf(tsA, tsB, lag.max = 2000, type =  "correlation", plot = T)
+
+
+
+##testing for white noise in R
+Box.test(tsA, lag=5000, type = "Ljung")
 
 
 
