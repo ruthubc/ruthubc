@@ -1,6 +1,7 @@
 ###trying to test for correlation or counter-correlatoin between things
 # 
 # Author: Ruth
+#gpTime<-data.frame(file$kinPref, file$avgGrSize)[which(file$tick>x),]
 ###############################################################################
 
 library(tseries) # loading the package time series
@@ -12,26 +13,33 @@ crsCrl<-function(A, B){
 	tsB=ts(data.frame(B)[which(file$tick>x),], start=0)
 	ccfOut<-ccf(tsA, tsB, lag.max = 0, type =  "correlation", plot = F)
 	
-	return(ccfOut)
+	return(as.numeric(ccfOut$acf))
 	
 }
 
-fileNames<-read.csv("D:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
-
-
-file<-read.delim(as.character(fileNames[1,]))
-
-#file <- read.delim("D:/Dropbox/kinshipEvolution/NewSimulations2010-2011/r0.10c0.06b0.2/r0.1c0.06b0.2_RPT.pf.csv.series")
-
 x=10000 # number of runs to remove before testing
 
+fileNames<-read.csv("D:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
 
-#gpTime<-data.frame(file$kinPref, file$avgGrSize)[which(file$tick>x),]
+kinGr<-c()
+
+
+for (i in 50:60){
+	
+	
+	
+file<-read.delim(as.character(fileNames[1,]))
+
+
+cc<-crsCrl(file$kinPref, file$avgGrSize)
 
 
 
+kinGr<-c(kinGr, cc)
 
-crsCrl(file$kinPref, file$avgGrSize)
+
+}
+
 crsCrl(file$kinPref, file$avgCoop)
 crsCrl(file$kinPref, file$rel)
 
@@ -51,15 +59,16 @@ ccf(tsA, tsB, lag.max = 2000, type =  "correlation", plot = T)
 
 
 
+
+
+
+
+
+##########################################
+
+
 ##testing for white noise in R
 Box.test(tsA, lag=5000, type = "Ljung")
-
-
-
-
-
-
-
 
 
 spec<-spectrum(gpTime)
