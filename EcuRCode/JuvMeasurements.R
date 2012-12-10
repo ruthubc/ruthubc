@@ -4,7 +4,7 @@
 ###############################################################################
 
 
-JuvMes<-read.csv("D:/Dropbox/DataEcuadorSummer2012/JuvMeasurements.csv", quote="", stringAsFactors=FALSE)
+JuvMes<-read.csv("D:/Dropbox/DataEcuadorSummer2012/JuvMeasurements.csv", quote="", stringsAsFactors=FALSE)
 
 NestTypes<-read.csv("C:/Users/Ruth/Documents/NestType.csv", stringsAsFactors=FALSE)
 
@@ -19,7 +19,7 @@ for(i in 1:nrow(JuvMes) ){
 
 
 
-Triplet<-levels(JuvMes$TripletID)
+Triplet<-levels(as.factor(JuvMes$TripletID))
 
 JuvMes$Date<-substr(JuvMes$Date, 1, 5)
 
@@ -37,7 +37,7 @@ for(i in 1:noNests){
 temp<-subset(JuvMes, TripletID==Triplet[i])
 
 
-boxplot(temp$individual.weight~temp$Nest,main=Triplet[i], cex=0.6, las=2)
+boxplot(temp$individual.weight~temp$Nest,main=Triplet[i], cex=0.6, las=2, xlab="weight")
 
 
 
