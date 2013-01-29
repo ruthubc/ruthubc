@@ -34,14 +34,14 @@ for(j in 1:3){
 		#subsetting the data so we have what we want
 		ave.Sub<-subset(averages, C==CC[j] & Beta==BB[i])
 		
-		points(ave.Sub$R, ave.Sub$avgGrSize, pch=i, col=i+j, cex=1.2)  
+		points(ave.Sub$R, ave.Sub$avgGrSize, pch=i, col=i, cex=1.2)  
 		#pch is dot type, cex point size
 		
 		my.spline<-fnSpline(lambda, cbind(ave.Sub$R, ave.Sub$avgGrSize))
 		
 		smooth<-spline(my.spline) # adds extra points to smooth the line so it is not angular  
 		
-		lines(smooth, lty=i, lwd=1, col = i+j)
+		lines(smooth, lty=i, lwd=1, col = i)
 		#lty is line type goes 1-6
 	}  
 	
