@@ -47,5 +47,3 @@ for(j in 1:3){
 	
 	
 }
-
-test<-cbind(ave.Sub$R, ave.Sub$avgGrSize)

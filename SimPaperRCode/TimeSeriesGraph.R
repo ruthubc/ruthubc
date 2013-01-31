@@ -1,6 +1,8 @@
 #creating time series graph
 
-graphHeaders <- read.csv("D:/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
+source("D:/EclipseR/SimPaper/SplineFunction.R")
+
+graphHeaders <- read.csv("D:/Dropbox/Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
 
 #import the data
 timeSes <- read.delim("D:/Dropbox/kinshipEvolution/NewSimulations2010-2011/r0.10c0.06b0.2/r0.1c0.06b0.2_RPT.pf.csv.series")
