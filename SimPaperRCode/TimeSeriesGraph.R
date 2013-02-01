@@ -1,4 +1,4 @@
-#creating time series graph
+#creating time series graph with optimal and stable group size
 
 source("D:/EclipseR/SimPaper/SplineFunction.R")
 
@@ -17,47 +17,49 @@ layout(matrix(c(1,2,3,4), 4, 1, byrow = FALSE))
 #AvegroupSize=10
 #rel=12
 #kinPref=13
+#optimum gp size =15
+#stable gp size = 16
 
-paramtrs<-c(8,10,12,13)
+paramtrs<-c(12,10,15, 16)
 
 names<-c("Average\nCooperation", "Average\nGroup Size", "Relatedness","Kin\nPreference")
 
 
 for(i in 1:4) {
-
-pam<-paramtrs[i]# define which paramter you want to run
-
-genRem<-10000# number of generations to remove from the start
-
-run<-ts(timeSes[,pam][which(timeSes$tick>=genRem)], start=genRem)
-
-spl<-fnSpline(0.0001, run)
-spl#print the spline
-
-print(graphHeaders[pam,4])#checking which parambetr chosen
-
-
-#plotting the spline smoothed times series
-if (i < 4) { 
+  
+  pam<-paramtrs[i]# define which paramter you want to run
+  
+  genRem<-10000# number of generations to remove from the start
+  
+  run<-ts(timeSes[,pam][which(timeSes$tick>=genRem)], start=genRem)
+  
+  spl<-fnSpline(0.0001, run)
+  spl#print the spline
+  
+  print(graphHeaders[pam,4])#checking which parambetr chosen
+  
+  
+  #plotting the spline smoothed times series
+  if (i < 4) { 
     print("less than 4")
-
-      xLabel<-""   # defines the xlabel
-      ticks<-"n"  #defines whenter there are any ticks on the xaxis
     
-} else {               
+    xLabel<-""   # defines the xlabel
+    ticks<-"n"  #defines whenter there are any ticks on the xaxis
+    
+  } else {               
     print("equals 4")
     
-      xLabel<-"Generation"
-      ticks<-"s"
-}
-
-par(mar=c(3,5,0.4,2))#setting the size of the margins
-#bottom, left, top, right
-    
-plot(spl, pch=3, col="white", xlab=xLabel, ylab=names[i], cex.axis=1.1, cex.lab=1.3,xaxt=ticks, mgp=c(2,0.5,0), xaxs="i", xlim=c(10000, 50000))
-
-abline(v=c(1000*(11:49)), col="darkgrey")# creating vertical grid lines
-
-lines(spl)
-
+    xLabel<-"Generation"
+    ticks<-"s"
+  }
+  
+  par(mar=c(3,5,0.4,2))#setting the size of the margins
+  #bottom, left, top, right
+  
+  plot(spl, pch=3, col="white", xlab=xLabel, ylab=graphHeaders$AxisHeaders[pam], cex.axis=1.1, cex.lab=1.3,xaxt=ticks, mgp=c(2,0.5,0), xaxs="i", xlim=c(10000, 50000))
+  
+  abline(v=c(1000*(11:49)), col="darkgrey")# creating vertical grid lines
+  
+  lines(spl)
+  
 }
