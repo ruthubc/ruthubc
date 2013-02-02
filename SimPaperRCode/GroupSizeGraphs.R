@@ -20,12 +20,14 @@ RR<-as.numeric(levels(as.factor(averages$R)))
 
 BB<-as.numeric(levels(as.factor(averages$Beta)))
 
+title<-c("GCC=50", "GCC=16.7", "GCC=10")
+
 
 for(j in 1:3){	
 	
-# makes empty plot with all C and R as don't want axis to change for each graph
+# makes empty plot 
 	ave.Sub2<-subset(averages, C==CC[j])
-	plot(ave.Sub2$R, ave.Sub2$avgGrSize)#, col=0)
+	plot(ave.Sub2$R, ave.Sub2$avgGrSize, main=title[j], xlab="rate of growth (r)", ylab="average group size", col=0)#, col=0)
 	
 	for(i in 1:5) {
 		
