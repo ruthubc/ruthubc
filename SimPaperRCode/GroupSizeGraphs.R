@@ -4,13 +4,13 @@
 ###############################################################################
 
 
-source("D:/EclipseR/SimPaper/SplineFunction.R")
+source("G:/PhDWork/RCode/SimPaperCode/SplineFunction.R")
 
 lambda<-0.001
 
 
 #imports the data
-averages <- read.csv("D:/Dropbox/kinshipEvolution/DataAnalysis/averages.csv")
+averages <- read.csv("G:/Dropbox/kinshipEvolution/DataAnalysis/averages.csv")
 
 layout(matrix(c(1:3), 1, 3, byrow = TRUE))# layout of graphs
 
