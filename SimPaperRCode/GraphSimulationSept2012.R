@@ -1,19 +1,23 @@
 ##graphs relatedness against group size or whatever
 
-library(pspline)
+###not the real 4 by 4 graph code... just testing and seeing!
 
-pdf("D:/Dropbox/kinshipEvolution/GamePlanAndResults/graphs/RelGpEtc/RelCoop.pdf", height=3)
+library(pspline)
+source("G:/PhDWork/RCode/SimPaperCode/SplineFunction.R")
+
+#pdf("C:/Users/Ruth/Desktop/pRelCoop.pdf", height=3)
 
 #imports the data
-averages <- read.csv("D:/Dropbox/kinshipEvolution/DataAnalysis/averages.csv")
+averages <- read.csv("G:/Dropbox/kinshipEvolution/DataAnalysis/averages.csv")
 
 #imports info for axis headers etc. can check with rows to use
-graphHeaders <- read.csv("D:/Dropbox/Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
+graphHeaders <- read.csv("G:/Dropbox/Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
 
 layout(matrix(c(1:3), 1, 3, byrow = TRUE))# layout of graphs
 
-#> levels(as.factor(averages$R))
-#[1] "0.1"  "0.25" "0.5"  "0.75" "1"    "1.5"  "2  7 levels!!
+##adding column to averages for relative group size in relation to C
+
+averages$relGrSize<-averages$C * averages$avgGrSize
 
 ################ setting the parameters###################
 
@@ -22,9 +26,10 @@ layout(matrix(c(1:3), 1, 3, byrow = TRUE))# layout of graphs
 #8 =cooperation
 #10=ave group size
 #12=relatedness
+#17= group size scaled by group carrying capacity
 
-xPar<-12 # parameter on the x axis 10 is gp size
-yPar<-8 # parameter on y axis 12 is relatednes
+xPar<-4 # parameter on the x axis 10 is gp size
+yPar<-17 # parameter on y axis 12 is relatednes
 byPar<-5 #by parambeter 5=beta
 
 names<-names(averages)

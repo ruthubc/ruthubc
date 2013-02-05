@@ -2,12 +2,13 @@
 
 source("D:/EclipseR/SimPaper/SplineFunction.R")
 
-graphHeaders <- read.csv("D:/Dropbox/Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
+graphHeaders <- read.csv("G:/Dropbox/Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
 
 
 
 #import the data
-timeSes <- read.delim("D:/Dropbox/kinshipEvolution/NewSimulations2010-2011/r0.10c0.06b0.2/r0.1c0.06b0.2_RPT.pf.csv.series")
+timeSes <- read.delim("G:/Dropbox/kinshipEvolution/NewSimulations2010-2011/r0.10c0.06b0.2/r0.1c0.06b0.2_RPT.pf.csv.series")
+
 
 #par(mfrow=c(4,1), mar = c(2,4,0,2))
 #defult par margins  5.1 4.1 4.1 2.1 (btm, left, top, right)
