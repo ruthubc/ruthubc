@@ -19,3 +19,5 @@ instrUp(spiList, lst)
 for i in range(len(spiList)):
     print "listNumber = %d" % i
     print "instar Number = %d" % spiList[i].instar
+
+print "testing"
