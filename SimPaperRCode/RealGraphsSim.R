@@ -1,7 +1,7 @@
 ##Redoing the simulation graphs Feb 4th 2013
 
-#exporting graph ######
-pdf("C:/Users/Ruth/Desktop/graph.pdf", width=10, height=10)
+#exporting graph pdf location ######
+pdf("C:/Users/Ruth/Desktop/graph.pdf", width=11, height=11)
 
 #imports of data and functions#########################################################################
 
@@ -36,7 +36,7 @@ cols<-c("navy", "tomato1","purple", "green4", "orange") # colours for graph
 pnts<-c(15, 16, 2, 18, 17) #point type
 lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
 
-#general graph settings#################################################################################################
+#graph and parameter settings#################################################################################################
 
 by<-as.numeric(levels(as.factor(averages[,byPar])))#number of levels of Beta
 lenBy<-as.numeric(length(by))
@@ -45,7 +45,7 @@ layout(matrix(c(1:12), 4, 3, byrow = TRUE)) #graph layout
 
 par(mar=c(5,5,1,1)) #setting margins c(bottom, left, top, right)
 
-#function to get graph settings for different parameters#####################
+#function to get graph settings for different parameters
 gphSet<-function(yParm){
   
   if (yParm==8){ #aveCoop
@@ -54,7 +54,7 @@ gphSet<-function(yParm){
     ya<-"r"    #y axis type
     aline<-c(0.1*(3:9))    
     
-  } else if (yParm==10){ #ave/relative GroupSize
+  } else if (yParm==10){ #ave GroupSize
     
     ylimt<-NULL #y axis limit
     ya<-"r"    #y axis type
@@ -76,7 +76,7 @@ gphSet<-function(yParm){
   
   ylimt<-c(0, 1.6) #y axis limit
   ya<-"i"    #y axis type
-  aline<-c(0.2*(1:7))
+  aline<-c(0.25*(1:6))
   
   }
   
@@ -84,8 +84,23 @@ gphSet<-function(yParm){
   
 }
 
+#settting the margins function
+MarFun<-function(j, k){
+  
+  if (k==4){b<-4} else {b<-0.5}
+  
+  if (k==1){t<-4} else {t<-0.5}
+  
+  if (j==1){l<-4} else {l<-0.5}
+  
+  if (j==3){r<-4} else {r<-0.5}  
+  
+  
+  return (c(b,l,t,r)) #setting margins c(bottom, left, top, right)
+  
+}
 
-#making graph#############################################################################################
+#making graph#############################
 
 for (k in 1:4){ #looping by rows/ y parameters
   
@@ -95,6 +110,8 @@ for (k in 1:4){ #looping by rows/ y parameters
     for(j in 1:3){
       
       CVal=CC[j]
+      
+      #par(mar=MarFun(j, k))
       
     ##setting first graph of the three has a y label, others don't
     if (j==1) {
@@ -160,10 +177,11 @@ for (k in 1:4){ #looping by rows/ y parameters
 beta<-c("Beta=0.0", "Beta=0.2", "Beta=0.4", "Beta=0.6", "Beta=0.8")
 #creates legend
 
+#rect (xleft, ybottom, xright, ytop)
 # kin pref if exporing w 911 h 324
 #rect(1.0,0.05, 2.0, 0.3, col="white", border=NA)   
 # average cooperation if exporting w911 h324
-rect(1.2,0.3, 2.1, 0.8, col="white", border="black") 
+rect(1.2,0.35, 2.1, 0.75, col="white", border="black") 
 #relatedness w911 h324
 #rect(1.0,0.20, 2.0, 0.27, col="white", border=NA)
 

@@ -1,6 +1,6 @@
 #creating time series graph with optimal and stable group size
 
-source("D:/EclipseR/SimPaper/SplineFunction.R")
+source("G:/EclipseR/SimPaper/SplineFunction.R")
 
 graphHeaders <- read.csv("G:/Dropbox/Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
 
