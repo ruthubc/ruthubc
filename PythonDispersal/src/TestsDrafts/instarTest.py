@@ -3,7 +3,7 @@ Created on 2013-01-08
 
 @author: Ruth
 '''
-from spiderClass import Spider
+from SpiderClass import Spider
 from FeedingFunctions import instrUp
 
 

@@ -20,3 +20,4 @@ rel_size(SPI_LIST)  # updates the spider  with relative size compared to colony
 
 
 instar_inc(SPI_LIST, INSTAR_LEVELS)  # updates the instar to the new size
+

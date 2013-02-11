@@ -31,7 +31,7 @@ def rel_size(spider_list):
 
 
 def colony_instar(spider_list):
-    "totals the instar number"
+    "totals the instar number for the whole colony"
     total_instar = 0
     for i in range(len(spider_list)):
         total_instar += spider_list[i].instar
@@ -39,6 +39,7 @@ def colony_instar(spider_list):
 
 
 def colony_food(spider_list, ):
+    "total amount of food colony gets"
 
 
 def amt_ind_food(rel_size, col_food):
