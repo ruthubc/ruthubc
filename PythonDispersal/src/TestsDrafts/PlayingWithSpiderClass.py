@@ -12,12 +12,18 @@ spiList = [Spider(3, 6, 5), Spider(1, 0, 5)]
 
 
 
+spi=Spider(1, 4, 5)
 print spiList[1]
 
+spiList[1].test()
 
-#updating an object within a list
-print spiList[1].instar
+print  spiList[1]
 
-spiList[1].instar += 1
+map_me = ['a', 'b', 'c', 'd']
+#result = map(lambda x: "the letter is %s", % x, map_me)
 
-print spiList[1].instar
+par= {"a":"b", "d":"e"}
+print par.items()
+
+
+

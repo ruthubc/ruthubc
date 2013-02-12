@@ -15,3 +15,8 @@ class Spider(object):
         self.size = size
         self.rel_size = rel_size
 
+    def __str__(self):
+        return "instar: %s, size %s" % (self.instar, self.size)
+
+    def test(self):
+        self.instar += 1

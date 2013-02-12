@@ -7,8 +7,8 @@ TODO: include scramble comp into amt_ind_food
 
 
 def instar_inc(spider_list, instar_levels_list):
-    "updates the instars of individuals after feeding"
-    "instar_levels_list defines the size limits to progress to the nest instar"
+    '''updates the instars of individuals after feeding
+    instar_levels_list defines the size limits to progress instars'''
 
     for i in range(len(spider_list)):
 
@@ -21,7 +21,7 @@ def instar_inc(spider_list, instar_levels_list):
 
 def rel_size(spider_list):
     '''calculates the relative size of ind compared to colony
-    size varies between 0 and 1'''
+    size varies between 0 and 1 to determine prop of food to ind'''
     total_size = 0  # getting total size of spiders in colony
     for i in range(len(spider_list)):
         total_size += spider_list[i].size
@@ -38,8 +38,9 @@ def colony_instar(spider_list):
         return total_instar
 
 
-def colony_food(spider_list, ):
-    "total amount of food colony gets"
+def colony_food(spider_list, total_instar):
+    '''total amount of food colony gets'''
+    
 
 
 def amt_ind_food(rel_size, col_food):

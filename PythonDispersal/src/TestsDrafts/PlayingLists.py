@@ -25,3 +25,6 @@ print list2
 total = np.sum(list2)
 
 print total
+
+print list[1]
+print list[1:5]
