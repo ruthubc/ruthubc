@@ -6,7 +6,7 @@ TODO: include scramble comp into amt_ind_food
 '''
 
 
-def instar_inc(spider_list, instar_levels_list):
+def instar_inc(spider_list, instar_levels_list): #moved into spider class
     '''updates the instars of individuals after feeding
     instar_levels_list defines the size limits to progress instars'''
 

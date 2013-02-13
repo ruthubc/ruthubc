@@ -15,7 +15,7 @@ spiList = [Spider(3, 6, 5), Spider(1, 0, 5)]
 spi=Spider(1, 4, 5)
 print spiList[1]
 
-spiList[1].test()
+spiList[0:1].test()
 
 print  spiList[1]
 

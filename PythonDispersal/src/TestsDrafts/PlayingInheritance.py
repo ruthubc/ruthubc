@@ -16,6 +16,9 @@ class Pet(object):
 
     def getSpecies(self):
         return self.species
+    
+    def addingSomething(self, number):
+        self.species += number
 
     def __str__(self):
         return "%s is a %s" % (self.name, self.species)
@@ -24,9 +27,15 @@ class Pet(object):
 
 jon = Pet("jon", "cat")
 
-print jon
+num = Pet("pe", 5)
 
-print jon.getName()
+print num
+
+num.addingSomething(7)
+
+print num
+
+
 
 
 
