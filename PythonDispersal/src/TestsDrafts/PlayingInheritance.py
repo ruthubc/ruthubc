@@ -24,7 +24,7 @@ class Pet(object):
         return "%s is a %s" % (self.name, self.species)
 
 
-
+'''
 jon = Pet("jon", "cat")
 
 num = Pet("pe", 5)
@@ -36,7 +36,7 @@ num.addingSomething(7)
 print num
 
 
-
+'''
 
 
 #subclasses
@@ -51,8 +51,23 @@ class Dog(Pet):
     def chasesCats(self):
         return self.chases_cats
 
-
+'''
 pete= Dog("pete", True)
 
 print pete.chases_cats
+'''
+   
+class extends(Pet):
+    
+    def __init__(self):
+        self.ext = (Pet, thing)
+        
+    def doThing(self):
+        print self.thing
 
+
+jon = Pet("jon", "cat")
+
+li = extends(jon, 'donut')
+
+print li.name

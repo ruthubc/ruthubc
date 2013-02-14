@@ -5,36 +5,40 @@ Created on 2013-02-12
 '''
 
 
-from SpiderClass import Spider
+class Colony(object):
+    '''making colony class'''
 
-class Colony(Spider): 
+    def __init__(self, colony_list, total_size=0.0, total_instar=0.0, ):
+        self.colony_list = colony_list
+        self.total_size = total_size
+        self.total_instar = total_instar
 
-    def __init__(self, list1):
-        self.list1= list1;
-        
-    def pword (self):
-        for i in range(len(self.list1)):
-            print self.list1[i]
-            
-    def allinstar(self):
-        for i in range(len(self.list1)):
-            self.list1[i]
-        
-      
-   
- 
+    def print_spiders(self):
+        '''prints all instances of spider'''
+        for i in range(len(self.colony_list)):
+            print "i = %s: %s" % (i, self.colony_list[i])
 
-j=Colony ([Spider(3, 6, 5), Spider(1, 0, 5)])
+    def all_instar(self, instar_levels):
+        "updating all instars in spider"
+        for i in range(len(self.colony_list)):
+            self.colony_list[i].instar_inc(instar_levels)
 
-print j.list1[1]
+    def col_size(self):
+        '''calculates the total size of all members in a colony'''
+        self.total_size = 0.0
+        for i in range(len(self.colony_list)):
+            self.total_size += self.colony_list[i].size
+        return self.total_size
 
-j.pword()
+    def rel_size(self):
+        '''calculates the relative size of ind compared to colony
+        size varies between 0 and 1 to determine prop of food to ind'''
+        self.col_size()  # getting total colony size
+        for i in range(len(self.colony_list)):
+            self.colony_list[i].rel_size = self.colony_list[i].size / self.total_size
 
-spi=Spider(3, 6, 5)
-
-print spi
-
-spi.addInstar()
-
-print spi
-
+    def instar_sum(self):
+        '''calculates the total instar in the colony'''
+        for i in range(len(self.colony_list)):
+            self.total_instar += self.colony_list[i].instar
+        return self.total_instar
