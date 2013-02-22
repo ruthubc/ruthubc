@@ -23,7 +23,7 @@ graphHeaders <- read.csv("G:/Dropbox/Ruth/RFile/graphHeaders.csv", stringsAsFact
 xPar<-4 # parameter on the x axis
 byPar<-5 #by parambeter
 
-yVals<-c(13,12,17,8)
+yVals<-c(13,12,10, 8)
 #aveCoop=8
 #AvegroupSize=10
 #rel=12
