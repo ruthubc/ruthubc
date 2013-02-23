@@ -8,6 +8,8 @@ lambda <-0.001
 
 corrs<-read.csv("G:/mydata.csv")
 
+#means<-colMeans(corrs) # calculates the column means
+
 cols<-c("navy", "tomato1","purple", "green4", "orange") # colours for graph
 pnts<-c(15, 16, 2, 18, 17) #point type
 lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
