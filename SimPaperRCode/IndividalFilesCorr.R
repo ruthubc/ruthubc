@@ -10,18 +10,21 @@ lam<-0.001
 library(tseries) # loading the package time series
 
 fileNames<-read.csv("G:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
+t
 
-file<-read.delim(as.character(fileNames[45,]))
+file<-read.delim(as.character(fileNames[2,]))
 
 file <- file[which (file$tick >=10000),]
 
-spline<-fnSpline(lam, file$tick, file$avgCoop)
 
-plot(as.ts(file$kinPref))
-plot(spline)
 
-file$avgCoop<-spline$y
+for (j in c(8,10,12,13, 11)){ # spline smoothing the time series
+	
+	print(j)
+	file[,j]<- (fnSpline(lam, file$tick, file[,j]))$y
+}
 
+plot(file$avgGrSize, file$avgCoop, cex=.1)
 
 #ccf(file$kinPref, file$avgCoop, plot = TRUE)
 
@@ -29,8 +32,14 @@ file$avgCoop<-spline$y
 
 #ccf(file$kinPref, file$rel, lag.max=0, plot = FALSE)
 
-ccf(file$avgGrSize, file$rel, lag.max=10000, type = "covariance")
+#ccf(file$rel, file$avgGrSize, lag.max=0, plot= FALSE)
 
-#ccf(file$avgGrSize, file$avgCoop, lag.max=5000)
+#ccf(file$avgGrSize, file$rel, lag.max=10000)
+
+ccf(file$avgCoop, file$avgGrSize, lag.max=10000)
 				
 #ccf(file$avgCoop, file$rel, lag.max=0, plot = FALSE)
+
+## graph of average cooperative vs group size faced by an average individual
+
+
