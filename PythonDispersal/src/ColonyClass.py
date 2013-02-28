@@ -5,6 +5,7 @@ Created on 2013-02-12
 '''
 
 import numpy as np
+from SpiderClass import Spider
 
 class Colony(object):
     '''making colony class'''
@@ -59,9 +60,14 @@ class Colony(object):
             per_gro = self.colony_list[i].ind_food * m
             self.colony_list[i].size = per_gro * self.colony_list[i]
 
-    def all_instar(self, instar_levels):
+    def update_instar(self, instar_levels):
         '''updating all instars in spider with predefined instar levels
         function instar_inc from spider class'''
         for i in range(len(self.colony_list)):
             self.colony_list[i].instar_inc(instar_levels)
 
+    def reproduction(self, no_offspring):
+        '''adding new offspring to colony'''
+        no_ads = len([spi for spi in self.colony_list if spi.instar > 6])
+        offsp = [Spider()] * (no_offspring* no_ads)
+        self.colony_list.extend(offsp)

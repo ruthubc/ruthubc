@@ -32,6 +32,11 @@ PS(spiList2)
 
 print ('miniusin')
 
+spiList.append(spi5)
+spiList.append(spi5)
+
+PS(spiList)
+
 
 
 #list_1 = [['good',100, 20, 0.2],['bad', 10, 0, 0.0],['change', 1, 2, 2]]
@@ -40,3 +45,16 @@ print ('miniusin')
 #print("removed")
 
 #PS(spiList)
+
+spi3 = Spider()
+
+print spi3
+
+
+
+y = [Spider(1, 5, 8)]* 3
+
+y.extend([Spider()] * 2)
+
+PS (y)
+
