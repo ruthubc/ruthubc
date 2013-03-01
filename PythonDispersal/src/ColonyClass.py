@@ -7,10 +7,12 @@ Created on 2013-02-12
 import numpy as np
 from SpiderClass import Spider
 
+
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, colony_list, total_size=0.0, total_instar=0.0, total_food=0.0 ):
+    def __init__(self, colony_list, total_size=0.0, total_instar=0.0,
+                 total_food=0.0):
         self.colony_list = colony_list
         self.total_size = total_size
         self.total_instar = total_instar
@@ -33,7 +35,8 @@ class Colony(object):
         size varies between 0 and 1 to determine prop of food to ind'''
         self.col_size()  # getting total colony size
         for i in range(len(self.colony_list)):
-            self.colony_list[i].rel_size = self.colony_list[i].size / self.total_size
+            self.colony_list[i].rel_size = (self.colony_list[i].size
+                                            / self.total_size)
 
     def instar_sum(self):
         '''calculates the total instar in the colony'''
@@ -41,23 +44,26 @@ class Colony(object):
             self.total_instar += self.colony_list[i].instar
         return self.total_instar
 
-    def colony_food(self, a, c, d):
-        '''total amount of food colony gets'''
-        I = self.instar_sum()
-        self.total_food = a * np.power(I, d) * np.exp(-c*I)
+    def colony_food(self, scaling, car_cap, skew):
+        '''total amount of food colony gets
+        d > 1'''
+        col_tot_instar = self.instar_sum()  # total instar of colony
+        self.total_food = (scaling * np.power(col_tot_instar, skew)
+                           * np.exp(-car_cap * col_tot_instar))
         return self.total_food
 
     def ind_food(self):
         '''this right now is pure scramble competition'''
-        for i in range (len(self.colony_list)):
-            self.colony_list[i].ind_food = self.colony_list[i].rel_size * self.total_food
+        for i in range(len(self.colony_list)):
+            self.colony_list[i].ind_food = (self.colony_list[i].rel_size
+                                            * self.total_food)
 
-    def ind_growth(self, a, m):
+    def ind_growth(self, intercept, slope):
         '''linear function for % growth, m is the slope
         a is the intercept which has to be negative
             no maximum value added yet'''
-        for i in range (len(self.colony_list)):
-            per_gro = self.colony_list[i].ind_food * m
+        for i in range(len(self.colony_list)):
+            per_gro = intercept + self.colony_list[i].ind_food * slope
             self.colony_list[i].size = per_gro * self.colony_list[i]
 
     def update_instar(self, instar_levels):
@@ -69,5 +75,10 @@ class Colony(object):
     def reproduction(self, no_offspring):
         '''adding new offspring to colony'''
         no_ads = len([spi for spi in self.colony_list if spi.instar > 6])
-        offsp = [Spider()] * (no_offspring* no_ads)
+        offsp = [Spider()] * (no_offspring * no_ads)
         self.colony_list.extend(offsp)
+
+    def dying(self, index):
+        '''given the index of the individual in the colony list,
+        deletes the spider at that location'''
+        del self.colony_list[index]
