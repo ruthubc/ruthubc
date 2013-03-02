@@ -19,8 +19,8 @@ class Spider(object):
         self.age = age  # incremented after each time tick.
 
     def __str__(self):
-        return "instar: %s, size: %s, rel size: %s" % (self.instar,
-                self.size, self.rel_size)
+        return "instar: %s, size: %s, rel size: %s, age: %s" % (self.instar,
+                self.size, self.rel_size, self.age)
 
     def instar_inc(self, instar_levels_list):
         '''updates the instars of individuals after feeding
@@ -31,5 +31,3 @@ class Spider(object):
             if (self.size >= instar_levels_list[k] and
              self.size < instar_levels_list[k + 1]):
                 self.instar = k
-
-

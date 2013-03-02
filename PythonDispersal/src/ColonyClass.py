@@ -46,7 +46,7 @@ class Colony(object):
 
     def colony_food(self, scaling, car_cap, skew):
         '''total amount of food colony gets
-        d > 1'''
+        skew > 1'''
         col_tot_instar = self.instar_sum()  # total instar of colony
         self.total_food = (scaling * np.power(col_tot_instar, skew)
                            * np.exp(-car_cap * col_tot_instar))
@@ -64,7 +64,7 @@ class Colony(object):
             no maximum value added yet'''
         for i in range(len(self.colony_list)):
             per_gro = intercept + self.colony_list[i].ind_food * slope
-            self.colony_list[i].size = per_gro * self.colony_list[i]
+            self.colony_list[i].size = per_gro * self.colony_list[i].size
 
     def update_instar(self, instar_levels):
         '''updating all instars in spider with predefined instar levels
@@ -82,3 +82,8 @@ class Colony(object):
         '''given the index of the individual in the colony list,
         deletes the spider at that location'''
         del self.colony_list[index]
+
+    def age_increment(self):
+        "increases age of spider by one"
+        for i in range(len(self.colony_list)):
+            self.colony_list[i].age += 1

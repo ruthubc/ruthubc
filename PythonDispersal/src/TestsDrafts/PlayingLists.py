@@ -45,5 +45,12 @@ print mylist
 print a
 
 
+hlist=[2, 3, 6]
 
+print (len(hlist))
+print ('word')
+
+for i in range(len(hlist)):
+    print i
+    print(hlist[i])
 
