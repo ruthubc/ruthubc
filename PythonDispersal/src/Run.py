@@ -39,6 +39,8 @@ def run(colony, no_offspring, scale, carrying_capacity,
 
     #(5) dispersal
 
+    return colony
+
 
 
 
@@ -49,7 +51,7 @@ IN_C = 0.2
 IN_SKEW = 1.2
 
 '''individual growth function linear function parameters'''
-IN_INTERCEPT = -5
+IN_INTERCEPT = 0
 IN_SLOPE = 5
 
 '''instar list'''
@@ -57,12 +59,24 @@ IN_INSTAR = range(1, 21, 2)
 "range (start, stop, step), nb: does not include last number!"
 
 "number of offspring an female has"
-IN_NO_OFFSP = 5
+IN_NO_OFFSP = 1
 
 
 START_COL = Colony([Spider(7, 7)])
 
 
-run(START_COL, IN_NO_OFFSP, IN_SCALE, IN_C,
+for i in range(1, 4):
+    START_COL = run(START_COL, IN_NO_OFFSP, IN_SCALE, IN_C,
     IN_SKEW, IN_INTERCEPT, IN_SLOPE, IN_INSTAR)
 
+
+print START_COL.print_spiders()
+
+print len(START_COL.colony_list)
+
+My_Col = Colony([Spider(2,2)]*3)
+
+
+START_COL.col_size()
+
+print START_COL.total_size

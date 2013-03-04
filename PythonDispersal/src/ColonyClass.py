@@ -18,6 +18,9 @@ class Colony(object):
         self.total_instar = total_instar
         self.total_food = total_food
 
+    def __str__(self):
+        return "number of spiders in colony: %s" % (len(self.colony_list))
+
     def print_spiders(self):
         '''prints all instances of spider in the colony'''
         for i in range(len(self.colony_list)):

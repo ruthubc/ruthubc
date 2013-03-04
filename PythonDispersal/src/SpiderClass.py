@@ -10,7 +10,7 @@ creating a spider class for each individual with the same method as in test2.
 
 class Spider(object):
 
-    def __init__(self, instar=0, size=0.0, rel_size=0.0, ind_food=0.0, age=0):
+    def __init__(self, instar=1.0, size=1.0, rel_size=0.0, ind_food=0.0, age=0.0):
         '''defining the spider object'''
         self.instar = instar
         self.size = size
@@ -28,6 +28,5 @@ class Spider(object):
 
         for k in range(len(instar_levels_list)):
 
-            if (self.size >= instar_levels_list[k] and
-             self.size < instar_levels_list[k + 1]):
-                self.instar = k
+            if (self.size >= instar_levels_list[k]):
+                self.instar = k+1 # because starts at 0

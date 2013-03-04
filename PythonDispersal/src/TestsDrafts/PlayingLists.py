@@ -33,7 +33,7 @@ print list[1:5]
 'http://docs.python.org/2/tutorial/datastructures.html'
 
 '''
-
+'''
 mylist = [1, 2, 4, 5, 3,  6, 7, 8, 9, 10]
 
 mylist.remove(3) # removes the item that is 3, but only the first one!
@@ -44,13 +44,12 @@ print mylist
 
 print a
 
+'''
 
-hlist=[2, 3, 6]
+hlist=[1, 2, 3, 4, 5, 6]
 
 print (len(hlist))
 print ('word')
 
 for i in range(len(hlist)):
-    print i
-    print(hlist[i])
-
+    print "i = %s, len = %s" % (i, hlist[i])
