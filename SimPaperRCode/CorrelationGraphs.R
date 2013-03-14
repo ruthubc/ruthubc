@@ -8,6 +8,8 @@ lambda <-0.001
 
 corrs<-read.csv("G:/mydata.csv")
 
+
+
 means<-colMeans(corrs) # calculates the column means
 
 cols<-c("navy", "tomato1","purple", "green4", "orange") # colours for graph
@@ -17,8 +19,10 @@ lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
 
 CC<-as.numeric(levels(as.factor(corrs$C)))
 Beta<-as.numeric(levels(as.factor(corrs$Beta)))
-yParm<-5 #column number 
+yParm<-14 #column number 
 ylabel<-"KinPre vs GS"
+
+#corrs[,yParm]<-abs(corrs[,yParm])
 
 layout(matrix(c(1:3), 1, 3, byrow = TRUE))
 #making empty plot with all C's so axis don't change
@@ -53,3 +57,9 @@ beta<-c("Beta=0.0", "Beta=0.2", "Beta=0.4", "Beta=0.6", "Beta=0.8")
 legend(x=.05, y=.4, beta, cex=.9, col=cols, pch=pnts, 
 		lty=lines, box.col="transparent", bg="blue", bty="n",
 		y.intersp=1) #kin pref x=1.0, y=0.3; ave coop x=1.0, y=0.4; relatedness 
+
+
+meansAbs<-colMeans(abs(corrs))
+
+write.table(means, "G:/means.csv", sep=",", row.names = TRUE)
+

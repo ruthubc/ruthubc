@@ -38,9 +38,17 @@ plot(file$avgGrSize, file$avgCoop, cex=.1)
 
 #ccf(file$avgGrSize, file$rel, lag.max=10000)
 
-ccf(file$avgCoop, file$avgGrSize, lag.max=10000)
+ccf(file$avgCoop, file$avgGrSize, lag.max=1000)
 				
 #ccf(file$avgCoop, file$rel, lag.max=0, plot = FALSE)
+
+cross<-ccf(file$avgCoop, file$avgGrSize, lag.max=10000, plot = FALSE)
+
+
+cross$lag[which.max(array(abs(cross$acf)))]
+
+cross$acf[which.max(array(abs(cross$acf)))]
+
 
 
 
