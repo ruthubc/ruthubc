@@ -5,10 +5,13 @@
 
 
 library(tseries) # loading the package time series
-source("G:/PhDWork/RCode/SimPaperCode/SplineFunction.R")
+source("Ruth/SplineFunction.R")
+
 lam<-0.001
 
-fileNames<-read.csv("G:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="", col.names="filenames")
+
+
+fileNames<-read.csv("kinshipEvolution/DataAnalysis/fileNames.csv", quote="", col.names="filenames")
 
 DF<- data.frame(R = numeric (0), Beta = numeric(0), C = numeric(0),  KPvsCoopMax = numeric(0), KPvsCoopLag = numeric(0), KPvsGSMax = numeric(0), 
 		KPvsGSLag = numeric(0),  KPvsRelMax = numeric(0), KPvsRelLag= numeric(0), GSvsResMax= numeric(0), GSvsResLag= numeric(0),
@@ -20,6 +23,11 @@ for (i in 1:nrow(fileNames)){
 	file<-read.delim(as.character(fileNames[i,]))
 	
 	file <- file[which (file$tick >=10000),]
+	
+	file$avgCoop <- asin(file$avgCoop)
+	file$rel<-asin(file$rel)
+	file$kinPref<-asin(file$kinPref)
+	file$avgGrSize<-log(file$avgGrSize)
 	
 	print (i)
 	
@@ -38,17 +46,17 @@ for (i in 1:nrow(fileNames)){
 	
 	
 	
-	a<-ccf(file$kinPref, file$avgCoop, lag.max=5000, plot = FALSE)
+	a<-ccf(file$kinPref, file$avgCoop, lag.max=7000, plot = FALSE)
 	
-	b<-ccf(file$kinPref, file$avgGrSize, lag.max=5000, plot = FALSE)
+	b<-ccf(file$kinPref, file$avgGrSize, lag.max=7000, plot = FALSE)
 	
-	c<-ccf(file$kinPref, file$rel, lag.max=5000, plot = FALSE)
+	c<-ccf(file$kinPref, file$rel, lag.max=7000, plot = FALSE)
 	
-	d<-ccf(file$avgGrSize, file$rel, lag.max=5000, plot = FALSE)
+	d<-ccf(file$avgGrSize, file$rel, lag.max=7000, plot = FALSE)
 	
-	e<-ccf(file$avgGrSize, file$avgCoop, lag.max=5000, plot = FALSE)
+	e<-ccf(file$avgGrSize, file$avgCoop, lag.max=7000, plot = FALSE)
 	
-	f<-ccf(file$avgCoop, file$rel, lag.max=5000, plot = FALSE)
+	f<-ccf(file$avgCoop, file$rel, lag.max=7000, plot = FALSE)
 	
 	list<-c(R, Beta, C,  
 			as.numeric(a$acf[which.max(array(abs(a$acf)))]), as.numeric(a$lag[which.max(array(abs(a$acf)))]), 
@@ -62,7 +70,7 @@ for (i in 1:nrow(fileNames)){
 
 }
 
-write.table(DF, "G:/mydata.csv", sep=",", row.names = FALSE)
+write.table(DF, "LagMeansTransCorrs.csv", sep=",", row.names = FALSE)
 
 
 colMeans(DF)
