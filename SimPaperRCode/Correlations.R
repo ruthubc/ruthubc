@@ -30,8 +30,7 @@ C <- file[1, 6]
 
 
 	for (j in c(8,10,12,13)){ # spline smoothing the time series
-		
-		print(j)
+
 		file[,j]<- (fnSpline(lam, file$tick, file[,j]))$y
 	}
 
@@ -55,7 +54,7 @@ DF[i,]<-list # adding row
 
 }
 
-write.table(DF, "G:/mydata.csv", sep=",", row.names = FALSE)
+write.table(DF, "G:/LagZeroMean.csv", sep=",", row.names = FALSE)
 
 
 colMeans(DF)
