@@ -11,7 +11,7 @@
 #par(xpd=T, mar=par()$mar+c(2,0,0,2))
 
 
-Census<-read.csv("D:/Dropbox/DataEcuadorSummer2012/GraphFiles/Censuses.csv", na.strings = "NA") #importing the real file
+Census<-read.csv("DataEcuadorSummer2012/GraphFiles/Censuses.csv", na.strings = "NA") #importing the real file
 
 
 
@@ -42,7 +42,7 @@ for(i in 1:noNests){ #look to seperate nests and loops
 	
 	CurTriplet<-(Triplet[i])
 	
-	jpeg(file=paste("D:/Dropbox/DataEcuadorSummer2012/GraphFiles/CensusGraphs/", CurTriplet, ".jpeg", sep=""))
+	jpeg(file=paste("DataEcuadorSummer2012/GraphFiles/CensusGraphs/", CurTriplet, ".jpeg", sep=""))
 	
 	par(mgp = c(3, 0.25, 0)) #change location of labels default is (3,1,0)
 	
