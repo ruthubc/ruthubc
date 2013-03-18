@@ -3,7 +3,7 @@
 # Author: Ruth
 ###############################################################################
 
-
+library(TSA)
 library(tseries) # loading the package time series
 source("Ruth/SplineFunction.R")
 
@@ -15,7 +15,8 @@ fileNames<-read.csv("kinshipEvolution/DataAnalysis/fileNames.csv", quote="", col
 
 DF<- data.frame(R = numeric (0), Beta = numeric(0), C = numeric(0),  KPvsCoopMax = numeric(0), KPvsCoopLag = numeric(0), KPvsGSMax = numeric(0), 
 		KPvsGSLag = numeric(0),  KPvsRelMax = numeric(0), KPvsRelLag= numeric(0), GSvsRelMax= numeric(0), GSvsRelLag= numeric(0),
-		GSvsCoopMax= numeric(0), GSvsCoopLag= numeric(0), CoopvsResMax = numeric(0), CoopvsResLag = numeric(0), KinADF, relADF, gsADF, coopADF)
+		GSvsCoopMax= numeric(0), GSvsCoopLag= numeric(0), CoopvsResMax = numeric(0), CoopvsResLag = numeric(0), KinADF = numeric(0) , 
+		relADF =numeric(0), gsADF =numeric(0), coopADF =numeric(0))
 
 
 for (i in 1:nrow(fileNames)){
@@ -78,6 +79,6 @@ for (i in 1:nrow(fileNames)){
 write.table(DF, "LagMeansTransNotSmMax5000.csv", sep=",", row.names = FALSE)
 
 
-colMeans(DF)
+#colMeans(DF)
 
 
