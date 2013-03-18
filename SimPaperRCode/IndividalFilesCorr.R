@@ -1,9 +1,11 @@
 # TODO: Add comment
-# 
+# http://www.statmethods.net/advstats/timeseries.html
 # Author: Ruth
 ###############################################################################
 
-source("G:/PhDWork/RCode/SimPaperCode/SplineFunction.R")
+source("Ruth/SplineFunction.R")
+library(TSA)
+library(tseries)
 
 lam<-0.001
 
@@ -12,9 +14,17 @@ library(tseries) # loading the package time series
 fileNames<-read.csv("G:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
 
 
-file<-read.delim(as.character(fileNames[58,]))
+file<-read.delim(as.character(fileNames[43,]))
+
+file$avgCoop <- asin(file$avgCoop)
+file$rel<-asin(file$rel)
+file$kinPref<-asin(file$kinPref)
+file$avgGrSize<-log(file$avgGrSize)
 
 file <- file[which (file$tick >=10000),]
+
+
+
 
 
 
@@ -27,6 +37,17 @@ for (j in c(8,10,12,13, 11)){ # spline smoothing the time series
 # graph of average cooperative vs group size faced by an average individual
 #plot(file$avgGrSize, file$avgCoop, cex=.1)
 
+ ###testing for stationaryity
+ 
+series<-ts(file[,13])
+series2<-ts(file[,12])
+adf.test(series)$p.value
+pp.test(series)
+
+time(series)
+
+prewhiten(series2, series, lag = 5000)
+ccf(series, series2, lag=5000)
 
 ccf(file$kinPref, file$avgCoop, lag.max= 10000, plot = TRUE)
 

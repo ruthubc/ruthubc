@@ -3,10 +3,10 @@
 # Author: Ruth
 ###############################################################################
 
-source("G:/PhDWork/RCode/SimPaperCode/SplineFunction.R")
+source("Ruth/SplineFunction.R")
 lambda <-0.001
 
-corrs<-read.csv("G:/mydata.csv")
+corrs<-read.csv("LagMeansTransCorrs.csv")
 
 
 
@@ -19,7 +19,7 @@ lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
 
 CC<-as.numeric(levels(as.factor(corrs$C)))
 Beta<-as.numeric(levels(as.factor(corrs$Beta)))
-yParm<-14 #column number 
+yParm<-5 #column number 
 ylabel<-"KinPre vs GS"
 
 #corrs[,yParm]<-abs(corrs[,yParm])

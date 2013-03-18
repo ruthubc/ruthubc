@@ -1,14 +1,13 @@
 #creating time series graph with optimal and stable group size
 
-source("G:/EclipseR/SimPaper/SplineFunction.R")
+source("Ruth/SplineFunction.R")
 
-graphHeaders <- read.csv("G:/Dropbox/Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
+graphHeaders <- read.csv("Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
 
+fileNames<-read.csv("kinshipEvolution/DataAnalysis/fileNames.csv", quote="", col.names="filenames")
 
-
+timeSes<-read.delim(as.character(fileNames[36,]))
 #import the data
-timeSes <- read.delim("G:/Dropbox/kinshipEvolution/NewSimulations2010-2011/r0.10c0.06b0.2/r0.1c0.06b0.2_RPT.pf.csv.series")
-
 
 #par(mfrow=c(4,1), mar = c(2,4,0,2))
 #defult par margins  5.1 4.1 4.1 2.1 (btm, left, top, right)
@@ -35,17 +34,18 @@ for(i in 1:4) {
   
   run<-ts(timeSes[,pam][which(timeSes$tick>=genRem)], start=genRem)
   
-  spl<-fnSpline(0.0001, run)
-  spl#print the spline
+  spl<-fnSpline(0.0001, time(run), run)
+  #spl#print the spline
   
   print(graphHeaders[pam,4])#checking which parambetr chosen
   
+ 
   
   #plotting the spline smoothed times series
   if (i < 4) { 
     
     xLabel<-""   # defines the xlabel
-    ticks<-"n"  #defines whenter there are any ticks on the xaxis
+    ticks<-"n"  #defines whether there are any ticks on the xaxis
     
   } else {               
     
@@ -69,3 +69,5 @@ run<-ts(timeSes[,15][which(timeSes$tick>=genRem)], start=genRem)
 spl<-fnSpline(0.0001, run)
 
 lines(spl, lty=2)
+
+print(row.names(run))
