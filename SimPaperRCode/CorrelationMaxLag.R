@@ -79,6 +79,12 @@ for (i in 1:nrow(fileNames)){
 write.table(DF, "LagMeansTransNotSmMax5000.csv", sep=",", row.names = FALSE)
 
 
-#colMeans(DF)
+####means from graphs
+corrs<-read.csv("LagMeansTransNotSmMax5000.csv")
+
+means<-colMeans(corrs) # calculates the column means
+meansAbs<-colMeans(abs(corrs))
+write.xlsx(means, "corrsMeans.xlsx", sheetName="means")
+write.xlsx2(meansAbs, "corrsMeans.xlsx", sheetName="absoluteMeans")
 
 

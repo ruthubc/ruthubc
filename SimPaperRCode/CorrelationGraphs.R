@@ -4,13 +4,11 @@
 ###############################################################################
 
 source("Ruth/SplineFunction.R")
+
 lambda <-0.001
 
-corrs<-read.csv("LagMeansTransCorrs.csv")
+corrs<-read.csv("LagMeansTransNotSmMax5000.csv")
 
-
-
-means<-colMeans(corrs) # calculates the column means
 
 cols<-c("navy", "tomato1","purple", "green4", "orange") # colours for graph
 pnts<-c(15, 16, 2, 18, 17) #point type
@@ -19,10 +17,23 @@ lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
 
 CC<-as.numeric(levels(as.factor(corrs$C)))
 Beta<-as.numeric(levels(as.factor(corrs$Beta)))
-yParm<-5 #column number 
-ylabel<-"KinPre vs GS"
 
-#corrs[,yParm]<-abs(corrs[,yParm])
+pdf("C:/Users/Ruth/Desktop/CorrGraphs/means.pdf", onefile=TRUE)
+
+for (i in 4:15){
+	
+print(i)
+	
+yParm<-i #column number 
+ylabel<-colnames(corrs)[yParm]
+
+fileName<- paste("C:/Users/Ruth/Desktop/CorrGraphs/", ylabel, ".pdf", sep="")
+
+print(fileName)
+
+#pdf(fileName)
+
+
 
 layout(matrix(c(1:3), 1, 3, byrow = TRUE))
 #making empty plot with all C's so axis don't change
@@ -50,6 +61,13 @@ CVal <- CC[i]
 	
 	} 
 }
+
+#dev.off()
+}
+
+dev.off()
+
+
 
 beta<-c("Beta=0.0", "Beta=0.2", "Beta=0.4", "Beta=0.6", "Beta=0.8")
 
