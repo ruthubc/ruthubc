@@ -47,12 +47,12 @@ class Colony(object):
             self.total_instar += self.colony_list[i].instar
         return self.total_instar
 
-    def colony_food(self, scaling, car_cap, skew):
+    def colony_food(self, car_cap, skew):
         '''total amount of food colony gets
         skew > 1'''
         col_tot_instar = self.instar_sum()  # total instar of colony
-        self.total_food = (scaling * np.power(col_tot_instar, skew)
-                           * np.exp(-car_cap * col_tot_instar))
+        self.total_food = (np.exp(skew - car_cap * col_tot_instar) *
+                           np.power((car_cap * col_tot_instar / skew), skew))
         return self.total_food
 
     def ind_food(self):
