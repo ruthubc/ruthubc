@@ -22,9 +22,9 @@ for i in range(40):
 
 plt.title("mortality")
 
-a = 0.9
+a = 0.5
 mu = 2
-ymin = 0.2
+ymin = 0.1
 
 m = -np.log(ymin/a)
 

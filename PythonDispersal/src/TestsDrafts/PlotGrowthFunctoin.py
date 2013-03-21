@@ -31,7 +31,7 @@ plt.plot(s_old, s_new)
 
 #plt.show()
 
-sz=1-B
+sz=0
 time= [0]
 size = [sz]
 

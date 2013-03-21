@@ -53,3 +53,8 @@ print ('word')
 
 for i in range(len(hlist)):
     print "i = %s, len = %s" % (i, hlist[i])
+    
+mylist = [1]*5
+
+print mylist
+

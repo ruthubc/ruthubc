@@ -36,10 +36,21 @@ class Colony(object):
     def rel_size(self):
         '''calculates the relative size of ind compared to colony
         size varies between 0 and 1 to determine prop of food to ind'''
+        max = 0
         self.col_size()  # getting total colony size
         for i in range(len(self.colony_list)):
             self.colony_list[i].rel_size = (self.colony_list[i].size
                                             / self.total_size)
+
+        for k in range(len(self.colony_list)):
+            if self.colony_list[k].rel_size > max:
+                max = self.colony_list[k].rel_size
+
+        for j in range(len(self.colony_list)):
+            self.colony_list[j].rel_size = (self.colony_list[j].rel_size / max)
+
+
+
 
     def instar_sum(self):
         '''calculates the total instar in the colony'''
@@ -58,16 +69,14 @@ class Colony(object):
     def ind_food(self):
         '''this right now is pure scramble competition'''
         for i in range(len(self.colony_list)):
-            self.colony_list[i].ind_food = (self.colony_list[i].rel_size
-                                            * self.total_food)
+            self.colony_list[i].ind_food = self.total_food
 
-    def ind_growth(self, intercept, slope):
-        '''linear function for % growth, m is the slope
-        a is the intercept which has to be negative
-            no maximum value added yet'''
+    def ind_growth(self, growth_rate):
+        '''non linear function that increases size based on food
+        and current size'''
         for i in range(len(self.colony_list)):
-            per_gro = intercept + self.colony_list[i].ind_food * slope
-            self.colony_list[i].size = per_gro * self.colony_list[i].size
+            self.colony_list[i].size = (1 - ((1 - self.colony_list[i].size) *
+                                             np.exp(-growth_rate * self.colony_list[i].ind_food)))
 
     def update_instar(self, instar_levels):
         '''updating all instars in spider with predefined instar levels
@@ -77,14 +86,24 @@ class Colony(object):
 
     def reproduction(self, no_offspring):
         '''adding new offspring to colony'''
-        no_ads = len([spi for spi in self.colony_list if spi.instar > 6])
-        offsp = [Spider()] * (no_offspring * no_ads)
-        self.colony_list.extend(offsp)
+        no_ads = len([spi for spi in self.colony_list if spi.instar >= 5])
+        no_new_ofs = no_offspring * no_ads
+        #offsp = [Spider()] * no_new_ofs
+        #self.colony_list = offsp + self.colony_list
+        new_spiders = list([Spider() for i in range(no_new_ofs)])
+        #self.colony_list([Spider() for i in range(no_new_ofs)])
+        self.colony_list = self.colony_list + new_spiders
 
-    def dying(self, index):
+    def dying(self, ad_min, juv_max, curve, max_age):
         '''given the index of the individual in the colony list,
         deletes the spider at that location'''
-        del self.colony_list[index]
+        for i in range(len(self.colony_list)):
+            mort = self.colony_list[i].death(ad_min, juv_max, curve, max_age)
+            index = []
+            if mort == 1:
+                index.append(i)
+
+        self.colony_list = [k for j, k in enumerate(self.colony_list) if j not in index]
 
     def age_increment(self):
         "increases age of spider by one"

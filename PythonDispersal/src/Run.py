@@ -15,8 +15,7 @@ from ColonyClass import Colony
 # One list containing all the colonies
 
 
-def run(colony, no_offspring, scale, carrying_capacity,
-        skew, intercept, slope, instar_list):
+def run(colony, no_offspring, carrying_capacity, food_skew, ind_growth_rate, instar_list, die_ad_min, die_juv_max, die_curve, die_max_age):
 
     # keeping track of age of spiders
     colony.age_increment()
@@ -26,57 +25,55 @@ def run(colony, no_offspring, scale, carrying_capacity,
 
     #(2) feeding
 
-    colony.colony_food(scale, carrying_capacity, skew)
+    colony.colony_food(carrying_capacity, food_skew)
     ''' calculating how much food the whole colony gets'''
     colony.rel_size()  # updates the relative size of each spider in colony
     colony.ind_food()  # amount of food to each individual
 
     #(3) growing
-    colony.ind_growth(intercept, slope)  # amount each individual grows
+    colony.ind_growth(ind_growth_rate)  # amount each individual grows
     colony.update_instar(instar_list)  # updating instar
 
     #(4) adults die
+    colony.dying(die_ad_min, die_juv_max, die_curve, die_max_age)
 
     #(5) dispersal
 
     return colony
 
 
-
-
-'''whole colony food function
-scale is a, in_c = C, skew = d '''
-IN_SCALE = 5
-IN_C = 0.2
-IN_SKEW = 1.2
-
-'''individual growth function linear function parameters'''
-IN_INTERCEPT = 0
-IN_SLOPE = 5
-
-'''instar list'''
-IN_INSTAR = range(1, 21, 2)
-"range (start, stop, step), nb: does not include last number!"
-
 "number of offspring an female has"
 IN_NO_OFFSP = 1
 
+'''whole colony food function
+scale is a, in_c = C, skew = d '''
+IN_CAR_CAP = 5
+IN_FOOD_SKEW = 0.2
 
-START_COL = Colony([Spider(7, 7)])
+'''individual growth function linear function parameters'''
+IN_IND_GROWTH = 0.1
 
 
-for i in range(1, 4):
-    START_COL = run(START_COL, IN_NO_OFFSP, IN_SCALE, IN_C,
-    IN_SKEW, IN_INTERCEPT, IN_SLOPE, IN_INSTAR)
+'''instar list'''
+IN_INSTAR = np.arange(0.1, 1, 0.1)
+"range (start, stop, step), nb: does not include last number!"
+
+'''death'''
+IN_MIN_PROB = 0.0001
+IN_MAX_PROB = 0.5
+IN_DIE_CURVE = 2
+DIE_MAX_AGE = 50
+
+
+START_COL = Colony([Spider(0.8), Spider(0.8),Spider(0.8)])
+
+
+for i in range(5):
+    START_COL = run(START_COL, IN_NO_OFFSP, IN_CAR_CAP, IN_FOOD_SKEW, IN_IND_GROWTH,
+                   IN_INSTAR, IN_MIN_PROB, IN_MAX_PROB, IN_DIE_CURVE, DIE_MAX_AGE)
 
 
 print START_COL.print_spiders()
 
 print len(START_COL.colony_list)
 
-My_Col = Colony([Spider(2,2)]*3)
-
-
-START_COL.col_size()
-
-print START_COL.total_size

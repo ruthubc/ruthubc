@@ -5,56 +5,45 @@ Created on 2012-12-23
 '''
 from SpiderClass import Spider
 from ColonyClass import Colony
+import numpy as np
 
 
-#spiList = [spi1, spi2] # creates a list of object spiders
+pete = Spider(0.8)
 
-spi5 = Spider(4, 8, 9)
+instarList = np.arange(0.1, 1, 0.1)
 
-spiList = [Spider(3, 6, 5), Spider(1, 0, 5), Spider(5, 9, 7), spi5]
+col = Colony([pete, Spider(0.2), Spider(0.4), Spider(0.11), Spider(0.89), Spider(0.11), Spider(0.11)])
 
-def PS(spiList):
-    for i in range(len(spiList)):
+col.age_increment()
+col.age_increment()
+col.update_instar(instarList)
+col.reproduction(5)
 
-        print spiList[i]
+#list1 = [Spider(0.8), Spider(0.4)]
 
-
-
-PS(spiList)
-
-#spiList.pop(1) #removes item at 
-#spiList.remove(spi5)
-print ("spilist2")
-
-spiList2 = [spi for spi in spiList if spi.instar > 3]
-
-PS(spiList2)
-
-print ('miniusin')
-
-spiList.append(spi5)
-spiList.append(spi5)
-
-PS(spiList)
+#list2 = list([Spider() for i in range(7)])
 
 
 
-#list_1 = [['good',100, 20, 0.2],['bad', 10, 0, 0.0],['change', 1, 2, 2]]
-#list_1 = [item for item in list_1 if item[2] >= 5 or item[3] >= 0.3]
-
-#print("removed")
-
-#PS(spiList)
-
-spi3 = Spider()
-
-print spi3
 
 
+#newCol = Colony(list1 + list2)
+#newCol.print_spiders()
+#newCol.rel_size()
+#print "now rel size"
 
-y = [Spider(1, 5, 8)]* 3
+#newCol.print_spiders()
 
-y.extend([Spider()] * 2)
 
-PS (y)
+#newCol.print_spiders()
 
+print "now rel size"
+
+col.rel_size()
+
+
+col.print_spiders()
+
+print len([spi for spi in col.colony_list if spi.instar >= 5])
+
+#print col.colony_list
