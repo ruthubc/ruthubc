@@ -40,24 +40,25 @@ layout(matrix(c(1:3), 1, 3, byrow = TRUE))
 
 for (i in 1:length(CC)){
 
-plot(corrs$R, corrs[, yParm], col=0, xlab = "R", ylab=ylabel)
+plot(corrs$R, corrs[, yParm], col=0, xlab = "R", main=ylabel)
 
 CVal <- CC[i]
 
 
 
-	for(i in 1:length(Beta)) {
-	
-	
-		corrs.Sub<-subset(corrs, C==CVal & corrs$Beta==Beta[i])
+	for(j in 1:length(Beta)) {
 		
-		points(corrs.Sub$R, corrs.Sub[, yParm], pch=pnts[i], col=cols[i], cex=1.2)
+	
+	
+		corrs.Sub<-subset(corrs, C==CVal & corrs$Beta==Beta[j])
+		
+		points(corrs.Sub$R, corrs.Sub[, yParm], pch=pnts[j], col=cols[j], cex=1.2)
 	
 		my.spline<-fnSpline(lambda, corrs.Sub$R, corrs.Sub[, yParm] )
 	
 		smooth<-spline(my.spline) # adds extra points to smooth the line so it is not angular  
 	
-		lines(smooth, lty=lines[i], lwd=1, col = cols[i])
+		lines(smooth, lty=lines[j], lwd=1, col = cols[j])
 	
 	} 
 }
@@ -65,19 +66,16 @@ CVal <- CC[i]
 #dev.off()
 }
 
-dev.off()
-
-
-
 beta<-c("Beta=0.0", "Beta=0.2", "Beta=0.4", "Beta=0.6", "Beta=0.8")
 
 
-legend(x=.05, y=.4, beta, cex=.9, col=cols, pch=pnts, 
+legend(x=.05, y=5000, beta, cex=.9, col=cols, pch=pnts, 
 		lty=lines, box.col="transparent", bg="blue", bty="n",
 		y.intersp=1) #kin pref x=1.0, y=0.3; ave coop x=1.0, y=0.4; relatedness 
 
+dev.off()
 
 meansAbs<-colMeans(abs(corrs))
 
-write.table(means, "G:/means.csv", sep=",", row.names = TRUE)
+#write.table(means, "G:/means.csv", sep=",", row.names = TRUE)
 

@@ -11,7 +11,7 @@
 #par(xpd=T, mar=par()$mar+c(2,0,0,2))
 
 
-Census<-read.csv("DataEcuadorSummer2012/GraphFiles/Censuses.csv", na.strings = "NA") #importing the real file
+Census<-read.csv("DataEcuadorSummer2012/Censuses.csv", na.strings = "NA") #importing the real file
 
 
 
