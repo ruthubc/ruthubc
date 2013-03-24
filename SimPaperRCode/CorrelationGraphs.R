@@ -18,9 +18,9 @@ lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
 CC<-as.numeric(levels(as.factor(corrs$C)))
 Beta<-as.numeric(levels(as.factor(corrs$Beta)))
 
-pdf("C:/Users/Ruth/Desktop/CorrGraphs/means.pdf", onefile=TRUE)
+pdf("G:/PhDWork/SimPapers/CorrGraphs.pdf", onefile=TRUE)
 
-for (i in 4:15){
+for (i in 10:15){
 	
 print(i)
 	

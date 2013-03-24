@@ -25,9 +25,9 @@ for (i in 1:nrow(fileNames)){
 	
 	file <- file[which (file$tick >=10000),]
 	
-	file$avgCoop <- asin(file$avgCoop)
-	file$rel<-asin(file$rel)
-	file$kinPref<-asin(file$kinPref)
+	file$avgCoop <- asin(sqrt(file$avgCoop))
+	file$rel<-asin(sqrt(file$rel))
+	file$kinPref<-asin(sqrt(file$kinPref))
 	file$avgGrSize<-log(file$avgGrSize)
 	
 	print (i)
@@ -76,7 +76,7 @@ for (i in 1:nrow(fileNames)){
 
 }
 
-write.table(DF, "LagMeansTransNotSmMax5000.csv", sep=",", row.names = FALSE)
+write.table(DF, "LagMeansTransNotSmMax5000New.csv", sep=",", row.names = FALSE)
 
 
 ####means from graphs

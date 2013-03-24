@@ -13,18 +13,19 @@
 
 Census<-read.csv("DataEcuadorSummer2012/Censuses.csv", na.strings = "NA") #importing the real file
 
+pdf("DataEcuadorSummer2012/GraphFiles/CensusGraphs.pdf", onefile=TRUE) # for one graph
 
 
 Census<-Census[order(as.Date(Census$Date, format="%d/%m/%Y")),] #orders by date
 
-
+#Census$Date<-as.Date(Census$Date)
 
 noNests<-as.numeric(nlevels(Census$TripletID))
 
 Triplet<-levels(Census$TripletID) #saves the different nests
 
 ##updating nest type
-NestTypes<-read.csv("C:/Users/Ruth/Documents/NestType.csv", stringsAsFactors=FALSE)
+NestTypes<-read.csv("DataEcuadorSummer2012/GraphFiles/NestType.csv", stringsAsFactors=FALSE)
 
 Census$NestType<-as.character(Census$NestType)
 
@@ -42,14 +43,14 @@ for(i in 1:noNests){ #look to seperate nests and loops
 	
 	CurTriplet<-(Triplet[i])
 	
-	jpeg(file=paste("DataEcuadorSummer2012/GraphFiles/CensusGraphs/", CurTriplet, ".jpeg", sep=""))
+	#jpeg(file=paste("DataEcuadorSummer2012/GraphFiles/CensusGraphs/", CurTriplet, ".jpeg", sep=""))
 	
 	par(mgp = c(3, 0.25, 0)) #change location of labels default is (3,1,0)
 	
 	
 	par(mfrow=c(2,1))
 	
-	par(xpd=T, mar=par()$mar+c(1,0,-1,2))
+	#par(xpd=T, mar=par()$mar+c(1,0,-1,2))
 	
 	CenTri<-subset(Census, TripletID==CurTriplet) #excluding all but current triplet
 	
@@ -121,12 +122,11 @@ for(i in 1:noNests){ #look to seperate nests and loops
 	
 	
 	
-	dev.off()
+	#dev.off()
 	
 }
 
-#dev.off()## one pdf
-#pdf("D:/Dropbox/DataEcuadorSummer2012/GraphFiles/CensusGraphs.pdf", onefile=TRUE) # for one graph
+dev.off()## one pdf
 
 #par(mgp = c(3, 0.25, 0)) #change location of labels default is (3,1,0)
 

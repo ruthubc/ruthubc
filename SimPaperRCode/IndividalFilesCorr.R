@@ -4,7 +4,7 @@
 ###############################################################################
 
 source("Ruth/SplineFunction.R")
-library(TSA)
+#library(TSA)
 library(tseries)
 
 lam<-0.001
@@ -14,7 +14,7 @@ library(tseries) # loading the package time series
 fileNames<-read.csv("G:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
 
 
-file<-read.delim(as.character(fileNames[43,]))
+file<-read.delim(as.character(fileNames[3,]))
 
 file$avgCoop <- asin(file$avgCoop)
 file$rel<-asin(file$rel)
@@ -48,8 +48,8 @@ time(series)
 
 prewhiten(series2, series, lag = 5000)
 ccf(series, series2, lag=5000)
-
-ccf(file$kinPref, file$avgCoop, lag.max= 10000, plot = TRUE)
+X11()
+ccf(file$kinPref, file$avgCoop, lag.max=2000, plot = TRUE)
 
 #ccf(file$kinPref, file$avgGrSize, lag.max=1000)
 
@@ -57,7 +57,7 @@ ccf(file$kinPref, file$avgCoop, lag.max= 10000, plot = TRUE)
 
 #ccf(file$rel, file$avgGrSize, lag.max=0, plot= FALSE)
 
-#ccf(file$avgGrSize, file$rel, lag.max=10000)
+ccf(file$avgGrSize, file$rel, lag.max=10000)
 
 #ccf(file$avgCoop, file$avgGrSize, lag.max=10000)
 				

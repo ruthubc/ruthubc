@@ -6,11 +6,13 @@ graphHeaders <- read.csv("Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
 
 fileNames<-read.csv("kinshipEvolution/DataAnalysis/fileNames.csv", quote="", col.names="filenames")
 
-timeSes<-read.delim(as.character(fileNames[36,]))
+timeSes<-read.delim(as.character(fileNames[3,]))
 #import the data
 
 #par(mfrow=c(4,1), mar = c(2,4,0,2))
 #defult par margins  5.1 4.1 4.1 2.1 (btm, left, top, right)
+
+X11()
 
 layout(matrix(c(1,2,3,4), 4, 1, byrow = FALSE))
 
