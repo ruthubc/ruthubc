@@ -40,10 +40,10 @@ for (i in 1:nrow(fileNames)){
 	###########spline
 	
 	
-		#for (j in c(8,10,12,13)){ # spline smoothing the time series
+		for (j in c(8,10,12,13)){ # spline smoothing the time series
 		
-		#	file[,j]<- (fnSpline(lam, file$tick, file[,j]))$y
-		#}
+			file[,j]<- (fnSpline(lam, file$tick, file[,j]))$y
+		}
 	
 	
 	
@@ -76,11 +76,11 @@ for (i in 1:nrow(fileNames)){
 
 }
 
-write.table(DF, "LagMeansTransNotSmMax5000New.csv", sep=",", row.names = FALSE)
+write.table(DF, "kinshipEvolution/Correlations/LagMeansTransSpline.csv", sep=",", row.names = FALSE)
 
 
 ####means from graphs
-corrs<-read.csv("LagMeansTransNotSmMax5000.csv")
+corrs<-read.csv("kinshipEvolution/Correlations/LagMeansTransNotSmMax5000New.csv")
 
 means<-colMeans(corrs) # calculates the column means
 meansAbs<-colMeans(abs(corrs))

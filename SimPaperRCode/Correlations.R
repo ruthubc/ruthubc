@@ -7,7 +7,7 @@ library(tseries) # loading the package time series
 source("G:/PhDWork/RCode/SimPaperCode/SplineFunction.R")
 lam<-0.001
 
-fileNames<-read.csv("G:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="", col.names="filenames")
+fileNames<-read.csv("kinshipEvolution/DataAnalysis/fileNames.csv", quote="", col.names="filenames")
 
 DF<- data.frame(R = numeric (0), Beta = numeric(0), C = numeric(0),  KPvsCoop = numeric(0), KPvsGS = numeric(0), 
 		KPvsRel= numeric(0), GSvsRes= numeric(0), GSvsCoop= numeric(0), CoopvsRes = numeric(0))

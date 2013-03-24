@@ -5,9 +5,9 @@
 
 source("Ruth/SplineFunction.R")
 
-lambda <-0.001
+lambda <-0.01
 
-corrs<-read.csv("LagMeansTransNotSmMax5000.csv")
+corrs<-read.csv("kinshipEvolution/Correlations/LagMeansTransNotSmMax5000New.csv")
 
 
 cols<-c("navy", "tomato1","purple", "green4", "orange") # colours for graph
@@ -18,9 +18,14 @@ lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
 CC<-as.numeric(levels(as.factor(corrs$C)))
 Beta<-as.numeric(levels(as.factor(corrs$Beta)))
 
-pdf("G:/PhDWork/SimPapers/CorrGraphs.pdf", onefile=TRUE)
+pdf("G:/PhDWork/SimPapers/CorrGraphsLA.pdf", onefile=TRUE)
 
-for (i in 10:15){
+layout(matrix(c(1:6), 2, 3, byrow = TRUE))
+
+for (i in c(12, 13, 14, 15, 10, 11)){
+	
+	if (i %% 2==0) {yaxislab <-"maximum correlation"} else
+	{yaxislab <- "Lag at maximum correlation"}
 	
 print(i)
 	
@@ -31,18 +36,17 @@ fileName<- paste("C:/Users/Ruth/Desktop/CorrGraphs/", ylabel, ".pdf", sep="")
 
 print(fileName)
 
-#pdf(fileName)
 
-
-
-layout(matrix(c(1:3), 1, 3, byrow = TRUE))
+##
 #making empty plot with all C's so axis don't change
 
-for (i in 1:length(CC)){
+for (k in 1:length(CC)){
+	
+	paste(ylabel, " C=", CC[k])
 
-plot(corrs$R, corrs[, yParm], col=0, xlab = "R", main=ylabel)
+plot(corrs$R, corrs[, yParm], col=0, xlab = "R", ylab = yaxislab, main=paste(ylabel, " C=", CC[k]))
 
-CVal <- CC[i]
+CVal <- CC[k]
 
 
 
@@ -69,7 +73,7 @@ CVal <- CC[i]
 beta<-c("Beta=0.0", "Beta=0.2", "Beta=0.4", "Beta=0.6", "Beta=0.8")
 
 
-legend(x=.05, y=5000, beta, cex=.9, col=cols, pch=pnts, 
+legend(x=.05, y=1500, beta, cex=.9, col=cols, pch=pnts, 
 		lty=lines, box.col="transparent", bg="blue", bty="n",
 		y.intersp=1) #kin pref x=1.0, y=0.3; ave coop x=1.0, y=0.4; relatedness 
 
