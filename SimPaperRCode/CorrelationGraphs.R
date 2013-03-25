@@ -18,14 +18,19 @@ lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
 CC<-as.numeric(levels(as.factor(corrs$C)))
 Beta<-as.numeric(levels(as.factor(corrs$Beta)))
 
-pdf("G:/PhDWork/SimPapers/CorrGraphsLA.pdf", onefile=TRUE)
+pdf("G:/PhDWork/SimPapers/CorrGraphsNonSplineLA.pdf", onefile=TRUE)
 
 layout(matrix(c(1:6), 2, 3, byrow = TRUE))
 
 for (i in c(12, 13, 14, 15, 10, 11)){
 	
-	if (i %% 2==0) {yaxislab <-"maximum correlation"} else
-	{yaxislab <- "Lag at maximum correlation"}
+	if (i %% 2==0) {
+		yaxislab <-"maximum correlation"
+		ylimits <- c(-1, 1)
+	} else{
+		yaxislab <- "Lag at maximum correlation"
+		ylimits<-c(-5000, 5000)
+	}
 	
 print(i)
 	
@@ -44,7 +49,8 @@ for (k in 1:length(CC)){
 	
 	paste(ylabel, " C=", CC[k])
 
-plot(corrs$R, corrs[, yParm], col=0, xlab = "R", ylab = yaxislab, main=paste(ylabel, " C=", CC[k]))
+plot(corrs$R, corrs[, yParm], col=0, xlab = "R", ylab = yaxislab, 
+		ylim= ylimits, main=paste(ylabel, " C=", CC[k]))
 
 CVal <- CC[k]
 
@@ -73,7 +79,7 @@ CVal <- CC[k]
 beta<-c("Beta=0.0", "Beta=0.2", "Beta=0.4", "Beta=0.6", "Beta=0.8")
 
 
-legend(x=.05, y=1500, beta, cex=.9, col=cols, pch=pnts, 
+legend(x=.05, y=4500, beta, cex=.9, col=cols, pch=pnts, 
 		lty=lines, box.col="transparent", bg="blue", bty="n",
 		y.intersp=1) #kin pref x=1.0, y=0.3; ave coop x=1.0, y=0.4; relatedness 
 

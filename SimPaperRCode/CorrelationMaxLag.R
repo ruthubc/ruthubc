@@ -80,13 +80,13 @@ write.table(DF, "kinshipEvolution/Correlations/LagMeansTransSpline.csv", sep=","
 
 
 ####means from graphs
-corrs<-read.csv("kinshipEvolution/Correlations/LagMeansTransNotSmMax5000New.csv")
+corrs<-read.csv("kinshipEvolution/Correlations/LagMeansTransSpline.csv")
 
-corrs = corrs[-3,]
+#corrs = corrs[-3,]
 
 means<-colMeans(corrs) # calculates the column means
 meansAbs<-colMeans(abs(corrs))
 
 x<-data.frame(means, meansAbs)
 
-write.csv(x, "kinshipEvolution/Correlations/nonSplMeans2.csv")
+write.csv(x, "kinshipEvolution/Correlations/SplineMeans.csv")
