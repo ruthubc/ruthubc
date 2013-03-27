@@ -5,14 +5,10 @@
 ###############################################################################
 
 
-
-
-##anova for group size
-
-averages <- read.csv("D:/Dropbox/kinshipEvolution/DataAnalysis/averages.csv")
+averages <- read.csv("kinshipEvolution/DataAnalysis/averages10000.csv")
 
 subAves<-averages
-subAves$avCoopTrans<-asin(subAves$avgCoop)
+subAves$avCoopTrans<-asin(sqrt(subAves$avgCoop))
 
 detach(subAves)
 
@@ -27,7 +23,7 @@ anova(lm1)
 anv1<-as.data.frame(anova(lm1))
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))] ##gives minimum value
 
-write.csv(as.matrix(anova(lm1)), file = "D:/Dropbox/kinshipEvolution/ANOVAandStatsTests/AveGpTransFullANOVA.csv", na = "")
+write.csv(as.matrix(anova(lm1)), file = "kinshipEvolution/ANOVAandStatsTests/NewAnova.csv", na = "")
 
 
 ##(2) removing R^3 and all R^3 intercept terms
@@ -71,7 +67,7 @@ anv1<-as.data.frame(anova(lm1))
 
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))]
 
-
+###########new averages this is the final ONE.. all terms significant
 ##(6) removing C^2 and all terms with c^2 
 lm1<-lm(avCoopTrans~(R+ Beta+C)^3 + I(R^2) + I(Beta^2) +   I(Beta^3) + C*I(Beta^2) + Beta*I(R^2) +R*I(Beta^2) )
 
@@ -83,4 +79,4 @@ anv1<-as.data.frame(anova(lm1))
 rownames(anv1)[which(anv1$"Sum Sq"==min(anv1$"Sum Sq"))]
 
 
-write.csv(as.matrix(anova(lm1)), file = "D:/Dropbox/kinshipEvolution/ANOVAandStatsTests/MyANOVA.csv", na = "")
+write.csv(as.matrix(anova(lm1)), file = "kinshipEvolution/ANOVAandStatsTests/NewAnova.csv", na = "")
