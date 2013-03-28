@@ -9,16 +9,15 @@ library(tseries)
 
 lam<-0.001
 
-library(tseries) # loading the package time series
 
-fileNames<-read.csv("G:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
+fileNames<-read.csv("kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
 
 
-file<-read.delim(as.character(fileNames[3,]))
+file<-read.delim(as.character(fileNames[21,]))
 
-file$avgCoop <- asin(file$avgCoop)
-file$rel<-asin(file$rel)
-file$kinPref<-asin(file$kinPref)
+file$avgCoop <- asin(sqrt(file$avgCoop))
+file$rel<-asin(sqrt(file$rel))
+file$kinPref<-asin(sqrt(file$kinPref))
 file$avgGrSize<-log(file$avgGrSize)
 
 file <- file[which (file$tick >=10000),]
@@ -60,11 +59,22 @@ ccf(file$kinPref, file$avgCoop, lag.max=2000, plot = TRUE)
 ccf(file$avgGrSize, file$rel, lag.max=10000)
 
 #ccf(file$avgCoop, file$avgGrSize, lag.max=10000)
-				
-#ccf(file$avgCoop, file$rel, lag.max=0, plot = FALSE)
+	ccf(file$avgCoop, file$avgGrSize, lag.max=5000, plot = F)			
+#
 
-cross<-ccf(file$avgCoop, file$avgGrSize, lag.max=10000, plot = FALSE)
-cross2 <-ccf(file$avgGrSize, file$avgCoop, lag.max=10000, plot = FALSE)
+cross<- ccf(file$avgCoop, file$rel, lag.max=5000, plot = FALSE)
+
+as.numeric(cross$acf[which.max(array(abs(cross$acf)))])
+as.numeric(cross$lag[which.max(array(abs(cross$acf)))])
+
+X11()
+
+ccf(file$avgCoop, file$rel, lag.max=5000, plot = T)
+
+ccf(file$avgCoop, file$avgGrSize, lag.max=5000, plot = T)
+
+
+ccf(file$avgGrSize, file$avgCoop, lag.max=10000, plot = FALSE)
 
 
 #cross$lag[which.max(array(abs(cross$acf)))]
