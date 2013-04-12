@@ -1,20 +1,24 @@
 ##Redoing the simulation graphs Feb 4th 2013
 
 #exporting graph pdf location ######
-pdf("C:/Users/Ruth/Desktop/graph.pdf", width=11, height=11)
+#pdf("C:/Users/Ruth/Desktop/graph.pdf", width=11, height=11)
+
+jpeg("C:/Users/Ruth/Desktop/graph.jpeg", width = 790, height = 790)
 
 #imports of data and functions#########################################################################
 
 source("G:/PhDWork/RCode/SimPaperCode/SplineFunction.R")
 
-averages <- read.csv("G:/Dropbox/kinshipEvolution/DataAnalysis/averages.csv")
+averages <- read.csv("kinshipEvolution/DataAnalysis/averages.csv")
 
 #adding relative group size to averages
 averages$relGrSize<-averages$C * averages$avgGrSize
 
 CC<-as.numeric(levels(as.factor(averages$C)))
 
-graphHeaders <- read.csv("G:/Dropbox/Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
+CCD<-c(50, 16.7, 10)
+
+graphHeaders <- read.csv("Ruth/RFile/graphHeaders.csv", stringsAsFactors=FALSE)
 
 #things to input before runing code################################
 #R=4  
@@ -50,9 +54,9 @@ gphSet<-function(yParm){
   
   if (yParm==8){ #aveCoop
     
-    ylimt<-NULL #y axis limit
+    ylimt<-c(0, 1) #y axis limit
     ya<-"r"    #y axis type
-    aline<-c(0.1*(3:9))    
+    aline<-c(0.1*(1:9))    
     
   } else if (yParm==10){ #ave GroupSize
     
@@ -62,9 +66,9 @@ gphSet<-function(yParm){
     
   } else if (yParm==12){ #relatedness
     
-    ylimt<-NULL #y axis limit
-    ya<-"r"    #y axis type
-    aline<-c(0.05*(5:8)) 
+    ylimt<-c(0, 0.5) #y axis limit
+    ya<-"i"    #y axis type
+    aline<-c(0.05*(1:9)) 
         
   } else if (yParm==13) { #kin preference
     
@@ -84,7 +88,7 @@ gphSet<-function(yParm){
   
 }
 
-#settting the margins function
+#setting the margins function
 MarFun<-function(j, k){
   
   if (k==4){b<-4} else {b<-0.5}
@@ -122,7 +126,7 @@ for (k in 1:4){ #looping by rows/ y parameters
           } else {               
         
           yLabel<-""   # y label is blank
-          ticks<-"n"  #defines whenter there are any ticks on the xaxis
+          ticks<-"n"  #defines whether there are any ticks on the xaxis
         }
     
     
@@ -148,7 +152,7 @@ for (k in 1:4){ #looping by rows/ y parameters
       
       abline(h=gphSet(yPar)$aline, col="darkgrey")  #horizental grid lines on graphs
       
-      if(k==2){mtext(paste("C=", CVal, sep=""), side=1, adj=0.5, cex=1.6, font=2, line=1)}
+      if(k==2){mtext(paste("1/C=", CCD[j], sep=""), side=1, adj=0.5, cex=1.6, font=2, line=1)}
       
       
       #plotting the points and lines  
@@ -159,7 +163,8 @@ for (k in 1:4){ #looping by rows/ y parameters
         
         points(ave.Sub, pch=pnts[i], col=cols[i], cex=1.2)  
         
-        my.spline<-fnSpline(lambda, ave.Sub)
+        my.spline<-fnSpline(lambda, ave.Sub[,1], ave.Sub[,2])
+		
         
         smooth<-spline(my.spline) # adds extra points to smooth the line so it is not angular  
         
@@ -181,7 +186,7 @@ beta<-c("Beta=0.0", "Beta=0.2", "Beta=0.4", "Beta=0.6", "Beta=0.8")
 # kin pref if exporing w 911 h 324
 #rect(1.0,0.05, 2.0, 0.3, col="white", border=NA)   
 # average cooperation if exporting w911 h324
-rect(1.2,0.35, 2.1, 0.75, col="white", border="black") 
+rect(1.2,0.2, 2.1, 0.75, col="white", border="black") 
 #relatedness w911 h324
 #rect(1.0,0.20, 2.0, 0.27, col="white", border=NA)
 
