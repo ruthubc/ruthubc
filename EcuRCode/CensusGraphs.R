@@ -10,6 +10,10 @@
 # Expand right side of clipping rect to make room for the legend
 #par(xpd=T, mar=par()$mar+c(2,0,0,2))
 
+#library(xlsx)
+
+#test<-read.xlsx()
+
 
 Census<-read.csv("DataEcuadorSummer2012/Censuses.csv", na.strings = "NA") #importing the real file
 
