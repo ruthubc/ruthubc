@@ -7,6 +7,8 @@
 #clean up
 rm(list=ls())
 
+#test of svn
+
 #The 'ccf' function allows a simple way to get cross-correlations.
 #Oddly, 'x' refers to the presumed endogenous variable and 'y' refers to the presumed exogenous variable.
 #This is opposite of what is usually expected.
