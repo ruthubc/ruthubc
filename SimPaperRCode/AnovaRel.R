@@ -1,12 +1,11 @@
-# TODO: Add comment
-# 
+
 # Author: Ruth
+# Paper:Evolution of kinship 
+# Carrying out the ANOVA on kin preference 26th March 2013
 ###############################################################################
- #test
 
-##Anova relatedness sept 30th 2012
 
-averages <- read.csv("kinshipEvolution/DataAnalysis/averages1000.csv")
+averages <- read.csv("kinshipEvolution/DataAnalysis/averages10000.csv")
 
 subAves<-averages
 subAves$relTrans<-asin(sqrt(subAves$rel))

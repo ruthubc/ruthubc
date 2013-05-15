@@ -1,7 +1,8 @@
 # TODO: Add comment
 # 
 # Author: Ruth
-# Carrying out the ANOVA for COOP
+# Paper:Evolution of kinship 
+# Carrying out the ANOVA on average Cooperation 26th March 2013
 ###############################################################################
 
 

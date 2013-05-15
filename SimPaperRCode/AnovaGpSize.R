@@ -1,10 +1,11 @@
 # TODO: Add comment
 # 
+
 # Author: Ruth
+# Paper:Evolution of kinship 
+# Carrying out the ANOVA on average group size 26th March 2013
 ###############################################################################
 
-
-##anova for group size
 
 averages <- read.csv("kinshipEvolution/DataAnalysis/averages10000.csv")
 

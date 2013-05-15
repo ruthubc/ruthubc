@@ -1,9 +1,9 @@
-##Redoing the simulation graphs Feb 4th 2013
+##Kin Preference Averages Graphs against C, R and Beta
 
 #exporting graph pdf location ######
-#pdf("C:/Users/Ruth/Desktop/graph.pdf", width=11, height=11)
+pdf("C:/Users/Ruth/Desktop/KinPrefAveragesGraph.pdf", width=11, height=11)
 
-jpeg("C:/Users/Ruth/Desktop/graph.jpeg", width = 790, height = 790)
+#jpeg("C:/Users/Ruth/Desktop/AveragesGraph.jpeg", width = 790, height = 790)
 
 #imports of data and functions#########################################################################
 
@@ -45,9 +45,9 @@ lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
 by<-as.numeric(levels(as.factor(averages[,byPar])))#number of levels of Beta
 lenBy<-as.numeric(length(by))
 
-layout(matrix(c(1:12), 4, 3, byrow = TRUE)) #graph layout
+layout(matrix(c(1:12), 4, 3, byrow = TRUE), widths = c(8.4,7,8), heights = c(10, 8, 8, 9.75)) #graph layout
 
-par(mar=c(5,5,1,1)) #setting margins c(bottom, left, top, right)
+#par(mar=c(5,5,1,1)) #setting margins c(bottom, left, top, right)
 
 #function to get graph settings for different parameters
 gphSet<-function(yParm){
@@ -66,7 +66,7 @@ gphSet<-function(yParm){
     
   } else if (yParm==12){ #relatedness
     
-    ylimt<-c(0, 0.5) #y axis limit
+    ylimt<-c(0, 0.49) #y axis limit
     ya<-"i"    #y axis type
     aline<-c(0.05*(1:9)) 
         
@@ -90,14 +90,14 @@ gphSet<-function(yParm){
 
 #setting the margins function
 MarFun<-function(j, k){
+   
+  if (k==4){b<-5} else {b<-0.75}
   
-  if (k==4){b<-4} else {b<-0.5}
+  if (k==1){t<-6} else {t<-0.75}
   
-  if (k==1){t<-4} else {t<-0.5}
+  if (j==1){l<-5} else {l<-0.75}
   
-  if (j==1){l<-4} else {l<-0.5}
-  
-  if (j==3){r<-4} else {r<-0.5}  
+  if (j==3){r<-4} else {r<-0.75}  
   
   
   return (c(b,l,t,r)) #setting margins c(bottom, left, top, right)
@@ -115,7 +115,7 @@ for (k in 1:4){ #looping by rows/ y parameters
       
       CVal=CC[j]
       
-      #par(mar=MarFun(j, k))
+      par(mar=MarFun(j, k))
       
     ##setting first graph of the three has a y label, others don't
     if (j==1) {
@@ -152,7 +152,7 @@ for (k in 1:4){ #looping by rows/ y parameters
       
       abline(h=gphSet(yPar)$aline, col="darkgrey")  #horizental grid lines on graphs
       
-      if(k==2){mtext(paste("1/C=", CCD[j], sep=""), side=1, adj=0.5, cex=1.6, font=2, line=1)}
+      if(k==1){mtext(paste("1/C=", CCD[j], sep=""), side=3, adj=0.5, cex=1.6, font=2, line=1)}
       
       
       #plotting the points and lines  
@@ -184,9 +184,9 @@ beta<-c("Beta=0.0", "Beta=0.2", "Beta=0.4", "Beta=0.6", "Beta=0.8")
 
 #rect (xleft, ybottom, xright, ytop)
 # kin pref if exporing w 911 h 324
-#rect(1.0,0.05, 2.0, 0.3, col="white", border=NA)   
+#rect(1.0,0.06, 2.0, 0.28, col="white", border=NA)   
 # average cooperation if exporting w911 h324
-rect(1.2,0.2, 2.1, 0.75, col="white", border="black") 
+rect(1.2,0.23, 2.0, 0.75, col="white", border="black") 
 #relatedness w911 h324
 #rect(1.0,0.20, 2.0, 0.27, col="white", border=NA)
 
@@ -196,3 +196,4 @@ legend(x=1.2, y=.75, beta, cex=1.3, col=cols, pch=pnts,
 
 
 dev.off()
+

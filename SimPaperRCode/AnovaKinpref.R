@@ -1,6 +1,7 @@
-# TODO: Add comment
-# 
+
 # Author: Ruth
+# Paper:Evolution of kinship 
+# Carrying out the ANOVA on kin preference 26th March 2013
 ###############################################################################
 
 
