@@ -4,9 +4,10 @@
 ###############################################################################
 
 
-JuvMes<-read.csv("DataEcuadorSummer2012/JuvMeasurements.csv", stringsAsFactors=FALSE)
+JuvMes<-read.csv("DataEcuadorSummer2012/JuvMeasurements/JuvMeasurements.csv", stringsAsFactors=FALSE)
 
- ##updating nest types
+ #########################################################
+ #######updating nest types and export the date back######
 
 NestTypes<-read.csv("DataEcuadorSummer2012/GraphFiles/NestType.csv", stringsAsFactors=FALSE)
 
@@ -59,6 +60,30 @@ boxplot(temp$individual.weight~temp$Nest,main=Triplet[i], cex=0.6, las=2, ylab =
 
 
 
+}
+
+dev.off()
+
+
+####same graph but with the juv measurments averaged between the two measurements
+
+pdf("DataEcuadorSummer2012/JuvMeasGraphsMeanDates.pdf")
+par(mfrow=c(2,3))
+par(mar=c(7,5,3,1)) # c(bottom, left, top, right) 
+
+
+
+for(i in 1:noNests){
+	
+	
+	
+	temp<-subset(JuvMes, TripletID==Triplet[i])
+	
+	
+	boxplot(JuvMes$individual.weight~JuvMes$Type ,main=Triplet[i], cex=0.6, las=2, ylab = "weight, mg")
+	
+	
+	
 }
 
 dev.off()
