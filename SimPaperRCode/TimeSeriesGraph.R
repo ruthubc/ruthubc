@@ -81,11 +81,13 @@ for(i in 1:4) {
   
 }
 
+
+run<-ts(timeSes[,15][which(timeSes$tick>=genRem)], start=genRem)
+
+spl<-fnSpline(0.0001, time(run), run)
+
+lines(spl, lty=2)
+
 dev.off()
-#run<-ts(timeSes[,15][which(timeSes$tick>=genRem)], start=genRem)
-
-#spl<-fnSpline(0.0001, run)
-
-#lines(spl, lty=2)
 
 #print(row.names(run))
