@@ -15,12 +15,18 @@
 #test<-read.xlsx()
 
 
+
 Census<-read.csv("DataEcuadorSummer2012/Censuses.csv", na.strings = "NA") #importing the real file
 
-pdf("DataEcuadorSummer2012/GraphFiles/CensusGraphs.pdf", onefile=TRUE) # for one graph
+levels(Census$ColonyID)
 
+Census$AdFemales<-as.numeric(Census$AdFemales)
 
-Census<-Census[order(as.Date(Census$Date, format="%d/%m/%Y")),] #orders by date
+pdf("DataEcuadorSummer2012/GraphFiles/CensusGraphsFrancisco.pdf", onefile=TRUE) # for one graph
+
+Census<-Census[order(Census$CensusNumber),]
+
+#Census<-Census[order(as.Date(Census$Date, format="%d/%m/%Y")),] #orders by date
 
 #Census$Date<-as.Date(Census$Date)
 
@@ -33,11 +39,11 @@ NestTypes<-read.csv("DataEcuadorSummer2012/GraphFiles/NestType.csv", stringsAsFa
 
 Census$NestType<-as.character(Census$NestType)
 
-for(m in 1:nrow(Census) ){
+#for(m in 1:nrow(Census) ){
 	
-	Census$NestType[m]<-NestTypes$Actual.Type[which(NestTypes$NestNumber==as.character(Census$NestNumber[m]) & as.character(NestTypes$TripletID)==as.character(Census$TripletID[m]))]
+#	Census$NestType[m]<-NestTypes$Actual.Type[which(NestTypes$NestNumber==as.character(Census$NestNumber[m]) & as.character(NestTypes$TripletID)==as.character(Census$TripletID[m]))]
 	
-}
+#}
 
 
 #############TRIPLETLOOP##########
