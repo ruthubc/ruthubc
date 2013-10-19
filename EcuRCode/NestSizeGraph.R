@@ -8,6 +8,7 @@
 
 library(plyr)
 library(ggplot2)
+require(lattice)
 
 spiderData <- read.csv("RuthEcuador2013/CombinedNestVsWeight.csv")
 
@@ -20,8 +21,41 @@ table(spiders$Instar)
 
 levels(spiders$Instar)
 
-levels(spiders$NestID)
+Nests<-levels(spiders$NestID)
 
+levels(spiders$NestID)[1]
+
+
+
+hist(spiders$Weight.mg, breaks = 20)
+
+
+histogram( ~ Weight.mg | Instar , data=spiders, type = "count", equal.widths = FALSE,
+		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
+		breaks = 15 )
+
+histogram( ~ LegLen.mm | Instar , data=spiders, type = "count", equal.widths = FALSE,
+		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
+		breaks = 15 )
+
+histogram( ~ HeadLength.mm | Instar , data=spiders, type = "count", equal.widths = FALSE,
+		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
+		breaks = 15 )
+
+Nest<-Nests[1]
+
+subset(spiders, NestID == Nest)
+
+ggplot(subset(spiders, NestID == Nests[5]) , aes(x=Weight.mg, fill = Instar)) + geom_bar()
+
+
+
+SumizeWeightInstarOnly <- ddply(spiders, .(Instar), summarise,
+		N = length(!is.na(Weight.mg)),
+		mean = mean(Weight.mg, na.rm = TRUE),
+		sd = sd(Weight.mg, na.rm = TRUE),
+		coefvar= sd / mean		
+)
 
 SSummariseWeight <- ddply(spiders, .(lnArea, Instar), summarise,
 		N = length(!is.na(Weight.mg)),
@@ -30,6 +64,13 @@ SSummariseWeight <- ddply(spiders, .(lnArea, Instar), summarise,
 		coefvar= sd / mean		
 		)
 		
+SumsWeightN <- subset(SSummariseWeight, N>9)
+
+
+histogram( ~ coefvar | Instar , data=SumsWeightN, type = "count", equal.widths = FALSE,
+		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
+		breaks = 8 )	
+
 		
 plot(mean ~ lnArea, data = SSummarise,
 		type = "l")
