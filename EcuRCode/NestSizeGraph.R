@@ -17,17 +17,10 @@ spiders <- subset(spiderData, Instar != "FALSE")
 #removes empty levels
 spiders$Instar <- factor(spiders$Instar)
 
-table(spiders$Instar)
-
-levels(spiders$Instar)
 
 Nests<-levels(spiders$NestID)
 
-levels(spiders$NestID)[1]
 
-
-
-hist(spiders$Weight.mg, breaks = 20)
 
 
 histogram( ~ Weight.mg | Instar , data=spiders, type = "count", equal.widths = FALSE,
@@ -42,13 +35,24 @@ histogram( ~ HeadLength.mm | Instar , data=spiders, type = "count", equal.widths
 		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
 		breaks = 15 )
 
-Nest<-Nests[1]
-
-subset(spiders, NestID == Nest)
-
-ggplot(subset(spiders, NestID == Nests[5]) , aes(x=Weight.mg, fill = Instar)) + geom_bar()
 
 
+
+# making individual histograms for each nest
+pdf("RuthEcuador2013/Graphs/IndNestGraphs.pdf", onefile = TRUE)
+
+for (i in 1:length(Nests)){
+	
+print(ggplot(subset(spiders, NestID == Nests[i]) , aes(x=LegLen.mm, fill = Instar)) + 
+				geom_bar(colour="black") + ggtitle(paste(Nests[i], "LegLen.mm", sep = " ")))
+	
+
+print(ggplot(subset(spiders, NestID == Nests[i]) , aes(x=HeadLength.mm, fill = Instar)) + 
+				geom_bar(colour="black") + ggtitle(paste(Nests[i], "HeadLen.mm", sep = " ")))
+
+}
+
+dev.off()
 
 SumizeWeightInstarOnly <- ddply(spiders, .(Instar), summarise,
 		N = length(!is.na(Weight.mg)),
@@ -60,8 +64,13 @@ SumizeWeightInstarOnly <- ddply(spiders, .(Instar), summarise,
 SSummariseWeight <- ddply(spiders, .(lnArea, Instar), summarise,
 		N = length(!is.na(Weight.mg)),
 		mean = mean(Weight.mg, na.rm = TRUE),
+		median = median(Weight.mg, na.rm = TRUE),
 		sd = sd(Weight.mg, na.rm = TRUE),
-		coefvar= sd / mean		
+		coefvar= sd / mean,
+		IQR = IQR(Weight.mg, na.rm = TRUE),
+		IQRDivMed =  IQR/median,
+		Diff = IQRDivMed - coefvar
+
 		)
 		
 SumsWeightN <- subset(SSummariseWeight, N>9)
