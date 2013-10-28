@@ -9,6 +9,7 @@
 library(plyr)
 library(ggplot2)
 require(lattice)
+require(reshape2)
 
 spiderData <- read.csv("RuthEcuador2013/CombinedNestVsWeight.csv")
 
@@ -54,16 +55,10 @@ print(ggplot(subset(spiders, NestID == Nests[i]) , aes(x=HeadLength.mm, fill = I
 
 dev.off()
 
+##summarises weight
 
 
-SumizeWeightInstarOnly <- ddply(spiders, .(Instar), summarise,
-		N = length(!is.na(Weight.mg)),
-		mean = mean(Weight.mg, na.rm = TRUE),
-		sd = sd(Weight.mg, na.rm = TRUE),
-		coefvar= sd / mean		
-)
-
-SSummariseWeight <- ddply(spiders, .(lnArea, Instar), summarise,
+SSummariseWeight <- ddply(spiders, .(NestID, lnArea, Instar), summarise,
 		N = length(!is.na(Weight.mg)),
 		mean = mean(Weight.mg, na.rm = TRUE),
 		median = median(Weight.mg, na.rm = TRUE),
@@ -71,15 +66,44 @@ SSummariseWeight <- ddply(spiders, .(lnArea, Instar), summarise,
 		coefvar= sd / mean,
 		IQR = IQR(Weight.mg, na.rm = TRUE),
 		IQRDivMed =  IQR/median,
-		Diff = IQRDivMed - coefvar
+		Diff = IQRDivMed - coefvar,
+		max = max(Weight.mg, na.rm=TRUE)
 
 		)
 		
 SumsWeightN <- subset(SSummariseWeight, N>15 & lnArea > 2.05)
 
 
-ggplot(SumsWeightN, aes(x=lnArea, y = IQRDivMed)) + geom_point(shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 3, raw = TRUE), se = TRUE)
+ggplot(subset(SSummariseWeight, Instar =="Adult") , aes(x=Age, y = mean)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
+		scale_y_continuous(limits = c(10, 16))
+
+
+
+### summarise leg length by nest area
+SSummariseLeg <- ddply(spiders, .(NestID, lnArea, Instar), summarise,
+		N = length(!is.na(LegLen.mm)),
+		mean = mean(LegLen.mm, na.rm = TRUE),
+		median = median(LegLen.mm, na.rm = TRUE),
+		sd = sd(LegLen.mm, na.rm = TRUE),
+		coefvar= sd / mean,
+		IQR = IQR(LegLen.mm, na.rm = TRUE),
+		IQRDivMed =  IQR/median,
+		Diff = IQRDivMed - coefvar,
+		max = max(LegLen.mm, na.rm=TRUE), 
+		min = min(LegLen.mm, na.rm = TRUE)
+)
+
+
+SumsWeightN <- subset(SSummariseLeg, N>10)
+
+pdf("RuthEcuador2013/Graphs/MaxLegLengthNestSize")
+
+ggplot(subset(SumsWeightN, Instar =="Adult") , aes(x=lnArea, y = max)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~ poly(x, 1, raw = TRUE), se = TRUE) +
+		xlab("Ln Nest Area") + ylab("Max Leg Length")+ ggtitle("max adult leg length by nest area")
+
+dev.off()
 
 
 histogram( ~ coefvar | Instar , data=SumsWeightN, type = "count", equal.widths = FALSE,
@@ -149,6 +173,7 @@ boxplot(HeadLength.mm ~ Approx..Single., data = Adults,
 boxplot(AbdmLen.mm ~ Approx..Single., data = Adults, 
 		main = "Abdomen length of adults in single and multiple nests", ylab = "Abdomen Length/mm" )
 
+
 dev.off()
 
 t.test(Adults$Weight.mg ~ Adults$Approx..Single. )
@@ -167,3 +192,28 @@ ggplot(subset(spiders, Instar == "Adult"), aes(x=HeadLength.mm, y = Weight.mg)) 
  ## Weight vs time difference
 
  boxplot(Weight.mg ~ DateDiff, data = subset(spiders, Instar == "Adult"))
+ 
+
+ 
+ 
+ ##Different Instars weight against each other
+ 
+ SumN <- subset(SSummariseLeg, N>0)
+ 
+ SumN$NestID <- factor(SumN$NestID)
+ 
+ TranSum <- subset(SumN, Instar == "Sub2" | Instar =="Sub1", 
+		 select = c(NestID, Instar, mean, lnArea) )
+ 
+TranSum$Instar <- factor(TranSum$Instar)
+
+
+
+InstarCols<- dcast(TranSum, NestID +  lnArea ~ Instar, value.var= "mean",  drop = T)
+
+InstarCols<-na.omit(InstarCols)
+
+InstarCols$Diff<-(InstarCols$Sub2 - InstarCols$Sub1)
+
+ggplot(data = InstarCols, aes(x = lnArea, y = Diff)) + geom_point() +
+		 stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 1))
