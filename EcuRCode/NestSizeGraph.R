@@ -13,7 +13,9 @@ require(reshape2)
 
 spiderData <- read.csv("RuthEcuador2013/CombinedNestVsWeight.csv")
 
-spiders <- subset(spiderData, Instar != "FALSE")
+spiders <- subset(spiderData, Instar != "FALSE" & NestID != "44.3ex01")
+
+
 
 #removes empty levels
 spiders$Instar <- factor(spiders$Instar)
@@ -71,10 +73,24 @@ SSummariseWeight <- ddply(spiders, .(NestID, lnArea, Instar), summarise,
 
 		)
 		
-SumsWeightN <- subset(SSummariseWeight, N>15 & lnArea > 2.05)
+SumsWeightN <- subset(SSummariseWeight, N>5)
 
+Instar<-levels(SumsWeightN$Instar)[c(1, 2, 5, 8, 9)]
 
-ggplot(subset(SSummariseWeight, Instar =="Adult") , aes(x=Age, y = mean)) + geom_point(shape = 16) + 
+pdf("RuthEcuador2013/Graphs/MeanWeights.pdf", onefile = "TRUE")
+
+for(i in 1: length(Instars)){
+
+	print(ggplot(subset(SumsWeightN, Instar ==Instar[i]) , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
+			geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+			ggtitle(paste("Mean weight of", Instar[i], sep = " ")) )
+			
+	
+}
+
+dev.off()
+
+ggplot(subset(SSummariseWeight, Instar =="Adult") , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
 		scale_y_continuous(limits = c(10, 16))
 
@@ -95,11 +111,27 @@ SSummariseLeg <- ddply(spiders, .(NestID, lnArea, Instar), summarise,
 )
 
 
-SumsWeightN <- subset(SSummariseLeg, N>10)
+SumsLegN <- subset(SSummariseLeg, min<2.6 & Instar == "Adult")
+
+Instar<-levels(SumsLegN$Instar)[c(1, 2, 5, 8, 9)]
+
+pdf("RuthEcuador2013/Graphs/MeanLegLength.pdf", onefile = "TRUE")
+
+for(i in 1: length(Instars)){
+	
+	print(ggplot(subset(SumsLegN, Instar ==Instar[i]) , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
+					geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+					ggtitle(paste("Mean leg length of", Instar[i], sep = " ")) )
+	
+	
+}
+
+dev.off()
+
 
 pdf("RuthEcuador2013/Graphs/MaxLegLengthNestSize")
 
-ggplot(subset(SumsWeightN, Instar =="Adult") , aes(x=lnArea, y = max)) + geom_point(shape = 16) + 
+ggplot(subset(SumsLegN, Instar =="Adult") , aes(x=NestID, y = min)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~ poly(x, 1, raw = TRUE), se = TRUE) +
 		xlab("Ln Nest Area") + ylab("Max Leg Length")+ ggtitle("max adult leg length by nest area")
 
