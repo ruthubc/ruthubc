@@ -359,11 +359,31 @@ SumN <- subset(SSummariseWeight, N>0)
 
 SumN$NestID <- factor(SumN$NestID)
 
+InstarCols<- dcast(subset(SumN, select = c(NestID, Instar, mean, lnArea)), 
+		NestID +  lnArea ~ Instar, value.var= "mean",  drop = T) #transpose data
 
-TranSum <- subset(SumN, 
-		select = c(NestID, Instar, mean, lnArea) )
 
-InstarCols<- dcast(TranSum, NestID +  lnArea ~ Instar, value.var= "mean",  drop = T) #transpose data
+SpiderDiffs <- ddply(InstarCols, .(NestID, lnArea), summarise,
+		AdultVsSub2 = Adult - Sub2,
+		AdultVsSub1 = Adult - Sub2,
+		AdultVsJuv4 = Adult - Juv4,
+		AdultVsMale = Adult - AdMale,
+		Sub2VsSub1 = Sub2 - Sub1,
+		Sub2VsJuv4 = Sub2 - Juv4,
+		Sub1VsJuv4 = Sub1 - Juv4,
+		Sub2VsAdMale = Sub2 - AdMale
+
+)
+
+#unstacks the data
+SpiderDiffs <- melt(SpiderDiffs, id.vars=c("NestID","lnArea"))#dcast(SpiderDiffs, NestID + lnArea + Instar)
+
+
+
+ggplot(data = SpiderDiffs, aes(x = lnArea, y = value)) + geom_point() +
+				stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 1)) +
+				facet_wrap(~ variable, scales = "free_y")
+
 
 InstarCols<-na.omit(InstarCols)
 
