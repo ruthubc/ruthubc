@@ -10,12 +10,14 @@ library(plyr)
 library(ggplot2)
 require(lattice)
 require(reshape2)
+require(gridExtra)
 
 spiderData <- read.csv("RuthEcuador2013/CombinedNestVsWeight.csv")
 
 #removing eggs and the outlier nest 44.3ex01 as the adults were particularly small
 
-spiders <- subset(spiderData, Instar != "FALSE" & NestID != "44.3ex01")
+spiders <- subset(spiderData, Instar != "FALSE" & NestID != "44.3ex01"  & Instar !="egg" & 
+				Instar != "pj" & Instar != "PST" & Instar != "juv3")
 
 spiders$hunger <- spiders$Weight.mg/spiders$HeadLength.mm
 
@@ -86,17 +88,32 @@ Instar<-levels(SumsWeightN$Instar)[c(2, 9, 8, 5, 1)]
 
 pdf("RuthEcuador2013/Graphs/MeanWeightVsNestArea.pdf", onefile = "TRUE")
 
-for(i in 1: length(Instar)){
+mylist <-c()
+#length(Instar)
+for(i in 1:2 ){
 	
 	MyInstar <- Instar[i]
 	
-	print(ggplot(subset(SumsWeightN, Instar ==MyInstar) , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
+	gph<- ggplot(subset(SumsWeightN, Instar ==MyInstar) , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
 			geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
 			ggtitle(paste("Mean of weight ", Instar[i], " if nest has ", MinNoSpis, " or more ", Instar[i], "'s", sep = ""))+
-			xlab("Log Approx. Nest Area") + ylab("Mean Weight(mg)"))
+			xlab("Log Approx. Nest Area") + ylab("Mean Weight(mg)")
+	
+	mylist <- c(mylist, gph)
 			
 	
 }
+
+
+##multiple graphs on one page
+gph<- ggplot(SumsWeightN , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Mean of weight ", Instar[i], " if nest has ", MinNoSpis, " or more ", Instar[i], "'s", sep = ""))+
+		xlab("Log Approx. Nest Area") + ylab("Mean Weight(mg)") + facet_wrap(~ Instar, scales = "free_y")
+
+gph
+
+grid.arrange(arrangeGrob(arrangeGrob(mylist), ncol=1))
 
 dev.off()
 
@@ -338,9 +355,24 @@ dev.off()
 
 
 
-SumN <- subset(SSummariseLeg, N>0)
+SumN <- subset(SSummariseWeight, N>0)
 
 SumN$NestID <- factor(SumN$NestID)
+
+
+TranSum <- subset(SumN, 
+		select = c(NestID, Instar, mean, lnArea) )
+
+InstarCols<- dcast(TranSum, NestID +  lnArea ~ Instar, value.var= "mean",  drop = T) #transpose data
+
+InstarCols<-na.omit(InstarCols)
+
+InstarCols$Diff<-(InstarCols[,3] - InstarCols[,4])
+
+
+cols<- colnames(InstarCols)
+
+paste(cols[3], "Vs", cols[4], sep = "")
 
 pdf("RuthEcuador2013/Graphs/DiffLegLenBtwnInstarsVsNestArea.pdf", onefile= TRUE)
 
@@ -374,11 +406,3 @@ for(i in 1: length(Instar)){
 	}}
 
 dev.off()
-
-
-http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
-for(i in c(1:3)){
-	
-	paste("p", i, sep= "") <- "test"
-	
-}
