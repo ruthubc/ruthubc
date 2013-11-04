@@ -311,7 +311,7 @@ ggplot(subset(spiders, Instar == "Adult"), aes(x=HeadLength.mm, y = Weight.mg)) 
 
  
  
- ##Different Instars weight against each other
+ ##Different Instars weight against each other but lots of individual graphs so not nice!!
  
  SumN <- subset(SSummariseWeight, N>0)
  
@@ -367,22 +367,31 @@ SpiderDiffs <- ddply(InstarCols, .(NestID, lnArea), summarise,
 		AdultVsSub2 = Adult - Sub2,
 		AdultVsSub1 = Adult - Sub2,
 		AdultVsJuv4 = Adult - Juv4,
-		AdultVsMale = Adult - AdMale,
+		AdultVsAdMale = Adult - AdMale,
 		Sub2VsSub1 = Sub2 - Sub1,
 		Sub2VsJuv4 = Sub2 - Juv4,
 		Sub1VsJuv4 = Sub1 - Juv4,
-		Sub2VsAdMale = Sub2 - AdMale
+		Sub2VsAdMale = Sub2 - AdMale,
+		AdMaleVsSubMale = AdMale - SubMale
+		
 
 )
 
 #unstacks the data
 SpiderDiffs <- melt(SpiderDiffs, id.vars=c("NestID","lnArea"))#dcast(SpiderDiffs, NestID + lnArea + Instar)
 
-
+pdf("RuthEcuador2013/Graphs/WeightDiffBtwnInstarVsNestArea.pdf")
 
 ggplot(data = SpiderDiffs, aes(x = lnArea, y = value)) + geom_point() +
-				stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 1)) +
-				facet_wrap(~ variable, scales = "free_y")
+				stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 2)) +
+				facet_wrap(~ variable, scales = "free_y") + xlab("Log of Nest Area") +
+				ylab("Difference in Weight (mm)") + xlim(2.4, 4.35)+ 
+				ggtitle("Difference Weight Between Instars")
+		
+		
+dev.off()
+		
+		
 
 
 InstarCols<-na.omit(InstarCols)
