@@ -12,7 +12,7 @@ require(lattice)
 require(reshape2)
 require(gridExtra)
 
-spiderData <- read.csv("RuthEcuador2013/CombinedNestVsWeight.csv")
+spiderData <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 
 #removing eggs and the outlier nest 44.3ex01 as the adults were particularly small
 
@@ -46,7 +46,7 @@ histogram( ~ HeadLength.mm | Instar , data=spiders, type = "count", equal.widths
 
 
 # making individual histograms for each nest
-pdf("RuthEcuador2013/Graphs/IndNestGraphs.pdf", onefile = TRUE)
+pdf("RuthEcuador2013/NestSize/Graphs/IndNestGraphs.pdf", onefile = TRUE)
 
 for (i in 1:length(Nests)){
 	
@@ -86,7 +86,7 @@ Instar<-levels(SumsWeightN$Instar)[c(2, 9, 8, 5, 1)]
 
 ###exporting graphs of mean weight against nest size, an individual graph for each 
 
-pdf("RuthEcuador2013/Graphs/MeanWeightVsNestArea.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/MeanWeightVsNestArea.pdf", onefile = "TRUE")
 
 mylist <-c()
 #length(Instar)
@@ -119,7 +119,7 @@ dev.off()
 
 ### exporting graph of standardized variance 
 
-pdf("RuthEcuador2013/Graphs/CoefVarWeightVsNestArea.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/CoefVarWeightVsNestArea.pdf", onefile = "TRUE")
 
 for(i in 1: length(Instar)){
 	
@@ -157,7 +157,7 @@ SumsLegN <- subset(SSummariseLeg, N > NMin)
 
 
 
-pdf("RuthEcuador2013/Graphs/MeanLegLengthVsNestArea.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/MeanLegLengthVsNestArea.pdf", onefile = "TRUE")
 
 for(i in 1: length(Instar)){
 	
@@ -174,7 +174,7 @@ for(i in 1: length(Instar)){
 dev.off()
 
 
-pdf("RuthEcuador2013/Graphs/CVLegLengthVsNestArea.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/CVLegLengthVsNestArea.pdf", onefile = "TRUE")
 
 for(i in 1: length(Instar)){
 	
@@ -193,7 +193,7 @@ dev.off()
 
  #### Max Leg Lenght vs Nest Area
 
-pdf("RuthEcuador2013/Graphs/MaxLegLengthVsNestArea.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/MaxLegLengthVsNestArea.pdf", onefile = "TRUE")
 
 for(i in 1: length(Instar)){
 	
@@ -232,7 +232,7 @@ SumsHungerN <- subset(SSummariseHunger, N > NMin)
 
 
 
-pdf("RuthEcuador2013/Graphs/MeanHungerVsNestArea.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/MeanHungerVsNestArea.pdf", onefile = "TRUE")
 
 for(i in 1: length(Instar)){
 	
@@ -249,7 +249,7 @@ for(i in 1: length(Instar)){
 dev.off()
 
 
-pdf("RuthEcuador2013/Graphs/CVHungerVsNestArea.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/CVHungerVsNestArea.pdf", onefile = "TRUE")
 
 for(i in 1: length(Instar)){
 	
@@ -273,7 +273,7 @@ dev.off()
 Adults <- subset(spiders, Instar == "Adult" & FemalesHaveEggsOrJuvs != "n" & 
 				FemalesHaveEggsOrJuvs != "unk" )
 
-pdf("RuthEcuador2013/Graphs/SingleMultipeNests.pdf", onefile= TRUE)
+pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests.pdf", onefile= TRUE)
 
 boxplot(Weight.mg ~ Approx..Single., data = Adults, 
 		main = "Weight of adult females in single and multiple nests", ylab = "Weight/mg" )
@@ -317,7 +317,7 @@ ggplot(subset(spiders, Instar == "Adult"), aes(x=HeadLength.mm, y = Weight.mg)) 
  
  SumN$NestID <- factor(SumN$NestID)
  
-pdf("RuthEcuador2013/Graphs/DiffWeightBtwnInstarsVsNestArea.pdf", onefile= TRUE)
+pdf("RuthEcuador2013/NestSize/Graphs/DiffWeightBtwnInstarsVsNestArea.pdf", onefile= TRUE)
  
 for(i in 1: length(Instar)){ 
 
@@ -380,7 +380,7 @@ SpiderDiffs <- ddply(InstarCols, .(NestID, lnArea), summarise,
 #unstacks the data
 SpiderDiffs <- melt(SpiderDiffs, id.vars=c("NestID","lnArea"))#dcast(SpiderDiffs, NestID + lnArea + Instar)
 
-pdf("RuthEcuador2013/Graphs/WeightDiffBtwnInstarVsNestArea.pdf")
+pdf("RuthEcuador2013/NestSize/Graphs/WeightDiffBtwnInstarVsNestArea.pdf")
 
 ggplot(data = SpiderDiffs, aes(x = lnArea, y = value)) + geom_point() +
 				stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 2)) +
@@ -403,7 +403,7 @@ cols<- colnames(InstarCols)
 
 paste(cols[3], "Vs", cols[4], sep = "")
 
-pdf("RuthEcuador2013/Graphs/DiffLegLenBtwnInstarsVsNestArea.pdf", onefile= TRUE)
+pdf("RuthEcuador2013/NestSize/Graphs/DiffLegLenBtwnInstarsVsNestArea.pdf", onefile= TRUE)
 
 for(i in 1: length(Instar)){ 
 	
