@@ -8,13 +8,11 @@
 
 library(plyr)
 library(ggplot2)
-require(lattice)
 require(reshape2)
-require(gridExtra)
 
 spiderData <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 
-#removing eggs and the outlier nest 44.3ex01 as the adults were particularly small
+#removing eggs, parastised individuals and the outlier nest 44.3ex01 as the adults were particularly small
 
 spiders <- subset(spiderData, Instar != "FALSE" & NestID != "44.3ex01"  & Instar !="egg" & 
 				Instar != "pj" & Instar != "PST" & Instar != "juv3")
@@ -22,7 +20,8 @@ spiders <- subset(spiderData, Instar != "FALSE" & NestID != "44.3ex01"  & Instar
 spiders$hunger <- spiders$Weight.mg/spiders$HeadLength.mm
 
 #removes empty levels
-spiders$Instar <- factor(spiders$Instar)
+spiders$Instar <- factor(spiders$Instar, levels= c("Adult", "Sub2", 
+				"Sub1", "Juv4", "AdMale", "SubMale"))
 
 
 Nests<-levels(spiders$NestID)
@@ -73,7 +72,7 @@ SSummariseWeight <- ddply(spiders, .(NestID, lnArea, Instar), summarise,
 		CV= sd / mean,
 		IQR = IQR(Weight.mg, na.rm = TRUE),
 		max = max(Weight.mg, na.rm=TRUE),
-		cvByN = (1+4/N) * CV
+		cvByN = (1+(1/(4*N))) * CV
 
 		)
 		
@@ -88,38 +87,33 @@ Instar<-levels(SumsWeightN$Instar)[c(2, 9, 8, 5, 1)]
 
 pdf("RuthEcuador2013/NestSize/Graphs/MeanWeightVsNestArea.pdf", onefile = "TRUE")
 
-mylist <-c()
 #length(Instar)
-for(i in 1:2 ){
+#for(i in 1:2 ){
 	
 	MyInstar <- Instar[i]
 	
-	gph<- ggplot(subset(SumsWeightN, Instar ==MyInstar) , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
+ggplot(subset(SumsWeightN, Instar ==MyInstar) , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
 			geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
 			ggtitle(paste("Mean of weight ", Instar[i], " if nest has ", MinNoSpis, " or more ", Instar[i], "'s", sep = ""))+
 			xlab("Log Approx. Nest Area") + ylab("Mean Weight(mg)")
-	
-	mylist <- c(mylist, gph)
 			
 	
-}
+#}
 
 
 ##multiple graphs on one page
-gph<- ggplot(SumsWeightN , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("Mean of weight ", Instar[i], " if nest has ", MinNoSpis, " or more ", Instar[i], "'s", sep = ""))+
+ggplot(SumsWeightN , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Mean of weight when nest has ", MinNoSpis, " or more", sep = ""))+
 		xlab("Log Approx. Nest Area") + ylab("Mean Weight(mg)") + facet_wrap(~ Instar, scales = "free_y")
 
-gph
 
-grid.arrange(arrangeGrob(arrangeGrob(mylist), ncol=1))
 
 dev.off()
 
 ### exporting graph of standardized variance 
 
-pdf("RuthEcuador2013/NestSize/Graphs/CoefVarWeightVsNestArea.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/CVWeightVsNestArea.pdf", onefile = "TRUE")
 
 for(i in 1: length(Instar)){
 	
@@ -128,10 +122,17 @@ for(i in 1: length(Instar)){
 	print(ggplot(subset(SumsWeightN, Instar ==MyInstar) , aes(x=lnArea, y = cvByN)) + geom_point(shape = 16) + 
 					geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 					ggtitle(paste("Coefficient of variation of weight ", Instar[i], " if nest has ", MinNoSpis, " or more ", Instar[i], "'s", sep = ""))+
-					xlab("Log Approx. Nest Area") + ylab("C of V of Weight(mg)"))
+					xlab("Log Approx. Nest Area") + ylab("C of V of Weight"))
 	
 	
 }
+
+
+ggplot(SumsWeightN , aes(x=lnArea, y = cvByN)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Coefficient of variation of weight when nest has min ", MinNoSpis, " spiders", sep = ""))+
+		xlab("Log Approx. Nest Area") + ylab("Mean Weight") + facet_wrap(~ Instar, scales = "free_y")
+
 
 dev.off()
 
@@ -149,7 +150,7 @@ SSummariseLeg <- ddply(spiders, .(NestID, lnArea, Instar), summarise,
 		IQRDivMed =  IQR/median,
 		max = max(LegLen.mm, na.rm=TRUE), 
 		min = min(LegLen.mm, na.rm = TRUE),
-		cvByN = (1+4/N) * CV
+		cvByN = (1+(1/(4*N))) * CV
 )
 
 NMin <- 2
@@ -171,6 +172,17 @@ for(i in 1: length(Instar)){
 	
 }
 
+
+##All graphs on one page
+
+
+ggplot(SumsLegN , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Mean length of leg with min ", NMin, " spiders", sep = ""))+
+		xlab("Log Approx. Nest Area") + ylab("Mean Leg Length (m3)") + facet_wrap(~ Instar, scales = "free_y")
+
+
+
 dev.off()
 
 
@@ -187,6 +199,15 @@ for(i in 1: length(Instar)){
 	
 	
 }
+
+
+##All graphs on one page
+
+ggplot(SumsLegN , aes(x=lnArea, y = cvByN)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Coefficient of variation of leg length when nest min of ", MinNoSpis, " spiders", sep = ""))+
+		xlab("Log Approx. Nest Area") + ylab("CV of Len Length") + facet_wrap(~ Instar, scales = "free_y")
+
 
 dev.off()
 
@@ -355,7 +376,7 @@ dev.off()
 
 
 
-SumN <- subset(SSummariseWeight, N>0)
+SumN <- subset(SSummariseLeg, N>0)
 
 SumN$NestID <- factor(SumN$NestID)
 
@@ -380,13 +401,13 @@ SpiderDiffs <- ddply(InstarCols, .(NestID, lnArea), summarise,
 #unstacks the data
 SpiderDiffs <- melt(SpiderDiffs, id.vars=c("NestID","lnArea"))#dcast(SpiderDiffs, NestID + lnArea + Instar)
 
-pdf("RuthEcuador2013/NestSize/Graphs/WeightDiffBtwnInstarVsNestArea.pdf")
+pdf("RuthEcuador2013/NestSize/Graphs/LegLengthDiffBtwnInstarVsNestArea.pdf")
 
 ggplot(data = SpiderDiffs, aes(x = lnArea, y = value)) + geom_point() +
 				stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 2)) +
 				facet_wrap(~ variable, scales = "free_y") + xlab("Log of Nest Area") +
-				ylab("Difference in Weight (mm)") + xlim(2.4, 4.35)+ 
-				ggtitle("Difference Weight Between Instars")
+				ylab("Difference in Leg Length (mm)") + xlim(2.4, 4.35)+ 
+				ggtitle("Difference in Leg Length Between Instars")
 		
 		
 dev.off()
