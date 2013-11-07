@@ -3,10 +3,13 @@
 # Author: Ruth
 ###############################################################################
 
+library(data.table)
 
 BoxData <- read.csv("RuthEcuador2013/BoxFeedingTrials/CombinedBoxData.csv")
 
 levels(BoxData$Nest)
+
+
 
 
 BoxData$WeightDiff <- BoxData$Weight.2 - BoxData$Weight.1
@@ -21,3 +24,15 @@ ggplot(SumsLegN , aes(x=lnArea, y = cvByN)) + geom_point(shape = 16) +
 
 
 boxplot(BoxData$IndCapture)
+
+##test for data table merging one to many works!
+
+x <- data.table(one=1:6, two=c('a','b','c', 'a','b','c'))
+
+y <- data.table(three = 1:3, two = c('a','b','c'))
+
+setkey(x, two)
+
+setkey(y, two)
+
+merge(x, y)
