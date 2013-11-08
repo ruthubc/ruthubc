@@ -5,7 +5,20 @@
 
 library(data.table)
 
-BoxData <- read.csv("RuthEcuador2013/BoxFeedingTrials/CombinedBoxData.csv")
+#BoxData <- read.csv("RuthEcuador2013/BoxFeedingTrials/CombinedBoxData.csv")
+
+Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv")
+
+Feeding <- read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv")
+
+#updates new field whether individual fed or not
+Feeding$IndFeed <- ifelse (Feeding$TotalTimeEating > 0, "y", "n")
+
+Feeding$IndFeed <- as.factor(Feeding$IndFeed)
+
+
+
+Weights <- read.csv("RuthEcuador2013/BoxFeedingTrials/Weights.csv")
 
 levels(BoxData$Nest)
 
@@ -27,12 +40,66 @@ boxplot(BoxData$IndCapture)
 
 ##test for data table merging one to many works!
 
-x <- data.table(one=1:6, two=c('a','b','c', 'a','b','c'))
+x <- data.table(one=c(1, 2, 1, 2), two=c('a','a','b', 'b'), three = c("1a", "2a", "1b", "2b" ))
 
-y <- data.table(three = 1:3, two = c('a','b','c'))
+y <- data.table(id = 1:6, one=c(1, 1, 1, 2, 2, 1), two=c('b','a','a', 'a', "b", "b"))
 
-setkey(x, two)
+setkeyv(x, c("one", "two")) # two setkeys!
 
-setkey(y, two)
+setkeyv(y, c("one", "two"))
 
 merge(x, y)
+
+##combining Trials and feeding
+Feeding <- data.table(Feeding)
+Trials <- data.table(Trials)
+Weights <- data.table(Weights)
+
+setkey(Trials, TrialID)
+
+setkey(Feeding, TrialID)
+
+TrialsFeeding <- merge(Trials, Feeding)
+
+##Updating TrailsFeeding to take account of whether or not
+
+#making lookup table for capture
+Capture <- data.table (IndCapture = c("y", "n", "n"), BoxCapture = c("y", "y", "n"), 
+		 CaptureIndPos = c("y", "n", NA))
+
+
+setkeyv(TrialsFeeding, c("IndCapture", "BoxCapture"))
+
+setkeyv(Capture, c("IndCapture", "BoxCapture"))
+
+TrialsFeeding<-merge(TrialsFeeding, Capture)
+
+
+###Lookup table for feeding
+Feed <- data.table (IndFeed = c("y", "n", "n"), BoxFeedObs = c("y", "y", "n"), 
+		FeedIndPos = c("y", "n", NA))
+
+setkeyv(TrialsFeeding, c("IndFeed", "BoxFeedObs"))
+
+setkeyv(Feed, c("IndFeed", "BoxFeedObs"))
+
+TrialsFeeding<-merge(TrialsFeeding, Feed)
+
+
+MyDataTable <- data.frame(TrialsFeeding$FeedIndPos, TrialsFeeding$CaptureIndPos)
+
+MyDataTable <-subset( TrialsFeeding, select = c("FeedIndPos", "CaptureIndPos") )
+
+MyDataTable <-na.omit(MyDataTable)
+
+table(MyDataTable)
+## Graph for capturing vs eating
+
+##start of with two binary measures?
+#Need to combine trials with feeding
+
+# grouped bar plot http://www.cookbook-r.com/Graphs/Bar_and_line_graphs_(ggplot2)/
+
+
+
+
