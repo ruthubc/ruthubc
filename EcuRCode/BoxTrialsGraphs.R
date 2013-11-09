@@ -4,6 +4,7 @@
 ###############################################################################
 
 library(data.table)
+library(ggplot2)
 
 #BoxData <- read.csv("RuthEcuador2013/BoxFeedingTrials/CombinedBoxData.csv")
 
@@ -86,13 +87,13 @@ setkeyv(Feed, c("IndFeed", "BoxFeedObs"))
 TrialsFeeding<-merge(TrialsFeeding, Feed)
 
 
-MyDataTable <- data.frame(TrialsFeeding$FeedIndPos, TrialsFeeding$CaptureIndPos)
+CapVsEat <- data.frame(TrialsFeeding$FeedIndPos, TrialsFeeding$CaptureIndPos)
 
-MyDataTable <-subset( TrialsFeeding, select = c("FeedIndPos", "CaptureIndPos") )
+CapVsEat <-subset( TrialsFeeding, select = c("FeedIndPos", "CaptureIndPos") )
 
-MyDataTable <-na.omit(MyDataTable)
+CapVsEat <-na.omit(CapVsEat)
 
-table(MyDataTable)
+test <- table(CapVsEat)
 ## Graph for capturing vs eating
 
 ##start of with two binary measures?
@@ -100,6 +101,48 @@ table(MyDataTable)
 
 # grouped bar plot http://www.cookbook-r.com/Graphs/Bar_and_line_graphs_(ggplot2)/
 
+df <- data.frame(time = factor(c("Lunch","Dinner"), levels=c("Lunch","Dinner")),
+		total_bill = c(14.89, 17.23))
+
+Test <- melt(CapVsEat, id.vars=c("activity"), measure.vars=c("yes","no","dontknow"),
+		variable.name="haveused", value.name="responses")
+
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/CaptureVsFeed.pdf")
+
+##separate bars
+ggplot(data=CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) +
+		geom_bar(stat="bin", position="fill", colour = "black") + 
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed")) +
+		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
+		scale_fill_discrete(name = "Involved with\nprey capture?", breaks = c("n", "y"),
+				labels = c("No", "Yes")) + ggtitle("Prey Capture Vs Feeding")
 
 
 
+##100% stacked bar graph
+ggplot(data=CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) + 
+		geom_bar(stat="bin", position='fill')
+
+##chi squared test
+chisq.test(table(CapVsEat))
+
+
+
+##comparing the proportion of eaters and captures between prey type
+
+CapVsEatSize <-subset( TrialsFeeding, select = c("FeedIndPos", "CaptureIndPos", "Treatment") )
+
+CapVsEatSize <-na.omit(CapVsEat)
+
+##separate bars
+ggplot(data=CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) +
+		geom_bar(stat="bin", position="fill", colour = "black") + 
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed")) +
+		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
+		scale_fill_discrete(name = "Involved with\nprey capture?", breaks = c("n", "y"),
+				labels = c("No", "Yes")) + ggtitle("Prey Capture Vs Feeding by prey size") +
+		facet_wrap(~Treatment)
+
+#larger prey requires more individuals to capture it
+
+dev.off()
