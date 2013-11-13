@@ -12,11 +12,17 @@ Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv")
 Feeding <- read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv")
 
 #only keeping a few field of Feeding
-Feeding<-Feeding[c("TrialID", "OverallID", "SpiderID", "Spider", "TotalTimeEating", 
+Feeding<-Feeding[c("TrialID", "OverallID", "SpiderID", "TotalTimeEating", 
 				"IndCapture")]
+
+TrialInfo <- Trials[c("TrialID", "Instar", "Treatment", "Day", "TimeOfDay" )]
 
 #updates new field whether individual fed or not
 Feeding$IndFeed <- ifelse (Feeding$TotalTimeEating > 0, "y", "n")
+
+levels(Trials$Instar) <- gsub("1s", "Sub1", levels(Trials$Instar))
+levels(Trials$Instar) <- gsub("2s", "Sub2", levels(Trials$Instar))
+
 
 Feeding$IndFeed <- as.factor(Feeding$IndFeed)
 
@@ -37,10 +43,11 @@ setkey(Feeding, TrialID)
 
 TrialsFeeding <- merge(Trials, Feeding)
 
-##Updating TrailsFeeding to take account of whether or 
-#not capture and feeding was observed in the box
 
-#making lookup table for capture
+
+############################################################################################
+###Lookup table for feeding, updating binary feeding and prey capture taking into account of
+#whether feeding and capture was observed in the box
 Capture <- data.table (IndCapture = c("y", "n", "n"), BoxCapture = c("y", "y", "n"), 
 		 CaptureIndPos = c("y", "n", NA))
 
@@ -50,9 +57,6 @@ setkeyv(Capture, c("IndCapture", "BoxCapture"))
 
 TrialsFeeding<-merge(TrialsFeeding, Capture)
 
-############################################################################################
-###Lookup table for feeding, updating binary feeding and prey capture taking into account of
-#whether feeding and capture was observed in the box
 Feed <- data.table (IndFeed = c("y", "n", "n"), BoxFeedObs = c("y", "y", "n"), 
 		FeedIndPos = c("y", "n", NA))
 
@@ -137,3 +141,65 @@ TrialsFeeding<-transform(TrialsFeeding, TimeEating.Rank = ave(TotalTimeEating, T
 
  
  )
+
+ #################################################################################
+ ## graph of number of individuals that feed on each prey
+ 
+ TrialInfo <- data.table(TrialInfo)
+ Feeding <- data.table(Feeding)
+ 
+ 
+setkey(TrialInfo, "TrialID")
+ 
+setkey(Feeding, "TrialID")
+ 
+FeedingMerge <-merge(TrialInfo, Feeding)
+
+# remove evening feeds as no or little feeding observations
+
+FeedingMorn <- subset(FeedingMerge, TimeOfDay =="morn" )
+
+##Counting the number of individuals eating in each trial
+EatCount <- ddply(FeedingMorn, .(TrialID, Treatment, Instar), summarise, 
+		N = length(!is.na(IndFeed)),
+		freq=length(SpiderID[IndFeed== "y"]),
+		feedSum = sum(TotalTimeEating),
+		logfeedSum = log(feedSum)
+ )
+
+ ##removing trials with no
+ EatCount <- subset(EatCount, freq >0)
+ 
+
+		 
+		 
+ ggplot(EatCount, aes(x=Treatment, y=freq)) + geom_boxplot() + 
+		 stat_summary(fun.y=mean, geom="point", shape=5, size=4)
+ 
+ ggplot(EatCount, aes(x=freq, fill = Treatment)) + geom_histogram(binwidth =1)
+ 
+ chisq.test(EatCount$Treatment, EatCount$freq)
+ 
+ 
+ ##### total time eating vs prey
+ 
+ ggplot(EatCount, aes(x=Treatment, y=feedSum)) + geom_boxplot() + 
+		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
+		 ggtitle("Total amount of time feeding on prey") + ylab("Total time feeding (mins)") +
+		 xlab("Prey Size")
+ 
+ ggplot(EatCount, aes(x=Treatment, y=feedSum)) + geom_boxplot() + 
+		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
+		 ggtitle("Log of Total amount of time feeding on prey") + 
+		 ylab("Log ofTotal time feeding (mins)") + xlab("Prey Size")
+ 
+ ggplot(EatCount, aes(x= logfeedSum, fill = Treatment)) + geom_histogram(binwidth = 0.25)
+ ## def not parametric
+ 
+ 
+ ggplot(EatCount, aes(x=Instar, y=feedSum)) + geom_boxplot() + 
+		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
+		 facet_wrap(~Treatment) 
+
+ 
+ 
