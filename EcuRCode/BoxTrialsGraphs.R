@@ -180,7 +180,7 @@ ggplot(EatCount, aes(x= logfeedSum, fill = Treatment)) + geom_histogram(binwidth
 ggplot(EatCount, aes(x= feedSum, fill = Treatment)) + geom_histogram()
 
  
-pdf("") 
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/NoAndDurationFeeding.pdf", onefile = "TRUE") 
 
  ##graph total number of individuals feeding vs prey size
  ggplot(EatCount, aes(x=Treatment, y=freq)) + geom_boxplot() + 
@@ -208,6 +208,14 @@ ggplot(EatCount, aes(x=Treatment, y=feedSum)) + geom_boxplot() +
 		 ggtitle("Total amount of time feeding on prey per box by instar") + 
 		 ylab("Total time feeding (mins)") + xlab("Prey Size")
  
+dev.off()
+
+
+####################################################################################
+##Feeding duration vs weight
+
+
+
 
  
  
