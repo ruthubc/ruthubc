@@ -11,6 +11,9 @@ Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv")
 
 Feeding <- read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv")
 
+levels(Trials$Instar) <- gsub("1s", "Sub1", levels(Trials$Instar))
+levels(Trials$Instar) <- gsub("2s", "Sub2", levels(Trials$Instar))
+
 #only keeping a few field of Feeding
 Feeding<-Feeding[c("TrialID", "OverallID", "SpiderID", "TotalTimeEating", 
 				"IndCapture")]
@@ -20,8 +23,6 @@ TrialInfo <- Trials[c("TrialID", "Instar", "Treatment", "Day", "TimeOfDay" )]
 #updates new field whether individual fed or not
 Feeding$IndFeed <- ifelse (Feeding$TotalTimeEating > 0, "y", "n")
 
-levels(Trials$Instar) <- gsub("1s", "Sub1", levels(Trials$Instar))
-levels(Trials$Instar) <- gsub("2s", "Sub2", levels(Trials$Instar))
 
 
 Feeding$IndFeed <- as.factor(Feeding$IndFeed)
@@ -170,36 +171,43 @@ EatCount <- ddply(FeedingMorn, .(TrialID, Treatment, Instar), summarise,
  ##removing trials with no
  EatCount <- subset(EatCount, freq >0)
  
+###histograms
+ggplot(EatCount, aes(x=freq, fill = Treatment)) + geom_histogram(binwidth =1)
 
-		 
-		 
+ggplot(EatCount, aes(x= logfeedSum, fill = Treatment)) + geom_histogram(binwidth = 0.25)
+## def not parametric		 
+
+ggplot(EatCount, aes(x= feedSum, fill = Treatment)) + geom_histogram()
+
+ 
+pdf("") 
+
+ ##graph total number of individuals feeding vs prey size
  ggplot(EatCount, aes(x=Treatment, y=freq)) + geom_boxplot() + 
-		 stat_summary(fun.y=mean, geom="point", shape=5, size=4)
- 
- ggplot(EatCount, aes(x=freq, fill = Treatment)) + geom_histogram(binwidth =1)
- 
- chisq.test(EatCount$Treatment, EatCount$freq)
+		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
+		 ggtitle("Total number of spiders fed on prey against prey size") +
+		 xlab("Prey Size") + ylab("Total number of spiders feeding on prey")
+
+ ggplot(EatCount, aes(x=Treatment, y=freq)) + geom_boxplot() + 
+		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
+		 ggtitle("Total number of spiders fed on prey against prey size") +
+		 xlab("Prey Size") + ylab("Total number of spiders feeding on prey by instar") +
+		 facet_wrap(~Instar)
  
  
  ##### total time eating vs prey
  
  ggplot(EatCount, aes(x=Treatment, y=feedSum)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
-		 ggtitle("Total amount of time feeding on prey") + ylab("Total time feeding (mins)") +
+		 ggtitle("Total amount of time feeding on prey per box") + ylab("Total time feeding (mins)") +
 		 xlab("Prey Size")
+
  
- ggplot(EatCount, aes(x=Treatment, y=feedSum)) + geom_boxplot() + 
-		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
-		 ggtitle("Log of Total amount of time feeding on prey") + 
-		 ylab("Log ofTotal time feeding (mins)") + xlab("Prey Size")
+ggplot(EatCount, aes(x=Treatment, y=feedSum)) + geom_boxplot() + 
+		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) + facet_wrap(~Instar) + 
+		 ggtitle("Total amount of time feeding on prey per box by instar") + 
+		 ylab("Total time feeding (mins)") + xlab("Prey Size")
  
- ggplot(EatCount, aes(x= logfeedSum, fill = Treatment)) + geom_histogram(binwidth = 0.25)
- ## def not parametric
- 
- 
- ggplot(EatCount, aes(x=Instar, y=feedSum)) + geom_boxplot() + 
-		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
-		 facet_wrap(~Treatment) 
 
  
  
