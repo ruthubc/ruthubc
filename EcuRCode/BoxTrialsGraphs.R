@@ -18,7 +18,8 @@ levels(Trials$Instar) <- gsub("2s", "Sub2", levels(Trials$Instar))
 Feeding<-Feeding[c("TrialID", "OverallID", "SpiderID", "TotalTimeEating", 
 				"IndCapture")]
 
-TrialInfo <- Trials[c("TrialID", "Instar", "Treatment", "Day", "TimeOfDay" )]
+TrialInfo <- Trials[c("TrialID", "Instar", "Treatment", "Day", "TimeOfDay", "SheetNo", 
+				"BoxID", "DateCol", "DateTrial")]
 
 #updates new field whether individual fed or not
 Feeding$IndFeed <- ifelse (Feeding$TotalTimeEating > 0, "y", "n")
@@ -37,6 +38,8 @@ Weights$WeightDiff <- Weights$Weight.2 - Weights$Weight.1
 Feeding <- data.table(Feeding)
 Trials <- data.table(Trials)
 Weights <- data.table(Weights)
+TrialInfo <- data.table(TrialInfo)
+
 
 setkey(Trials, TrialID)
 
@@ -120,35 +123,9 @@ dev.off()
 ###Chi squared test of capture vs eating
 chisq.test(table(CapVsEat))
 
-###################################################################################
-###Ranking individuals for time eating
-
-TrialsFeeding<-transform(TrialsFeeding, TimeEating.Rank = ave(TotalTimeEating, TrialID, 
-				FUN = function(x) rank(x, ties.method = "average")))
-
-
-TrialsFeeding<-transform(TrialsFeeding, TimeEating.Rank = ave(TotalTimeEating, TrialID, 
-				FUN = function(x) rank(x, ties.method = "average")))
-
- ## getting average of repeated trials
- 
- #need to include boxfeeding obs as well
- 
- table(Feeding$SpiderID)
- 
- SumarSpi <- ddply(Feeding, .(SpiderID, Spider), summarise, # need to discount trials where no feeding obs and eve
-		 N = length(!is.na(TotalTimeEating)),
-		 EatingTime.Mean = mean(TotalTimeEating, na.rm = TRUE)
-
- 
- )
 
  #################################################################################
- ## graph of number of individuals that feed on each prey
- 
- TrialInfo <- data.table(TrialInfo)
- Feeding <- data.table(Feeding)
- 
+ ## graph of number of individuals and total duration vs prey size and instar
  
 setkey(TrialInfo, "TrialID")
  
@@ -163,59 +140,104 @@ FeedingMorn <- subset(FeedingMerge, TimeOfDay =="morn" )
 ##Counting the number of individuals eating in each trial
 EatCount <- ddply(FeedingMorn, .(TrialID, Treatment, Instar), summarise, 
 		N = length(!is.na(IndFeed)),
-		freq=length(SpiderID[IndFeed== "y"]),
-		feedSum = sum(TotalTimeEating),
-		logfeedSum = log(feedSum)
+		noFeed=length(SpiderID[IndFeed== "y"]),
+		feedDur = sum(TotalTimeEating),
+		logFeedDur = log(feedDur),
+		logNoFeed = log(noFeed)
  )
 
  ##removing trials with no
- EatCount <- subset(EatCount, freq >0)
+ EatCount <- subset(EatCount, feedDur > 30)
  
 ###histograms
 ggplot(EatCount, aes(x=freq, fill = Treatment)) + geom_histogram(binwidth =1)
 
-ggplot(EatCount, aes(x= logfeedSum, fill = Treatment)) + geom_histogram(binwidth = 0.25)
-## def not parametric		 
+## def not parametric	
+ggplot(EatCount, aes(x= feedDur, fill = Treatment)) + geom_histogram(binwidth = 100)
 
-ggplot(EatCount, aes(x= feedSum, fill = Treatment)) + geom_histogram()
+ggplot(EatCount, aes(x= logFeedDur, fill = Treatment)) + geom_histogram(binwidth = 0.25)
+	 
+
+
 
  
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/NoAndDurationFeeding.pdf", onefile = "TRUE") 
 
  ##graph total number of individuals feeding vs prey size
- ggplot(EatCount, aes(x=Treatment, y=freq)) + geom_boxplot() + 
+ ggplot(EatCount, aes(x=Treatment, y=noFeed)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
-		 ggtitle("Total number of spiders fed on prey against prey size") +
-		 xlab("Prey Size") + ylab("Total number of spiders feeding on prey")
+		 ggtitle("Log of Total number of spiders fed on prey against prey size") +
+		 xlab("Prey Size") + ylab("Total number of spiders feeding on prey")  + 
+		 scale_y_log10()
 
- ggplot(EatCount, aes(x=Treatment, y=freq)) + geom_boxplot() + 
+ ggplot(EatCount, aes(x=Treatment, y=noFeed)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
 		 ggtitle("Total number of spiders fed on prey against prey size") +
 		 xlab("Prey Size") + ylab("Total number of spiders feeding on prey by instar") +
-		 facet_wrap(~Instar)
+		 facet_wrap(~Instar)  + scale_y_log10()
  
  
  ##### total time eating vs prey
  
- ggplot(EatCount, aes(x=Treatment, y=feedSum)) + geom_boxplot() + 
+ ggplot(EatCount, aes(x=Treatment, y=feedDur)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
-		 ggtitle("Total amount of time feeding on prey per box") + ylab("Total time feeding (mins)") +
-		 xlab("Prey Size")
+		 ggtitle("Log of Total amount of time feeding on prey per box") + ylab("Total time feeding (mins)") +
+		 xlab("Prey Size") + scale_y_log10()
 
  
-ggplot(EatCount, aes(x=Treatment, y=feedSum)) + geom_boxplot() + 
+ggplot(EatCount, aes(x=Treatment, y=feedDur)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) + facet_wrap(~Instar) + 
-		 ggtitle("Total amount of time feeding on prey per box by instar") + 
-		 ylab("Total time feeding (mins)") + xlab("Prey Size")
+		 ggtitle("Log of Total amount of time feeding on prey per box by instar") + 
+		 ylab("Total time feeding (mins)") + xlab("Prey Size") + scale_y_log10()
  
 dev.off()
-
-
-####################################################################################
-##Feeding duration vs weight
-
-
-
-
  
- 
+#stat Tests...might be a good idea to remove ones that only fed for 15mins
+
+t.test(EatCount$logNoFeed ~ EatCount$Treatment)  #only sig when remove all feeing < 30 mins
+t.test(EatCount$feedDur ~ EatCount$Treatment)
+
+##########################################################################################
+##Feeding duration (rank?) vs weight rank
+
+##need to combine small trials 
+
+setkey(Feeding, SpiderID)
+setkey(Weights, SpiderID)
+
+spiderID<- as.data.frame(table(Weights$SpiderID))
+TrialsTable <- as.data.frame(table(Feeding$TrialID))
+
+
+FeedingWeights <- merge(Weights, Feeding)
+
+
+
+###Ranking individuals for time eating
+
+FeedingWeights<-transform(FeedingWeights, 
+		TimeEating.Rank = ave(TotalTimeEating, TrialID, 
+				FUN = function(x) rank(x, ties.method = "average")))
+
+### need to check that that ranking worked 
+Trials<- levels(FeedingWeights$TrialID)
+subset(FeedingWeights, TrialID == Trials[51], select= c(TotalTimeEating, TimeEating.Rank))[order(TotalTimeEating),] 
+
+FeedingWeights<-transform(FeedingWeights, TimeEating.Rank = ave(FeedingWeights, TrialID, 
+				FUN = function(x) rank(x, ties.method = "average")))
+
+## getting average of repeated trials
+
+#need to include boxfeeding obs as well
+
+
+
+SumarSpi <- ddply(Feeding, .(SpiderID, Spider), summarise, # need to discount trials where no feeding obs and eve
+		N = length(!is.na(TotalTimeEating)),
+		EatingTime.Mean = mean(TotalTimeEating, na.rm = TRUE)
+
+
+)
+
+
+
