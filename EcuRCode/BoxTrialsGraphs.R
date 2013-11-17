@@ -6,6 +6,7 @@
 library(data.table)
 library(ggplot2)
 library(plyr)
+library(nlme)
 
 Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv")
 
@@ -124,8 +125,8 @@ dev.off()
 chisq.test(table(CapVsEat))
 
 
- #################################################################################
- ## graph of number of individuals and total duration vs prey size and instar
+ #########################################################################################
+ ########graph of number of individuals and total duration vs prey size and instar########
  
 setkey(TrialInfo, "TrialID")
  
@@ -135,19 +136,17 @@ FeedingMerge <-merge(TrialInfo, Feeding)
 
 FeedingMerge$LogFeedDurP1 <- log(FeedingMerge$TotalTimeEating + 1)
 
-###adding a field for total box feeding time
+###adding a field for total box feeding time and fraction of time feeding
 FeedingMerge<-transform(FeedingMerge, 
 		TotBoxEating = ave(TotalTimeEating, TrialID, 
 				FUN = function(x) sum(x)))
 
 FeedingMerge$FeedFraction <-
 		FeedingMerge$TotalTimeEating/FeedingMerge$TotBoxEating
-		
-		
 
-# remove evening feeds as no or little feeding observations
-
-FeedingMorn <- subset(FeedingMerge, TimeOfDay =="morn" )
+		
+####removing evening feeds as no or little feeding observations
+FeedingMorn <- subset(FeedingMerge, TimeOfDay.x =="morn" )
 
 ##Counting the number of individuals eating in each trial
 EatCount <- ddply(FeedingMorn, .(TrialID, Treatment, Instar), summarise, 
@@ -203,20 +202,21 @@ ggplot(EatCount, aes(x=Treatment, y=feedDur)) + geom_boxplot() +
  
  ####graph of individual time eating vs prey size (and instar)
  
+ ggplot((subset(FeedingMorn, FeedFraction >= 0)), aes(x=Treatment, y=FeedFraction)) + geom_boxplot() + 
+		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
+		 ggtitle("Fraction of time feeding by individual") + ylab("Fraction of time spent eating prey by each individual") +
+		 xlab("Prey Size") + facet_wrap(~Instar) + scale_y_sqrt()
+ 
  ggplot((subset(FeedingMorn, FeedFraction > 0)), aes(x=Treatment, y=FeedFraction)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
-		 ggtitle("Log of mean amount of time feeding on prey per box") + ylab("mean time feeding (mins)") +
-		 xlab("Prey Size") + facet_wrap(~Instar) + scale_y_log10()
+		 ggtitle("Fraction of time feeding by individuals\nwith individuals who didn't feed removed") + 
+		 ylab("Fraction of time spent eating prey by each individual") +
+		 xlab("Prey Size") + facet_wrap(~Instar) + scale_y_sqrt()
  
- 
- 
- ggplot(FeedingMorn, aes(x=LogFeedDurP1, fill = Treatment)) + geom_histogram()
- 
- ggplot(subset(FeedingMorn, TotalTimeEating > 0), aes(x=Treatment, y=TotalTimeEating)) + 
-		 geom_boxplot()
+
  
 dev.off()
- 
+#___________________________________________________________________________________#
 #stat Tests...might be a good idea to remove ones that only fed for 15mins
 
 test<- subset(FeedingMorn, FeedFraction > 0)
@@ -236,58 +236,78 @@ setkey(Weights, SpiderID)
 
 FeedingWeights <- merge(Weights, Feeding)
 
-#####removing evening trials
-
-
-
-
-
-
 ###Ranking individuals for time eating
-
 FeedingWeights<-transform(FeedingWeights, 
 		Rank.TimeEating = ave(TotalTimeEating, TrialID, 
 				FUN = function(x) rank(x, ties.method = "average")))
 
-### need to check that that ranking worked 
-Trials<- levels(FeedingWeights$TrialID)
-
-subset(FeedingWeights, TrialID == Trials[51], 
-		select= c(TotalTimeEating, Rank.TimeEating))[order(TotalTimeEating),] 
-
-
 ####Ranking individuals by weight
-
 FeedingWeights<-transform(FeedingWeights, 
 		Rank.Weights = ave(Weight.1, TrialID, 
 				FUN = function(x) rank(x, ties.method = "average")))
 
-
-subset(FeedingWeights, TrialID == Trials[51], 
-		select= c(Weight.1, Rank.Weights))[order(Weight.1),] 
-
-
-
-
-####remove evening trials
+####Ranking individuals by leg length
+FeedingWeights<-transform(FeedingWeights, 
+		Rank.Legs = ave(LegLen.mm, TrialID, 
+				FUN = function(x) rank(x, ties.method = "average")))
 
 
+####remove evening trials and moulted individuals
 FeedingWeights <- subset(FeedingWeights, TimeOfDay == "morn")
 FeedingWeights <- subset(FeedingWeights, Moulted. != "y")
 
-table(FeedingWeights$Moulted.)
+####calculating fraction of time feeding
+FeedingWeights<-transform(FeedingWeights, 
+		TotBoxEating = ave(TotalTimeEating, TrialID, 
+				FUN = function(x) sum(x)))
+
+FeedingWeights$FeedFraction <-
+		FeedingWeights$TotalTimeEating/FeedingWeights$TotBoxEating
+
+###hunger levels head length / weight1
+FeedingWeights$Hunger <- FeedingWeights$HeadLen.mm/ FeedingWeights$Weight.1
+
+####calculating rank of hunger
+FeedingWeights<-transform(FeedingWeights, 
+		Rank.Hunger = ave(Hunger, TrialID, 
+				FUN = function(x) sum(x)))
+
 ## perhaps need to get average of repeated trials
 
+ggplot(FeedingWeights, aes(x = Rank.Weights, y = Rank.TimeEating)) +
+		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
+		ggtitle("Weight ranked within box vs time eating ranked within box ") + ylab("Rank of Time Eating") +
+		xlab("Weight rank within box") + facet_wrap(~Treatment)
+
 ggplot(FeedingWeights, aes(x = Rank.Weights, y = Rank.TimeEating, colour = Instar)) +
-		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE)
-
-ggplot(FeedingWeights, aes(x = Rank.Weights, y = TotalTimeEating)) + 
 		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
-		facet_wrap(~Instar)
+		ggtitle("Weight ranked within box vs time eating ranked within box ") + ylab("Rank of Time Eating") +
+		xlab("Weight rank within box") + facet_wrap(~Treatment)
 
-ggplot(FeedingWeights, aes(x = LegLen.mm, y = TotalTimeEating)) + 
+#ggplot(FeedingWeights, aes(x = Rank.Weights, y = FeedFraction, colour = Treatment)) + 
+#		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
+
+
+#ggplot(FeedingWeights, aes(x = LegLen.mm, y = FeedFraction, colour = Treatment)) + 
+#		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
+#		facet_wrap(~Instar, scales = "free_x")
+
+ggplot(FeedingWeights, aes(x = Rank.Legs, y = Rank.TimeEating, colour = Treatment)) + 
 		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
-		facet_wrap(~Instar)
+		ggtitle("Rank of leg eating vs rank of time eating") + ylab("Rank of time eating") + 
+		xlab("Rank of leg length")
+
+ggplot(FeedingWeights, aes(x= Hunger, y = TotalTimeEating, colour = Treatment)) + geom_point() +
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+		ggtitle("Total Time Eating against hunger level (head length / weight") + 
+		facet_wrap(~Instar, scales = "free_x")
+
+ggplot(FeedingWeights, aes(x= Hunger, y = FeedFraction, colour = Treatment)) + geom_point() +
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+		ggtitle("Total Time Eating against hunger level (head length / weight") +
+		facet_wrap(~Instar, scales = "free_x")
+
+##todo: hunger rank
 
 
 SumarSpi <- ddply(Feeding, .(SpiderID, Spider), summarise, # need to discount trials where no feeding obs and eve
@@ -297,3 +317,9 @@ SumarSpi <- ddply(Feeding, .(SpiderID, Spider), summarise, # need to discount tr
 
 
 
+######Regression testing#########################
+fit <- lme(Rank.TimeEating ~ Rank.Weights, random=~1|IndBoxID, data=FeedingWeights)
+summary(fit)
+anova(fit)
+plot(fit)
+hist(resid(fit))
