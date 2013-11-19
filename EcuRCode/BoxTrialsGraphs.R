@@ -1,4 +1,3 @@
-# TODO: Add comment
 # 
 # Author: Ruth
 ###############################################################################
@@ -79,7 +78,6 @@ CapVsEat <-subset( TrialsFeeding, select = c("FeedIndPos", "CaptureIndPos") )
 
 CapVsEat <-na.omit(CapVsEat)
 
-test <- table(CapVsEat)
 
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/CaptureVsFeed.pdf")
 
@@ -284,14 +282,6 @@ ggplot(FeedingWeights, aes(x = Rank.Weights, y = Rank.TimeEating, colour = Insta
 		ggtitle("Weight ranked within box vs time eating ranked within box ") + ylab("Rank of Time Eating") +
 		xlab("Weight rank within box") + facet_wrap(~Treatment)
 
-#ggplot(FeedingWeights, aes(x = Rank.Weights, y = FeedFraction, colour = Treatment)) + 
-#		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
-
-
-#ggplot(FeedingWeights, aes(x = LegLen.mm, y = FeedFraction, colour = Treatment)) + 
-#		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
-#		facet_wrap(~Instar, scales = "free_x")
-
 ggplot(FeedingWeights, aes(x = Rank.Legs, y = Rank.TimeEating, colour = Treatment)) + 
 		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
 		ggtitle("Rank of leg eating vs rank of time eating") + ylab("Rank of time eating") + 
@@ -323,3 +313,53 @@ summary(fit)
 anova(fit)
 plot(fit)
 hist(resid(fit))
+
+#####################################################################################
+##Behaviour vs inital weight
+
+ggplot(Weights, aes(x= AvePokeRating, y = Weight.1)) + geom_point() + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+		facet_wrap(~Instar, scales = "free_y")
+
+ggplot(Weights, aes(x= AveBoldness, y = Weight.1)) + geom_point() + 
+		facet_wrap(~Instar, scales = "free_y") + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE)
+
+#####################################################################################
+##Behaviour vs feeding and capture
+
+Feeding$IndCapNum<- ifelse(Feeding$IndCap=="y", 1, 0) # changing y and n to 0 and 1 for aves 
+Feeding$IndFeedNum<- ifelse(Feeding$IndFeed=="y", 1, 0)
+
+Feeding<- subset(Feeding, TimeOfDay == 'morn')
+
+setkey(Feeding, SpiderID)
+setkey(Weights, SpiderID)
+
+
+FeedingWeights <- merge(Weights, Feeding)
+
+FeedBehv <- ddply(FeedingWeights, .(SpiderID, Treatment, Instar, AveBoldness, AvePokeRating, Poke.1 ), summarise, 
+		N = length(!is.na(SpiderID)),
+		AveFeed = mean(IndFeedNum, na.rm = TRUE),
+		AveCap = mean(IndCapNum, na.rm = TRUE),
+		TotFeedDur = sum(TotalTimeEating, na.rm = TRUE),
+		MaxFeed = max(IndFeedNum, na.rm = TRUE)
+)
+
+levels(as.factor(FeedBehv$AveFeed))
+
+ggplot(FeedBehv, aes(x=AveBoldness)) + geom_histogram()
+
+
+ggplot(FeedBehv, aes(x= as.factor(AveCap), y = AveBoldness)) + geom_boxplot() +
+		facet_wrap(~Instar)
+
+ggplot(FeedBehv, aes(x= as.factor(AveCap), y = AvePokeRating)) + geom_boxplot() +
+		facet_wrap(~Instar)
+
+ggplot(data=FeedBehv, aes(x=Poke.1, fill = as.factor(AveFeed))) +
+		geom_bar(stat="bin", position="fill", colour = "black")
+
+ggplot(data=FeedBehv, aes(x=Poke.1, fill = as.factor(AveCap))) +
+		geom_bar(stat="bin", position="fill", colour = "black")

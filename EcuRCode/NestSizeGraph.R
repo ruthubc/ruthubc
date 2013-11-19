@@ -1,4 +1,4 @@
-# TODO: Add comment
+
 # 
 # Author: Ruth
 ###############################################################################
@@ -9,6 +9,8 @@
 library(plyr)
 library(ggplot2)
 require(reshape2)
+library(nlme)
+library(lme)
 
 spiderData <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 
@@ -23,11 +25,10 @@ spiders$hunger <- spiders$Weight.mg/spiders$HeadLength.mm
 spiders$Instar <- factor(spiders$Instar, levels= c("Adult", "Sub2", 
 				"Sub1", "Juv4", "AdMale", "SubMale"))
 
-
 Nests<-levels(spiders$NestID)
 
+##########################################################################################
 ### histograms to check distribution and outliers etc.
-
 
 histogram( ~ Weight.mg | Instar , data=spiders, type = "count", equal.widths = FALSE,
 		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
@@ -41,10 +42,7 @@ histogram( ~ HeadLength.mm | Instar , data=spiders, type = "count", equal.widths
 		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
 		breaks = 15 )
 
-
-
-
-# making individual histograms for each nest
+####histograms for each individual nest
 pdf("RuthEcuador2013/NestSize/Graphs/IndNestGraphs.pdf", onefile = TRUE)
 
 for (i in 1:length(Nests)){
@@ -72,11 +70,12 @@ SSummariseWeight <- ddply(spiders, .(NestID, lnArea, Instar), summarise,
 		CV= sd / mean,
 		IQR = IQR(Weight.mg, na.rm = TRUE),
 		max = max(Weight.mg, na.rm=TRUE),
+		min = min(Weight.mg, na.rm=TRUE),
 		cvByN = (1+(1/(4*N))) * CV
 
 		)
 		
-MinNoSpis <- 2
+MinNoSpis <- 5
 		
 SumsWeightN <- subset(SSummariseWeight, N>MinNoSpis)
 
@@ -111,6 +110,14 @@ ggplot(SumsWeightN , aes(x=lnArea, y = mean)) + geom_point(shape = 16) +
 
 dev.off()
 
+ggplot(SumsWeightN , aes(x=lnArea, y = min)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Mean of weight when nest has ", MinNoSpis, " or more", sep = ""))+
+		xlab("Log Approx. Nest Area") + ylab("Mean Weight(mg)") + facet_wrap(~ Instar, scales = "free_y")
+
+lmMinWeight <- lm(min ~ lnArea, data = subset(SumsWeightN,Instar == "Adult" ))
+anova(lmMinWeight)
+
 ### exporting graph of standardized variance 
 
 pdf("RuthEcuador2013/NestSize/Graphs/CVWeightVsNestArea.pdf", onefile = "TRUE")
@@ -136,6 +143,10 @@ ggplot(SumsWeightN , aes(x=lnArea, y = cvByN)) + geom_point(shape = 16) +
 
 dev.off()
 
+ggplot(SumsWeightN , aes(x=lnArea, y = cvByN)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Coefficient of variation of weight when nest has min ", MinNoSpis, " spiders", sep = ""))+
+		xlab("Log Approx. Nest Area") + ylab("Mean Weight") + facet_wrap(~ Instar, scales = "free_y")
 
 
 
@@ -175,15 +186,25 @@ for(i in 1: length(Instar)){
 
 ##All graphs on one page
 
+pdf("RuthEcuador2013/NestSize/Graphs/MaxLegLengthVsNestSize.pdf")
+
+
+ggplot(SumsLegN , aes(x=lnArea, y = max)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Max length of leg with min ", NMin, " spiders", sep = ""))+
+		xlab("Log Approx. Nest Area") + ylab("Max Leg Length (mm)") + facet_wrap(~ Instar, scales = "free_y")
+
+
+
+dev.off()
 
 ggplot(SumsLegN , aes(x=lnArea, y = mean)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 		ggtitle(paste("Mean length of leg with min ", NMin, " spiders", sep = ""))+
 		xlab("Log Approx. Nest Area") + ylab("Mean Leg Length (m3)") + facet_wrap(~ Instar, scales = "free_y")
 
-
-
-dev.off()
+lmMaxLeg <- lm(max ~ lnArea, data = subset(SumsLegN,Instar == "Adult" ))
+anova(lmMaxLeg)
 
 
 pdf("RuthEcuador2013/NestSize/Graphs/CVLegLengthVsNestArea.pdf", onefile = "TRUE")
@@ -456,3 +477,20 @@ for(i in 1: length(Instar)){
 	}}
 
 dev.off()
+
+
+################################################################################
+######Statistical tests
+
+spiders$WeightSqr<- (spiders$Weight.mg)^2
+
+
+test <- lme(lnArea ~ WeightSqr, random = ~1|NestID ,  
+		data = subset(spiders, Instar = "Adult"), na.action = "na.omit")
+
+summary(test)
+
+anova(test)
+
+min(spiders$WeightSqr, na.rm = TRUE)
+min(spiders$Weight.mg, na.rm = TRUE)
