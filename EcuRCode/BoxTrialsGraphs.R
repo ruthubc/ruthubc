@@ -231,7 +231,7 @@ t.test(test$FeedFraction ~ test$Treatment)
 
 setkey(Feeding, SpiderID)
 setkey(Weights, SpiderID)
-
+x
 FeedingWeights <- merge(Weights, Feeding)
 
 ###Ranking individuals for time eating
@@ -272,6 +272,8 @@ FeedingWeights<-transform(FeedingWeights,
 
 ## perhaps need to get average of repeated trials
 
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/InitalWeights.pdf", onefile = "TRUE")
+
 ggplot(FeedingWeights, aes(x = Rank.Weights, y = Rank.TimeEating)) +
 		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
 		ggtitle("Weight ranked within box vs time eating ranked within box ") + ylab("Rank of Time Eating") +
@@ -279,7 +281,7 @@ ggplot(FeedingWeights, aes(x = Rank.Weights, y = Rank.TimeEating)) +
 
 ggplot(FeedingWeights, aes(x = Rank.Weights, y = Rank.TimeEating, colour = Instar)) +
 		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
-		ggtitle("Weight ranked within box vs time eating ranked within box ") + ylab("Rank of Time Eating") +
+		ggtitle("Weight ranked within box vs time eating ranked within box, colour is instar ") + ylab("Rank of Time Eating") +
 		xlab("Weight rank within box") + facet_wrap(~Treatment)
 
 ggplot(FeedingWeights, aes(x = Rank.Legs, y = Rank.TimeEating, colour = Treatment)) + 
@@ -289,15 +291,21 @@ ggplot(FeedingWeights, aes(x = Rank.Legs, y = Rank.TimeEating, colour = Treatmen
 
 ggplot(FeedingWeights, aes(x= Hunger, y = TotalTimeEating, colour = Treatment)) + geom_point() +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+		ggtitle("Total Time Eating against hunger level (head length / weight")
+
+ggplot(FeedingWeights, aes(x= Hunger, y = TotalTimeEating, colour = Treatment)) + geom_point() +
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
 		ggtitle("Total Time Eating against hunger level (head length / weight") + 
 		facet_wrap(~Instar, scales = "free_x")
 
-ggplot(FeedingWeights, aes(x= Hunger, y = FeedFraction, colour = Treatment)) + geom_point() +
-		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
-		ggtitle("Total Time Eating against hunger level (head length / weight") +
-		facet_wrap(~Instar, scales = "free_x")
+#ggplot(FeedingWeights, aes(x= Hunger, y = FeedFraction, colour = Treatment)) + geom_point() +
+	#	geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+	#	ggtitle("Total Time Eating against hunger level (head length / weight") +
+	#	facet_wrap(~Instar, scales = "free_x")
 
-##todo: hunger rank
+#TODO: hunger rank
+
+dev.off()
 
 
 SumarSpi <- ddply(Feeding, .(SpiderID, Spider), summarise, # need to discount trials where no feeding obs and eve
@@ -325,6 +333,44 @@ ggplot(Weights, aes(x= AveBoldness, y = Weight.1)) + geom_point() +
 		facet_wrap(~Instar, scales = "free_y") + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE)
 
+
+#######################################################################################
+##comparing behaviours over time
+
+## Poke consistancy between time periods
+
+ggplot(data=Weights, aes(x=Poke.1, fill = as.factor(Poke.2))) +
+		geom_bar(stat="bin", position="fill", colour = "black")
+##Does not seem that consistant over time...I will try a stats test
+
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/BehaviourOverTime.pdf")
+
+ggplot(data=Weights, aes(x= PokeRating.1, y = PokeRating.2)) + geom_jitter(position = position_jitter(w = 0.1, h = 0.1)) +
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2 , raw = TRUE), se = TRUE) +
+		ggtitle("Poke rating of same spider at different times (jittered points)")
+
+ggplot(data = Weights, aes(x = BoldnessRank.1, y = BoldnessRank.2)) + geom_jitter(position = position_jitter(w = 0.1, h = 0.1)) +
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2 , raw = TRUE), se = TRUE) +
+		ggtitle("Boldness rank of same spider at different times (jittered points)")
+
+dev.off()
+
+ggplot(data= Weights, aes(x = as.factor(CupDrop.2), fill = as.factor(CupDrop.1))) + 
+		geom_bar(stat="bin", position="fill", colour = "black")
+
+ggplot(data= Weights, aes(x = as.factor(DropBox.2), fill = as.factor(BoxDrop.1))) + 
+		geom_bar(stat="bin", position="fill", colour = "black")
+
+#Calculating the difference between poke rating 1 and poke rating 2
+Weights$PokeDifference <- Weights$PokeRating.1 - Weights$PokeRating.2
+
+##Histogram of differences .. not very informative
+ggplot(Weights, aes(x = PokeDifference)) + geom_bar()
+
+##paired t-test
+t.test(Weights$PokeRating.1, Weights$PokeRating.2, alternative = "two.sided", paired = TRUE)
+
+
 #####################################################################################
 ##Behaviour vs feeding and capture
 
@@ -341,14 +387,22 @@ FeedingWeights <- merge(Weights, Feeding)
 
 FeedBehv <- ddply(FeedingWeights, .(SpiderID, Treatment, Instar, AveBoldness, AvePokeRating, Poke.1 ), summarise, 
 		N = length(!is.na(SpiderID)),
-		AveFeed = mean(IndFeedNum, na.rm = TRUE),
-		AveCap = mean(IndCapNum, na.rm = TRUE),
-		TotFeedDur = sum(TotalTimeEating, na.rm = TRUE),
-		MaxFeed = max(IndFeedNum, na.rm = TRUE)
+		AveFeed = mean(IndFeedNum, na.omit = TRUE),
+		AveCap = mean(IndCapNum, na.omit= TRUE),
+		TotFeedDur = sum(TotalTimeEating, na.omit = TRUE),
+		MaxFeed = max(IndFeedNum, na.omit = TRUE),
+		MaxCap = max(IndCapNum, na.omit= TRUE)
 )
+
+FeedBehv$Move<- ifelse(FeedBehv$AveBoldness == 0, "n", "y") 
 
 levels(as.factor(FeedBehv$AveFeed))
 
+ggplot(data=FeedBehv, aes(x=Move, fill = as.factor(MaxCap))) +
+		geom_bar(stat="bin", position="fill", colour = "black")
+
+
+###histogram of AveBoldness rating... maybe need to change classifactions
 ggplot(FeedBehv, aes(x=AveBoldness)) + geom_histogram()
 
 
