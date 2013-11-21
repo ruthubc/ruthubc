@@ -16,7 +16,7 @@ levels(Trials$Instar) <- gsub("2s", "Sub2", levels(Trials$Instar))
 
 #only keeping a few field of Feeding
 Feeding<-Feeding[c("TrialID", "OverallID", "SpiderID", "TotalTimeEating", 
-				"IndCapture", "TimeOfDay")]
+				"IndCapture")]
 
 TrialInfo <- Trials[c("TrialID", "Instar", "Treatment", "Day", "TimeOfDay", "SheetNo", 
 				"BoxID", "DateCol", "DateTrial")]
@@ -374,43 +374,71 @@ t.test(Weights$PokeRating.1, Weights$PokeRating.2, alternative = "two.sided", pa
 #####################################################################################
 ##Behaviour vs feeding and capture
 
-Feeding$IndCapNum<- ifelse(Feeding$IndCap=="y", 1, 0) # changing y and n to 0 and 1 for aves 
-Feeding$IndFeedNum<- ifelse(Feeding$IndFeed=="y", 1, 0)
 
-Feeding<- subset(Feeding, TimeOfDay == 'morn')
+SubWeights<- subset(Weights, select = -c(Treatment, Instar))
 
-setkey(Feeding, SpiderID)
-setkey(Weights, SpiderID)
+# changing y and n to 0 and 1 for aves taking into account when feeding or capture not observed
+TrialsFeeding$IndCapNum<- ifelse(TrialsFeeding$CaptureIndPos=="y", 1,
+		ifelse(TrialsFeeding$CaptureIndPos =="n", 0, "NA"))
+
+TrialsFeeding$IndFeedNum<- ifelse(TrialsFeeding$FeedIndPos=="y", 1,
+		ifelse(TrialsFeeding$FeedIndPos =="n", 0, "NA"))
 
 
-FeedingWeights <- merge(Weights, Feeding)
+
+##merging TrialsFeeding and Weights
+setkey(TrialsFeeding, SpiderID)
+setkey(SubWeights, SpiderID)
+
+FeedingWeights <- merge(SubWeights, TrialsFeeding, IndBoxID, DateCol)
+
+FeedingWeights$IndCapNum <- as.numeric(FeedingWeights$IndCapNum)
+FeedingWeights$IndFeedNum <- as.numeric(FeedingWeights$IndFeedNum)
+
+##removing evening trials...perhaps only necessary if using duration of feeding
+#FeedingWeights<- subset(FeedingWeights, TimeOfDay == 'morn')
+
 
 FeedBehv <- ddply(FeedingWeights, .(SpiderID, Treatment, Instar, AveBoldness, AvePokeRating, Poke.1 ), summarise, 
 		N = length(!is.na(SpiderID)),
-		AveFeed = mean(IndFeedNum, na.omit = TRUE),
+		AveFeed = mean(IndFeedNum, na.omit=TRUE),
 		AveCap = mean(IndCapNum, na.omit= TRUE),
 		TotFeedDur = sum(TotalTimeEating, na.omit = TRUE),
 		MaxFeed = max(IndFeedNum, na.omit = TRUE),
 		MaxCap = max(IndCapNum, na.omit= TRUE)
 )
 
-FeedBehv$Move<- ifelse(FeedBehv$AveBoldness == 0, "n", "y") 
+FeedBehv$Move<- ifelse(FeedBehv$AveBoldness == 0, "n", 
+		ifelse(FeedBehv$AveBoldness == "NA", "NA", "y")) 
 
-levels(as.factor(FeedBehv$AveFeed))
+FeedBehv$Feed<- ifelse(FeedBehv$AveFeed == 0, "n", 
+		ifelse(FeedBehv$AveFeed > 0, "y", "NA")) 
 
-ggplot(data=FeedBehv, aes(x=Move, fill = as.factor(MaxCap))) +
-		geom_bar(stat="bin", position="fill", colour = "black")
 
 
 ###histogram of AveBoldness rating... maybe need to change classifactions
 ggplot(FeedBehv, aes(x=AveBoldness)) + geom_histogram()
 
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/Behaviour.pdf")
 
-ggplot(FeedBehv, aes(x= as.factor(AveCap), y = AveBoldness)) + geom_boxplot() +
-		facet_wrap(~Instar)
+ggplot(FeedBehv, aes(x= AveCap, y = AveBoldness)) + geom_jitter(position = position_jitter(w = 0.1, h = 0.1)) +
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1 , raw = TRUE), se = TRUE) +
+		facet_wrap(~Instar) + ggtitle("Ave capture vs average boldness rating")
 
-ggplot(FeedBehv, aes(x= as.factor(AveCap), y = AvePokeRating)) + geom_boxplot() +
-		facet_wrap(~Instar)
+ggplot(FeedBehv, aes(x= AveCap, y = AvePokeRating)) + geom_jitter(position = position_jitter(w = 0.1, h = 0.1)) +
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1 , raw = TRUE), se = TRUE)+
+		facet_wrap(~Instar) + ggtitle("Ave capture vs average poke rating")
+
+ggplot(data=subset(FeedBehv, AveCap != "NA"), aes(x=Move, fill = as.factor(AveCap))) +
+		geom_bar(stat="bin", position="fill", colour = "black") + 
+		ggtitle("Move at all during boldness test with particitpated in capture")
+
+ggplot(data=subset(FeedBehv, AveFeed != "NA"), aes(x=Move, fill = Feed)) +
+		geom_bar(stat="bin", position="fill", colour = "black")  +
+		ggtitle("Move at all during boldness test with eat at all")
+
+dev.off()
+
 
 ggplot(data=FeedBehv, aes(x=Poke.1, fill = as.factor(AveFeed))) +
 		geom_bar(stat="bin", position="fill", colour = "black")
