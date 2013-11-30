@@ -7,3 +7,6 @@ Graphs to make for Box Trials
  - Hunger ranks
  - Maybe binary ...does not move vs prey capture
  - Behaviour rank vs feeding and capture
+ - Measure of diversity/uneveness simpsons index 
+ 		(perhaps more unsuitbale Shannon- Weiner index- to do with uncertaintiy)
+ 		BUT what about zeros??
