@@ -144,7 +144,7 @@ FeedingMerge$FeedFraction <-
 
 		
 ####removing evening feeds as no or little feeding observations
-FeedingMorn <- subset(FeedingMerge, TimeOfDay.x =="morn" )
+FeedingMorn <- subset(FeedingMerge, TimeOfDay =="morn" )
 
 ##Counting the number of individuals eating in each trial
 EatCount <- ddply(FeedingMorn, .(TrialID, Treatment, Instar), summarise, 
@@ -199,6 +199,10 @@ ggplot(EatCount, aes(x=Treatment, y=feedDur)) + geom_boxplot() +
  
  
  ####graph of individual time eating vs prey size (and instar)
+ ggplot((subset(FeedingMorn, FeedFraction >= 0)), aes(x=Treatment, y=FeedFraction)) + geom_boxplot() + 
+		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
+		 ggtitle("Fraction of time feeding by individual") + ylab("Fraction of time spent eating prey by each individual") +
+		 xlab("Prey Size")  + scale_y_sqrt()
  
  ggplot((subset(FeedingMorn, FeedFraction >= 0)), aes(x=Treatment, y=FeedFraction)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
@@ -231,7 +235,6 @@ t.test(test$FeedFraction ~ test$Treatment)
 
 setkey(Feeding, SpiderID)
 setkey(Weights, SpiderID)
-x
 FeedingWeights <- merge(Weights, Feeding)
 
 ###Ranking individuals for time eating
@@ -292,7 +295,6 @@ ggplot(FeedingWeights, aes(x = Rank.Legs, y = Rank.TimeEating, colour = Treatmen
 ggplot(FeedingWeights, aes(x= Hunger, y = TotalTimeEating, colour = Treatment)) + geom_point() +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
 		ggtitle("Total Time Eating against hunger level (head length / weight")
-
 ggplot(FeedingWeights, aes(x= Hunger, y = TotalTimeEating, colour = Treatment)) + geom_point() +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
 		ggtitle("Total Time Eating against hunger level (head length / weight") + 
@@ -379,10 +381,10 @@ SubWeights<- subset(Weights, select = -c(Treatment, Instar))
 
 # changing y and n to 0 and 1 for aves taking into account when feeding or capture not observed
 TrialsFeeding$IndCapNum<- ifelse(TrialsFeeding$CaptureIndPos=="y", 1,
-		ifelse(TrialsFeeding$CaptureIndPos =="n", 0, "NA"))
+		ifelse(TrialsFeeding$CaptureIndPos =="n", 0, NA))
 
 TrialsFeeding$IndFeedNum<- ifelse(TrialsFeeding$FeedIndPos=="y", 1,
-		ifelse(TrialsFeeding$FeedIndPos =="n", 0, "NA"))
+		ifelse(TrialsFeeding$FeedIndPos =="n", 0, NA))
 
 
 
@@ -390,7 +392,7 @@ TrialsFeeding$IndFeedNum<- ifelse(TrialsFeeding$FeedIndPos=="y", 1,
 setkey(TrialsFeeding, SpiderID)
 setkey(SubWeights, SpiderID)
 
-FeedingWeights <- merge(SubWeights, TrialsFeeding, IndBoxID, DateCol)
+FeedingWeights <- merge(SubWeights, TrialsFeeding)#, IndBoxID, DateCol)
 
 FeedingWeights$IndCapNum <- as.numeric(FeedingWeights$IndCapNum)
 FeedingWeights$IndFeedNum <- as.numeric(FeedingWeights$IndFeedNum)
@@ -403,18 +405,21 @@ FeedBehv <- ddply(FeedingWeights, .(SpiderID, Treatment, Instar, AveBoldness, Av
 		N = length(!is.na(SpiderID)),
 		AveFeed = mean(IndFeedNum, na.omit=TRUE),
 		AveCap = mean(IndCapNum, na.omit= TRUE),
-		TotFeedDur = sum(TotalTimeEating, na.omit = TRUE),
-		MaxFeed = max(IndFeedNum, na.omit = TRUE),
-		MaxCap = max(IndCapNum, na.omit= TRUE)
+		TotFeedDur = sum(TotalTimeEating, na.omit = TRUE)
 )
 
-FeedBehv$Move<- ifelse(FeedBehv$AveBoldness == 0, "n", 
-		ifelse(FeedBehv$AveBoldness == "NA", "NA", "y")) 
+FeedBehv$Move<- factor (ifelse(FeedBehv$AveBoldness > 0 , "y", 
+		ifelse(FeedBehv$AveBoldness == 0 , "n", NA))) 
 
-FeedBehv$Feed<- ifelse(FeedBehv$AveFeed == 0, "n", 
-		ifelse(FeedBehv$AveFeed > 0, "y", "NA")) 
+FeedBehv$Feed<- factor(ifelse(FeedBehv$AveFeed == 0, "n", 
+		ifelse(FeedBehv$AveFeed > 0, "y", NA)) )
 
-
+FeedBehv$Cap<- factor(ifelse(FeedBehv$AveCap > 0, "y", 
+		ifelse(FeedBehv$AveCap == 0 , "n", NA)) )
+#changing order of factors
+FeedBehv$Move <- factor(FeedBehv$Move, levels = c("y", "n") )
+FeedBehv$Feed <- factor(FeedBehv$Feed, levels =  c("y", "n") )
+FeedBehv$Cap <- factor(FeedBehv$Cap, levels = c("y", "n") )
 
 ###histogram of AveBoldness rating... maybe need to change classifactions
 ggplot(FeedBehv, aes(x=AveBoldness)) + geom_histogram()
@@ -429,13 +434,23 @@ ggplot(FeedBehv, aes(x= AveCap, y = AvePokeRating)) + geom_jitter(position = pos
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1 , raw = TRUE), se = TRUE)+
 		facet_wrap(~Instar) + ggtitle("Ave capture vs average poke rating")
 
-ggplot(data=subset(FeedBehv, AveCap != "NA"), aes(x=Move, fill = as.factor(AveCap))) +
+ggplot(data=subset(FeedBehv, AveCap != "NA"), aes(x=Move, fill = Cap)) +
 		geom_bar(stat="bin", position="fill", colour = "black") + 
-		ggtitle("Move at all during boldness test with particitpated in capture")
+		ggtitle("Move at all during boldness test vs particitpated in capture") +
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Moved", "Did Not Move")) +
+		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
+		scale_fill_discrete(name = "Involved with\nprey capture?", breaks = c("n", "y"),
+				labels = c("No", "Yes"))
+
 
 ggplot(data=subset(FeedBehv, AveFeed != "NA"), aes(x=Move, fill = Feed)) +
 		geom_bar(stat="bin", position="fill", colour = "black")  +
-		ggtitle("Move at all during boldness test with eat at all")
+		ggtitle("Move at all during boldness test with eat at all") +
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Moved", "Did Not Move")) +
+		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
+		scale_fill_discrete(name = "Ate Food?", breaks = c("n", "y"),
+				labels = c("No", "Yes"))
+
 
 dev.off()
 

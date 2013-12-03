@@ -32,6 +32,7 @@ spiders$logCtFm <- log10(spiders$CountFemales)
 spiders$logLeg<- log10(spiders$LegLen.mm)
 spiders$logHead <-log10(spiders$HeadLength.mm)
 spiders$logAbdm<- log10(spiders$AbdmLen.mm)
+spiders$logHung <- log10(spiders$hunger)
 
 Nests<-levels(spiders$NestID)
 
@@ -83,7 +84,7 @@ SSummariseWeight <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
 
 		)
 		
-MinNoSpis <- 2
+MinNoSpis <- 1
 		
 SumsWeightN <- subset(SSummariseWeight, N>MinNoSpis)
 
@@ -92,29 +93,20 @@ Instar<-levels(SumsWeightN$Instar)[c(2, 9, 8, 5, 1)]
 
 ###exporting graphs of mean weight against nest size, an individual graph for each 
 
-pdf("RuthEcuador2013/NestSize/Graphs/MeanWeightVsNestSize.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/WeightVsNestSize.pdf", height=7, width=11)
 
 
 ##multiple graphs on one page
 ggplot(SumsWeightN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("Mean of weight when nest has ", MinNoSpis, " or more", sep = ""))+
+		ggtitle(paste("Mean of weight with ", MinNoSpis, " or more spiders measured", sep = ""))+
 		xlab("Log Number of females in nest") + ylab("Log Mean Weight(mg)") + 
-		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
+		facet_wrap(~ Instar, scales = "free", ncol = 4)
 
 
-
-dev.off()
-
-#GRAPH TO EXPORT
-####################################################################################
-### exporting graph of standardized variance 
-
-pdf("RuthEcuador2013/NestSize/Graphs/CVWeightVsNestSize.pdf", onefile = "TRUE")
-
-ggplot(SumsWeightN , aes(x=logWeight, y = cvByN)) + geom_point(shape = 16) + 
+ggplot(SumsWeightN , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("Coefficient of variation of weight when nest has min ", MinNoSpis, " spiders", sep = ""))+
+		ggtitle(paste("CV of weight with ", MinNoSpis, " or more spiders measured", sep = ""))+
 		xlab("Log Number of Females") + ylab("Log Mean Weight") + 
 		facet_wrap(~ Instar, scales = "free_y", ncol=4)
 
@@ -139,10 +131,10 @@ SSummariseLeg <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
 		cvByN = (1+(1/(4*N))) * CV
 )
 
-NMin <- 2
+NMin <- 1
 SumsLegN <- subset(SSummariseLeg, N > NMin)
 
-pdf("RuthEcuador2013/NestSize/Graphs/MeanLegLengthVsNestSize.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSize.pdf", height=7, width=11)
 
 ggplot(SumsLegN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
@@ -150,19 +142,11 @@ ggplot(SumsLegN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) +
 		xlab("Log number of females") + ylab("Log leg length") + 
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
 
-dev.off()
-
-lmMaxLeg <- lm(max ~ logCtFm, data = subset(SumsLegN,Instar == "Adult" ))
-anova(lmMaxLeg)
-
-##GRAPH TO EXPORT---- CV OF LEG
-###################################################################################
-pdf("RuthEcuador2013/NestSize/Graphs/CVLegLengthVsNestSize.pdf", onefile = "TRUE")
-
 ggplot(SumsLegN , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 		ggtitle(paste("Coefficient of variation of leg length (min ", MinNoSpis, " spiders counted)", sep = ""))+
-		xlab("Log Approx. Nest Area") + ylab("CV of Len Length") + facet_wrap(~ Instar, scales = "free_y")
+		xlab("Log number of females") + ylab("CV of Len Length") + 
+		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
 
 dev.off()
 
@@ -227,19 +211,19 @@ dev.off()
 Adults <- subset(spiders, Instar == "Adult" & FemalesHaveEggsOrJuvs != "n" & 
 				FemalesHaveEggsOrJuvs != "unk" )
 
-pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests.pdf", onefile= TRUE)
+pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests.pdf", height = 7, width = 9.5)
 
-p1 = ggplot(Adults, aes(x=Approx..Single, y=logWeight)) + geom_boxplot() +
-		ggtitle("Weight") + ylab("Log Weight")
+p1 = ggplot(Adults, aes(x=Approx..Single., y=logWeight)) + geom_boxplot() +
+		ggtitle("Weight") + ylab("Log Weight") + theme(axis.title.x = element_blank())
 
-p2 = ggplot(Adults, aes(x=Approx..Single, y=logLeg)) + geom_boxplot() +
-		ggtitle("Leg Length") + ylab("Log Leg Length")
+p2 = ggplot(Adults, aes(x=Approx..Single., y=logLeg)) + geom_boxplot() +
+		ggtitle("Leg Length") + ylab("Log Leg Length") + theme(axis.title.x = element_blank())
 
-p3 = ggplot(Adults, aes(x=Approx..Single, y=logHead)) + geom_boxplot() +
-		ggtitle("Head Length") + ylab("Log Head Length")
+p3 = ggplot(Adults, aes(x=Approx..Single., y=logHead)) + geom_boxplot() +
+		ggtitle("Head Length") + ylab("Log Head Length") + theme(axis.title.x = element_blank())
 
-p4 = ggplot(Adults, aes(x=Approx..Single, y=logAbdm)) + geom_boxplot() +
-		ggtitle("Abdomen Length") + ylab("Log Abdomen Length")
+p4 = ggplot(Adults, aes(x=Approx..Single., y=logHung)) + geom_boxplot() +
+		ggtitle("Hunger") + ylab("Log Hunger") + theme(axis.title.x = element_blank())
 
 grid.arrange(p1, p2, p3, p4, ncol = 2, main = "Multiple vs (approx) single nests")
 
@@ -248,21 +232,21 @@ dev.off()
 ####################################################################################
 ## Only including 44.4 nest in the analysis (large nest is 44.4EX03
 
-AdSub <- subset(Adults, grepl("44.4EXM", spiders$NestID) | NestID == "44.4EX03")
+AdSub <- subset(Adults, grepl("44.4EXM", Adults$NestID) | NestID == "44.4EX03"  )
 
-pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests44.4ONLY.pdf", onefile= TRUE)
+pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests44.4ONLY.pdf", height = 7, width = 9.5)
 
-p1 = ggplot(AdSub, aes(x=Approx..Single, y=logWeight)) + geom_boxplot() +
-		ggtitle("Weight") + ylab("Log Weight")
+p1 = ggplot(AdSub, aes(x=Approx..Single., y=logWeight)) + geom_boxplot() +
+		ggtitle("Weight") + ylab("Log Weight") +  theme(axis.title.x = element_blank())
 
-p2 = ggplot(AdSub, aes(x=Approx..Single, y=logLeg)) + geom_boxplot() +
-		ggtitle("Leg Length") + ylab("Log Leg Length")
+p2 = ggplot(AdSub, aes(x=Approx..Single., y=logLeg)) + geom_boxplot() +
+		ggtitle("Leg Length") + ylab("Log Leg Length") + theme(axis.title.x = element_blank())
 
-p3 = ggplot(AdSub, aes(x=Approx..Single, y=logHead)) + geom_boxplot() +
-		ggtitle("Head Length") + ylab("Log Head Length")
+p3 = ggplot(AdSub, aes(x=Approx..Single., y=logHead)) + geom_boxplot() +
+		ggtitle("Head Length") + ylab("Log Head Length") + theme(axis.title.x = element_blank())
 
-p4 = ggplot(AdSub, aes(x=Approx..Single, y=logAbdm)) + geom_boxplot() +
-		ggtitle("Abdomen Length") + ylab("Log Abdomen Length")
+p4 = ggplot(AdSub, aes(x=Approx..Single., y=logHung)) + geom_boxplot() +
+		ggtitle("Hunger") + ylab("Log Hunger") + theme(axis.title.x = element_blank())
 
 grid.arrange(p1, p2, p3, p4, ncol = 2, main = "Multiple vs (approx) single nests 44.4 only")
 
@@ -326,71 +310,77 @@ for(i in 1: length(Instar)){
 dev.off()
 
 
-#GRAPH TO EXPORT ---- Diff in leg length between different instars
+#GRAPH TO EXPORT ---- Diff in LEG LENGTH between different instars
 ########################################################################################
 
-SumN <- subset(SSummariseLeg, N>0)
+DifSmLeg <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
+		N = length(!is.na(LegLen.mm)),
+		mean = mean(LegLen.mm, na.rm = TRUE)
+)
 
-SumN$NestID <- factor(SumN$NestID)
+DifSmLeg <- subset(DifSmLeg, N>0)
 
-InstarCols<- dcast(subset(SumN, select = c(NestID, Instar, mean, logCtFm)), 
+DifSmLeg$NestID <- factor(DifSmLeg$NestID)
+
+InsrColsLeg<- dcast(subset(DifSmLeg, select = c(NestID, Instar, mean, logCtFm)), 
 		NestID +  logCtFm ~ Instar, value.var= "mean",  drop = T) #transpose data
 
-SpiderDiffs <- ddply(InstarCols, .(NestID, logCtFm), summarise,
+LegDiffs <- ddply(InsrColsLeg, .(NestID, logCtFm), summarise,
 		AdultVsSub2 = Adult - Sub2,
 		Sub2VsSub1 = Sub2 - Sub1,
 		Sub1VsJuv4 = Sub1 - Juv4,
-		Sub2VsAdMale = Sub2 - AdMale,
-		Sub1VsSubMale = Sub1 - Sub2,
+		AdMaleVsSub2 = AdMale - Sub2,
+		SubMaleVsSub1 = SubMale - Sub1,
 		AdMaleVsSubMale = AdMale - SubMale
-		
-
 )
-
-##########################################################################################
 #unstacks the data
-SpiderDiffs <- melt(SpiderDiffs, id.vars=c("NestID","logCtFm"))#dcast(SpiderDiffs, NestID + logCtFm + Instar)
+SpiderDiffsLeg <- melt(LegDiffs, id.vars=c("NestID","logCtFm"))#dcast(SpiderDiffs, NestID + logCtFm + Instar)
 
-pdf("RuthEcuador2013/NestSize/Graphs/LegLengthDiffBtwnInstarVsNestSize.pdf")
+#####makes the graph
+pdf("RuthEcuador2013/NestSize/Graphs/LegLengthDiffBtwnInstarVsNestSize.pdf", height=6.5, width=9)
 
-ggplot(data = SpiderDiffs, aes(x = logCtFm, y = value)) + geom_point() +
-				stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 2)) +
-				facet_wrap(~ variable, scales = "free_y") + xlab("Log of Nest Area") +
-				ylab("Difference in log Leg Length") + 
-				ggtitle("Difference in Leg Length Between Instars") # + xlim(2.4, 4.35)
+ggplot(SpiderDiffsLeg, aes(x = logCtFm, y = value)) + geom_point() +
+				stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 1)) +
+				facet_wrap(~ variable, scales = "free") + xlab("Log of Number of females") +
+				ylab("Difference in Leg Length") + xlim(1.10,3.75)
+				#ggtitle("Difference in Leg Length Between Instars")
 dev.off()
-
 
 
 #GRAPH TO EXPORT ---- Diff in weight between different instars
 ########################################################################################
 
-SumN <- subset(SSummariseWeight, N>0)
+DifSmWt <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
+		N = length(!is.na(Weight.mg)),
+		mean = mean(Weight.mg, na.rm = TRUE)
+)
 
-SumN$NestID <- factor(SumN$NestID)
+DifSmWt <- subset(DifSmWt, N>0)
 
-InstarCols<- dcast(subset(SumN, select = c(NestID, Instar, mean, logCtFm)), 
+DifSmWt$NestID <- factor(DifSmWt$NestID)
+
+WtInsrCols<- dcast(subset(DifSmWt, select = c(NestID, Instar, mean, logCtFm)), 
 		NestID +  logCtFm ~ Instar, value.var= "mean",  drop = T) #transpose data
 
-SpiderDiffs <- ddply(InstarCols, .(NestID, logCtFm), summarise,
+WtDiffs <- ddply(WtInsrCols, .(NestID, logCtFm), summarise,
 		AdultVsSub2 = Adult - Sub2,
 		Sub2VsSub1 = Sub2 - Sub1,
 		Sub1VsJuv4 = Sub1 - Juv4,
-		Sub2VsAdMale = Sub2 - AdMale,
-		Sub1VsSubMale = Sub1 - Sub2,
+		AdMaleVsSub2 = AdMale - Sub2,
+		SubMaleVsSub1 = SubMale - Sub1,
 		AdMaleVsSubMale = AdMale - SubMale
 )
 
 #unstacks the data
-SpiderDiffs <- melt(SpiderDiffs, id.vars=c("NestID","logCtFm"))#dcast(SpiderDiffs, NestID + logCtFm + Instar)
+SpiderWtDiffs <- melt(WtDiffs, id.vars=c("NestID","logCtFm"))#dcast(SpiderDiffs, NestID + logCtFm + Instar)
 
-pdf("RuthEcuador2013/NestSize/Graphs/WeightDiffBtwnInstarVsNestSize.pdf")
+pdf("RuthEcuador2013/NestSize/Graphs/WeightDiffBtwnInstarVsNestSize.pdf",  height=6.5, width=9)
 
-ggplot(data = SpiderDiffs, aes(x = logCtFm, y = value)) + geom_point() +
-		stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 2)) +
-		facet_wrap(~ variable, scales = "free_y") + xlab("Log of Nest Area") +
-		ylab("Difference in log weight") + 
-		ggtitle("Difference in Weight Between Instars") # + xlim(2.4, 4.35)
+ggplot(data = SpiderWtDiffs, aes(x = logCtFm, y = value)) + geom_point() +
+		stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 1)) +
+		facet_wrap(~ variable, scales = "free") + xlab("Log Number of spiders") +
+		ylab("Log Diff in mean weight") + xlim(1.10,3.75) #+
+		#ggtitle("Difference in Weight Between Instars") 
 dev.off()
 
 
