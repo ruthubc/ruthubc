@@ -18,44 +18,74 @@ Weights$WeightDiff <- Weights$Weight.2 - Weights$Weight.1
 Weights$Hunger <- Weights$HeadLen.mm/ Weights$Weight.1
 
 #only keeping a few fields
-
 Feeding<-subset(Feeding, select=c("TrialID", "OverallID", "SpiderID", "TotalTimeEating", 
 				"IndCapture"))
-Trials<- subset(Trials, select = c("TrialID", "Day", "TimeOfDay", "SheetNo", "DateTrial"))
+Trials<- subset(Trials, select = c("TrialID", "Day", "TimeOfDay", "SheetNo", "DateTrial", 
+				"BoxAtePrey", "BoxFeedObs", "BoxCapture"))
 
 ##combining all tables
 FeedingWeights <- merge(Feeding, Weights, by = c("SpiderID"))
 BoxCombo <- merge(FeedingWeights, Trials, by = c("TrialID"))
 
-#################  RANKING ###############
+##########################  RANKING and FEEDING FRACTION #####################################
 
 #feeding fraction
-BoxCombo<-transform(BoxCombo, 
-		TotBoxEating = ave(TotalTimeEating, TrialID, FUN = function(x) sum(x)))
+BoxCombo<-transform(BoxCombo, TotBoxEating = ave(TotalTimeEating, TrialID, 
+				FUN = function(x) sum(x)))
 BoxCombo$FeedFraction <- BoxCombo$TotalTimeEating/BoxCombo$TotBoxEating
 
 # time eating
 BoxCombo<-transform(BoxCombo, Rank.TimeEating = ave(TotalTimeEating, 
 				TrialID, FUN = function(x) rank(x, ties.method = "average")))
 # weight
-BoxCombo<-transform(BoxCombo, Rank.Weights = ave(Weight.1, TrialID, 
+BoxCombo <- transform(BoxCombo, Rank.Weights = ave(Weight.1, TrialID, 
 				FUN = function(x) rank(x, ties.method = "average")))
 # leg length
-BoxCombo<-transform(BoxCombo, Rank.Legs = ave(LegLen.mm, TrialID, 
+BoxCombo <- transform(BoxCombo, Rank.Legs = ave(LegLen.mm, TrialID, 
 				FUN = function(x) rank(x, ties.method = "average")))
 # hunger
-BoxCombo-transform(BoxCombo, Rank.Hunger = ave(Hunger, TrialID, 
+BoxCombo <- transform(BoxCombo, Rank.Hunger = ave(Hunger, TrialID, 
 				FUN = function(x) rank(x, ties.method = "average")))
 
-################################################################################
-################################################################################
+################  Capture and eat including NAs  ######################################
+
+BoxCombo$IndFeed <- as.factor(ifelse (BoxCombo$TotalTimeEating > 0, "y", "n"))
+
+###replacing mmm? with n.. perhaps I need to check out what is really going on!
+BoxCombo$BoxFeedObs <- replace(BoxCombo$BoxFeedObs, BoxCombo$BoxFeedObs=="mmm?", "n")
+
+Capture <- data.frame (IndCapture = c("y", "n", "n"), BoxCapture = c("y", "y", "n"), 
+		 CaptureIndPos = c("y", "n", NA))
+BoxCombo <- merge(BoxCombo, Capture, by = (c("IndCapture", "BoxCapture")))
+
+
+
+Feed <- data.table (IndFeed = c("y", "n", "n"), BoxFeedObs = c("y", "y", "n"), 
+		FeedIndPos = c("y", "n", NA))
+BoxComboTest <- merge(BoxCombo, Feed, by= c("IndFeed", "BoxFeedObs"))
+
+
+BoxCombo2<-subset(BoxCombo, select = c("TrialID", "SpiderID", "OverallID"))
+BoxCombo3<-subset(BoxComboTest, select = c("TrialID", "SpiderID", "OverallID"))
+
+
+require(sqldf)
+
+a1NotIna2 <- sqldf('SELECT * FROM BoxCombo2 EXCEPT SELECT * FROM BoxCombo3')
+
+missing <- sqldf('SELECT BoxCombo.* FROM BoxCombo INNER JOIN a1NotIna2 ON BoxCombo.OverallID = a1NotIna2.OverallID')
+
 
 
 
 #####################################################################################
-#Making barplot of capture vs feeding
-CapVsEat <- data.frame(TrialsFeeding$FeedIndPos, TrialsFeeding$CaptureIndPos)
-CapVsEat <-subset( TrialsFeeding, select = c("FeedIndPos", "CaptureIndPos", "Treatment") )
+
+
+#########Barplot Capture vs eating###################################################
+#####################################################################################
+
+CapVsEat <- data.frame(BoxCombo$FeedIndPos, BoxCombo$CaptureIndPos)
+CapVsEat <-subset(BoxCombo, select = c("FeedIndPos", "CaptureIndPos", "Treatment") )
 CapVsEat <-na.omit(CapVsEat)
 
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/CaptureVsFeed.pdf")
