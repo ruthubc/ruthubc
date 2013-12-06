@@ -31,30 +31,31 @@ FeedingWeights <- merge(Feeding, Weights, by = c("SpiderID"))
 BoxCombo <- merge(FeedingWeights, Trials, by = c("TrialID"))
 
 ##########################  RANKING and FEEDING FRACTION #####################################
-
+##If removing NA's then need to check that all boxes have 10 individuals with  no NA's
 #feeding fraction
 BoxCombo<-transform(BoxCombo, TotBoxEating = ave(TotalTimeEating, TrialID, 
 				FUN = function(x) sum(x)))
-BoxCombo$FeedFraction <- BoxCombo$TotalTimeEating/BoxCombo$TotBoxEating
-##removing boxes from the feeding analysis if tot eating < 1hour
+
 BoxCombo$BoxFeedObs <- as.factor(ifelse(BoxCombo$TotBoxEating > 60, "y", "n")) #change to 15mins?30mins?
 
 # setting Total time eating to NA if TotBoxEating is NA
 BoxCombo$TotalTimeEating <- ifelse(BoxCombo$BoxFeedObs == "y", BoxCombo$TotalTimeEating, NA)
 
+##removing boxes from the feeding analysis if tot eating < 1hour
+BoxCombo$FeedFraction <- BoxCombo$TotalTimeEating/BoxCombo$TotBoxEating
  
 # time eating
 BoxCombo<-transform(BoxCombo, Rank.TimeEating = ave(TotalTimeEating, 
-				TrialID, FUN = function(x) rank(x, ties.method = "average")))
+				TrialID, FUN = function(x) rank(x, ties.method = "average", na.last = "keep")))
 # weight
 BoxCombo <- transform(BoxCombo, Rank.Weights = ave(Weight.1, TrialID, 
-				FUN = function(x) rank(x, ties.method = "average")))
+				FUN = function(x) rank(x, ties.method = "average", na.last = "keep")))
 # leg length
 BoxCombo <- transform(BoxCombo, Rank.Legs = ave(LegLen.mm, TrialID, 
-				FUN = function(x) rank(x, ties.method = "average")))
+				FUN = function(x) rank(x, ties.method = "average", na.last = "keep")))
 # hunger
 BoxCombo <- transform(BoxCombo, Rank.Hunger = ave(Hunger, TrialID, 
-				FUN = function(x) rank(x, ties.method = "average")))
+				FUN = function(x) rank(x, ties.method = "average", na.last = "keep")))
 
 ################  Capture and eat including NAs  ######################################
 
@@ -78,7 +79,7 @@ BoxCombo$IndFeedNum<- ifelse(BoxCombo$FeedIndPos=="y", 1,
 
 #####################################################################################
 ######## Averages table combining different trials (small trials) ###################
-
+#####################################################################################
 
 BoxComboAve<- ddply(BoxCombo, .(SpiderID, Rank.Weights, Instar, Rank.Legs, Moulted., 
 				AveBoldness, AvePokeRating, Treatment, Hunger), summarise, # need to discount trials where no feeding obs and eve
@@ -143,15 +144,6 @@ dev.off()
  
 ####removing evening feeds as no or little feeding observations
 ##Counting the number of individuals eating in each trial
-EatCount <- ddply(subset(BoxCombo, TimeOfDay =="morn" & TotBoxEating > 30), .(TrialID, Treatment, 
-				Instar), summarise, 
-		N = length(!is.na(IndFeed)),
-		noFeed=length(SpiderID[IndFeed== "y"]),
-		feedDur = sum(TotalTimeEating),
-		logFeedDur = log(feedDur),
-		logNoFeed = log(noFeed),
-		meanFeedDur = mean(TotalTimeEating)
- )
 
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/NoAndDurationFeeding.pdf", onefile = "TRUE") 
 
