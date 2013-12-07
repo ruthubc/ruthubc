@@ -17,11 +17,12 @@ Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv", na.strings = N
 Feeding <-read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv", na.strings = NA)
 Weights <-read.csv("RuthEcuador2013/BoxFeedingTrials/Weights.csv", na.strings = NA)
 
-levels(Trials$Instar) <- gsub("1s", "Sub1", levels(Trials$Instar))
-levels(Trials$Instar) <- gsub("2s", "Sub2", levels(Trials$Instar))
+#levels(Trials$Instar) <- gsub("1s", "Sub1", levels(Trials$Instar))
+#levels(Trials$Instar) <- gsub("2s", "Sub2", levels(Trials$Instar))
 
 Weights$WeightDiff <- Weights$Weight.2 - Weights$Weight.1
 Weights$Hunger <- Weights$HeadLen.mm/ Weights$Weight.1
+Weights$WeightDiffPer <- Weights$WeightDiff/Weights$Weight.1
 
 #only keeping a few fields
 Feeding<-subset(Feeding, select=c("TrialID", "OverallID", "SpiderID", "TotalTimeEating", 
@@ -62,7 +63,8 @@ BoxCombo <- transform(BoxCombo, Rank.Hunger = ave(Hunger, TrialID,
 
 ################  Capture and eat including NAs  ######################################
 
-BoxCombo$IndFeed <- as.factor(ifelse (BoxCombo$TotalTimeEating > 0, "y", "n"))
+BoxCombo$IndFeed <- as.factor(ifelse (BoxCombo$TotalTimeEating == "NA", NA, 
+				ifelse(BoxCombo$TotalTimeEating > 0, "y", "n")))
 
 Capture <- data.frame (IndCapture = c("y", "n", "n"), BoxCapture = c("y", "y", "n"), 
 		CaptureIndPos = c("y", "n", NA))
@@ -80,38 +82,60 @@ BoxCombo$IndCapNum<- ifelse(BoxCombo$CaptureIndPos=="y", 1,
 BoxCombo$IndFeedNum<- ifelse(BoxCombo$FeedIndPos=="y", 1,
 		ifelse(BoxCombo$FeedIndPos =="n", 0, NA))
 
+
 #####################################################################################
 ######## Averages table combining different trials on same box    ###################
 #####################################################################################
 
 BoxComboAve<- ddply(BoxCombo, .(SpiderID, Rank.Weights, Instar, Rank.Legs, Moulted., 
-				AveBoldness, AvePokeRating, Treatment, Hunger), summarise, # need to discount trials where no feeding obs and eve
+				AveBoldness, AvePokeRating, Treatment, Hunger, WeightDiffPer ), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(SpiderID)),
 		IndEatDur.Mean = mean(TotalTimeEating, na.rm = TRUE),
-		SumIndEat = sum(TotalTimeEating),
+		SumIndEat = sum(TotalTimeEating, na.rm = TRUE),
 		RankEatDur.Mean = mean(Rank.TimeEating, na.rm = TRUE),
-		AveFeed = mean(IndFeedNum, na.omit=TRUE),
-		AveCap = mean(IndCapNum, na.omit= TRUE)
+		AveFeed = mean(IndFeedNum, na.rm=TRUE),
+		AveCap = mean(IndCapNum, na.rm= TRUE)
 )
 ## checking that the averaging works
 subset(as.data.frame(table(BoxComboAve$SpiderID)), Freq >1)
 
+x1<- c(1,2,3,4,NA)
+sum(x1, na.omit = TRUE)
+
+###################### Behaviour summary #####################
+
+BoxComboAve$Move<- factor(ifelse(BoxComboAve$AveBoldness > 0 , "y", 
+				ifelse(BoxComboAve$AveBoldness == 0 , "n", NA))) 
+BoxComboAve$Feed<- factor(ifelse(BoxComboAve$AveFeed == 0, "n", 
+				ifelse(BoxComboAve$AveFeed > 0, "y", NA)))
+BoxComboAve$Cap<- factor(ifelse(BoxComboAve$AveCap > 0, "y", 
+				ifelse(BoxComboAve$AveCap == 0 , "n", NA)))
+
+#changing order of factors
+BoxComboAve$Move <- factor(BoxComboAve$Move, levels = c("y", "n") )
+BoxComboAve$Feed <- factor(BoxComboAve$Feed, levels =  c("y", "n") )
+BoxComboAve$Cap <- factor(BoxComboAve$Cap, levels = c("y", "n") )
+
+
 
 #####################################################################################
-######## Averages table combining boxes  ###################
+############### Averages table by trial ID  ########################################
 #####################################################################################
 
 ## only include day time boxes
 
 EatCount <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, Instar), summarise, 
-		N = length(!is.na(IndFeed)),
-		noFeed=length(SpiderID[IndFeed== "y"]),
-		feedDur = sum(TotalTimeEating),
+		N = sum(!is.na(IndFeed)),
+		noFeed=sum(!is.na(SpiderID[IndFeed== "y"])),
+		feedDur = sum(TotalTimeEating, na.rm =TRUE),
 		logFeedDur = log(feedDur),
 		logNoFeed = log(noFeed),
-		meanFeedDur = mean(TotalTimeEating)
+		meanFeedDur = mean(TotalTimeEating, na.rm= TRUE)
 )
 
-##removing trials with no
+subset(as.data.frame(table(EatCount$TrialID)), Freq >1)
+
+##removing trials with no feeding dur
 EatCount <- subset(EatCount, feedDur > 0)
 
+sum()

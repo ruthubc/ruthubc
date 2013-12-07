@@ -55,7 +55,7 @@ dev.off()
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/NoAndDurationFeeding.pdf", onefile = "TRUE") 
 
  ##graph total number of individuals feeding vs prey size
- ggplot(BoxComboAve, aes(x=Treatment, y=noFeed)) + geom_boxplot() + 
+ ggplot(EatCount, aes(x=Treatment, y=noFeed)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
 		 ggtitle("Log of Total number of spiders fed on prey against prey size") +
 		 xlab("Prey Size") + ylab("Total number of spiders feeding on prey")  + 
@@ -82,7 +82,8 @@ ggplot(EatCount, aes(x=Treatment, y=feedDur)) + geom_boxplot() +
  
  ################################  Feeding fraction  #####################################
  
- ####graph of individual feeding fractionvs prey size and instar
+ ####graph of individual feeding fractionvs prey size and instar (graph looks pretty much the same
+ # with zeros included compared to no zeros included
  ggplot((subset(BoxCombo, FeedFraction > 0)), aes(x=Treatment, y=FeedFraction)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
 		 ggtitle("Fraction of time feeding by individual (no eaters removed)") + ylab("Fraction of time spent eating prey by each individual") +
@@ -115,7 +116,7 @@ t.test(test$FeedFraction ~ test$Treatment)
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/InitalWeights.pdf", onefile = "TRUE")
 
 # weight rank vs rank eating duration by treatment
-ggplot(BoxComboAve, aes(x = Rank.Weights, y = RankEatDur.Mean) +
+ggplot(BoxComboAve, aes(x = Rank.Weights, y = RankEatDur.Mean)) +
 		geom_point() + geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
 		ggtitle("Weight ranked within box vs time eating ranked within box ") + ylab("Rank of Time Eating") +
 		xlab("Weight rank within box") + facet_wrap(~Treatment)
@@ -207,17 +208,6 @@ ggplot(data= Weights, aes(x = as.factor(DropBox.2), fill = as.factor(BoxDrop.1))
 ##Behaviour vs feeding and capture
 
 
-BoxComboAve$Move<- factor(ifelse(BoxComboAve$AveBoldness > 0 , "y", 
-		ifelse(BoxComboAve$AveBoldness == 0 , "n", NA))) 
-BoxComboAve$Feed<- factor(ifelse(BoxComboAve$AveFeed == 0, "n", 
-		ifelse(BoxComboAve$AveFeed > 0, "y", NA)))
-BoxComboAve$Cap<- factor(ifelse(BoxComboAve$AveCap > 0, "y", 
-		ifelse(BoxComboAve$AveCap == 0 , "n", NA)))
-
-#changing order of factors
-BoxComboAve$Move <- factor(BoxComboAve$Move, levels = c("y", "n") )
-BoxComboAve$Feed <- factor(BoxComboAve$Feed, levels =  c("y", "n") )
-BoxComboAve$Cap <- factor(BoxComboAve$Cap, levels = c("y", "n") )
 
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/Behaviour.pdf")
 
@@ -225,10 +215,12 @@ pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/Behaviour.pdf")
 ggplot(BoxComboAve, aes(x= AveCap, y = AveBoldness)) + geom_jitter(position = position_jitter(w = 0.1, h = 0.1)) +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1 , raw = TRUE), se = TRUE) +
 		facet_wrap(~Instar) + ggtitle("Ave capture vs average boldness rating")
+
 # Capture vs poke by instar
 ggplot(BoxComboAve, aes(x= AveCap, y = AvePokeRating)) + geom_jitter(position = position_jitter(w = 0.1, h = 0.1)) +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1 , raw = TRUE), se = TRUE)+
 		facet_wrap(~Instar) + ggtitle("Ave capture vs average poke rating")
+
 # Move at all vs capture
 ggplot(subset(BoxComboAve, Cap != "NA"), aes(x=Move, fill = Cap)) +
 		geom_bar(stat="bin", position="fill", colour = "black") + 
@@ -238,7 +230,7 @@ ggplot(subset(BoxComboAve, Cap != "NA"), aes(x=Move, fill = Cap)) +
 		scale_fill_discrete(name = "Involved with\nprey capture?", breaks = c("n", "y"),
 				labels = c("No", "Yes"))
 
-
+#Move at all vs feed
 ggplot(subset(BoxComboAve, Feed != "NA"), aes(x=Move, fill = Feed)) +
 		geom_bar(stat="bin", position="fill", colour = "black")  +
 		ggtitle("Move at all during boldness test with eat at all") +
@@ -251,12 +243,6 @@ ggplot(subset(BoxComboAve, Feed != "NA"), aes(x=Move, fill = Feed)) +
 dev.off()
 
 
-ggplot(data=FeedBehv, aes(x=Poke.1, fill = as.factor(AveFeed))) +
-		geom_bar(stat="bin", position="fill", colour = "black")
-
-ggplot(data=FeedBehv, aes(x=Poke.1, fill = as.factor(AveCap))) +
-		geom_bar(stat="bin", position="fill", colour = "black")
-
 
 
 ############################################################################
@@ -264,4 +250,6 @@ ggplot(data=FeedBehv, aes(x=Poke.1, fill = as.factor(AveCap))) +
 
 # (1) Feeding time vs weight change
 
-ggplot()
+ggplot(BoxComboAve, aes(x=SumIndEat, y = WeightDiffPer)) + geom_point() +
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2 , raw = TRUE), se = TRUE)
+		
