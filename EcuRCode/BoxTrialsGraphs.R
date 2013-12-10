@@ -55,27 +55,27 @@ dev.off()
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/NoAndDurationFeeding.pdf", onefile = "TRUE") 
 
  ##graph total number of individuals feeding vs prey size
- ggplot(EatCount, aes(x=Treatment, y=noFeed)) + geom_boxplot() + 
+ ggplot(AveByTrial, aes(x=Treatment, y=noFeed)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
 		 ggtitle("Log of Total number of spiders fed on prey against prey size") +
 		 xlab("Prey Size") + ylab("Total number of spiders feeding on prey")  + 
 		 scale_y_log10()
 
 #Number feeding vs treatment 
-ggplot(EatCount, aes(x=Treatment, y=noFeed)) + geom_boxplot() + 
+ggplot(AveByTrial, aes(x=Treatment, y=noFeed)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
 		 ggtitle("Total number of spiders fed on prey against prey size") +
 		 xlab("Prey Size") + ylab("Total number of spiders feeding on prey by instar") +
 		 facet_wrap(~Instar)  + scale_y_log10() 
  
  ##### total box time eating vs prey
- ggplot(EatCount, aes(x=Treatment, y=feedDur)) + geom_boxplot() + 
+ ggplot(AveByTrial, aes(x=Treatment, y=feedDur)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
 		 ggtitle("Log of Total amount of time feeding on prey per box") + ylab("Total time feeding (mins)") +
 		 xlab("Prey Size") + scale_y_log10()
  
 #total box time eating vs treatment by instar
-ggplot(EatCount, aes(x=Treatment, y=feedDur)) + geom_boxplot() + 
+ggplot(AveByTrial, aes(x=Treatment, y=feedDur)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) + facet_wrap(~Instar) + 
 		 ggtitle("Log of Total amount of time feeding on prey per box by instar") + 
 		 ylab("Total time feeding (mins)") + xlab("Prey Size") + scale_y_log10() 
@@ -101,8 +101,8 @@ dev.off()
 
 test<- subset(FeedingMorn, FeedFraction > 0)
 
-t.test(EatCount$logNoFeed ~ EatCount$Treatment)  #only sig when remove all feeding < 30 mins
-t.test(EatCount$feedDur ~ EatCount$Treatment)
+t.test(AveByTrial$logNoFeed ~ AveByTrial$Treatment)  #only sig when remove all feeding < 30 mins
+t.test(AveByTrial$feedDur ~ AveByTrial$Treatment)
 t.test(FeedingMorn$FeedFraction ~ FeedingMorn$Treatment)
 t.test(test$FeedFraction ~ test$Treatment)
 
@@ -243,6 +243,7 @@ ggplot(subset(BoxComboAve, Feed != "NA"), aes(x=Move, fill = Feed)) +
 dev.off()
 
 
+ggplot()
 
 
 ############################################################################
@@ -252,4 +253,9 @@ dev.off()
 
 ggplot(BoxComboAve, aes(x=SumIndEat, y = WeightDiffPer)) + geom_point() +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2 , raw = TRUE), se = TRUE)
-		
+
+ggplot(AveByTrial, aes(x = Treatment, y = SimpAlt )) + geom_boxplot() + facet_wrap(~Instar)
+
+AveByTrSub<- subset(AveByTrial, Instar == "Sub1")
+
+t.test(AveByTrSub$Simpsons ~ AveByTrSub$Treatment)

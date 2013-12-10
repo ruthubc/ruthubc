@@ -20,15 +20,20 @@ Weights <-read.csv("RuthEcuador2013/BoxFeedingTrials/Weights.csv", na.strings = 
 #levels(Trials$Instar) <- gsub("1s", "Sub1", levels(Trials$Instar))
 #levels(Trials$Instar) <- gsub("2s", "Sub2", levels(Trials$Instar))
 
-Weights$WeightDiff <- Weights$Weight.2 - Weights$Weight.1
-Weights$Hunger <- Weights$HeadLen.mm/ Weights$Weight.1
-Weights$WeightDiffPer <- Weights$WeightDiff/Weights$Weight.1
-
 #only keeping a few fields
 Feeding<-subset(Feeding, select=c("TrialID", "OverallID", "SpiderID", "TotalTimeEating", 
 				"IndCapture"))
 Trials<- subset(Trials, select = c("TrialID", "Day", "TimeOfDay", "SheetNo", "DateTrial", 
 				"BoxAtePrey", "BoxCapture"))
+Weights<-subset(Weights, select=c("IndBoxID", "SpiderID", "Instar", "Treatment", "DateCol",
+				"Poke.1", "Weight.1", "LegLen.mm", "AbdmLen.mm", "BodyLen.mm", "HeadLen.mm", 
+				"Weight.2", "Poke.2", "Replaced.", "Moulted.", "PokeRating.1", "PokeRating.2",
+				"AvePokeRating", "Climb.1", "BoldnessRank.1", "BoldnessRank.2", "AveBoldness"))
+
+Weights$WeightDiff <- Weights$Weight.2 - Weights$Weight.1
+Weights$Hunger <- Weights$HeadLen.mm/ Weights$Weight.1
+Weights$WeightDiffPer <- Weights$WeightDiff/Weights$Weight.1
+
 
 ##combining all tables
 FeedingWeights <- merge(Feeding, Weights, by = c("SpiderID"))
@@ -48,6 +53,7 @@ BoxCombo$TotalTimeEating <- ifelse(BoxCombo$BoxFeedObs == "y", BoxCombo$TotalTim
 ##removing boxes from the feeding analysis if tot eating < 1hour
 BoxCombo$FeedFraction <- BoxCombo$TotalTimeEating/BoxCombo$TotBoxEating
 
+
 # time eating
 BoxCombo<-transform(BoxCombo, Rank.TimeEating = ave(TotalTimeEating, 
 				TrialID, FUN = function(x) rank(x, ties.method = "average", na.last = "keep")))
@@ -60,6 +66,15 @@ BoxCombo <- transform(BoxCombo, Rank.Legs = ave(LegLen.mm, TrialID,
 # hunger
 BoxCombo <- transform(BoxCombo, Rank.Hunger = ave(Hunger, TrialID, 
 				FUN = function(x) rank(x, ties.method = "average", na.last = "keep")))
+
+
+# simpsons diversity index
+BoxCombo$nn1 <-BoxCombo$TotalTimeEating * (BoxCombo$TotalTimeEating -1)
+BoxCombo<-transform(BoxCombo, nn1Tot = ave(nn1, TrialID, FUN = function(x) sum(x)))
+BoxCombo$Simpsons <- 1- (BoxCombo$nn1Tot/ (BoxCombo$TotBoxEating * (BoxCombo$TotBoxEating -1)))
+
+BoxCombo$nDivN <- ((BoxCombo$TotalTimeEating/BoxCombo$TotBoxEating) ^2)
+BoxCombo<-transform(BoxCombo, nDivN = ave(nDivN, TrialID, FUN = function(x) (1-sum(x))))
 
 ################  Capture and eat including NAs  ######################################
 
@@ -124,7 +139,7 @@ BoxComboAve$Cap <- factor(BoxComboAve$Cap, levels = c("y", "n") )
 
 ## only include day time boxes
 
-EatCount <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, Instar), summarise, 
+AveByTrial <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, Instar, Simpsons, SimpAlt ), summarise, 
 		N = sum(!is.na(IndFeed)),
 		noFeed=sum(!is.na(SpiderID[IndFeed== "y"])),
 		feedDur = sum(TotalTimeEating, na.rm =TRUE),
@@ -133,9 +148,9 @@ EatCount <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, I
 		meanFeedDur = mean(TotalTimeEating, na.rm= TRUE)
 )
 
-subset(as.data.frame(table(EatCount$TrialID)), Freq >1)
+subset(as.data.frame(table(AveByTrial$TrialID)), Freq >1)
 
 ##removing trials with no feeding dur
-EatCount <- subset(EatCount, feedDur > 0)
+AveByTrial <- subset(AveByTrial, feedDur > 0)
 
-sum()
+
