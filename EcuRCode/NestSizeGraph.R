@@ -11,6 +11,7 @@ library(ggplot2)
 require(reshape2)
 library(nlme)
 library(gridExtra)
+library(histogram)
 #library(lme) wrong packages
 
 spiderData <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
@@ -36,6 +37,16 @@ spiders$logHung <- log10(spiders$hunger)
 
 Nests<-levels(spiders$NestID)
 
+######################################################################################
+##### catorgizing nests into small mediuum and large
+
+spiders$size<-as.factor(ifelse(spiders$Approx..Single =="single", "single",
+				ifelse(spiders$CountFemales <200, "small", 
+						ifelse(spiders$CountFemales <1000, "medium", "large"))))
+
+
+
+
 ##########################################################################################
 ### histograms to check distribution and outliers etc.
 
@@ -50,6 +61,12 @@ histogram( ~ LegLen.mm | Instar , data=spiders, type = "count", equal.widths = F
 histogram( ~ HeadLength.mm | Instar , data=spiders, type = "count", equal.widths = FALSE,
 		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
 		breaks = 15 )
+
+###histogram checking distribution of catogrical nest sizes
+
+ggplot(subset(spiders, !duplicated(NestID)), aes(x=logCtFm, fill=size))+ geom_histogram()
+
+table(subset(spiders, !duplicated(NestID))$size)
 
 ####histograms for each individual nest
 pdf("RuthEcuador2013/NestSize/Graphs/IndNestGraphs.pdf", onefile = TRUE)
@@ -71,7 +88,7 @@ dev.off()
 #############################################################################
 ## Summary of weight
 
-SSummariseWeight <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
+SSummariseWeight <- ddply(spiders, .(NestID, CountFemales, Approx..Single., logCtFm, Instar), summarise,
 		N = length(!is.na(Weight.mg)),
 		mean = mean(logWeight, na.rm = TRUE),
 		median = median(logWeight, na.rm = TRUE),
@@ -84,24 +101,29 @@ SSummariseWeight <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
 
 		)
 		
-MinNoSpis <- 1
-		
-SumsWeightN <- subset(SSummariseWeight, N>MinNoSpis)
+MinNoSpis <- 1; SumsWeightN <- subset(SSummariseWeight, N>MinNoSpis)
+
+##removed spiders in single(ish) female nests
+SumsWeightN <- subset(SSummariseWeight, Approx..Single. != "single") #options multiple or single
 
 Instar<-levels(SumsWeightN$Instar)[c(2, 9, 8, 5, 1)]
 
+##removing the now blank factor levels
+SumsWeightN$NestID <-factor(SumsWeightN$NestID)
 
 ###exporting graphs of mean weight against nest size, an individual graph for each 
 
 pdf("RuthEcuador2013/NestSize/Graphs/WeightVsNestSize.pdf", height=7, width=11)
 
+nlevels(SumsWeightN$NestID)
 
 ##multiple graphs on one page
-ggplot(SumsWeightN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
+ggplot(SumsWeightN , aes(x=logCtFm, y = mean)) + geom_point(aes(colour = NestID), shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 		ggtitle(paste("Mean of weight with ", MinNoSpis, " or more spiders measured", sep = ""))+
 		xlab("Log Number of females in nest") + ylab("Log Mean Weight(mg)") + 
-		facet_wrap(~ Instar, scales = "free", ncol = 4)
+		facet_wrap(~ Instar, scales = "free", ncol = 4) + scale_colour_manual(values=rainbow(nlevels(SumsWeightN$NestID)))
+		+ theme(legend.position = "none")
 
 
 ggplot(SumsWeightN , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
@@ -118,7 +140,7 @@ dev.off()
 #GRAPH TO EXPORT ------ LEG LENGTH
 
 ### summarise leg length by nest area
-SSummariseLeg <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
+SSummariseLeg <- ddply(spiders, .(NestID, logCtFm, Instar, size), summarise,
 		N = length(!is.na(LegLen.mm)),
 		mean = mean(logLeg, na.rm = TRUE),
 		median = median(logLeg, na.rm = TRUE),
@@ -150,7 +172,9 @@ ggplot(SumsLegN , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) +
 
 dev.off()
 
+##graphs of progression of growth within nest
 
+ggplot(SumsLegN, aes(x=Instar, y= mean)) + geom_point(aes(colour=size)) + geom_line(aes(group=NestID, colour = size))
 
 ### Hunger levels
 ###################################################################################
@@ -429,6 +453,8 @@ for(i in 1: length(Instar)){
 	}}
 
 dev.off()
+
+
 
 
 ################################################################################
