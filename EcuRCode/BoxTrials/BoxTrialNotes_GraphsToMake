@@ -1,4 +1,4 @@
-Graphs to make for Box Trials
+Graphs to make for Box Trials and General Notes
  
  - Behaviour vs weight difference
  - Compare time eating and capture between different trials
@@ -13,3 +13,9 @@ Graphs to make for Box Trials
  		
  - maybe test/graph everything against instar? ..perhpas it was just because 
  - Prey capture vs feeding fraction
+ 
+ POINT ABOUT HUNGER AND DIFFERENT INSTARS
+ --I think I need to rank hunger within instars.. or at least standardize it
+ 	-- might be different for different instars!!
+ 	-If I ranked then due to different number of individuals not such a great plan so
+ 	... transform to make the same mean and variance!
