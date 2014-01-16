@@ -3,7 +3,7 @@ Notes from lab meeting Dec 3rd 2013
 Nest size
 - colour the nests individual colours
 - categorize nests by size and compare leg size by age and histograms of weight/size
-- paper Lubin from 80's sp.  something wu (science?)
+- paper Lubin from 80's sp.  something wu (science?) -- paper is dispersal by swarming in a social spider 
 analysis
 - weigh points by sample size
 
@@ -16,5 +16,8 @@ Box trials
 - index: add 1 to zeros
 - hunger vs behaviour: temp? hunger?
 - make graph of behaviour vs hunger
+
+Other notes:
+- Evenness measure Pielou's J-- what about sample size? Do I have to take account of sample size?
 
 

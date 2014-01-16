@@ -68,13 +68,27 @@ BoxCombo <- transform(BoxCombo, Rank.Hunger = ave(Hunger, TrialID,
 				FUN = function(x) rank(x, ties.method = "average", na.last = "keep")))
 
 
-# simpsons diversity index
+# simpsons diversity index >> incorrect should use Pielou J's
 BoxCombo$nn1 <-BoxCombo$TotalTimeEating * (BoxCombo$TotalTimeEating -1)
 BoxCombo<-transform(BoxCombo, nn1Tot = ave(nn1, TrialID, FUN = function(x) sum(x)))
 BoxCombo$Simpsons <- 1- (BoxCombo$nn1Tot/ (BoxCombo$TotBoxEating * (BoxCombo$TotBoxEating -1)))
 
 BoxCombo$nDivN <- ((BoxCombo$TotalTimeEating/BoxCombo$TotBoxEating) ^2)
 BoxCombo<-transform(BoxCombo, nDivN = ave(nDivN, TrialID, FUN = function(x) (1-sum(x))))
+
+
+## Pielou's J index of evenness... start with shannon-weiner index
+BoxCombo$SW_ind<- ifelse(BoxCombo$FeedFraction == 0, 0,
+		log(BoxCombo$FeedFraction) * (BoxCombo$FeedFraction))
+		
+BoxCombo<-transform(BoxCombo, N_Spi = ave(as.numeric(SpiderID), TrialID, FUN = function(x) length(x)))
+
+BoxCombo<-transform(BoxCombo, SW_Tot = ave(SW_ind, TrialID, FUN = function(x) sum(x)))
+
+BoxCombo$PJEven<- -1 * (BoxCombo$SW_Tot/ log(BoxCombo$N_Spi))
+
+
+count(BoxCombo, TrialID)
 
 ################  Capture and eat including NAs  ######################################
 
