@@ -259,3 +259,14 @@ ggplot(AveByTrial, aes(x = Treatment, y = SimpAlt )) + geom_boxplot() + facet_wr
 AveByTrSub<- subset(AveByTrial, Instar == "Sub1")
 
 t.test(AveByTrSub$Simpsons ~ AveByTrSub$Treatment)
+
+
+#####################################################################################33
+##### Pielou's J graphs
+
+#histogram
+
+ggplot(AveByTrial, aes(PJEven)) + geom_histogram()
+
+ggplot(AveByTrial, aes(x = Treatment, y = PJEven)) + geom_boxplot() + facet_wrap(~Instar)
+

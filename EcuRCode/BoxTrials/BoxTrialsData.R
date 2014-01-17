@@ -87,9 +87,6 @@ BoxCombo<-transform(BoxCombo, SW_Tot = ave(SW_ind, TrialID, FUN = function(x) su
 
 BoxCombo$PJEven<- -1 * (BoxCombo$SW_Tot/ log(BoxCombo$N_Spi))
 
-
-count(BoxCombo, TrialID)
-
 ################  Capture and eat including NAs  ######################################
 
 BoxCombo$IndFeed <- as.factor(ifelse (BoxCombo$TotalTimeEating == "NA", NA, 
@@ -153,7 +150,7 @@ BoxComboAve$Cap <- factor(BoxComboAve$Cap, levels = c("y", "n") )
 
 ## only include day time boxes
 
-AveByTrial <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, Instar, Simpsons, SimpAlt ), summarise, 
+AveByTrial <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, Instar, PJEven ), summarise, 
 		N = sum(!is.na(IndFeed)),
 		noFeed=sum(!is.na(SpiderID[IndFeed== "y"])),
 		feedDur = sum(TotalTimeEating, na.rm =TRUE),
