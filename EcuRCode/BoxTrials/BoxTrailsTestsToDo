@@ -1,0 +1,17 @@
+Box Trials: Things to test
+
+1) Capture vs eat YES
+	1b) capture vs spider weight??  mmmm. but weight is nested within instar....
+	.... think i therefore need to make instar a random??
+	1c) capture vs hunger ..UPDATE MODEL
+
+2) Time eating vs hunger 
+
+3) Time eating vs hunger... given that they have fed
+	3b) fraction eating vs hunger
+
+4) Box evenness vs instar and treatment with 
+	random: spidersize??? not sure how this fits in
+			box
+
+5) Capture/feeding vs boldness (boldness will have to be nested with instar)

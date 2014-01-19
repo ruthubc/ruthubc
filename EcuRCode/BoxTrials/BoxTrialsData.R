@@ -164,4 +164,7 @@ subset(as.data.frame(table(AveByTrial$TrialID)), Freq >1)
 ##removing trials with no feeding dur
 AveByTrial <- subset(AveByTrial, feedDur > 0)
 
+### Removing the evening trials from box combo
+
+BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
 
