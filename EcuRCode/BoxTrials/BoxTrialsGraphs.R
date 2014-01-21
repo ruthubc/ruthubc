@@ -7,6 +7,9 @@ BoxSubset<-subset(BoxCombo, TimeOfDay == "morn")
 BoxEating <- aggregate(BoxSubset, by = list(BoxSubset$TrialID), FUN = mean)
 ggplot(BoxEating, aes(x= x)) + geom_histogram(binwidth = 15)
 
+BoxWeight <- unique(subset(BoxCombo, select = c(Weight.1, Instar)))
+ggplot(BoxWeight, aes(x=log(Weight.1)) ) + geom_histogram() + facet_wrap(~Instar)
+
 #########  Barplot Capture vs eating  ###################################################
 #####################################################################################
 

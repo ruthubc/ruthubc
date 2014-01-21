@@ -33,6 +33,7 @@ Weights<-subset(Weights, select=c("IndBoxID", "SpiderID", "Instar", "Treatment",
 Weights$WeightDiff <- Weights$Weight.2 - Weights$Weight.1
 Weights$Hunger <- Weights$HeadLen.mm/ Weights$Weight.1
 Weights$WeightDiffPer <- Weights$WeightDiff/Weights$Weight.1
+Weights$LogWeight1 <- log(Weights$Weight.1)
 
 
 ##combining all tables

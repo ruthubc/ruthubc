@@ -1,0 +1,13 @@
+Tests to do for weight vs nest size
+Multivariate analysis??.. need to look up some stuff about multivariate analysis
+
+1) Weight = number of females in nest^2 + number of females + instar + interaction with instar 
+	+ random (nest + location??) + all interactions
+		--- do both with and without single female nests
+		
+2) Repeat above for leg length
+
+3) coevar of weight = # of fems ^ 2 + number of fems
+	random: nest and sample size
+	
+4) single vs multipe nests: size = nest type + random: location and nest

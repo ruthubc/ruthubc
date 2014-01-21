@@ -6,6 +6,7 @@ Box Trials: Things to test
 	1c) capture vs hunger ..UPDATE MODEL
 
 2) Time eating vs hunger 
+		-- remove records where they didn't eat for more than an hour or whatever
 
 3) Time eating vs hunger... given that they have fed
 	3b) fraction eating vs hunger
@@ -15,3 +16,6 @@ Box Trials: Things to test
 			box
 
 5) Capture/feeding vs boldness (boldness will have to be nested with instar)
+
+Questions: Do I need TrialID in here? 
+			Anova and unbalanced designs? 
