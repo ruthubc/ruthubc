@@ -8,7 +8,7 @@ source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
 
 
 ######### Overdisperson function from 'http://glmm.wikidot.com/faq'
-overdisp_fun <- function(model) {
+ overdisp_fun <- function(model) {
 	## number of variance parameters in 
 	##   an n-by-n variance-covariance matrix
 	vpars <- function(m) {
@@ -47,7 +47,7 @@ summary(CapRedMod) # don't know what this means!!
 plot(CapRedMod) # not sure what these plots mean
 qqnorm(fitted(CapModel))
 ranef(CapModel)$IndBoxID #get individual predicted random effects
-
+anova(CapModel)
 ## testing full model against reduced model
 anova(model, RedMod)
 
