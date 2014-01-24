@@ -11,3 +11,5 @@ Multivariate analysis??.. need to look up some stuff about multivariate analysis
 	random: nest and sample size
 	
 4) single vs multipe nests: size = nest type + random: location and nest
+
+5) levene test for equality of variances
