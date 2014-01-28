@@ -31,41 +31,63 @@ source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
 ## I think I need to transform some of the variables
 ##-------from histogram weight needs to be log transformed
 
-		
-CapModel = glmer(IndCapture ~ IndFeed + Instar + Treatment +  (Instar|LogWeight1)
-				+ (1|IndBoxID) + (1|TrialID) + (1|SpiderID), data = BoxComboMorn, family = binomial(logit))
+BoxComboCap <- subset(BoxComboMorn, IndFeed != "NA") # removing NA lines as the bootrstrapping can't deal
 
-CapRedMod= glmer(IndCapture ~  IndFeed + Instar + Treatment + (1|IndBoxID) + (1|SpiderID),
-		data = BoxComboMorn, family = binomial(logit) )
+# orig model: CapMod <- glmer(IndCapture ~ IndFeed*Instar*Treatment + (1|Instar:IndBoxID) + 
+				#(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
 
-summary(CapModel) ## doesn't look like there are any effects for interaction but prob need to check
-fixef(CapModel)
-ranef(CapModel)
-deviance(CapModel)
-overdisp_fun(CapModel)
-summary(CapRedMod) # don't know what this means!!
-plot(CapRedMod) # not sure what these plots mean
-qqnorm(fitted(CapModel))
-ranef(CapModel)$IndBoxID #get individual predicted random effects
-anova(CapModel)
+CapMod <- glmer(IndCapture ~ IndFeed + (1|Instar) + (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+
+RedCapMod <- glmer(IndCapture ~ IndFeed + (1|Instar)+ (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+
+anova(CapMod, RedCapMod)
+
+###other ways to check the model
+summary(CapMod) 
+logLik(CapMod)
+deviance(CapMod)
+overdisp_fun(CapMod)
+
+
 ## testing full model against reduced model
-anova(model, RedMod)
+anova(CapModel, CapRedMod)
 
 
 ### testing the random effects.. not sure that I actually want to do this but the 
 	# ... bootstrap methods seem useful
 number<-as.numeric(2*(logLik(CapModel) - logLik(CapRedMod)))
 pchisq(number, 5)
-##bootstraping
-test<- simulate(CapRedMod)
+##bootstraping Faraway p160 and 164
 
-lrstat<- numeric(1000)
-for (i in 1:1000){
-	y<-unlist(simulate(CapRedMod))
-	bnull <-
-} # p160 to finish if necessary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
-ftable(xtabs())
+lrstat<- numeric(10)
+for (i in 1:10){
+	print(i)
+	SimCap <- unlist(simulate(CapRedMod))
+	SimCapRedMod <- glmer(SimCap ~  IndFeed + Instar + Treatment + (1|IndBoxID) + (1|SpiderID),
+			data = BoxComboCap, family = binomial(logit), REML=FALSE) 
+	SimCapMod <- glmer(SimCap ~  Instar + Treatment + (1|IndBoxID) + (1|SpiderID),
+			data = BoxComboCap, family = binomial(logit), REML=FALSE)
+	lrstat[i] <- as.numeric(2*(logLik(SimCapMod)-logLik(SimCapRedMod)))
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+
+2*(logLik(CapModel)-logLik(CapRedMod))
+
+logLik(CapModel)
+logLik(CapRedMod)
+
+#lrstat[1]<-(2*(
+logLik(SimCapMod)#-
+logLik(SimCapRedMod)
+
+
+##plotting the simulated results but not sure how useful this is with the bionomial
+plot(qchisq((1:10)/11, 6), sort(lrstat), xlab = expression(chi[4]^2), ylab = "simulated LRT")
+abline(0,1)
+
+ftable(xtabs()) # I can't remember the point of the ftable but may come in handy later!
 ###################################################################################
 #### Time eating vs hunger
 
