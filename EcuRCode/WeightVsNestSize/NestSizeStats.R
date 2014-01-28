@@ -10,3 +10,5 @@
 # book about lme4: http://lme4.r-forge.r-project.org/book/
 
 library(lme4)
+library(lawstat)
+

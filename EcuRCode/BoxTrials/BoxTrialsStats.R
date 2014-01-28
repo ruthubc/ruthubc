@@ -42,7 +42,7 @@ CapMod <- glmer(IndCapture ~ IndFeed + (1|Instar) + (1|Instar:IndBoxID) +
 RedCapMod <- glmer(IndCapture ~ IndFeed + (1|Instar)+ (1|Instar:IndBoxID) + 
 				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
 
-anova(CapMod, RedCapMod)
+anova(CapMod, RedCapMod) # testing the full model against the reduced model
 
 ###other ways to check the model
 summary(CapMod) 
@@ -50,9 +50,6 @@ logLik(CapMod)
 deviance(CapMod)
 overdisp_fun(CapMod)
 
-
-## testing full model against reduced model
-anova(CapModel, CapRedMod)
 
 
 ### testing the random effects.. not sure that I actually want to do this but the 
