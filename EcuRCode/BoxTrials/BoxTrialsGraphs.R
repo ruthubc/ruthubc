@@ -136,10 +136,13 @@ ggplot(BoxComboAve, aes(x= Hunger, y = SumIndEat, colour = Treatment)) + geom_po
 		ggtitle("Total Time Eating against hunger level (head length / weight")
 
 # hunger by sum of time eating by instar
-ggplot(BoxComboAve, aes(x= Hunger, y = SumIndEat, colour = Treatment)) + geom_point() +
+ggplot(subset(BoxComboAve, SumIndEat>0), aes(x= Hunger, y = SumIndEat, colour = Treatment)) + geom_point() +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
 		ggtitle("Total Time Eating against hunger level (head length / weight") + 
 		facet_wrap(~Instar, scales = "free_x")
+
+# hunger boxplot by ate or didn't
+ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = Hunger)) + geom_boxplot() + facet_wrap(~Instar)
 
 
 #TODO: hunger rank
@@ -264,7 +267,7 @@ AveByTrSub<- subset(AveByTrial, Instar == "Sub1")
 t.test(AveByTrSub$Simpsons ~ AveByTrSub$Treatment)
 
 
-#####################################################################################33
+#####################################################################################
 ##### Pielou's J graphs
 
 #histogram
@@ -273,3 +276,13 @@ ggplot(AveByTrial, aes(PJEven)) + geom_histogram()
 
 ggplot(AveByTrial, aes(x = Treatment, y = PJEven)) + geom_boxplot() + facet_wrap(~Instar)
 
+
+
+#################################################################################
+#Histograms of time eating to see if need to transform
+ggplot(subset(BoxComboMorn, TotBoxEating >30), aes((log(TotalTimeEating)))) + geom_histogram() + facet_wrap(~Instar)
+
+##histogram of hunger
+ggplot(BoxComboMorn, aes((Hunger))) + geom_histogram()  + facet_wrap(~Instar)
+
+ggplot(BoxComboMorn, aes(x = Treatment, y=  Hunger)) + geom_boxplot() + facet_wrap(~Instar)
