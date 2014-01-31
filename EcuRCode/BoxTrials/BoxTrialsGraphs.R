@@ -133,16 +133,18 @@ ggplot(BoxComboAve, aes(x = Rank.Legs, y = RankEatDur.Mean, colour = Treatment))
 # hunger by sum of time eating
 ggplot(BoxComboAve, aes(x= Hunger, y = SumIndEat, colour = Treatment)) + geom_point() +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
-		ggtitle("Total Time Eating against hunger level (head length / weight")
+		ggtitle("Total Time Eating against hunger level (head length / weight") +
+		facet_wrap(Treatment~Instar, scales = "free_x")
 
 # hunger by sum of time eating by instar
 ggplot(subset(BoxComboAve, SumIndEat>0), aes(x= Hunger, y = SumIndEat, colour = Treatment)) + geom_point() +
-		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 		ggtitle("Total Time Eating against hunger level (head length / weight") + 
-		facet_wrap(~Instar, scales = "free_x")
+		facet_wrap(Treatment~Instar, scales = "free_x")
 
 # hunger boxplot by ate or didn't
-ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = Hunger)) + geom_boxplot() + facet_wrap(~Instar)
+ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = Hunger)) + geom_boxplot() + 
+		facet_wrap(Treatment~Instar)
 
 
 #TODO: hunger rank
@@ -272,9 +274,9 @@ t.test(AveByTrSub$Simpsons ~ AveByTrSub$Treatment)
 
 #histogram
 
-ggplot(AveByTrial, aes(PJEven)) + geom_histogram()
+ggplot(AveByTrial, aes(AsinPJEven)) + geom_histogram()
 
-ggplot(AveByTrial, aes(x = Treatment, y = PJEven)) + geom_boxplot() + facet_wrap(~Instar)
+ggplot(AveByTrial, aes(x = Treatment, y = AsinPJEven)) + geom_boxplot()
 
 
 
@@ -283,6 +285,6 @@ ggplot(AveByTrial, aes(x = Treatment, y = PJEven)) + geom_boxplot() + facet_wrap
 ggplot(subset(BoxComboMorn, TotBoxEating >30), aes((log(TotalTimeEating)))) + geom_histogram() + facet_wrap(~Instar)
 
 ##histogram of hunger
-ggplot(BoxComboMorn, aes((Hunger))) + geom_histogram()  + facet_wrap(~Instar)
+ggplot(BoxComboMorn, aes((Hunger))) + geom_histogram()  + facet_wrap(~Instar) + 
 
 ggplot(BoxComboMorn, aes(x = Treatment, y=  Hunger)) + geom_boxplot() + facet_wrap(~Instar)

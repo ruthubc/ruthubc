@@ -46,7 +46,7 @@ BoxCombo <- merge(FeedingWeights, Trials, by = c("TrialID"))
 BoxCombo<-transform(BoxCombo, TotBoxEating = ave(TotalTimeEating, TrialID, 
 				FUN = function(x) sum(x)))
 
-BoxCombo$BoxFeedObs <- as.factor(ifelse(BoxCombo$TotBoxEating > 60, "y", "n")) #change to 15mins?30mins?
+BoxCombo$BoxFeedObs <- as.factor(ifelse(BoxCombo$TotBoxEating > 30, "y", "n")) #change to 15mins?30mins?
 
 # setting Total time eating to NA if TotBoxEating is NA
 BoxCombo$TotalTimeEating <- ifelse(BoxCombo$BoxFeedObs == "y", BoxCombo$TotalTimeEating, NA)
@@ -87,6 +87,13 @@ BoxCombo<-transform(BoxCombo, N_Spi = ave(as.numeric(SpiderID), TrialID, FUN = f
 BoxCombo<-transform(BoxCombo, SW_Tot = ave(SW_ind, TrialID, FUN = function(x) sum(x)))
 
 BoxCombo$PJEven<- -1 * (BoxCombo$SW_Tot/ log(BoxCombo$N_Spi))
+BoxCombo$AsinPJEven <- asin(sqrt(BoxCombo$PJEven))
+
+##Log Transform Hunger
+BoxCombo$TimeEatingLog <- log(BoxCombo$TotalTimeEating)
+BoxCombo$TimeEatingLog1 <- log(BoxCombo$TotalTimeEating + 1)
+BoxCombo$LogHunger<- log(BoxCombo$Hunger)
+
 
 ################  Capture and eat including NAs  ######################################
 
@@ -151,7 +158,7 @@ BoxComboAve$Cap <- factor(BoxComboAve$Cap, levels = c("y", "n") )
 
 ## only include day time boxes
 
-AveByTrial <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, Instar, PJEven ), summarise, 
+AveByTrial <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, Instar, PJEven, AsinPJEven, IndBoxID ), summarise, 
 		N = sum(!is.na(IndFeed)),
 		noFeed=sum(!is.na(SpiderID[IndFeed== "y"])),
 		feedDur = sum(TotalTimeEating, na.rm =TRUE),

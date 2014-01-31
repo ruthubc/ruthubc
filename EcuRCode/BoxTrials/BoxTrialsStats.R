@@ -48,12 +48,7 @@ overdisp_fun(CapMod)
 ##Time eating vs Hunger
 # Only include morning trials and might have to disregard boxes that did not eat for under 30 mins
 
-##Transforming the data
-BoxComboMorn$TimeEatingLog <- log(BoxComboMorn$TotalTimeEating)
-BoxComboMorn$TimeEatingLog1 <- log(BoxComboMorn$TotalTimeEating + 1)
-BoxComboMorn$LogHunger<- log(BoxComboMorn$Hunger)
-
-#linear modle
+#linear model
 TimeHunMod <- lmer(TimeEatingLog1 ~ LogHunger + Treatment +  Instar + LogHunger:Treatment + (1|Instar:LogHunger) +
 				(1|Instar:IndBoxID) + (1|Instar:IndBoxID:SpiderID), BoxComboMorn, REML = FALSE)
 
@@ -91,6 +86,56 @@ GiveTimeHunRedMod <- glmer(TotalTimeEating ~ Treatment +  Instar + (1|Instar:Log
 anova(GiveTimeHunRedMod, GiveTimeHunMod )
 
 
+######################################################################################
+# Eating at all (binary) vs everything else
+## has everything in it model
+#glmer(IndFeed ~ LogHunger + Treatment +  Instar + LogHunger:Treatment + LogHunger:Instar +
+			#	Treatment:Instar + LogHunger:Treatment:Instar+  (1|Instar) + (1|Instar:IndBoxID) + 
+			#	(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+
+EatBinMod <- glmer(IndFeed ~ LogHunger + Treatment  + LogHunger:Treatment  +
+				   (1|Instar) + (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+
+summary(EatBinMod)
+
+EatBinRedMod <- glmer(IndFeed ~ Treatment   +
+				LogHunger:Treatment +  (1|Instar) + (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
 
+anova(EatBinMod, EatBinRedMod)
 
+############################################################################
+##Testing pj's against treatment
+
+# linear model 
+
+PJMod <-  glmer(PJEven ~ Treatment  +  Instar + (1|Instar:IndBoxID), 
+		AveByTrial, family = binomial(logit))
+summary(PJMod)
+
+PJRedMod <-  glmer(PJEven ~ Instar + (1|Instar:IndBoxID), 
+		AveByTrial, family = binomial(logit))
+
+anova( PJRedMod, PJMod)
+
+##Boot strappin
+lrstat<- numeric(1000)
+for (i in 1:1000){
+	print(i)
+	SimPJ <- unlist(simulate(PJRedMod))
+	SimPJRedMod <- glmer(SimPJ ~ Instar + (1|Instar:IndBoxID), AveByTrial, family = binomial(logit)) 
+	SimPJMod <- glmer(SimPJ ~  Treatment  +  Instar + (1|Instar:IndBoxID), AveByTrial, family = binomial(logit))
+	lrstat[i] <- as.numeric(2*(logLik(SimPJMod)-logLik(SimPJRedMod)))
+}                                
+
+
+number<-as.numeric(2*(logLik(PJMod) - logLik(PJRedMod)))
+
+
+mean(lrstat > number)
+
+0.057 - 1000 iterations
+0.046 - 2000 iterations
+0.0533 - 3000 iterations
