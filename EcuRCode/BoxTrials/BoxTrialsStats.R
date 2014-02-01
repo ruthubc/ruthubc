@@ -111,22 +111,31 @@ anova(EatBinMod, EatBinRedMod)
 
 # linear model 
 
-PJMod <-  glmer(PJEven ~ Treatment  +  Instar + (1|Instar:IndBoxID), 
-		AveByTrial, family = binomial(logit))
+PJMod <-  glmer(PJEven ~ Treatment + Instar + (1|IndBoxID),
+		(AveByTrial) , family = binomial(logit))
 summary(PJMod)
+anova(PJMod)
 
-PJRedMod <-  glmer(PJEven ~ Instar + (1|Instar:IndBoxID), 
-		AveByTrial, family = binomial(logit))
+PJRedMod <-  glm(PJEven ~ 1, 
+		subset(AveByTrial, Instar == "Sub2"), family = quasibinomial(logit))
+summary(PJRedMod)
 
-anova( PJRedMod, PJMod)
+anova( PJRedMod, PJMod, test = 'Chi')
+
+overdisp_fun(PJMod)
+#Calculating overdispersion
+rdev <- sum(residuals(PJMod,"pearson")^2)
+mdf <- length(fixef(PJMod))
+rdf <- nrow(AveByTrial)-mdf
+rdev/rdf # =9.7
 
 ##Boot strappin
 lrstat<- numeric(1000)
 for (i in 1:1000){
 	print(i)
 	SimPJ <- unlist(simulate(PJRedMod))
-	SimPJRedMod <- glmer(SimPJ ~ Instar + (1|Instar:IndBoxID), AveByTrial, family = binomial(logit)) 
-	SimPJMod <- glmer(SimPJ ~  Treatment  +  Instar + (1|Instar:IndBoxID), AveByTrial, family = binomial(logit))
+	SimPJRedMod <- glmer(SimPJ ~ Instar + Treatment + (1|IndBoxID), AveByTrial, family = binomial(logit)) 
+	SimPJMod <- glmer(SimPJ ~  Treatment*Instar + (1|IndBoxID), AveByTrial, family = binomial(logit))
 	lrstat[i] <- as.numeric(2*(logLik(SimPJMod)-logLik(SimPJRedMod)))
 }                                
 
@@ -136,6 +145,6 @@ number<-as.numeric(2*(logLik(PJMod) - logLik(PJRedMod)))
 
 mean(lrstat > number)
 
-0.057 - 1000 iterations
-0.046 - 2000 iterations
-0.0533 - 3000 iterations
+#0.057 - 1000 iterations
+#0.046 - 2000 iterations
+#0.0533 - 3000 iterations
