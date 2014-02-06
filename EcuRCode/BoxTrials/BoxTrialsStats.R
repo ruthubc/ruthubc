@@ -3,7 +3,7 @@
 # Author: Ruth
 ###############################################################################
 library (lme4)
-library(aods3)
+#library(lmerTest) not sure what excatly this does
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
 
 ######### Overdisperson function from 'http://glmm.wikidot.com/faq'
@@ -19,8 +19,12 @@ source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
 	Pearson.chisq <- sum(rp^2)
 	prat <- Pearson.chisq/rdf
 	pval <- pchisq(Pearson.chisq, df=rdf, lower.tail=FALSE)
-	c(chisq=Pearson.chisq,ratio=prat,rdf=rdf,p=pval)
+	dev <- deviance(model)
+	myRatio <- dev/rdf	
+	c(chisq=Pearson.chisq,ratio=prat,rdf=rdf,p=pval, dev = dev, myRatio = myRatio)
+
 }
+
 
 #################################################################################
 ##### feeding vs prey capture
@@ -29,19 +33,46 @@ source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
 #I made instar a random variable
 BoxComboCap <- subset(BoxComboMorn, IndFeed != "NA") # removing NA lines as the bootrstrapping can't deal
 
-CapMod <- glmer(IndCapture ~ IndFeed + (1|Instar) + (1|Instar:IndBoxID) + 
+CapMod1 <- glmer(IndCapture ~ IndFeed*Treatment*Instar + (1|Instar:IndBoxID) + 
 				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
 
-RedCapMod <- glmer(IndCapture ~  (1|Instar)+ (1|Instar:IndBoxID) + 
+summary(CapMod1)
+anova(CapMod1) 
+qqnorm(resid(CapMod1), main = "main") # not great but not bad
+
+##Removing all interaction terms as they are massively not significant
+
+CapMod2 <- glmer(IndCapture ~ IndFeed + Treatment + Instar + (1|Instar:IndBoxID) + 
 				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
 
-anova(CapMod, RedCapMod) # testing the full model against the reduced model
+summary(CapMod2)
+anova(CapMod2) 
+qqnorm(resid(CapMod2), main = "main") # not great but not bad
 
-###other ways to check the model
-summary(CapMod) 
-logLik(CapMod)
-deviance(CapMod)
-overdisp_fun(CapMod)
+##Removing treatment as it is very not significat from summary!
+
+CapMod3 <- glmer(IndCapture ~ IndFeed  + Instar + (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+
+summary(CapMod3)
+anova(CapMod3) 
+qqnorm(resid(CapMod3), main = "main") # not great but not bad
+
+##Removing instar as it is very not significat from summary so we are just left with IndFeed!
+
+CapMod4 <- glmer(IndCapture ~ IndFeed+ (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+
+summary(CapMod4)
+qqnorm(resid(CapMod4), main = "main") # not great but not bad
+
+RedCapMod <- glmer(IndCapture ~ 1+ (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+
+overdisp_fun(CapMod4); overdisp_fun(RedCapMod)
+
+anova(CapMod4, RedCapMod) # testing the full model against the reduced model
+
 
 
 #################################################################
@@ -49,15 +80,46 @@ overdisp_fun(CapMod)
 # Only include morning trials and might have to disregard boxes that did not eat for under 30 mins
 
 #linear model
-TimeHunMod <- lmer(TimeEatingLog1 ~ LogHunger + Treatment +  Instar + LogHunger:Treatment + (1|Instar:LogHunger) +
+TimeHunMod1 <- lmer(TimeEatingLog1 ~ LogHunger*Treatment*Instar + (1|Instar:LogHunger) +
 				(1|Instar:IndBoxID) + (1|Instar:IndBoxID:SpiderID), BoxComboMorn, REML = FALSE)
 
+summary(TimeHunMod1)
+anova(TimeHunMod1) 
+qqnorm(resid(TimeHunMod1), main = "TimeHunMod1") # dips in the middle
+overdisp_fun(TimeHunMod1) # it is massively over dispersed
 
-TimeHunMod <- glmer(TotalTimeEating ~ Hunger + Treatment +  Instar + LogHunger:Treatment + (1|Instar:LogHunger) +
+# Glmer with untransformed data
+TimeHunMod2 <- glmer(TotalTimeEating ~ Hunger*Treatment*Instar + (1|Instar:Hunger) +
 				(1|Instar:IndBoxID) + (1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = poisson(link = "log" ))
 
-anova(TimeHunMod)
-summary(TimeHunMod)
+summary(TimeHunMod2)
+anova(TimeHunMod2) 
+qqnorm(resid(TimeHunMod2), main = "TimeHunMod2") # qqplot looked worse that TimeModHum1
+overdisp_fun(TimeHunMod2) # But is less overdispersed, althoguh sitll over dispersed
+
+#GLMER with transformed data, won't work with log transformed Time Eating
+TimeHunMod3 <- glmer(TotalTimeEating ~ LogHunger*Treatment*Instar + (1|Instar:LogHunger) +
+				(1|Instar:IndBoxID) + (1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = poisson(link = "log" ))
+
+summary(TimeHunMod3)
+anova(TimeHunMod3) 
+qqnorm(resid(TimeHunMod3), main = "TimeHunMod3") # same as TimeHunMod2
+overdisp_fun(TimeHunMod3) # same as TimeHunMod2
+
+#Trying to correct for overdispersion
+BoxComboMorn$obsID<-as.factor(1:nrow(BoxComboMorn))
+
+TimeHunMod4 <- glmer(TotalTimeEating ~ LogHunger*Treatment*Instar + (1|Instar:LogHunger) +
+				(1|Instar:IndBoxID) + (1|Instar:IndBoxID:SpiderID) + (1|obsID), 
+		BoxComboMorn, family = poisson(link = "log" ))
+
+summary(TimeHunMod4)
+anova(TimeHunMod4) 
+qqnorm(resid(TimeHunMod4), main = "TimeHunMod4") # looks much better than TimeHunMod3
+overdisp_fun(TimeHunMod4) # massively over dispersed!! SHIT
+
+
+
 
 TimeHunRedMod <- glmer(TotalTimeEating ~ Hunger + Treatment +  Instar  + (1|Instar:LogHunger) +
 				(1|Instar:IndBoxID) + (1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = poisson(link = "log" ))
@@ -111,18 +173,34 @@ anova(EatBinMod, EatBinRedMod)
 
 # linear model 
 
-PJMod <-  glmer(PJEven ~ Treatment + Instar + (1|IndBoxID),
-		(AveByTrial) , family = binomial(logit))
+AveByTrial$resid<-as.factor(1:dim(AveByTrial)[1]) # http://tolstoy.newcastle.edu.au/R/e12/help/10/11/5740.html
+
+AveByTrial$RowID<-factor(seq_len(nrow(AveByTrial)))
+
+PJMod <-  glmer(log(PJEven+1) ~ Treatment*Instar + (1|IndBoxID),
+		(AveByTrial), family = binomial)
 summary(PJMod)
-anova(PJMod)
+anova(PJMod, type = "marginal")
+anova(PJMod, ddf = "Kenward-Roger")
 
-PJRedMod <-  glm(PJEven ~ 1, 
-		subset(AveByTrial, Instar == "Sub2"), family = quasibinomial(logit))
-summary(PJRedMod)
+PJRedMod <-  lmer(log(PJEven+1) ~ (1|IndBoxID), 
+		AveByTrial)
+summary(PJRedMod)$dispersion
 
-anova( PJRedMod, PJMod, test = 'Chi')
+anova( PJRedMod, PJMod)
 
-overdisp_fun(PJMod)
+overdisp_fun(PJMod) 
+
+qqnorm(resid(PJMod), main = "main")
+
+overdisp_fun(PJMod) 
+
+deviance(PJMod)
+
+plot(PJMod)
+
+interaction.plot(AveByTrial$Treatment, AveByTrial$Instar,log(AveByTrial$PJEven+1))
+#subset(AveByTrial, Instar == "Sub2")
 #Calculating overdispersion
 rdev <- sum(residuals(PJMod,"pearson")^2)
 mdf <- length(fixef(PJMod))

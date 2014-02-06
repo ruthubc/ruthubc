@@ -9,6 +9,7 @@ http://www.ats.ucla.edu/stat/r/dae/melogit.htm
 how to transform the data: http://www3.imperial.ac.uk/pls/portallive/docs/1/1171926.PDF
 glmer faq: http://glmm.wikidot.com/faq
 glmer book? http://glmm.wdfiles.com/local--files/examples/Banta_2011_part1.pdf
+random effects:http://stats.stackexchange.com/questions/31569/questions-about-how-random-effects-are-specified-in-lmer
 
 book: extending the linear model in R  http://onlinelibrary.wiley.com.ezproxy.library.ubc.ca/doi/10.1111/rssa.2006.169.issue-4/issuetoc
 
