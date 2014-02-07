@@ -1,5 +1,5 @@
 #### Box trails graphs. Code importing and manipulating the data is in BoxTrialsData.R
-
+source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
 
 ################### Histograms ######################################################
 ##Looking at the total time eating in box. Need to remove maybe all records time < 1hour?
@@ -85,29 +85,30 @@ ggplot(AveByTrial, aes(x=Treatment, y=feedDur)) + geom_boxplot() +
  
  ################################  Feeding fraction  #####################################
  
+ ##Feed Fraction histograms
+ 
+ ggplot((subset(BoxComboMorn, FeedFraction > 0)), aes(ASFeedFrac)) + geom_histogram() #asin makes it more normal
+ 
  ####graph of individual feeding fractionvs prey size and instar (graph looks pretty much the same
  # with zeros included compared to no zeros included
- ggplot((subset(BoxCombo, FeedFraction > 0)), aes(x=Treatment, y=FeedFraction)) + geom_boxplot() + 
+ ggplot((subset(BoxComboMorn, FeedFraction > 0)), aes(x=Treatment, y=ASFeedFrac)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
 		 ggtitle("Fraction of time feeding by individual (no eaters removed)") + ylab("Fraction of time spent eating prey by each individual") +
-		 xlab("Prey Size")  + scale_y_log10()
+		 xlab("Prey Size")
  
 # feeding fraction by instar
-ggplot((subset(BoxCombo, FeedFraction > 0)), aes(x=Treatment, y=FeedFraction)) + geom_boxplot() + 
+ggplot((subset(BoxComboMorn, FeedFraction > 0)), aes(x=Treatment, y=ASFeedFrac)) + geom_boxplot() + 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
 		 ggtitle("Fraction of time feeding by individual (zero eaters removed)") + ylab("Fraction of time spent eating prey by each individual") +
-		 xlab("Prey Size") + facet_wrap(~Instar) + scale_y_log10()
+		 xlab("Prey Size") + facet_wrap(~Instar)
+ 
+ ggplot(subset(BoxComboMorn, FeedFraction > 0), aes(x= Hunger, y = ASFeedFrac, colour = Treatment)) + geom_point() +
+		 geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+		 ggtitle("Feeding Fraction against hunger level (head length / weight") + 
+		 facet_wrap(Treatment~Instar, scales = "free_x")
+ 
 dev.off()
 
-##########################################################################################
-#stat Tests...might be a good idea to remove ones that only fed for 15mins
-
-test<- subset(FeedingMorn, FeedFraction > 0)
-
-t.test(AveByTrial$logNoFeed ~ AveByTrial$Treatment)  #only sig when remove all feeding < 30 mins
-t.test(AveByTrial$feedDur ~ AveByTrial$Treatment)
-t.test(FeedingMorn$FeedFraction ~ FeedingMorn$Treatment)
-t.test(test$FeedFraction ~ test$Treatment)
 
 ##########################################################################################
 ##Feeding duration (rank?) vs weight rank
@@ -142,21 +143,23 @@ ggplot(subset(BoxComboAve, SumIndEat>0), aes(x= Hunger, y = SumIndEat, colour = 
 		ggtitle("Total Time Eating against hunger level (head length / weight") + 
 		facet_wrap(Treatment~Instar, scales = "free_x")
 
+dev.off()
+
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/FeedingAndHunger.pdf", width= 10)
+
 # hunger boxplot by ate or didn't
-ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = Hunger)) + geom_boxplot() + 
+ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = LogHunger)) + geom_boxplot() + 
 		facet_wrap(Treatment~Instar)
 
+ggplot(subset(BoxComboMorn, IndFeed == "y"), aes(x= LogHunger, y = TimeEatingLog1, colour = Treatment)) + geom_point() +
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+		ggtitle("Total Time Eating against hunger level- zeros removed") + 
+		facet_wrap(Treatment~Instar, scales = "free_x")
 
 #TODO: hunger rank
 
 dev.off()
 
-#####################   Regression testing  #########################################
-fit <- lme(Rank.TimeEating ~ Rank.Weights, random=~1|IndBoxID, data=FeedingWeights)
-summary(fit)
-anova(fit)
-plot(fit)
-hist(resid(fit))
 
 #####################################################################################
 #### Behavior vs physiological things
@@ -276,15 +279,21 @@ t.test(AveByTrSub$Simpsons ~ AveByTrSub$Treatment)
 
 ggplot(AveByTrial, aes(AsinPJEven)) + geom_histogram()
 
-ggplot(AveByTrial, aes(x = Treatment, y = AsinPJEven)) + geom_boxplot()
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PJEven.pdf")
 
+SubsetAveByTrial<- subset(AveByTrial, PJEven > 0)
 
+ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot()
+
+ggplot(SubsetAveByTrial, aes(x= Instar, y =AsinPJEven)) + geom_boxplot()
+
+ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + facet_wrap(~Instar)
+
+dev.off()
 
 #################################################################################
-#Histograms of time eating to see if need to transform
-ggplot(subset(BoxComboMorn, TotBoxEating >30), aes((log(TotalTimeEating)))) + geom_histogram() + facet_wrap(~Instar)
 
 ##histogram of hunger
-ggplot(BoxComboMorn, aes((Hunger))) + geom_histogram()  + facet_wrap(~Instar) + 
+ggplot(BoxComboMorn, aes((Hunger))) + geom_histogram()  + facet_wrap(~Instar)
 
 ggplot(BoxComboMorn, aes(x = Treatment, y=  Hunger)) + geom_boxplot() + facet_wrap(~Instar)

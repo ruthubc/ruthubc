@@ -54,6 +54,8 @@ BoxCombo$TotalTimeEating <- ifelse(BoxCombo$BoxFeedObs == "y", BoxCombo$TotalTim
 ##removing boxes from the feeding analysis if tot eating < 1hour
 BoxCombo$FeedFraction <- BoxCombo$TotalTimeEating/BoxCombo$TotBoxEating
 
+BoxCombo$ASFeedFrac <- asin(sqrt(BoxCombo$FeedFraction))
+
 
 # time eating
 BoxCombo<-transform(BoxCombo, Rank.TimeEating = ave(TotalTimeEating, 
@@ -94,11 +96,16 @@ BoxCombo$TimeEatingLog <- log(BoxCombo$TotalTimeEating)
 BoxCombo$TimeEatingLog1 <- log(BoxCombo$TotalTimeEating + 1)
 BoxCombo$LogHunger<- log(BoxCombo$Hunger)
 
+# Create logical arguments for treatment and 
+BoxCombo$LogicalTreat<- ifelse(BoxCombo$Treatment == "large", 1, 0 )
+
 
 ################  Capture and eat including NAs  ######################################
 
 BoxCombo$IndFeed <- as.factor(ifelse (BoxCombo$TotalTimeEating == "NA", NA, 
 				ifelse(BoxCombo$TotalTimeEating > 0, "y", "n")))
+
+BoxCombo$LogicalIndFeed <- ifelse(BoxCombo$IndFeed == "y", "1", ifelse(BoxCombo$IndFeed == "n", "0", NA))
 
 Capture <- data.frame (IndCapture = c("y", "n", "n"), BoxCapture = c("y", "y", "n"), 
 		CaptureIndPos = c("y", "n", NA))
@@ -176,3 +183,6 @@ AveByTrial <- subset(AveByTrial, feedDur > 0)
 
 BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
 
+
+		
+		
