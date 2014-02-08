@@ -3,12 +3,36 @@
 # Author: Ruth
 ###############################################################################
 
-# useful pdf http://www.stat.columbia.edu/~martin/W2024/R11.pdf
-# http://www.stat.columbia.edu/~martin/W2024/W2024.html very clear
-# http://www.bodowinter.com/tutorial/bw_LME_tutorial2.pdf on page 14.
-# http://stats.stackexchange.com/questions/5344/how-to-choose-nlme-or-lme4-r-library-for-mixed-effects-models
-# book about lme4: http://lme4.r-forge.r-project.org/book/
+library (lme4)
+library(lmerTest) # not sure what excatly this does
+library(glmmADMB)
+library(ICC)
+library(reshape)
+source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/WeightVsNestSize/NestSizeData.R")
+source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/OverDispersionFunction.R")
 
-library(lme4)
-library(lawstat)
+
+############ Single vs multiple nests #####################################
+
+spidersSglMt <- subset(spiders, Instar == "Adult")
+
+###Leg Length
+SglMtLegMod1 <- lmer(LegLen.mm ~ type + (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
+
+qqnorm(resid(SglMtLegMod1), main = "SglMtMod1"); abline(0, 1) # not good, how would I fix this I don't know.
+overdisp_fun(SglMtLegMod1)# really really over dispersed
+summary(SglMtLegMod1)
+anova(SglMtLegMod1)
+
+### Testing against reduced model
+
+
+SglMtLegRedMod <- lmer(LegLen.mm ~ (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
+
+qqnorm(resid(SglMtLegRedMod), main = "SglMtLegRedMod") # not good
+overdisp_fun(SglMtLegRedMod)# really really over dispersed
+summary(SglMtLegRedMod)
+anova(SglMtLegRedMod, SglMtLegMod1 )
+
+
 

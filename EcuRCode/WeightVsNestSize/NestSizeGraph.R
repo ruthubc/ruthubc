@@ -14,37 +14,6 @@ library(gridExtra)
 library(histogram)
 #library(lme) wrong packages
 
-spiderData <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
-
-#removing eggs, parastised individuals and the outlier nest 44.3ex01 as the adults were particularly small
-
-spiders <- subset(spiderData, Instar != "FALSE" & NestID != "44.3ex01"  & Instar !="egg" & 
-				Instar != "pj" & Instar != "PST" & Instar != "juv3")
-
-spiders$hunger <- spiders$Weight.mg/spiders$HeadLength.mm
-
-#removes empty levels
-spiders$Instar <- factor(spiders$Instar, levels= c("Adult", "Sub2", 
-				"Sub1", "Juv4", "AdMale", "SubMale"))
-
-####log transforming Female count, weight and leg length
-spiders$logWeight <- log10(spiders$Weight.mg)
-spiders$logCtFm <- log10(spiders$CountFemales)
-spiders$logLeg<- log10(spiders$LegLen.mm)
-spiders$logHead <-log10(spiders$HeadLength.mm)
-spiders$logAbdm<- log10(spiders$AbdmLen.mm)
-spiders$logHung <- log10(spiders$hunger)
-
-Nests<-levels(spiders$NestID)
-
-######################################################################################
-##### catorgizing nests into small mediuum and large
-
-spiders$size<-as.factor(ifelse(spiders$Approx..Single =="single", "single",
-				ifelse(spiders$CountFemales <200, "small", 
-						ifelse(spiders$CountFemales <1000, "medium", "large"))))
-
-
 
 
 ##########################################################################################
@@ -55,6 +24,10 @@ histogram( ~ Weight.mg | Instar , data=spiders, type = "count", equal.widths = F
 	)
 
 histogram( ~ LegLen.mm | Instar , data=spiders, type = "count", equal.widths = FALSE,
+		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
+		breaks = 15 )
+
+histogram( ~ LnLegLen | Instar , data=spiders, type = "count", equal.widths = FALSE,
 		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
 		breaks = 15 )
 

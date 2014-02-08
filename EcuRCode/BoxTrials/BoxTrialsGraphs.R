@@ -239,7 +239,7 @@ ggplot(subset(BoxComboAve, Cap != "NA"), aes(x=Move, fill = Cap)) +
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Moved", "Did Not Move")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Involved with\nprey capture?", breaks = c("n", "y"),
-				labels = c("No", "Yes"))
+				labels = c("No", "Yes")) + facet_wrap(Instar~Treatment)
 
 #Move at all vs feed
 ggplot(subset(BoxComboAve, Feed != "NA"), aes(x=Move, fill = Feed)) +
@@ -248,7 +248,11 @@ ggplot(subset(BoxComboAve, Feed != "NA"), aes(x=Move, fill = Feed)) +
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Moved", "Did Not Move")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Ate Food?", breaks = c("n", "y"),
-				labels = c("No", "Yes"))
+				labels = c("No", "Yes")) + facet_wrap(Instar~Treatment)
+
+##Boldness against instar
+
+ggplot(subset(BoxComboAve), aes(x=Instar, fill = Move)) +  geom_bar(stat="bin", position="fill", colour = "black")
 
 
 dev.off()
