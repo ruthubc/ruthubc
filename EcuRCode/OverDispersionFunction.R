@@ -24,3 +24,32 @@ overdisp_fun <- function(model) {
 	
 }
 
+modelPlot <- function(model){
+	qqnorm(resid(model))
+	qqnorm(resid(model))
+	plot(model)
+	plot(model) # need dummy plot for some reason!
+	
+
+
+}
+
+modelDiag <- function(model1) {
+	on.exit(par(ask=FALSE))
+	par(ask=TRUE)
+	modelPlot(model1)
+	#print(overdisp_fun(model1))
+	
+}
+
+modelPlot(LegNestSzeMd1)
+
+modelDiag(LegNestSzeMd1)
+
+
+
+
+
+
+
+
