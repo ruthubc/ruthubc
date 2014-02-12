@@ -14,117 +14,127 @@ source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/OverDispersionFunction.R")
 
 ############ Single vs multiple nests #####################################
 
-#### All nests ###############
+############################## All nests ############################3##########
 spidersSglMt <- subset(spiders, Instar == "Adult")
 
+#removing single spiders that don't have juvs or eggs to make sure that the higher weight isn't because they are gravid
 spidersSglMt <- subset(spidersSglMt , FemalesHaveEggsOrJuvs != "n")
 
-###Leg Length ##########
-SglMtLegMod1 <- lmer(lnLegLen ~ type + (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
+### Leg Length for all nests ##########
+SglMtLegMod1 <- lmer(LnLegLen ~ type + (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
 
-qqnorm(resid(SglMtLegMod1), main = "SglMtMod1"); abline(0, 1) # not good, how would I fix this I don't know.
-overdisp_fun(SglMtLegMod1)# underdispered
+modelPlot(SglMtLegMod1) # not sure so normal but variance seems good
 summary(SglMtLegMod1)
 anova(SglMtLegMod1)
 
 ### Testing against reduced model
+SglMtLegRedMod <- lmer(LnLegLen ~ (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
 
-
-SglMtLegRedMod <- lmer(lnLegLen ~ (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
-
-qqnorm(resid(SglMtLegRedMod), main = "SglMtLegRedMod") # fine
-overdisp_fun(SglMtLegRedMod)# underdispersed
+modelPlot(SglMtLegRedMod) # same as for the none reduced model
 summary(SglMtLegRedMod)
+
 anova(SglMtLegRedMod, SglMtLegMod1 )
 
 
-###  Weight ##########
+###  Weight  for all nests ##########
 SglMtWeiMod1 <- lmer(logWeight ~ type + (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
 
-qqnorm(resid(SglMtWeiMod1), main = "SglMtWeiMod1"); # very good fit
-overdisp_fun(SglMtWeiMod1)# very over dispersed
+modelPlot(SglMtWeiMod1) # very normal and good variance
 summary(SglMtWeiMod1)
-anova(SglMtWeiMod1)
+
 
 ### Testing against reduced model
 
 SglMtWeiRedMod <- lmer(logWeight ~ (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
+modelPlot(SglMtWeiRedMod) # same for full model
 
-qqnorm(resid(SglMtWeiRedMod), main = "SglMtWeiRedMod") # fine
-overdisp_fun(SglMtWeiRedMod)# underdispersed\
 anova(SglMtWeiRedMod, SglMtWeiMod1 )
 
-###################################################################################################
-##### Stats of size using only 44.4 singe nests and the prob source nest 44.4EX03####################
+
+################## Only 44.4 singe nests and the prob source nest 44.4EX03####################
 
 Spis44 <- subset(spidersSglMt, km == "44.4")
 Spis44 <- subset(Spis44, type == "single" | NestID == "44.4EX03")
 
+####### Leg length for 44.4 nests ########
+
 SingMt44LegMod <- lmer(logLeg ~ type + (1|NestID), data = Spis44, REML = FALSE )
 
-qqnorm(resid(SingMt44LegMod), main = "SglMtLegRedMod") # ok
-overdisp_fun(SingMt44LegMod)# underdispersed
+modelPlot(SingMt44LegMod) # not so normal and not good variances
 summary(SingMt44LegMod)
 
 ### testing against reduced model
 
 SingMt44LegRedMod <- lmer(logLeg ~ 1 + (1|NestID), data = Spis44, REML = FALSE )
 
-qqnorm(resid(SingMt44LegRedMod), main = "SingMt44WeiRedMod") # ok
-overdisp_fun(SingMt44LegRedMod)# underdispersed
+modelPlot(SingMt44LegRedMod) # variance not good and not so normal
 anova(SingMt44LegRedMod, SingMt44LegMod)
 
 
-########## Weight #######################
-
-
+######################### Weight #######################
 
 SingMt44WeiMod <- lmer(logWeight ~ type + (1|NestID), data = Spis44, REML = FALSE )
 
-qqnorm(resid(SingMt44WeiMod), main = "SingMt44WeiMod") # ok
-overdisp_fun(SingMt44WeiMod)# ??? could be ok
+modelPlot(SingMt44WeiMod) # normal, variances not great but not good
 summary(SingMt44WeiMod)
 
 ### testing against reduced model
 
 SingMt44WeiRedMod <- lmer(logWeight ~ 1 + (1|NestID), data = Spis44, REML = FALSE )
 
-qqnorm(resid(SingMt44WeiRedMod), main = "SingMt44LegRedMod") # ok
-overdisp_fun(SingMt44WeiRedMod)# ??? could be ok
+modelPlot(SingMt44WeiRedMod) # normal but variances not great
 anova(SingMt44WeiRedMod, SingMt44WeiMod)
 
 
 ##################################################################
-########## Leg Lenght vs nest size ###############################
+########## Leg Length vs nest size ###############################
 
-### start by removing the single female nests
+spidersMul <- subset(spiders, type == "multiple") #removing single females
 
-spidersMul <- subset(spiders, type == "multiple")
+LegNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2)*logCtFm*Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
-LegNestSzeMd1 <- lmer(logLeg ~ logCtFm*Instar + (1|NestID), data = spidersMul, REML = FALSE)
+modelPlot(LegNestSzeMd1) # seems to be skwesnot sure it is so normal;not sure about the variances
+# I could check the different variance with that test
 
-qqnorm(resid(LegNestSzeMd1), main = "LegNestSzeMd1") # mmm not so great
-overdisp_fun(LegNestSzeMd1)# ??? very very underdispersed even when removing the interaction term
-plot(fitted(LegNestSzeMd1), resid(LegNestSzeMd1),xlab = "fitted", ylab = "Residuals")
+anova(LegNestSzeMd1)  # The interactions matter!!
 
-var(spidersMul$logLeg ~ Instar)
 
-summary(LegNestSzeMd1)  # The interactions matter!!
-coefplot2(LegNestSzeMd1) # not really sure that this shows me!
-anova(LegNestSzeMd1)
-plot(LegNestSzeMd1)
-VarCorr(LegNestSzeMd1)
+drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.00058	
+drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm, test = "Chi") # NOT sig 
+drop1(LegNestSzeMd1, scope ~ logCtFm:Instar, test = "Chi") # sig p = 0.0028
+drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):Instar, test = "Chi") # sig p = 0.001238
+drop1(LegNestSzeMd1, scope ~ I(logCtFm^2), test = "Chi")# sig p = 0.0138
+drop1(LegNestSzeMd1, scope ~ logCtFm, test = "Chi") # sig p = 0.02566
+drop1(LegNestSzeMd1, scope ~ Instar, test = "Chi") # sig p = 0.00197
 
-plot(spidersMul$LogCtFm, resid(LegNestSzeMd1))
 
-### Taking out all nest size in the reduced model and testing against that
+######### Testing 3-way interaction by reduced model
 
-LegNestSzeRedMd <- lmer(logLeg ~ I(logCtFm^2)*Instar + (1|NestID), data = spidersMul, REML = FALSE)
+LegNestSzeRedMd3W <- lmer(logLeg ~ I(logCtFm^2)+ logCtFm  + I(logCtFm^2):logCtFm + logCtFm:Instar + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
-qqnorm(resid(LegNestSzeRedMd), main = "LegNestSzeRedMd") # mmm not so great
-overdisp_fun(LegNestSzeRedMd)# so over dispered, Not sure why or what is going on.
-summary(LegNestSzeRedMd)
+modelPlot(LegNestSzeRedMd3W) #same as full mod
+summary(LegNestSzeRedMd3W)
+anova(LegNestSzeRedMd3W)
 
-anova(LegNestSzeRedMd, LegNestSzeMd1)
+anova(LegNestSzeRedMd3W, LegNestSzeMd1) # three way interactions are significant
 
-qqnorm(ranef(LegNestSzeMd1)$NestID[[1]])
+
+########### Weight vs nest size ################################
+spidersMul <- subset(spiders, type == "multiple") #removing single females
+
+WeightNestSzeMd1 <- lmer(logWeight ~ I(logCtFm^2)*logCtFm*Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+modelPlot(WeightNestSzeMd1) # all seems good! Yay!
+
+anova(WeightNestSzeMd1)  # The interactions matter!!
+
+
+drop1(WeightNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.0257
+drop1(WeightNestSzeMd1, scope ~ I(logCtFm^2):logCtFm, test = "Chi") # NOT sig although not sure about this
+drop1(WeightNestSzeMd1, scope ~ logCtFm:Instar, test = "Chi") # sig p = 0.04 but not massively so
+drop1(WeightNestSzeMd1, scope ~ I(logCtFm^2):Instar, test = "Chi") # sig p = 0.03
+drop1(WeightNestSzeMd1, scope ~ I(logCtFm^2), test = "Chi")# sig p = 0.03069
+drop1(WeightNestSzeMd1, scope ~ logCtFm, test = "Chi") # NOT sig p = 0.2845, perhpas we only need the square term in there
+drop1(WeightNestSzeMd1, scope ~ Instar, test = "Chi") # sig p = 0.03821
+

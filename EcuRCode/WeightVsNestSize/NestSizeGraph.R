@@ -72,7 +72,7 @@ SSummariseWeight <- ddply(spiders, .(NestID, CountFemales, Approx..Single., logC
 		min = min(logWeight, na.rm=TRUE),
 		cvByN = (1+(1/(4*N))) * CV
 
-		)
+)
 		
 MinNoSpis <- 1; SumsWeightN <- subset(SSummariseWeight, N>MinNoSpis)
 

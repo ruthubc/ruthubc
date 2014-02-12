@@ -39,3 +39,30 @@ spiders$NestSize<-as.factor(ifelse(spiders$Approx..Single =="single", "single",
 #Adding km to use as a random
 spiders$km <- substring((as.character(spiders$NestID)), 0, 4)
 
+
+SpidersNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm), summarise, # need to discount trials where no feeding obs and eve
+		N = length(!is.na(Weight.mg)),
+		meanLWei = mean(logWeight, na.rm = TRUE),
+		sdLWei = sd(logWeight, na.rm = TRUE),
+		CVLWei= sdLWei / meanLWei,
+		cvByNLWei = (1+(1/(4*N))) * CVLWei,
+		meanLeg = mean(logWeight, na.rm = TRUE),
+		sdLWei = sd(logWeight, na.rm = TRUE),
+		CVLWei= sdLWei / meanLWei,
+		cvByNLWei = (1+(1/(4*N))) * CVLWei
+
+)
+
+
+SSummariseWeight <- ddply(spiders, .(NestID, CountFemales, Approx..Single., logCtFm, Instar), summarise,
+		N = length(!is.na(Weight.mg)),
+		mean = mean(logWeight, na.rm = TRUE),
+		median = median(logWeight, na.rm = TRUE),
+		sd = sd(logWeight, na.rm = TRUE),
+		CV= sd / mean,
+		IQR = IQR(logWeight, na.rm = TRUE),
+		max = max(logWeight, na.rm=TRUE),
+		min = min(logWeight, na.rm=TRUE),
+		cvByN = (1+(1/(4*N))) * CV
+
+)

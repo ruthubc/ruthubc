@@ -25,6 +25,8 @@ overdisp_fun <- function(model) {
 }
 
 modelPlot <- function(model){
+	on.exit(par(ask=FALSE))
+	par(ask=TRUE)
 	qqnorm(resid(model))
 	qqnorm(resid(model))
 	plot(model)
@@ -34,17 +36,6 @@ modelPlot <- function(model){
 
 }
 
-modelDiag <- function(model1) {
-	on.exit(par(ask=FALSE))
-	par(ask=TRUE)
-	modelPlot(model1)
-	#print(overdisp_fun(model1))
-	
-}
-
-modelPlot(LegNestSzeMd1)
-
-modelDiag(LegNestSzeMd1)
 
 
 
