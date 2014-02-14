@@ -71,7 +71,7 @@ modelPlot(SingMt44LegRedMod) # variance not good and not so normal
 anova(SingMt44LegRedMod, SingMt44LegMod)
 
 
-######################### Weight #######################
+######################### Weight vs single/multiple #######################
 
 SingMt44WeiMod <- lmer(logWeight ~ type + (1|NestID), data = Spis44, REML = FALSE )
 
@@ -91,13 +91,16 @@ anova(SingMt44WeiRedMod, SingMt44WeiMod)
 
 spidersMul <- subset(spiders, type == "multiple") #removing single females
 
-LegNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2)*logCtFm*Instar + (1|NestID), data = spidersMul, REML = FALSE)
+LegNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
 modelPlot(LegNestSzeMd1) # seems to be skwesnot sure it is so normal;not sure about the variances
 # I could check the different variance with that test
 
 anova(LegNestSzeMd1)  # The interactions matter!!
+summary(LegNestSzeMd1)
 
+test<-residuals(LegNestSzeMd1)
 
 drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.00058	
 drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm, test = "Chi") # NOT sig 
@@ -110,8 +113,7 @@ drop1(LegNestSzeMd1, scope ~ Instar, test = "Chi") # sig p = 0.00197
 
 ######### Testing 3-way interaction by reduced model
 
-LegNestSzeRedMd3W <- lmer(logLeg ~ I(logCtFm^2)+ logCtFm  + I(logCtFm^2):logCtFm + logCtFm:Instar + 
-				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+LegNestSzeRedMd3W <- lmer(logLeg ~ logCtFm*Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
 modelPlot(LegNestSzeRedMd3W) #same as full mod
 summary(LegNestSzeRedMd3W)

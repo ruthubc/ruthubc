@@ -166,7 +166,18 @@ overdisp_fun(TimeNoZeroHunMod3)# might be just about OK! Faraway book says might
 summary(TimeNoZeroHunMod3)
 anova(TimeNoZeroHunMod3)
 
+####################### Hunger rank vs time eating with zeros removed ###########
 
+TimeEatHunRank1 <- lmer(TimeEatingLog ~ Rank.Hunger*Treatment*Instar + (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxMornFed)
+
+modelPlot(TimeEatHunRank1)
+summary(TimeEatHunRank1)
+
+TimeEatHunRankRed <- lmer(TimeEatingLog ~ Treatment*Instar + (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxMornFed)
+
+anova(TimeEatHunRankRed, TimeEatHunRank1) # not significant
 ######################################################################################
 # Eating at all (binary) vs everything else
 ## has everything in it model
@@ -226,6 +237,9 @@ qqnorm(resid(EatBinRedModHun, main = "EatBinRedModHun")) ; abline(0, 1)
 overdisp_fun(EatBinRedModHun)
 
 anova(EatBinRedModHun, EatBinMod3)
+
+
+
 
 ############################################################################
 ##Testing pj's against treatment
@@ -429,3 +443,4 @@ overdisp_fun(BldMvCap1 ) # good
 summary(BldMvCap1 )
 
 ## nothing... no point continuing
+
