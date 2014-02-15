@@ -31,6 +31,8 @@ histogram( ~ LnLegLen | Instar , data=spiders, type = "count", equal.widths = FA
 		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
 		breaks = 15 )
 
+ggplot(spiders, aes(LegLen.mm)) + geom_histogram()
+
 histogram( ~ HeadLength.mm | Instar , data=spiders, type = "count", equal.widths = FALSE,
 		layout=c(3,2) , scales= list(y=list(relation="free"), x=list(relation="free")), 
 		breaks = 15 )

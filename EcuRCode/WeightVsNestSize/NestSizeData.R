@@ -9,6 +9,8 @@ spiderData <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 spiders <- subset(spiderData, Instar != "FALSE" & NestID != "44.3ex01"  & Instar !="egg" & 
 				Instar != "pj" & Instar != "PST" & Instar != "juv3")
 
+spiders <- subset(spiders, Instar != "Juv4" | (Instar == "Juv4" & LegLen.mm > 0.82))
+
 #Calculating spider hunger
 spiders$hunger <- spiders$HeadLength.mm/spiders$Weight.mg
 
@@ -66,3 +68,10 @@ SSummariseWeight <- ddply(spiders, .(NestID, CountFemales, Approx..Single., logC
 		cvByN = (1+(1/(4*N))) * CV
 
 )
+
+
+## looking at small juv 4's to see if needs to be removed from analysis
+
+table(spiderData$Instar)
+
+juvs <- subset(spiderData, Instar == 'Juv4' | Instar =='juv3', select = c('NestID', 'Key', 'Instar', 'LegLen.mm' ))

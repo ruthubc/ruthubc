@@ -91,6 +91,11 @@ anova(SingMt44WeiRedMod, SingMt44WeiMod)
 
 spidersMul <- subset(spiders, type == "multiple") #removing single females
 
+LegNestSzeMdNull <- lmer(logLeg ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+#getting AIC and p values and putting into list
+LegNestNull <- multipleModel(LegNestSzeMdNull, LegNestSzeMdNull)
+
 LegNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
 				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
@@ -100,8 +105,36 @@ modelPlot(LegNestSzeMd1) # seems to be skwesnot sure it is so normal;not sure ab
 anova(LegNestSzeMd1)  # The interactions matter!!
 summary(LegNestSzeMd1)
 
-test<-residuals(LegNestSzeMd1)
+LegNest1<- multipleModel(LegNestSzeMd1, LegNestSzeMdNull)
 
+### Leg 2 removing squared term and interaction
+LegNestSzeMd2 <- lmer(logLeg ~ logCtFm + Instar + logCtFm:Instar 
+				 + (1|NestID), data = spidersMul, REML = FALSE)
+
+modelPlot(LegNestSzeMd2) # seems to be skwesnot sure it is so normal;not sure about the variances
+# I could check the different variance with that test
+
+anova(LegNestSzeMd2)  
+summary(LegNestSzeMd2)
+
+LegNest2<- multipleModel(LegNestSzeMd2, LegNestSzeMdNull)
+
+### Leg 3 removing interaction
+LegNestSzeMd3 <- lmer(logLeg ~ logCtFm + Instar 
+				+ (1|NestID), data = spidersMul, REML = FALSE)
+
+modelPlot(LegNestSzeMd3) # seems to be skwesnot sure it is so normal;not sure about the variances
+# I could check the different variance with that test
+
+anova(LegNestSzeMd3)  
+summary(LegNestSzeMd3)
+
+LegNest3<- multipleModel(LegNestSzeMd3, LegNestSzeMdNull)
+
+LegColNames<-c("null", "Full", "No Size Sq", "No Interaction")
+LegTable<- data.frame(LegColNames, LegNestNull, LegNest1, LegNest2, LegNest3)
+
+##drop 1..not sure how useful this is
 drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.00058	
 drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm, test = "Chi") # NOT sig 
 drop1(LegNestSzeMd1, scope ~ logCtFm:Instar, test = "Chi") # sig p = 0.0028
@@ -125,11 +158,25 @@ anova(LegNestSzeRedMd3W, LegNestSzeMd1) # three way interactions are significant
 ########### Weight vs nest size ################################
 spidersMul <- subset(spiders, type == "multiple") #removing single females
 
+WeightNestSzMdNull <-lmer(logWeight ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
 WeightNestSzeMd1 <- lmer(logWeight ~ I(logCtFm^2)*logCtFm*Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
 modelPlot(WeightNestSzeMd1) # all seems good! Yay!
 
 anova(WeightNestSzeMd1)  # The interactions matter!!
+
+modsum <- summary(WeightNestSzeMd1)
+
+anova(WeightNestSzMdNull, WeightNestSzeMd1)
+
+modsum$formula
+as.character(WeightNestSzeMd1@call[2])
+
+
+AIC(WeightNestSzeMd1)
+BIC(WeightNestSzeMd1)
+
 
 
 drop1(WeightNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.0257
