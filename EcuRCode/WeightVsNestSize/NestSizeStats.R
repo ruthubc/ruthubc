@@ -131,8 +131,9 @@ summary(LegNestSzeMd3)
 
 LegNest3<- multipleModel(LegNestSzeMd3, LegNestSzeMdNull)
 
-LegColNames<-c("null", "Full", "No Size Sq", "No Interaction")
-LegTable<- data.frame(LegColNames, LegNestNull, LegNest1, LegNest2, LegNest3)
+LegColNames<-c("model", "AIC", "BIC", "pValue")
+LegTable<- as.data.frame(t(data.frame(LegNestNull, LegNest1, LegNest2, LegNest3)))
+colnames(LegTable)<-LegColNames
 
 ##drop 1..not sure how useful this is
 drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.00058	
@@ -144,46 +145,86 @@ drop1(LegNestSzeMd1, scope ~ logCtFm, test = "Chi") # sig p = 0.02566
 drop1(LegNestSzeMd1, scope ~ Instar, test = "Chi") # sig p = 0.00197
 
 
-######### Testing 3-way interaction by reduced model
-
-LegNestSzeRedMd3W <- lmer(logLeg ~ logCtFm*Instar + (1|NestID), data = spidersMul, REML = FALSE)
-
-modelPlot(LegNestSzeRedMd3W) #same as full mod
-summary(LegNestSzeRedMd3W)
-anova(LegNestSzeRedMd3W)
-
-anova(LegNestSzeRedMd3W, LegNestSzeMd1) # three way interactions are significant
-
-
 ########### Weight vs nest size ################################
 spidersMul <- subset(spiders, type == "multiple") #removing single females
 
-WeightNestSzMdNull <-lmer(logWeight ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
+WgtNestSzMdNull <-lmer(logWeight ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
-WeightNestSzeMd1 <- lmer(logWeight ~ I(logCtFm^2)*logCtFm*Instar + (1|NestID), data = spidersMul, REML = FALSE)
+##full model
+WgtNestSzMd1 <- lmer(logWeight ~ I(logCtFm^2)+ logCtFm + Instar +logCtFm:Instar + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
-modelPlot(WeightNestSzeMd1) # all seems good! Yay!
+modelPlot(WgtNestSzeMd1) # all seems good!
+anova(WgtNestSzeMd1)  # The interactions matter!!
 
-anova(WeightNestSzeMd1)  # The interactions matter!!
-
-modsum <- summary(WeightNestSzeMd1)
-
-anova(WeightNestSzMdNull, WeightNestSzeMd1)
-
-modsum$formula
-as.character(WeightNestSzeMd1@call[2])
+WgtNest1<- multipleModel(WgtNestSzMd1,WgtNestSzMdNull)
 
 
-AIC(WeightNestSzeMd1)
-BIC(WeightNestSzeMd1)
+##removing fem ct squared and interaction
+WgtNestSzMd2 <- lmer(logWeight ~ logCtFm + Instar +logCtFm:Instar 
+				 + (1|NestID), data = spidersMul, REML = FALSE)
+
+modelPlot(WgtNestSzeMd2) # all seems good!
+anova(WgtNestSzeMd2)  # The interactions matter!!
+
+WgtNest2<- multipleModel(WgtNestSzMd2,WgtNestSzMdNull)
+
+##removing interaction
+WgtNestSzMd3 <- lmer(logWeight ~ logCtFm + Instar 
+				+ (1|NestID), data = spidersMul, REML = FALSE)
+
+modelPlot(WgtNestSzeMd3) # all seems good!
+anova(WgtNestSzeMd3)  # The interactions matter!!
+
+WgtNest3<- multipleModel(WgtNestSzMd3,WgtNestSzMdNull)
 
 
 
-drop1(WeightNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.0257
-drop1(WeightNestSzeMd1, scope ~ I(logCtFm^2):logCtFm, test = "Chi") # NOT sig although not sure about this
-drop1(WeightNestSzeMd1, scope ~ logCtFm:Instar, test = "Chi") # sig p = 0.04 but not massively so
-drop1(WeightNestSzeMd1, scope ~ I(logCtFm^2):Instar, test = "Chi") # sig p = 0.03
-drop1(WeightNestSzeMd1, scope ~ I(logCtFm^2), test = "Chi")# sig p = 0.03069
-drop1(WeightNestSzeMd1, scope ~ logCtFm, test = "Chi") # NOT sig p = 0.2845, perhpas we only need the square term in there
-drop1(WeightNestSzeMd1, scope ~ Instar, test = "Chi") # sig p = 0.03821
+## making table of different model values
+WgtColNames<-c("model", "AIC", "BIC", "pValue")
+WgtTable<- as.data.frame(t(data.frame(WgtNest1, WgtNest2, WgtNest3)))
+colnames(WgtTable)<-WgtColNames
+
+
+
+### Hunger vs nest size
+
+HunNestSzMdNull <-lmer(logHung ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+##full model
+HunNestSzMd1 <- lmer(logHung ~ I(logCtFm^2)+ logCtFm + Instar +logCtFm:Instar + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+HunNest1<-multipleModel(HunNestSzMd1, HunNestSzMdNull)
+
+##removing logCtFm^2 and interaction
+HunNestSzMd2 <- lmer(logHung ~ logCtFm + Instar +logCtFm:Instar + 
+				(1|NestID), data = spidersMul, REML = FALSE)
+
+HunNest2<-multipleModel(HunNestSzMd2, HunNestSzMdNull)
+
+##removing interaction
+HunNestSzMd3<- lmer(logHung ~ logCtFm + Instar + 
+				(1|NestID), data = spidersMul, REML = FALSE)
+
+HunNest3<-multipleModel(HunNestSzMd3, HunNestSzMdNull)
+
+## making table of different model values
+HunTable<- as.data.frame(t(data.frame(HunNest1, HunNest2, HunNest3)))
+colnames(HunTable)<-c("model", "AIC", "BIC", "pValue")
+
+
+############# CV of Leg by nest size
+
+cvLegMod1<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				I(logCtFm^2):Instar + (1|NestID), data = subset(SpiNestAve, type == "multiple"), REML = FALSE)
+
+modelPlot(cvLegMod1)
+
+anova(cvLegMod1)
+
+cvLegModNull<- lmer(logcvByNLeg ~ Instar+ (1|NestID), data = subset(SpiNestAve, type == "multiple"), REML = FALSE)
+
+anova(cvLegModNull)
+anova(cvLegModNull, cvLegMod1 )
 

@@ -472,3 +472,9 @@ test <-subset(spiders, grepl("16.2", spiders$NestID))
 test<-subset(spiders, grepl("44.4EXM", spiders$NestID) | NestID == "44.4EX03")
 
 
+### histogram of cvbyN
+
+ggplot(SpiNestAve, aes(log(cvByNLeg))) + geom_histogram()
+
+table<-subset(spiders, NestID == "45.1EXa06" & Instar == "Juv4" )
+

@@ -42,32 +42,25 @@ spiders$NestSize<-as.factor(ifelse(spiders$Approx..Single =="single", "single",
 spiders$km <- substring((as.character(spiders$NestID)), 0, 4)
 
 
-SpidersNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm), summarise, # need to discount trials where no feeding obs and eve
+SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(Weight.mg)),
-		meanLWei = mean(logWeight, na.rm = TRUE),
-		sdLWei = sd(logWeight, na.rm = TRUE),
-		CVLWei= sdLWei / meanLWei,
-		cvByNLWei = (1+(1/(4*N))) * CVLWei,
-		meanLeg = mean(logWeight, na.rm = TRUE),
-		sdLWei = sd(logWeight, na.rm = TRUE),
-		CVLWei= sdLWei / meanLWei,
-		cvByNLWei = (1+(1/(4*N))) * CVLWei
+		meanLgWei = mean(logWeight, na.rm = TRUE),
+		sdLgWei = sd(logWeight, na.rm = TRUE),
+		CVLgWei= sdLgWei / meanLgWei,
+		cvByNLgWei = (1+(1/(4*N))) * CVLgWei,
+		meanLgLeg = mean(logLeg, na.rm = TRUE),
+		sdLgLeg = sd(logLeg, na.rm = TRUE),
+		CVLgLeg= sdLgLeg / meanLgLeg,
+		cvByNLgLeg = (1+(1/(4*N))) * CVLgLeg,
+		meanLeg = mean(LegLen.mm, na.rm = TRUE),
+		sdLeg = sd(LegLen.mm, na.rm = TRUE),
+		CVLeg= sdLeg / meanLeg,
+		cvByNLeg = (1+(1/(4*N))) * CVLeg,
+		logcvByNLeg = log(cvByNLeg)
+
 
 )
 
-
-SSummariseWeight <- ddply(spiders, .(NestID, CountFemales, Approx..Single., logCtFm, Instar), summarise,
-		N = length(!is.na(Weight.mg)),
-		mean = mean(logWeight, na.rm = TRUE),
-		median = median(logWeight, na.rm = TRUE),
-		sd = sd(logWeight, na.rm = TRUE),
-		CV= sd / mean,
-		IQR = IQR(logWeight, na.rm = TRUE),
-		max = max(logWeight, na.rm=TRUE),
-		min = min(logWeight, na.rm=TRUE),
-		cvByN = (1+(1/(4*N))) * CV
-
-)
 
 
 ## looking at small juv 4's to see if needs to be removed from analysis
