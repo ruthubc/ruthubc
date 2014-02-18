@@ -45,4 +45,3 @@ BIC <- BIC(model)
 pValue <- as.numeric(anova(nullModel, model)$`Pr(>Chisq)`[2])
 return(c(TheModel, AIC, BIC, pValue))
 }
-
