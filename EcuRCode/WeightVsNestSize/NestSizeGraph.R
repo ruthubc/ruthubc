@@ -12,6 +12,12 @@ require(reshape2)
 library(nlme)
 library(gridExtra)
 library(histogram)
+source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/WeightVsNestSize/NestSizeData.R")
+mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
+		plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+
+
+#+theme(axis.line = element_line(colour = "black"))#theme(panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
 #library(lme) wrong packages
 
 
@@ -115,7 +121,7 @@ dev.off()
 #GRAPH TO EXPORT ------ LEG LENGTH
 
 ### summarise leg length by nest area
-SSummariseLeg <- ddply(spiders, .(NestID, logCtFm, Instar, size), summarise,
+SSummariseLeg <- ddply(spiders, .(NestID, logCtFm, Instar, type), summarise,
 		N = length(!is.na(LegLen.mm)),
 		mean = mean(logLeg, na.rm = TRUE),
 		median = median(logLeg, na.rm = TRUE),
@@ -139,11 +145,25 @@ ggplot(SumsLegN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) +
 		xlab("Log number of females") + ylab("Log leg length") + 
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
 
+ggplot(subset(SumsLegN, type =='multiple'), aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE, colour = "black") + 
+		ggtitle(paste("Mean leg length for multiple nests"))+
+		xlab("Log number of females") + ylab("Log leg length") + 
+		facet_wrap(~ Instar, scales = "free_y", ncol = 4)  + mytheme 
+
+
+ggplot(SumsLegN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Mean leg length with min ", NMin, " spiders", sep = ""))+
+		xlab("Log number of females") + ylab("Log leg length") + 
+		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
+
 ggplot(SumsLegN , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("Coefficient of variation of leg length (min ", MinNoSpis, " spiders counted)", sep = ""))+
+		ggtitle(paste("Coefficient of variation of leg length (min ", NMin, " spiders counted)", sep = ""))+
 		xlab("Log number of females") + ylab("CV of Len Length") + 
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
+
 
 dev.off()
 
@@ -214,6 +234,7 @@ pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests.pdf", height = 7, width 
 
 p1 = ggplot(Adults, aes(x=Approx..Single., y=logWeight)) + geom_boxplot() +
 		ggtitle("Weight") + ylab("Log Weight") + theme(axis.title.x = element_blank())
+
 
 p2 = ggplot(Adults, aes(x=Approx..Single., y=logLeg)) + geom_boxplot() +
 		ggtitle("Leg Length") + ylab("Log Leg Length") + theme(axis.title.x = element_blank())
