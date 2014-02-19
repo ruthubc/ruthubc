@@ -14,7 +14,7 @@ library(gridExtra)
 library(histogram)
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/WeightVsNestSize/NestSizeData.R")
 mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
-		plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
 
 
 #+theme(axis.line = element_line(colour = "black"))#theme(panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
@@ -69,7 +69,7 @@ dev.off()
 #############################################################################
 ## Summary of weight
 
-SSummariseWeight <- ddply(spiders, .(NestID, CountFemales, Approx..Single., logCtFm, Instar), summarise,
+SSummariseWeight <- ddply(spiders, .(NestID, CountFemales, type, logCtFm, Instar), summarise,
 		N = length(!is.na(Weight.mg)),
 		mean = mean(logWeight, na.rm = TRUE),
 		median = median(logWeight, na.rm = TRUE),
@@ -85,7 +85,7 @@ SSummariseWeight <- ddply(spiders, .(NestID, CountFemales, Approx..Single., logC
 MinNoSpis <- 1; SumsWeightN <- subset(SSummariseWeight, N>MinNoSpis)
 
 ##removed spiders in single(ish) female nests
-SumsWeightN <- subset(SSummariseWeight, Approx..Single. != "single") #options multiple or single
+SumsWeightN <- subset(SSummariseWeight, type == "multiple") #options multiple or single
 
 Instar<-levels(SumsWeightN$Instar)[c(2, 9, 8, 5, 1)]
 
@@ -94,17 +94,16 @@ SumsWeightN$NestID <-factor(SumsWeightN$NestID)
 
 ###exporting graphs of mean weight against nest size, an individual graph for each 
 
-pdf("RuthEcuador2013/NestSize/Graphs/WeightVsNestSize.pdf", height=7, width=11)
+pdf("RuthEcuador2013/NestSize/Graphs/WeightVsNestSize.pdf", height=7, width=13)
 
 nlevels(SumsWeightN$NestID)
 
 ##multiple graphs on one page
-ggplot(SumsWeightN , aes(x=logCtFm, y = mean)) + geom_point(aes(colour = NestID), shape = 16) + 
+ggplot(SumsWeightN , aes(x=logCtFm, y = mean)) + geom_point() + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("Mean of weight with ", MinNoSpis, " or more spiders measured", sep = ""))+
-		xlab("Log Number of females in nest") + ylab("Log Mean Weight(mg)") + 
-		facet_wrap(~ Instar, scales = "free", ncol = 4) + scale_colour_manual(values=rainbow(nlevels(SumsWeightN$NestID)))
-		+ theme(legend.position = "none")
+		ggtitle(paste("Mean of weight of multiple nests"))+
+		xlab("Log Number of females in nest") + ylab("Log Mean Weight") + 
+		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + mytheme
 
 
 ggplot(SumsWeightN , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
@@ -158,11 +157,11 @@ ggplot(SumsLegN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) +
 		xlab("Log number of females") + ylab("Log leg length") + 
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
 
-ggplot(SumsLegN , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("Coefficient of variation of leg length (min ", NMin, " spiders counted)", sep = ""))+
+ggplot(subset(SumsLegN, type =='multiple') , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE, colour = 'black') + 
+		ggtitle(paste("Coefficient of variation of leg length with multiple nests", sep = ""))+
 		xlab("Log number of females") + ylab("CV of Len Length") + 
-		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
+		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + mytheme
 
 
 dev.off()
@@ -230,14 +229,15 @@ dev.off()
 Adults <- subset(spiders, Instar == "Adult" & FemalesHaveEggsOrJuvs != "n" & 
 				FemalesHaveEggsOrJuvs != "unk" )
 
-pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests.pdf", height = 7, width = 9.5)
+pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests.pdf", height = 6, width = 9.5)
 
 p1 = ggplot(Adults, aes(x=Approx..Single., y=logWeight)) + geom_boxplot() +
-		ggtitle("Weight") + ylab("Log Weight") + theme(axis.title.x = element_blank())
+		ggtitle("Weight") + ylab("Log Weight") + mytheme +theme(axis.title.x = element_blank())
 
 
 p2 = ggplot(Adults, aes(x=Approx..Single., y=logLeg)) + geom_boxplot() +
-		ggtitle("Leg Length") + ylab("Log Leg Length") + theme(axis.title.x = element_blank())
+		ggtitle("Leg Length") + ylab("Log Leg Length") +
+		mytheme +  theme(axis.title.x = element_blank())
 
 p3 = ggplot(Adults, aes(x=Approx..Single., y=logHead)) + geom_boxplot() +
 		ggtitle("Head Length") + ylab("Log Head Length") + theme(axis.title.x = element_blank())
@@ -245,7 +245,7 @@ p3 = ggplot(Adults, aes(x=Approx..Single., y=logHead)) + geom_boxplot() +
 p4 = ggplot(Adults, aes(x=Approx..Single., y=logHung)) + geom_boxplot() +
 		ggtitle("Hunger") + ylab("Log Hunger") + theme(axis.title.x = element_blank())
 
-grid.arrange(p1, p2, p3, p4, ncol = 2, main = "Multiple vs (approx) single nests")
+grid.arrange(p1, p2, ncol =2, main = "Multiple vs (approx) single nests")
 
 dev.off()
 
@@ -254,9 +254,10 @@ dev.off()
 
 AdSub <- subset(Adults, grepl("44.4EXM", Adults$NestID) | NestID == "44.4EX03"  )
 
-pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests44.4ONLY.pdf", height = 7, width = 9.5)
+pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests44.4ONLY.pdf", height = 6, width = 9.5)
 
-p1 = ggplot(AdSub, aes(x=Approx..Single., y=logWeight)) + geom_boxplot() +
+#p1 = 
+ggplot(AdSub, aes(x=Approx..Single., y=logWeight)) + geom_boxplot() +
 		ggtitle("Weight") + ylab("Log Weight") +  theme(axis.title.x = element_blank())
 
 p2 = ggplot(AdSub, aes(x=Approx..Single., y=logLeg)) + geom_boxplot() +

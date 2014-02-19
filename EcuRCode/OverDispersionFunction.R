@@ -40,8 +40,8 @@ modelPlot <- function(model){
 multipleModel <- function(model, nullModel){
 	
 TheModel <- as.character(model@call[2])
-AIC <- AIC(model)
-BIC <- BIC(model)
-pValue <- as.numeric(anova(nullModel, model)$`Pr(>Chisq)`[2])
+AIC <- round(AIC(model), digits = 0)
+BIC <- round(BIC(model), digits = 0)
+pValue <- round(as.numeric(anova(nullModel, model)$`Pr(>Chisq)`[2]), digits = 4)
 return(c(TheModel, AIC, BIC, pValue))
 }

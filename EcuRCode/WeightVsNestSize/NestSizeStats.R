@@ -4,7 +4,7 @@
 ###############################################################################
 
 library (lme4)
-library(lmerTest) # not sure what excatly this does
+library(lmerTest) # this puts pvalue in lmer
 library(glmmADMB)
 library(ICC)
 library(reshape)
@@ -94,7 +94,7 @@ spidersMul <- subset(spiders, type == "multiple") #removing single females
 LegNestSzeMdNull <- lmer(logLeg ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
 #getting AIC and p values and putting into list
-LegNestNull <- multipleModel(LegNestSzeMdNull, LegNestSzeMdNull)
+#LegNestNull <- multipleModel(LegNestSzeMdNull, LegNestSzeMdNull)
 
 LegNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
 				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
@@ -126,14 +126,17 @@ LegNestSzeMd3 <- lmer(logLeg ~ logCtFm + Instar
 modelPlot(LegNestSzeMd3) # seems to be skwesnot sure it is so normal;not sure about the variances
 # I could check the different variance with that test
 
+
 anova(LegNestSzeMd3)  
 summary(LegNestSzeMd3)
 
 LegNest3<- multipleModel(LegNestSzeMd3, LegNestSzeMdNull)
 
-LegColNames<-c("model", "AIC", "BIC", "pValue")
-LegTable<- as.data.frame(t(data.frame(LegNestNull, LegNest1, LegNest2, LegNest3)))
-colnames(LegTable)<-LegColNames
+
+LegTable<- as.data.frame(t(data.frame(LegNest1, LegNest2, LegNest3)))
+colnames(LegTable)<-c("model", "AIC", "BIC", "pValue")
+
+write.table(LegTable, file="RuthEcuador2013/NestSize/Graphs/LegNestSizeStats.csv", sep=",",row.names=F)
 
 ##drop 1..not sure how useful this is
 drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.00058	
@@ -216,15 +219,29 @@ colnames(HunTable)<-c("model", "AIC", "BIC", "pValue")
 
 ############# CV of Leg by nest size
 
+LegCV <- na.omit(subset(SpiNestAve, type == "multiple"))
+
 cvLegMod1<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				I(logCtFm^2):Instar + (1|NestID), data = subset(SpiNestAve, type == "multiple"), REML = FALSE)
+				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = LegCV, REML = FALSE)
 
 modelPlot(cvLegMod1)
 
 anova(cvLegMod1)
 
-cvLegModNull<- lmer(logcvByNLeg ~ Instar+ (1|NestID), data = subset(SpiNestAve, type == "multiple"), REML = FALSE)
+cvLegModNull<- lmer(logcvByNLeg ~ Instar+ (1|NestID), data = LegCV, REML = FALSE)
 
 anova(cvLegModNull)
 anova(cvLegModNull, cvLegMod1 )
 
+cvLegMod2 <- lmer(logcvByNLeg ~ logCtFm + Instar+ Instar:logCtFm + (1|N)
+				+ (1|NestID), data = LegCV, REML = FALSE)
+
+anova(cvLegMod2)
+anova(cvLegModNull, cvLegMod2 )
+
+cvLegMod3 <- lmer(logcvByNLeg ~ logCtFm + Instar
+				+ (1|NestID) + (1|N), data = LegCV, REML = FALSE)
+
+anova(cvLegMod3)
+
+anova(cvLegMod3, cvLegMod2)
