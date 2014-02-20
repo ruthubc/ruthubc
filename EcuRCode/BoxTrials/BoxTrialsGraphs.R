@@ -15,16 +15,17 @@ ggplot(BoxWeight, aes(x=(Weight.1)) ) + geom_histogram() + facet_wrap(~Instar)
 
 CapVsEat <-subset(BoxCombo, select = c("FeedIndPos", "CaptureIndPos", "Treatment", "Instar") )
 CapVsEat <-na.omit(CapVsEat)
+CapVsEat$FeedIndPos <- factor(CapVsEat$FeedIndPos, levels =c("y", "n"))
 
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/CaptureVsFeed.pdf")
 
 ##separate bars
-ggplot(data=CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) +
+ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 		geom_bar(stat="bin", position="fill", colour = "black") + 
-		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed")) +
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Captured Prey", "Did Not Capture Prey")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
-		scale_fill_discrete(name = "Involved with\nprey capture?", breaks = c("n", "y"),
-				labels = c("No", "Yes")) + ggtitle("Prey Capture Vs Feeding")
+		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
+				labels = c("Yes", "No")) + ggtitle("Prey Capture Vs Feeding") + mytheme
 
 CapVsEatSize <-subset( TrialsFeeding, select = c("FeedIndPos", "CaptureIndPos", "Treatment") )
 
@@ -149,7 +150,8 @@ pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/FeedingAndHunger.pdf", width= 10)
 
 # hunger boxplot by ate or didn't
 ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = LogHunger)) + geom_boxplot() + 
-		facet_wrap(Treatment~Instar)
+		facet_wrap(Treatment~Instar) + mytheme + ylab("Log Hunger") + xlab("")+
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed"))
 
 ggplot(subset(BoxComboMorn, IndFeed == "y"), aes(x= LogHunger, y = TimeEatingLog1, colour = Treatment)) + geom_point() +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
@@ -285,13 +287,13 @@ ggplot(AveByTrial, aes(AsinPJEven)) + geom_histogram()
 
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PJEven.pdf")
 
-SubsetAveByTrial<- subset(AveByTrial, PJEven > 0)
+SubsetAveByTrial<- subset(AveByTrial, PJEven > -1)
 
 ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot()
 
 ggplot(SubsetAveByTrial, aes(x= Instar, y =AsinPJEven)) + geom_boxplot()
 
-ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + facet_wrap(~Instar)
+ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + facet_wrap(~Instar) + 
 
 dev.off()
 

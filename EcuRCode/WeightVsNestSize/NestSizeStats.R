@@ -157,8 +157,8 @@ WgtNestSzMdNull <-lmer(logWeight ~ Instar + (1|NestID), data = spidersMul, REML 
 WgtNestSzMd1 <- lmer(logWeight ~ I(logCtFm^2)+ logCtFm + Instar +logCtFm:Instar + 
 				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
-modelPlot(WgtNestSzeMd1) # all seems good!
-anova(WgtNestSzeMd1)  # The interactions matter!!
+modelPlot(WgtNestSzMd1) # all seems good!
+anova(WgtNestSzMd1)  # The interactions matter!!
 
 WgtNest1<- multipleModel(WgtNestSzMd1,WgtNestSzMdNull)
 
@@ -184,10 +184,10 @@ WgtNest3<- multipleModel(WgtNestSzMd3,WgtNestSzMdNull)
 
 
 ## making table of different model values
-WgtColNames<-c("model", "AIC", "BIC", "pValue")
-WgtTable<- as.data.frame(t(data.frame(WgtNest1, WgtNest2, WgtNest3)))
-colnames(WgtTable)<-WgtColNames
 
+WgtTable<- as.data.frame(t(data.frame(WgtNest1, WgtNest2, WgtNest3)))
+colnames(WgtTable)<-c("model", "AIC", "BIC", "pValue")
+write.table(WgtTable, file="RuthEcuador2013/NestSize/Graphs/WeightNestSizeStats.csv", sep=",",row.names=F)
 
 
 ### Hunger vs nest size
@@ -217,9 +217,9 @@ HunTable<- as.data.frame(t(data.frame(HunNest1, HunNest2, HunNest3)))
 colnames(HunTable)<-c("model", "AIC", "BIC", "pValue")
 
 
-############# CV of Leg by nest size
+############# CV of Leg by nest size####
 
-LegCV <- na.omit(subset(SpiNestAve, type == "multiple"))
+CV <- na.omit(subset(SpiNestAve, type == "multiple"))
 
 cvLegMod1<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
 				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = LegCV, REML = FALSE)
@@ -245,3 +245,30 @@ cvLegMod3 <- lmer(logcvByNLeg ~ logCtFm + Instar
 anova(cvLegMod3)
 
 anova(cvLegMod3, cvLegMod2)
+
+######## CV of weight by nest size #######
+
+cvWgtModNull<- lmer(logCVByNWei ~ Instar + (1|NestID) + (1|N), data = CV, REML = FALSE)
+
+cvWgtMod1<- lmer(logCVByNWei ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = CV, REML = FALSE)
+
+modelPlot(cvWgtMod1)
+summary(cvWgtMod1)
+anova(cvWgtMod1)
+
+multipleModel(cvWgtMod1, cvWgtModNull)
+
+cvWgtMod2<- lmer(logCVByNWei ~  + logCtFm + Instar+ Instar:logCtFm + (1|NestID) + (1|N), data = CV, REML = FALSE)
+anova(cvWgtMod2)
+multipleModel(cvWgtMod2, cvWgtModNull)
+
+cvWgtMod3<- lmer(logCVByNWei ~ logCtFm + Instar+ (1|NestID) + (1|N), data = CV, REML = FALSE)
+anova(cvWgtMod3)
+multipleModel(cvWgtMod3, cvWgtModNull)
+
+cvWgtMod4<- lmer(logCVByNWei ~ I(logCtFm^2) + Instar + 
+				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = CV, REML = FALSE)
+
+anova(cvWgtMod4)
+multipleModel(cvWgtMod4, cvWgtModNull)

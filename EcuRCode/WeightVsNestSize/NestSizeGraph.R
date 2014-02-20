@@ -94,7 +94,7 @@ SumsWeightN$NestID <-factor(SumsWeightN$NestID)
 
 ###exporting graphs of mean weight against nest size, an individual graph for each 
 
-pdf("RuthEcuador2013/NestSize/Graphs/WeightVsNestSize.pdf", height=7, width=13)
+pdf("RuthEcuador2013/NestSize/Graphs/WeightVsNestSize.pdf", height=8, width=13)
 
 nlevels(SumsWeightN$NestID)
 
@@ -108,9 +108,9 @@ ggplot(SumsWeightN , aes(x=logCtFm, y = mean)) + geom_point() +
 
 ggplot(SumsWeightN , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("CV of weight with ", MinNoSpis, " or more spiders measured", sep = ""))+
+		ggtitle(paste("CV of weight with multiple spider nests"))+
 		xlab("Log Number of Females") + ylab("Log Mean Weight") + 
-		facet_wrap(~ Instar, scales = "free_y", ncol=4)
+		facet_wrap(~ Instar, scales = "free_y", ncol=4) + mytheme
 
 
 dev.off()
@@ -136,7 +136,7 @@ SSummariseLeg <- ddply(spiders, .(NestID, logCtFm, Instar, type), summarise,
 NMin <- 1
 SumsLegN <- subset(SSummariseLeg, N > NMin)
 
-pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSize.pdf", height=7, width=11)
+pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSize.pdf", height=8, width=11)
 
 ggplot(SumsLegN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 

@@ -44,10 +44,11 @@ spiders$km <- substring((as.character(spiders$NestID)), 0, 4)
 
 SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(Weight.mg)),
-		meanLgWei = mean(logWeight, na.rm = TRUE),
-		sdLgWei = sd(logWeight, na.rm = TRUE),
-		CVLgWei= sdLgWei / meanLgWei,
-		cvByNLgWei = (1+(1/(4*N))) * CVLgWei,
+		meanWei = mean(Weight.mg, na.rm = TRUE),
+		sdWei = sd(Weight.mg, na.rm = TRUE),
+		CVWei= sdWei / meanWei,
+		cvByNWei = (1+(1/(4*N))) * CVWei,
+		logCVByNWei = log(cvByNWei),
 		meanLgLeg = mean(logLeg, na.rm = TRUE),
 		sdLgLeg = sd(logLeg, na.rm = TRUE),
 		CVLgLeg= sdLgLeg / meanLgLeg,
