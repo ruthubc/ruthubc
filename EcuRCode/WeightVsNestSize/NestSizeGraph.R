@@ -172,7 +172,7 @@ ggplot(SumsLegN, aes(x=Instar, y= mean)) + geom_point(aes(colour=size)) + geom_l
 
 ### Hunger levels
 ###################################################################################
-SSummariseHunger <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
+SSummariseHunger <- ddply(spiders, .(NestID, logCtFm, Instar, type), summarise,
 		N = length(!is.na(hunger)),
 		mean = mean(hunger, na.rm = TRUE),
 		median = median(hunger, na.rm = TRUE),
@@ -186,21 +186,19 @@ SSummariseHunger <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
 )
 
 NMin <- 2
-SumsHungerN <- subset(SSummariseHunger, N > NMin)
+SumsHungerN <- subset(SSummariseHunger, type == "multiple" )
 
 pdf("RuthEcuador2013/NestSize/Graphs/MeanHungerVsNestSize.pdf", onefile = "TRUE")
 
-for(i in 1: length(Instar)){
-	
-	MyInstar <- Instar[i]
-	
-	print(ggplot(subset(SumsHungerN, Instar ==MyInstar) , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
+ggplot(subset(SumsHungerN) , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
 					geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-					ggtitle(paste("Mean Hunger ", Instar[i], " if nest has ", MinNoSpis, " or more ", Instar[i], "'s", sep = ""))+
-					xlab("Log Approx. Nest Area") + ylab("Mean hunger"))
-	
-	
-}
+					ggtitle(paste("Mean Hunger if nest has ", NMin, " or more spiders", sep = ""))+
+					xlab("Log Approx. Nest Area") + ylab("Mean hunger") + facet_wrap(~Instar, scales = "free_y")
+
+ggplot(subset(SumsHungerN) , aes(x=logCtFm, y = log(cvByN))) + geom_point(shape = 16) + 
+			geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+			ggtitle(paste("CV Hunger if nest has ", NMin, " or more spiders", sep = ""))+
+			xlab("Log Approx. Nest Area") + ylab("CV hunger") #+ facet_wrap(~Instar, scales = "free_y")			
 
 dev.off()
 
