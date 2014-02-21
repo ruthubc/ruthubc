@@ -1,3 +1,9 @@
+library(ggplot2)
+
+mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
+		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
+
+
 #### Box trails graphs. Code importing and manipulating the data is in BoxTrialsData.R
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
 
@@ -289,11 +295,11 @@ pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PJEven.pdf")
 
 SubsetAveByTrial<- subset(AveByTrial, PJEven > -1)
 
-ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot()
+ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
 
-ggplot(SubsetAveByTrial, aes(x= Instar, y =AsinPJEven)) + geom_boxplot()
+ggplot(SubsetAveByTrial, aes(x= Instar, y =AsinPJEven)) + geom_boxplot() + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
 
-ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + facet_wrap(~Instar) + 
+ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + facet_wrap(~Instar) + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
 
 dev.off()
 

@@ -245,19 +245,19 @@ anova(EatBinRedModHun, EatBinMod3)
 ##Testing pj's against treatment
 
 # linear model
-SubAveByTrial <-subset(AveByTrial, TrialID != "T3")
+SubAveByTrial <-subset(AveByTrial)#, TrialID != "T3")
 
 # testing as simple linear model
-PJMod1 <-  lmer(AsinPJEven ~ Treatment*Instar + (1|IndBoxID), SubAveByTrial)
+PJMod1 <-  lmer(AsinPJEven ~ Treatment*Instar + (1|IndBoxID), SubAveByTrial,REML = FALSE)
 
-qqnorm(resid(PJMod1, main = "PJMod1")) ; abline(0, 1) # looks ok until you add the abline
-overdisp_fun(PJMod1) # underdispersed
+modelPlot(PJMod1)
 summary(PJMod1)
+anova(PJMod1)
 
 ## try binomial glmer but very very oversdispersed
 PJMod2 <- glmer(PJEven ~ Treatment*Instar + (1|IndBoxID), SubAveByTrial, family = binomial)
 
-qqnorm(resid(PJMod2, main = "PJMod2")) ; abline(0, 1) # 
+
 overdisp_fun(PJMod2) # Very overdispersed
 
 
@@ -268,23 +268,27 @@ qqnorm(resid(PJMod3, main = "PJMod3")) ; abline(0, 1) #  looks good if i don't l
 overdisp_fun(PJMod2) # Very very very overdispersed
 summary(PJMod3)
 
+
 ### I'll stick to the linear model for the moment
 
 #removing the interaction as not sigificant but then the model doesn't fit at all
-PJMod4 <-  lmer(AsinPJEven ~ Treatment +Instar+ (1|IndBoxID), SubAveByTrial)
+PJMod4 <-  lmer(AsinPJEven ~ Treatment +Instar+ (1|IndBoxID), SubAveByTrial, REML = FALSE)
 
-qqnorm(resid(PJMod4, main = "PJMod4")) ; abline(0, 1) # again not so good.
-overdisp_fun(PJMod4) # VERY VERY OVERDISPERSED
+modelPlot(PJMod4)
 summary(PJMod4)	
+anova(PJMod4)
+
+anova(PJMod1, PJMod4)
 
 #### Testing against reduced model
-PJRedModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), SubAveByTrial)
+PJRedModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), SubAveByTrial, REML = FALSE)
 
 qqnorm(resid(PJRedModTreat, main = "PJRedModTreat")) ; abline(0, 1) # again not so good.
 overdisp_fun(PJRedModTreat) # underdispersed
 summary(PJRedModTreat)	
 
-anova(PJRedModTreat, PJMod4 )
+anova(PJRedModTreat, PJMod1)
+anova(PJMod4, PJRedModTreat)
 
 #### Testing against reduced model
 PJRedModIns <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), SubAveByTrial)
@@ -306,17 +310,19 @@ rdf <- nrow(AveByTrial)-mdf
 rdev/rdf # =9.7
 
 ##Boot strappin
+
 lrstat<- numeric(1000)
 for (i in 1:1000){
 	print(i)
-	SimPJ <- unlist(simulate(PJRedMod))
-	SimPJRedMod <- glmer(SimPJ ~ Instar + Treatment + (1|IndBoxID), AveByTrial, family = binomial(logit)) 
-	SimPJMod <- glmer(SimPJ ~  Treatment*Instar + (1|IndBoxID), AveByTrial, family = binomial(logit))
+	SimPJ <- unlist(simulate(PJRedModTreat))
+	SimPJRedMod <- lmer(SimPJ ~ Instar+ (1|IndBoxID), SubAveByTrial, REML = FALSE)
+	SimPJMod <- lmer(SimPJ ~Treatment+ Instar+ (1|IndBoxID), SubAveByTrial, REML = FALSE)
 	lrstat[i] <- as.numeric(2*(logLik(SimPJMod)-logLik(SimPJRedMod)))
 }                                
 
 
-number<-as.numeric(2*(logLik(PJMod) - logLik(PJRedMod)))
+
+number<-as.numeric(2*(logLik(PJMod4) - logLik(PJRedModTreat)))
 
 
 mean(lrstat > number)
