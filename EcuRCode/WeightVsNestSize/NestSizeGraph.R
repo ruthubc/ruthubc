@@ -161,7 +161,7 @@ ggplot(subset(SumsLegN, type =='multiple') , aes(x=logCtFm, y = cvByN)) + geom_p
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE, colour = 'black') + 
 		ggtitle(paste("Coefficient of variation of leg length with multiple nests", sep = ""))+
 		xlab("Log number of females") + ylab("CV of Len Length") + 
-		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + mytheme
+		facet_wrap(~ Instar, ncol = 4) + mytheme
 
 
 dev.off()
@@ -198,7 +198,7 @@ ggplot(subset(SumsHungerN) , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) 
 ggplot(subset(SumsHungerN) , aes(x=logCtFm, y = log(cvByN))) + geom_point(shape = 16) + 
 			geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 			ggtitle(paste("CV Hunger if nest has ", NMin, " or more spiders", sep = ""))+
-			xlab("Log Approx. Nest Area") + ylab("CV hunger") #+ facet_wrap(~Instar, scales = "free_y")			
+			xlab("Log Approx. Nest Area") + ylab("CV hunger") + facet_wrap(~Instar, scales = "free_y")			
 
 dev.off()
 

@@ -15,8 +15,11 @@ spiders <- subset(spiders, Instar != "Juv4" | (Instar == "Juv4" & LegLen.mm > 0.
 spiders$hunger <- spiders$HeadLength.mm/spiders$Weight.mg
 
 #removing empty levels
-spiders$Instar <- factor(spiders$Instar, levels= c("Adult", "Sub2", 
-				"Sub1", "Juv4", "AdMale", "SubMale"))
+#spiders$Instar <- factor(spiders$Instar, levels= c("Adult", "Sub2", 
+				#"Sub1", "Juv4", "AdMale", "SubMale"))
+
+spiders$Instar <- factor(spiders$Instar, levels= c("Juv4", "Sub1", 
+				"Sub2", "Adult", "SubMale", "AdMale"))
 
 #changing to simplier name
 spiders$type <- spiders$Approx..Single.
@@ -48,16 +51,18 @@ SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm), summarise, # need 
 		sdWei = sd(Weight.mg, na.rm = TRUE),
 		CVWei= sdWei / meanWei,
 		cvByNWei = (1+(1/(4*N))) * CVWei,
-		logCVByNWei = log(cvByNWei),
-		meanLgLeg = mean(logLeg, na.rm = TRUE),
-		sdLgLeg = sd(logLeg, na.rm = TRUE),
-		CVLgLeg= sdLgLeg / meanLgLeg,
-		cvByNLgLeg = (1+(1/(4*N))) * CVLgLeg,
+		logCVByNWei = log10(cvByNWei),
 		meanLeg = mean(LegLen.mm, na.rm = TRUE),
 		sdLeg = sd(LegLen.mm, na.rm = TRUE),
 		CVLeg= sdLeg / meanLeg,
 		cvByNLeg = (1+(1/(4*N))) * CVLeg,
-		logcvByNLeg = log(cvByNLeg)
+		logcvByNLeg = log10(cvByNLeg),
+		meanHung = mean(hunger, na.rm = TRUE),
+		sdHung = sd(hunger, na.rm = TRUE),
+		CVHung= sdHung/ meanHung,
+		cvByNHung = (1+(1/(4*N))) * CVHung,
+		logcvByNHung= log10(cvByNHung)
+
 
 
 )

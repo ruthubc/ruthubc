@@ -148,7 +148,41 @@ drop1(LegNestSzeMd1, scope ~ logCtFm, test = "Chi") # sig p = 0.02566
 drop1(LegNestSzeMd1, scope ~ Instar, test = "Chi") # sig p = 0.00197
 
 
+############### Testing Leg Length Nest Size individual terms
+
+LegNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+#removed squared interactin term
+LegNestSzeMd2a <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
+				  (1|NestID), data = spidersMul, REML = FALSE)
+  
+anova(LegNestSzeMd1, LegNestSzeMd2a)
+# removed all squared terms
+LegNestSzeMd3a <- lmer(logLeg ~ logCtFm + Instar + logCtFm:Instar + 
+				(1|NestID), data = spidersMul, REML = FALSE)
+
+anova(LegNestSzeMd1, LegNestSzeMd3a)
+
+## removing non squared interaction terms
+
+LegNestSzeMd4a <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar  + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+anova(LegNestSzeMd1, LegNestSzeMd4a)
+
+## removing all non squared interaction terms
+
+LegNestSzeMd5a <- lmer(logLeg ~ I(logCtFm^2) + Instar  + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+anova(LegNestSzeMd1, LegNestSzeMd5a)
+
+modelPlot(LegNestSzeMd5a)
+
+
 ########### Weight vs nest size ################################
+
 spidersMul <- subset(spiders, type == "multiple") #removing single females
 
 WgtNestSzMdNull <-lmer(logWeight ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
@@ -222,18 +256,63 @@ colnames(HunTable)<-c("model", "AIC", "BIC", "pValue")
 CV <- na.omit(subset(SpiNestAve, type == "multiple"))
 
 cvLegMod1<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = LegCV, REML = FALSE)
+				I(logCtFm^2):Instar + (1|NestID), data = CV, REML = FALSE)
 
 modelPlot(cvLegMod1)
 
 anova(cvLegMod1)
+
+##testing individual terms
+### removing square interation term and testing
+
+cvLegMod2a<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				 (1|NestID), data = CV, REML = FALSE)
+ 
+ anova(cvLegMod1, cvLegMod2a)
+ 
+ ## removing all square terms
+ cvLegMod3a<- lmer(logcvByNLeg ~  logCtFm + Instar+ Instar:logCtFm + 
+				 (1|NestID), data = CV, REML = FALSE)
+ 
+ anova(cvLegMod1, cvLegMod3a)
+
+#testing instar:logfme
+ cvLegMod4a<- lmer(logcvByNLeg ~  logCtFm + Instar+ 
+				 (1|NestID), data = CV, REML = FALSE)
+ 
+ anova(cvLegMod1, cvLegMod4a)
+ anova(cvLegMod3a, cvLegMod4a)
+ 
+ 
+ #testing count fem
+ cvLegMod5a<- lmer(logcvByNLeg ~  Instar + (1|NestID), data = CV, REML = FALSE)
+ 
+ anova(cvLegMod1, cvLegMod5a)
+ anova(cvLegMod3a, cvLegMod5a)
+ 
+ #testing instar
+ cvLegMod6a<- lmer(logcvByNLeg ~  I(logCtFm^2) + logCtFm + (1|NestID), data = CV, REML = FALSE)
+ 
+ anova(cvLegMod1, cvLegMod6a)
+
+ ##testing instar against just log CtFm
+ cvLegMod7a<- lmer(logcvByNLeg ~ logCtFm + (1|NestID), data = CV, REML = FALSE)
+ 
+ anova(cvLegMod1, cvLegMod7a)
+ 
+ 
+ ##testing instar against completely null model
+ cvLegMod8a<- lmer(logcvByNLeg ~ Instar+ (1|NestID), data = CV, REML = FALSE)
+ cvLegModComNull<- lmer(logcvByNLeg ~ (1|NestID), data = CV, REML = FALSE)
+ anova(cvLegModComNull, cvLegMod8a)
+
 
 cvLegModNull<- lmer(logcvByNLeg ~ Instar+ (1|NestID), data = LegCV, REML = FALSE)
 
 anova(cvLegModNull)
 anova(cvLegModNull, cvLegMod1 )
 
-cvLegMod2 <- lmer(logcvByNLeg ~ logCtFm + Instar+ Instar:logCtFm + (1|N)
+cvLegMod2 <- lmer(logcvByNLeg ~ logCtFm + Instar+ Instar:logCtFm +
 				+ (1|NestID), data = LegCV, REML = FALSE)
 
 anova(cvLegMod2)
@@ -253,15 +332,24 @@ cvWgtModNull<- lmer(logCVByNWei ~ Instar + (1|NestID) + (1|N), data = CV, REML =
 cvWgtMod1<- lmer(logCVByNWei ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
 				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = CV, REML = FALSE)
 
+drop1(cvWgtMod1, test = "Chi", scope = ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				I(logCtFm^2):Instar)
+
 modelPlot(cvWgtMod1)
 summary(cvWgtMod1)
 anova(cvWgtMod1)
 
 multipleModel(cvWgtMod1, cvWgtModNull)
 
-cvWgtMod2<- lmer(logCVByNWei ~  + logCtFm + Instar+ Instar:logCtFm + (1|NestID) + (1|N), data = CV, REML = FALSE)
+cvWgtMod2<- lmer(logCVByNWei ~ logCtFm + Instar+ Instar:logCtFm + (1|NestID) + (1|N), data = CV, REML = FALSE)
 anova(cvWgtMod2)
 multipleModel(cvWgtMod2, cvWgtModNull)
+
+anova(cvWgtMod2, cvWgtMod1)
+
+cvWgtMod2_5<- lmer(logCVByNWei ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + (1|NestID) + (1|N), data = CV, REML = FALSE)
+
+anova(cvWgtMod2_5, cvWgtMod1)
 
 cvWgtMod3<- lmer(logCVByNWei ~ logCtFm + Instar+ (1|NestID) + (1|N), data = CV, REML = FALSE)
 anova(cvWgtMod3)
@@ -272,3 +360,57 @@ cvWgtMod4<- lmer(logCVByNWei ~ I(logCtFm^2) + Instar +
 
 anova(cvWgtMod4)
 multipleModel(cvWgtMod4, cvWgtModNull)
+
+######## CV of hunger by nest size #######
+
+
+cvHungMod1<- lmer(cvByNHung ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				I(logCtFm^2):Instar + (1|NestID), data = CV, REML = FALSE)
+
+modelPlot(cvHungMod1)
+
+anova(cvHungMod1)
+
+##testing individual terms
+### removing square interation term and testing
+
+cvHungMod2a<- lmer(cvByNHung ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				(1|NestID), data = CV, REML = FALSE)
+
+anova(cvHungMod1, cvHungMod2a)
+
+## removing all square terms
+cvHungMod3a<- lmer(logcvByNHung ~  logCtFm + Instar+ Instar:logCtFm + 
+				(1|NestID), data = CV, REML = FALSE)
+
+anova(cvHungMod1, cvHungMod3a)
+
+#testing instar:logfme
+cvHungMod4a<- lmer(logcvByNHung ~  logCtFm + Instar+ 
+				(1|NestID), data = CV, REML = FALSE)
+
+anova(cvHungMod1, cvHungMod4a)
+anova(cvHungMod3a, cvHungMod4a)
+
+
+#testing count fem
+cvHungMod5a<- lmer(logcvByNHung ~  Instar + (1|NestID), data = CV, REML = FALSE)
+
+anova(cvHungMod1, cvHungMod5a)
+anova(cvHungMod3a, cvHungMod5a)
+
+#testing instar
+cvHungMod6a<- lmer(logcvByNHung ~  I(logCtFm^2) + logCtFm + (1|NestID), data = CV, REML = FALSE)
+
+anova(cvHungMod1, cvHungMod6a)
+
+##testing instar against just log CtFm
+cvHungMod7a<- lmer(logcvByNHung ~ logCtFm + (1|NestID), data = CV, REML = FALSE)
+
+anova(cvHungMod1, cvHungMod7a)
+
+
+##testing instar against completely null model
+cvHungMod8a<- lmer(logcvByNHung ~ Instar+ (1|NestID), data = CV, REML = FALSE)
+cvHungModComNull<- lmer(logcvByNHung ~ (1|NestID), data = CV, REML = FALSE)
+anova(cvHungModComNull, cvHungMod8a)
