@@ -11,13 +11,14 @@ spiders <- subset(spiderData, Instar != "FALSE" & NestID != "44.3ex01"  & Instar
 
 spiders <- subset(spiders, Instar != "Juv4" | (Instar == "Juv4" & LegLen.mm > 0.82))
 
+##replacing ad males with sub bodies as sub males
+spiders$Instar<-as.character(spiders$Instar) ; spiders$Instar[spiders$AdMaleSubBd == "y"] <- "SubMale"
+spiders$Instar <-as.factor(spiders$Instar)
+
 #Calculating spider hunger
 spiders$hunger <- spiders$HeadLength.mm/spiders$Weight.mg
 
-#removing empty levels
-#spiders$Instar <- factor(spiders$Instar, levels= c("Adult", "Sub2", 
-				#"Sub1", "Juv4", "AdMale", "SubMale"))
-
+#removing empty levels and ordering for graph
 spiders$Instar <- factor(spiders$Instar, levels= c("Juv4", "Sub1", 
 				"Sub2", "Adult", "SubMale", "AdMale"))
 
@@ -67,7 +68,12 @@ SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm), summarise, # need 
 
 )
 
+## Removing single nests
+SpiNestAve <- subset(SpiNestAve, type == "multiple")
+##removing NA's from SpiNestAve
+SpiNestAve <- na.omit(SpiNestAve)
 
+spidersMul <- subset(spiders, type == "multiple") #removing single females
 
 ## looking at small juv 4's to see if needs to be removed from analysis
 

@@ -238,8 +238,14 @@ overdisp_fun(EatBinRedModHun)
 
 anova(EatBinRedModHun, EatBinMod3)
 
+### Eating at all vs hunger but switching the variables to make a linear model
 
+HungEatMod1 <- lmer(LogHunger ~ IndFeed*Treatment + (1|Instar:IndBoxID) + 
+				(1|Instar:IndBoxID:SpiderID), BoxComboMorn)
+modelPlot(HungEatMod1)
 
+anova(HungEatMod1)
+summary(HungEatMod1)
 
 ############################################################################
 ##Testing pj's against treatment

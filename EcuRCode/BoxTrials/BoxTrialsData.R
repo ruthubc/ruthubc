@@ -94,7 +94,7 @@ BoxCombo$AsinPJEven <- asin(sqrt(BoxCombo$PJEven))
 ##Log Transform Hunger
 BoxCombo$TimeEatingLog <- log(BoxCombo$TotalTimeEating)
 BoxCombo$TimeEatingLog1 <- log(BoxCombo$TotalTimeEating + 1)
-BoxCombo$LogHunger<- log(BoxCombo$Hunger)
+BoxCombo$LogHunger<- log10(BoxCombo$Hunger)
 
 # Create logical arguments for treatment and 
 BoxCombo$LogicalTreat<- ifelse(BoxCombo$Treatment == "large", 1, 0 )

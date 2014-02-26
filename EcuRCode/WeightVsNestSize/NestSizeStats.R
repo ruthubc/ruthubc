@@ -91,99 +91,69 @@ anova(SingMt44WeiRedMod, SingMt44WeiMod)
 
 spidersMul <- subset(spiders, type == "multiple") #removing single females
 
-LegNestSzeMdNull <- lmer(logLeg ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
+HungNestSzeMdNull <- lmer(logLeg ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
 #getting AIC and p values and putting into list
-#LegNestNull <- multipleModel(LegNestSzeMdNull, LegNestSzeMdNull)
+#HungNestNull <- multipleModel(HungNestSzeMdNull, HungNestSzeMdNull)
 
-LegNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
+HungNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
 				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
-modelPlot(LegNestSzeMd1) # seems to be skwesnot sure it is so normal;not sure about the variances
+modelPlot(HungNestSzeMd1) # seems to be skwesnot sure it is so normal;not sure about the variances
 # I could check the different variance with that test
 
-anova(LegNestSzeMd1)  # The interactions matter!!
-summary(LegNestSzeMd1)
+anova(HungNestSzeMd1)  # The interactions matter!!
+summary(HungNestSzeMd1)
 
-LegNest1<- multipleModel(LegNestSzeMd1, LegNestSzeMdNull)
+HungNest1<- multipleModel(HungNestSzeMd1, HungNestSzeMdNull)
 
 ### Leg 2 removing squared term and interaction
-LegNestSzeMd2 <- lmer(logLeg ~ logCtFm + Instar + logCtFm:Instar 
+HungNestSzeMd2 <- lmer(logLeg ~ logCtFm + Instar + logCtFm:Instar 
 				 + (1|NestID), data = spidersMul, REML = FALSE)
 
-modelPlot(LegNestSzeMd2) # seems to be skwesnot sure it is so normal;not sure about the variances
+modelPlot(HungNestSzeMd2) # seems to be skwesnot sure it is so normal;not sure about the variances
 # I could check the different variance with that test
 
-anova(LegNestSzeMd2)  
-summary(LegNestSzeMd2)
+anova(HungNestSzeMd2)  
+summary(HungNestSzeMd2)
 
-LegNest2<- multipleModel(LegNestSzeMd2, LegNestSzeMdNull)
+HungNest2<- multipleModel(HungNestSzeMd2, HungNestSzeMdNull)
 
 ### Leg 3 removing interaction
-LegNestSzeMd3 <- lmer(logLeg ~ logCtFm + Instar 
+HungNestSzeMd3 <- lmer(logLeg ~ logCtFm + Instar 
 				+ (1|NestID), data = spidersMul, REML = FALSE)
 
-modelPlot(LegNestSzeMd3) # seems to be skwesnot sure it is so normal;not sure about the variances
+modelPlot(HungNestSzeMd3) # seems to be skwesnot sure it is so normal;not sure about the variances
 # I could check the different variance with that test
 
 
-anova(LegNestSzeMd3)  
-summary(LegNestSzeMd3)
+anova(HungNestSzeMd3)  
+summary(HungNestSzeMd3)
 
-LegNest3<- multipleModel(LegNestSzeMd3, LegNestSzeMdNull)
+HungNest3<- multipleModel(HungNestSzeMd3, HungNestSzeMdNull)
 
 
-LegTable<- as.data.frame(t(data.frame(LegNest1, LegNest2, LegNest3)))
+LegTable<- as.data.frame(t(data.frame(HungNest1, HungNest2, HungNest3)))
 colnames(LegTable)<-c("model", "AIC", "BIC", "pValue")
 
-write.table(LegTable, file="RuthEcuador2013/NestSize/Graphs/LegNestSizeStats.csv", sep=",",row.names=F)
+write.table(LegTable, file="RuthEcuador2013/NestSize/Graphs/HungNestSizeStats.csv", sep=",",row.names=F)
 
 ##drop 1..not sure how useful this is
-drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.00058	
-drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):logCtFm, test = "Chi") # NOT sig 
-drop1(LegNestSzeMd1, scope ~ logCtFm:Instar, test = "Chi") # sig p = 0.0028
-drop1(LegNestSzeMd1, scope ~ I(logCtFm^2):Instar, test = "Chi") # sig p = 0.001238
-drop1(LegNestSzeMd1, scope ~ I(logCtFm^2), test = "Chi")# sig p = 0.0138
-drop1(LegNestSzeMd1, scope ~ logCtFm, test = "Chi") # sig p = 0.02566
-drop1(LegNestSzeMd1, scope ~ Instar, test = "Chi") # sig p = 0.00197
+drop1(HungNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.00058	
+drop1(HungNestSzeMd1, scope ~ I(logCtFm^2):logCtFm, test = "Chi") # NOT sig 
+drop1(HungNestSzeMd1, scope ~ logCtFm:Instar, test = "Chi") # sig p = 0.0028
+drop1(HungNestSzeMd1, scope ~ I(logCtFm^2):Instar, test = "Chi") # sig p = 0.001238
+drop1(HungNestSzeMd1, scope ~ I(logCtFm^2), test = "Chi")# sig p = 0.0138
+drop1(HungNestSzeMd1, scope ~ logCtFm, test = "Chi") # sig p = 0.02566
+drop1(HungNestSzeMd1, scope ~ Instar, test = "Chi") # sig p = 0.00197
 
 
 ############### Testing Leg Length Nest Size individual terms
 
-LegNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
-				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
-
-#removed squared interactin term
-LegNestSzeMd2a <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
-				  (1|NestID), data = spidersMul, REML = FALSE)
-  
-anova(LegNestSzeMd1, LegNestSzeMd2a)
-# removed all squared terms
-LegNestSzeMd3a <- lmer(logLeg ~ logCtFm + Instar + logCtFm:Instar + 
-				(1|NestID), data = spidersMul, REML = FALSE)
-
-anova(LegNestSzeMd1, LegNestSzeMd3a)
-
-## removing non squared interaction terms
-
-LegNestSzeMd4a <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar  + 
-				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
-
-anova(LegNestSzeMd1, LegNestSzeMd4a)
-
-## removing all non squared interaction terms
-
-LegNestSzeMd5a <- lmer(logLeg ~ I(logCtFm^2) + Instar  + 
-				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
-
-anova(LegNestSzeMd1, LegNestSzeMd5a)
-
-modelPlot(LegNestSzeMd5a)
-
 
 ########### Weight vs nest size ################################
 
-spidersMul <- subset(spiders, type == "multiple") #removing single females
+
 
 WgtNestSzMdNull <-lmer(logWeight ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
@@ -251,12 +221,45 @@ HunTable<- as.data.frame(t(data.frame(HunNest1, HunNest2, HunNest3)))
 colnames(HunTable)<-c("model", "AIC", "BIC", "pValue")
 
 
+#### Hunger vs nest size individual terms #######################
+
+HungNestSzeMd1 <- lmer(logHung ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+#removed squared interactin term
+HungNestSzeMd2a <- lmer(logHung ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
+				(1|NestID), data = spidersMul, REML = FALSE)
+
+anova(HungNestSzeMd1, HungNestSzeMd2a)
+# removed all squared terms
+HungNestSzeMd3a <- lmer(logHung ~ logCtFm + Instar + logCtFm:Instar + 
+				(1|NestID), data = spidersMul, REML = FALSE)
+
+anova(HungNestSzeMd1, HungNestSzeMd3a)
+
+## removing non squared interaction terms
+
+HungNestSzeMd4a <- lmer(logHung ~ I(logCtFm^2) + logCtFm + Instar  + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+anova(HungNestSzeMd1, HungNestSzeMd4a)
+
+## removing all non squared interaction terms
+
+HungNestSzeMd5a <- lmer(logHung ~ I(logCtFm^2) + Instar  + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+anova(HungNestSzeMd1, HungNestSzeMd5a)
+
+modelPlot(HungNestSzeMd5a)
+
+
+
 ############# CV of Leg by nest size####
 
-CV <- na.omit(subset(SpiNestAve, type == "multiple"))
 
 cvLegMod1<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				I(logCtFm^2):Instar + (1|NestID), data = CV, REML = FALSE)
+				I(logCtFm^2):Instar + (1|NestID), data = SpiNestAve, REML = FALSE)
 
 modelPlot(cvLegMod1)
 
@@ -266,44 +269,44 @@ anova(cvLegMod1)
 ### removing square interation term and testing
 
 cvLegMod2a<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				 (1|NestID), data = CV, REML = FALSE)
+				 (1|NestID), data = SpiNestAve, REML = FALSE)
  
  anova(cvLegMod1, cvLegMod2a)
  
  ## removing all square terms
  cvLegMod3a<- lmer(logcvByNLeg ~  logCtFm + Instar+ Instar:logCtFm + 
-				 (1|NestID), data = CV, REML = FALSE)
+				 (1|NestID), data = SpiNestAve, REML = FALSE)
  
  anova(cvLegMod1, cvLegMod3a)
 
 #testing instar:logfme
  cvLegMod4a<- lmer(logcvByNLeg ~  logCtFm + Instar+ 
-				 (1|NestID), data = CV, REML = FALSE)
+				 (1|NestID), data = SpiNestAve, REML = FALSE)
  
  anova(cvLegMod1, cvLegMod4a)
  anova(cvLegMod3a, cvLegMod4a)
  
  
  #testing count fem
- cvLegMod5a<- lmer(logcvByNLeg ~  Instar + (1|NestID), data = CV, REML = FALSE)
+ cvLegMod5a<- lmer(logcvByNLeg ~  Instar + (1|NestID), data = SpiNestAve, REML = FALSE)
  
  anova(cvLegMod1, cvLegMod5a)
  anova(cvLegMod3a, cvLegMod5a)
  
  #testing instar
- cvLegMod6a<- lmer(logcvByNLeg ~  I(logCtFm^2) + logCtFm + (1|NestID), data = CV, REML = FALSE)
+ cvLegMod6a<- lmer(logcvByNLeg ~  I(logCtFm^2) + logCtFm + (1|NestID), data = SpiNestAve, REML = FALSE)
  
  anova(cvLegMod1, cvLegMod6a)
 
  ##testing instar against just log CtFm
- cvLegMod7a<- lmer(logcvByNLeg ~ logCtFm + (1|NestID), data = CV, REML = FALSE)
+ cvLegMod7a<- lmer(logcvByNLeg ~ logCtFm + (1|NestID), data = SpiNestAve, REML = FALSE)
  
  anova(cvLegMod1, cvLegMod7a)
  
  
  ##testing instar against completely null model
- cvLegMod8a<- lmer(logcvByNLeg ~ Instar+ (1|NestID), data = CV, REML = FALSE)
- cvLegModComNull<- lmer(logcvByNLeg ~ (1|NestID), data = CV, REML = FALSE)
+ cvLegMod8a<- lmer(logcvByNLeg ~ Instar+ (1|NestID), data = SpiNestAve, REML = FALSE)
+ cvLegModComNull<- lmer(logcvByNLeg ~ (1|NestID), data = SpiNestAve, REML = FALSE)
  anova(cvLegModComNull, cvLegMod8a)
 
 
@@ -327,10 +330,10 @@ anova(cvLegMod3, cvLegMod2)
 
 ######## CV of weight by nest size #######
 
-cvWgtModNull<- lmer(logCVByNWei ~ Instar + (1|NestID) + (1|N), data = CV, REML = FALSE)
+cvWgtModNull<- lmer(logCVByNWei ~ Instar + (1|NestID) + (1|N), data = SpiNestAve, REML = FALSE)
 
 cvWgtMod1<- lmer(logCVByNWei ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = CV, REML = FALSE)
+				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = SpiNestAve, REML = FALSE)
 
 drop1(cvWgtMod1, test = "Chi", scope = ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
 				I(logCtFm^2):Instar)
@@ -341,22 +344,22 @@ anova(cvWgtMod1)
 
 multipleModel(cvWgtMod1, cvWgtModNull)
 
-cvWgtMod2<- lmer(logCVByNWei ~ logCtFm + Instar+ Instar:logCtFm + (1|NestID) + (1|N), data = CV, REML = FALSE)
+cvWgtMod2<- lmer(logCVByNWei ~ logCtFm + Instar+ Instar:logCtFm + (1|NestID) + (1|N), data = SpiNestAve, REML = FALSE)
 anova(cvWgtMod2)
 multipleModel(cvWgtMod2, cvWgtModNull)
 
 anova(cvWgtMod2, cvWgtMod1)
 
-cvWgtMod2_5<- lmer(logCVByNWei ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + (1|NestID) + (1|N), data = CV, REML = FALSE)
+cvWgtMod2_5<- lmer(logCVByNWei ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + (1|NestID) + (1|N), data = SpiNestAve, REML = FALSE)
 
 anova(cvWgtMod2_5, cvWgtMod1)
 
-cvWgtMod3<- lmer(logCVByNWei ~ logCtFm + Instar+ (1|NestID) + (1|N), data = CV, REML = FALSE)
+cvWgtMod3<- lmer(logCVByNWei ~ logCtFm + Instar+ (1|NestID) + (1|N), data = SpiNestAve, REML = FALSE)
 anova(cvWgtMod3)
 multipleModel(cvWgtMod3, cvWgtModNull)
 
 cvWgtMod4<- lmer(logCVByNWei ~ I(logCtFm^2) + Instar + 
-				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = CV, REML = FALSE)
+				I(logCtFm^2):Instar + (1|NestID) + (1|N), data = SpiNestAve, REML = FALSE)
 
 anova(cvWgtMod4)
 multipleModel(cvWgtMod4, cvWgtModNull)
@@ -365,7 +368,7 @@ multipleModel(cvWgtMod4, cvWgtModNull)
 
 
 cvHungMod1<- lmer(cvByNHung ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				I(logCtFm^2):Instar + (1|NestID), data = CV, REML = FALSE)
+				I(logCtFm^2):Instar + (1|NestID), data = SpiNestAve, REML = FALSE)
 
 modelPlot(cvHungMod1)
 
@@ -375,42 +378,42 @@ anova(cvHungMod1)
 ### removing square interation term and testing
 
 cvHungMod2a<- lmer(cvByNHung ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				(1|NestID), data = CV, REML = FALSE)
+				(1|NestID), data = SpiNestAve, REML = FALSE)
 
 anova(cvHungMod1, cvHungMod2a)
 
 ## removing all square terms
 cvHungMod3a<- lmer(logcvByNHung ~  logCtFm + Instar+ Instar:logCtFm + 
-				(1|NestID), data = CV, REML = FALSE)
+				(1|NestID), data = SpiNestAve, REML = FALSE)
 
 anova(cvHungMod1, cvHungMod3a)
 
 #testing instar:logfme
 cvHungMod4a<- lmer(logcvByNHung ~  logCtFm + Instar+ 
-				(1|NestID), data = CV, REML = FALSE)
+				(1|NestID), data = SpiNestAve, REML = FALSE)
 
 anova(cvHungMod1, cvHungMod4a)
 anova(cvHungMod3a, cvHungMod4a)
 
 
 #testing count fem
-cvHungMod5a<- lmer(logcvByNHung ~  Instar + (1|NestID), data = CV, REML = FALSE)
+cvHungMod5a<- lmer(logcvByNHung ~ I(logCtFm^2) + I(logCtFm^2):Instar + Instar+ (1|NestID), data = SpiNestAve, REML = FALSE)
 
 anova(cvHungMod1, cvHungMod5a)
 anova(cvHungMod3a, cvHungMod5a)
 
 #testing instar
-cvHungMod6a<- lmer(logcvByNHung ~  I(logCtFm^2) + logCtFm + (1|NestID), data = CV, REML = FALSE)
+cvHungMod6a<- lmer(logcvByNHung ~  I(logCtFm^2) + logCtFm + (1|NestID), data = SpiNestAve, REML = FALSE)
 
 anova(cvHungMod1, cvHungMod6a)
 
 ##testing instar against just log CtFm
-cvHungMod7a<- lmer(logcvByNHung ~ logCtFm + (1|NestID), data = CV, REML = FALSE)
+cvHungMod7a<- lmer(logcvByNHung ~ logCtFm + (1|NestID), data = SpiNestAve, REML = FALSE)
 
 anova(cvHungMod1, cvHungMod7a)
 
 
 ##testing instar against completely null model
-cvHungMod8a<- lmer(logcvByNHung ~ Instar+ (1|NestID), data = CV, REML = FALSE)
-cvHungModComNull<- lmer(logcvByNHung ~ (1|NestID), data = CV, REML = FALSE)
+cvHungMod8a<- lmer(logcvByNHung ~ Instar+ (1|NestID), data = SpiNestAve, REML = FALSE)
+cvHungModComNull<- lmer(logcvByNHung ~ (1|NestID), data = SpiNestAve, REML = FALSE)
 anova(cvHungModComNull, cvHungMod8a)

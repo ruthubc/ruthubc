@@ -65,24 +65,17 @@ print(ggplot(subset(spiders, NestID == Nests[i]) , aes(x=HeadLength.mm, fill = I
 
 dev.off()
 
+### histograme of cvbyN
+
+ggplot(SpiNestAve, aes(cvByNHung)) + geom_histogram() # using log doesn't help the normality
+ggplot(SpiNestAve, aes(logcvByNLeg)) + geom_histogram() # this is better log transformed
+
+
 #GRAPH TO EXPORT
 #############################################################################
 ## Summary of weight
-
-SSummariseWeight <- ddply(spiders, .(NestID, CountFemales, type, logCtFm, Instar), summarise,
-		N = length(!is.na(Weight.mg)),
-		mean = mean(logWeight, na.rm = TRUE),
-		median = median(logWeight, na.rm = TRUE),
-		sd = sd(logWeight, na.rm = TRUE),
-		CV= sd / mean,
-		IQR = IQR(logWeight, na.rm = TRUE),
-		max = max(logWeight, na.rm=TRUE),
-		min = min(logWeight, na.rm=TRUE),
-		cvByN = (1+(1/(4*N))) * CV
-
-)
-		
-MinNoSpis <- 1; SumsWeightN <- subset(SSummariseWeight, N>MinNoSpis)
+	
+MinNoSpis <- 1; SumsWeightN <- subset(SpiNestAve, N>MinNoSpis)
 
 ##removed spiders in single(ish) female nests
 SumsWeightN <- subset(SSummariseWeight, type == "multiple") #options multiple or single
@@ -119,49 +112,26 @@ dev.off()
 
 #GRAPH TO EXPORT ------ LEG LENGTH
 
-### summarise leg length by nest area
-SSummariseLeg <- ddply(spiders, .(NestID, logCtFm, Instar, type), summarise,
-		N = length(!is.na(LegLen.mm)),
-		mean = mean(logLeg, na.rm = TRUE),
-		median = median(logLeg, na.rm = TRUE),
-		sd = sd(logLeg, na.rm = TRUE),
-		CV= sd / mean,
-		IQR = IQR(logLeg, na.rm = TRUE),
-		IQRDivMed =  IQR/median,
-		max = max(logLeg, na.rm=TRUE), 
-		min = min(logLeg, na.rm = TRUE),
-		cvByN = (1+(1/(4*N))) * CV
-)
+### summarise leg length by nest size
 
 NMin <- 1
-SumsLegN <- subset(SSummariseLeg, N > NMin)
+SumsLegN <- subset(SpiNestAve, N > NMin)
 
 pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSize.pdf", height=8, width=11)
 
-ggplot(SumsLegN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
+ggplot(SumsLegN , aes(x=logCtFm, y = log10(meanLeg))) + geom_point(aes(colour = NestID), shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 		ggtitle(paste("Mean leg length with min ", NMin, " spiders", sep = ""))+
-		xlab("Log number of females") + ylab("Log leg length") + 
-		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
-
-ggplot(subset(SumsLegN, type =='multiple'), aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE, colour = "black") + 
-		ggtitle(paste("Mean leg length for multiple nests"))+
-		xlab("Log number of females") + ylab("Log leg length") + 
-		facet_wrap(~ Instar, scales = "free_y", ncol = 4)  + mytheme 
+		xlab("Log number of females") + ylab("Log leg length") + mytheme+
+		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + theme(legend.position = "none")
 
 
-ggplot(SumsLegN , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
+ggplot(subset(SumsLegN, Instar != "SubMaler"), aes(x=logCtFm, y = cvByNLeg)) +  geom_point(aes(colour = NestID), shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("Mean leg length with min ", NMin, " spiders", sep = ""))+
-		xlab("Log number of females") + ylab("Log leg length") + 
-		facet_wrap(~ Instar, scales = "free_y", ncol = 4)
+		ggtitle(paste("Coefficent of variation of leg length"))+ ylim(0, 0.17) + 
+		xlab("Log number of females") + ylab("Log coefficient of variation") + mytheme+
+		facet_wrap(~ Instar, ncol = 4) + theme(legend.position = "none")
 
-ggplot(subset(SumsLegN, type =='multiple') , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE, colour = 'black') + 
-		ggtitle(paste("Coefficient of variation of leg length with multiple nests", sep = ""))+
-		xlab("Log number of females") + ylab("CV of Len Length") + 
-		facet_wrap(~ Instar, ncol = 4) + mytheme
 
 
 dev.off()
@@ -172,33 +142,24 @@ ggplot(SumsLegN, aes(x=Instar, y= mean)) + geom_point(aes(colour=size)) + geom_l
 
 ### Hunger levels
 ###################################################################################
-SSummariseHunger <- ddply(spiders, .(NestID, logCtFm, Instar, type), summarise,
-		N = length(!is.na(hunger)),
-		mean = mean(hunger, na.rm = TRUE),
-		median = median(hunger, na.rm = TRUE),
-		sd = sd(hunger, na.rm = TRUE),
-		CV= sd / mean,
-		IQR = IQR(hunger, na.rm = TRUE),
-		IQRDivMed =  IQR/median,
-		max = max(hunger, na.rm=TRUE), 
-		min = min(hunger, na.rm = TRUE),
-		cvByN = (1+4/N) * CV
-)
 
-NMin <- 2
-SumsHungerN <- subset(SSummariseHunger, type == "multiple" )
+NMin <- 1
+SumsHungerN <- subset(SpiNestAve, N > NMin)
 
 pdf("RuthEcuador2013/NestSize/Graphs/MeanHungerVsNestSize.pdf", onefile = "TRUE")
 
-ggplot(subset(SumsHungerN) , aes(x=logCtFm, y = mean)) + geom_point(shape = 16) + 
-					geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-					ggtitle(paste("Mean Hunger if nest has ", NMin, " or more spiders", sep = ""))+
-					xlab("Log Approx. Nest Area") + ylab("Mean hunger") + facet_wrap(~Instar, scales = "free_y")
+ggplot(SumsHungerN , aes(x=logCtFm, y = log10(meanHung*10))) + geom_point(aes(colour = NestID), shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Log mean hunger")) +
+		xlab("Log number of females") + ylab("Log hunger") + mytheme+
+		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + theme(legend.position = "none")
 
-ggplot(subset(SumsHungerN) , aes(x=logCtFm, y = log(cvByN))) + geom_point(shape = 16) + 
-			geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-			ggtitle(paste("CV Hunger if nest has ", NMin, " or more spiders", sep = ""))+
-			xlab("Log Approx. Nest Area") + ylab("CV hunger") + facet_wrap(~Instar, scales = "free_y")			
+ggplot(SumsHungerN , aes(x=logCtFm, y = cvByNHung)) + geom_point(aes(colour = NestID), shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("CV hunger")) +
+		xlab("Log number of females") + ylab("Coefficient of variation of hunger") + mytheme+
+		facet_wrap(~ Instar,  ncol = 4) + theme(legend.position = "none")
+
 
 dev.off()
 
