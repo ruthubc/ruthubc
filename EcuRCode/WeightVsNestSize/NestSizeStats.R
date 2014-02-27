@@ -303,6 +303,7 @@ cvLegMod2a<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm 
  cvLegMod7a<- lmer(logcvByNLeg ~ logCtFm + (1|NestID), data = SpiNestAve, REML = FALSE)
  
  anova(cvLegMod1, cvLegMod7a)
+ anova(cvLegMod3a, cvLegMod7a)
  
  
  ##testing instar against completely null model
