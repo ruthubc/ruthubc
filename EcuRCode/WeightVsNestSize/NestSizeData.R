@@ -62,7 +62,8 @@ SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm), summarise, # need 
 		sdHung = sd(hunger, na.rm = TRUE),
 		CVHung= sdHung/ meanHung,
 		cvByNHung = (1+(1/(4*N))) * CVHung,
-		logcvByNHung= log10(cvByNHung)
+		logcvByNHung= log10(cvByNHung),
+		meanHead =  mean(HeadLength.mm)
 
 
 
@@ -73,7 +74,17 @@ SpiNestAve <- subset(SpiNestAve, type == "multiple")
 ##removing NA's from SpiNestAve
 SpiNestAve <- na.omit(SpiNestAve)
 
-spidersMul <- subset(spiders, type == "multiple") #removing single females
+spidersMul <- subset(spiders, type == "multiple") #removing single females\
+
+### data for single vs multiple nests
+spidersSglMt <- subset(spiders, Instar == "Adult")
+
+
+#removing single spiders that don't have juvs or eggs to make sure that the higher weight isn't because they are gravid
+spidersSglMt <- subset(spidersSglMt , FemalesHaveEggsOrJuvs != "n")
+Spis44 <- subset(spidersSglMt, km == "44.4")
+Spis44 <- subset(Spis44, type == "single" | NestID == "44.4EX03")
+
 
 ## looking at small juv 4's to see if needs to be removed from analysis
 

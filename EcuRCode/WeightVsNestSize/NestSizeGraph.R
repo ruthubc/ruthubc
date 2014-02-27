@@ -122,7 +122,7 @@ pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSize.pdf", height=8, width=1
 ggplot(SumsLegN , aes(x=logCtFm, y = log10(meanLeg))) + geom_point(aes(colour = NestID), shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 		ggtitle(paste("Mean leg length with min ", NMin, " spiders", sep = ""))+
-		xlab("Log number of females") + ylab("Log leg length") + mytheme+
+		xlab("Log number of females") + ylab("Log leg length") + mytheme+ 
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + theme(legend.position = "none")
 
 
@@ -130,7 +130,7 @@ ggplot(subset(SumsLegN, Instar != "SubMaler"), aes(x=logCtFm, y = cvByNLeg)) +  
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 		ggtitle(paste("Coefficent of variation of leg length"))+ ylim(0, 0.17) + 
 		xlab("Log number of females") + ylab("Log coefficient of variation") + mytheme+
-		facet_wrap(~ Instar, ncol = 4) + theme(legend.position = "none")
+		facet_wrap(~ Instar, scales= "free_y", ncol = 4) + theme(legend.position = "none")
 
 
 
@@ -146,99 +146,58 @@ ggplot(SumsLegN, aes(x=Instar, y= mean)) + geom_point(aes(colour=size)) + geom_l
 NMin <- 1
 SumsHungerN <- subset(SpiNestAve, N > NMin)
 
-pdf("RuthEcuador2013/NestSize/Graphs/MeanHungerVsNestSize.pdf", onefile = "TRUE")
+pdf("RuthEcuador2013/NestSize/Graphs/MeanHungerVsNestSize.pdf", , height=8, width=11)
 
-ggplot(SumsHungerN , aes(x=logCtFm, y = log10(meanHung*10))) + geom_point(aes(colour = NestID), shape = 16) + 
+ggplot(SumsHungerN , aes(x=logCtFm, y = meanHung)) + geom_point(aes(colour = NestID), shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 		ggtitle(paste("Log mean hunger")) +
-		xlab("Log number of females") + ylab("Log hunger") + mytheme+
+		xlab("Log number of females") + ylab("Mean hunger") + mytheme+
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + theme(legend.position = "none")
 
 ggplot(SumsHungerN , aes(x=logCtFm, y = cvByNHung)) + geom_point(aes(colour = NestID), shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("CV hunger")) +
+		ggtitle(paste("CV hunger")) + ylim(-0.02, 0.70) + 
 		xlab("Log number of females") + ylab("Coefficient of variation of hunger") + mytheme+
-		facet_wrap(~ Instar,  ncol = 4) + theme(legend.position = "none")
+		facet_wrap(~ Instar, scales = "free_y",  ncol = 4) + theme(legend.position = "none")
 
 
 dev.off()
 
 
-pdf("RuthEcuador2013/NestSize/Graphs/CVHungerVsNestSize.pdf", onefile = "TRUE")
+### head size
+###################################################################################
 
-for(i in 1: length(Instar)){
-	
-	MyInstar <- Instar[i]
-	
-	print(ggplot(subset(SumsHungerN, Instar ==MyInstar) , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) + 
-					geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-					ggtitle(paste("CV of hunger ", Instar[i], " if nest has ", MinNoSpis, " or more ", Instar[i], "'s", sep = ""))+
-					xlab("Log Approx. Nest Area") + ylab("CV of hunger)"))
-	
-	
-}
 
-dev.off()
+
+
+ggplot(SpiNestAve , aes(x=logCtFm, y = meanHead)) + geom_point(aes(colour = NestID), shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		ggtitle(paste("Log mean hunger")) +
+		xlab("Log number of females") + ylab("Mean Head") + mytheme+
+		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + theme(legend.position = "none")
+
+
 
 
 #GRAPH TO EXPORT
 #######################################################################################
 ###single females against multi-female nests
 
-Adults <- subset(spiders, Instar == "Adult" & FemalesHaveEggsOrJuvs != "n" & 
-				FemalesHaveEggsOrJuvs != "unk" )
 
-pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests.pdf", height = 6, width = 9.5)
+pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests.pdf", height = 6, width = 6)
 
-p1 = ggplot(Adults, aes(x=Approx..Single., y=logWeight)) + geom_boxplot() +
-		ggtitle("Weight") + ylab("Log Weight") + mytheme +theme(axis.title.x = element_blank())
+ggplot(Spis44, aes(x=type, y=hunger)) + geom_boxplot() +
+		ggtitle("Hunger 44.4 nests only ") + ylab("Hunger") + mytheme +theme(axis.title.x = element_blank())
 
-
-p2 = ggplot(Adults, aes(x=Approx..Single., y=logLeg)) + geom_boxplot() +
-		ggtitle("Leg Length") + ylab("Log Leg Length") +
+ggplot(Spis44, aes(x=type, y=logLeg)) + geom_boxplot() +
+		ggtitle("Leg Length 44.4 nests only ") + ylab("Log Leg Length") +
 		mytheme +  theme(axis.title.x = element_blank())
 
-p3 = ggplot(Adults, aes(x=Approx..Single., y=logHead)) + geom_boxplot() +
-		ggtitle("Head Length") + ylab("Log Head Length") + theme(axis.title.x = element_blank())
 
-p4 = ggplot(Adults, aes(x=Approx..Single., y=logHung)) + geom_boxplot() +
-		ggtitle("Hunger") + ylab("Log Hunger") + theme(axis.title.x = element_blank())
-
-grid.arrange(p1, p2, ncol =2, main = "Multiple vs (approx) single nests")
+#grid.arrange(p1, p2, ncol =2, main = "Multiple vs (approx) single nests")
 
 dev.off()
 
-####################################################################################
-## Only including 44.4 nest in the analysis (large nest is 44.4EX03
-
-AdSub <- subset(Adults, grepl("44.4EXM", Adults$NestID) | NestID == "44.4EX03"  )
-
-pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests44.4ONLY.pdf", height = 6, width = 9.5)
-
-#p1 = 
-ggplot(AdSub, aes(x=Approx..Single., y=logWeight)) + geom_boxplot() +
-		ggtitle("Weight") + ylab("Log Weight") +  theme(axis.title.x = element_blank())
-
-p2 = ggplot(AdSub, aes(x=Approx..Single., y=logLeg)) + geom_boxplot() +
-		ggtitle("Leg Length") + ylab("Log Leg Length") + theme(axis.title.x = element_blank())
-
-p3 = ggplot(AdSub, aes(x=Approx..Single., y=logHead)) + geom_boxplot() +
-		ggtitle("Head Length") + ylab("Log Head Length") + theme(axis.title.x = element_blank())
-
-p4 = ggplot(AdSub, aes(x=Approx..Single., y=logHung)) + geom_boxplot() +
-		ggtitle("Hunger") + ylab("Log Hunger") + theme(axis.title.x = element_blank())
-
-grid.arrange(p1, p2, p3, p4, ncol = 2, main = "Multiple vs (approx) single nests 44.4 only")
-
-dev.off()
-
-############################################################################################
-##stats test of weight etc against nest type single or multiple
-
-t.test(Adults$Weight.mg ~ Adults$Approx..Single. )
-t.test(Adults$LegLen.mm ~ Adults$Approx..Single. )
-t.test(Adults$HeadLength.mm ~ Adults$Approx..Single. )
-t.test(Adults$AbdmLen.mm ~ Adults$Approx..Single. )
 
 ############################################################################################
 ###head size vs weight graph

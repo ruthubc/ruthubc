@@ -63,6 +63,7 @@ SingMt44LegMod <- lmer(logLeg ~ type + (1|NestID), data = Spis44, REML = FALSE )
 modelPlot(SingMt44LegMod) # not so normal and not good variances
 summary(SingMt44LegMod)
 
+
 ### testing against reduced model
 
 SingMt44LegRedMod <- lmer(logLeg ~ 1 + (1|NestID), data = Spis44, REML = FALSE )
@@ -389,14 +390,15 @@ cvHungMod3a<- lmer(logcvByNHung ~  logCtFm + Instar+ Instar:logCtFm +
 anova(cvHungMod1, cvHungMod3a)
 
 #testing instar:logfme
-cvHungMod4a<- lmer(logcvByNHung ~  logCtFm + Instar+ 
-				(1|NestID), data = SpiNestAve, REML = FALSE)
+cvHungMod4a<-  lmer(cvByNHung ~ I(logCtFm^2) + logCtFm + Instar+ 
+				I(logCtFm^2):Instar + (1|NestID), data = SpiNestAve, REML = FALSE)
+
 
 anova(cvHungMod1, cvHungMod4a)
 anova(cvHungMod3a, cvHungMod4a)
 
 
-#testing count fem
+#testing count fem and interaction effect
 cvHungMod5a<- lmer(logcvByNHung ~ I(logCtFm^2) + I(logCtFm^2):Instar + Instar+ (1|NestID), data = SpiNestAve, REML = FALSE)
 
 anova(cvHungMod1, cvHungMod5a)
