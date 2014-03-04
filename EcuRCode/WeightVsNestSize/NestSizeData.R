@@ -91,3 +91,10 @@ Spis44 <- subset(Spis44, type == "single" | NestID == "44.4EX03")
 table(spiderData$Instar)
 
 juvs <- subset(spiderData, Instar == 'Juv4' | Instar =='juv3', select = c('NestID', 'Key', 'Instar', 'LegLen.mm' ))
+
+
+##Leticia Export
+
+LAExport <- subset(SpiNestAve, Instar == "Sub1", select = c("NestID", "Instar", "logCtFm", "meanHung", "cvByNHung" ))
+
+write.table(LAExport, "RuthEcuador2013/NestSize/Graphs/CVHunger.csv", sep = ",")

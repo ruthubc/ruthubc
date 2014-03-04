@@ -159,7 +159,7 @@ pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/FeedingAndHunger.pdf", width= 10)
 
 # hunger boxplot by ate or didn't
 ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = LogHunger)) + geom_boxplot() + 
-		facet_wrap(Treatment~Instar) + mytheme + ylab("Log Hunger") + xlab("")+
+		facet_wrap(Instar ~ Treatment) + mytheme + ylab("Log Hunger") + xlab("")+
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed"))
 
 ggplot(subset(BoxComboMorn, IndFeed == "y"), aes(x= LogHunger, y = TimeEatingLog1, colour = Treatment)) + geom_point() +
@@ -297,12 +297,13 @@ ggplot(AveByTrial, aes(AsinPJEven)) + geom_histogram()
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PJEven.pdf", width = 7, height =5.5)
 
 SubsetAveByTrial<- subset(AveByTrial, PJEven > -1)
+#(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
 
-ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
+ggplot(SubsetAveByTrial, aes(x= Treatment, y =PJEven)) + geom_boxplot() + mytheme + ylab("Box evenness") + xlab("Prey Size")
 
-ggplot(SubsetAveByTrial, aes(x= Instar, y =AsinPJEven)) + geom_boxplot() + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
+#ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + facet_wrap(~Instar) + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
 
-ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + facet_wrap(~Instar) + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
+ggplot(SubsetAveByTrial, aes(x= Treatment, y =PJEven)) + geom_boxplot() + facet_wrap(~Instar) + mytheme + ylab("Box evenness") + xlab("Prey Size")
 
 dev.off()
 

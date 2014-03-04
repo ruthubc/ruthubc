@@ -154,7 +154,7 @@ ggplot(SumsHungerN , aes(x=logCtFm, y = meanHung)) + geom_point(aes(colour = Nes
 		xlab("Log number of females") + ylab("Mean hunger") + mytheme+
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + theme(legend.position = "none")
 
-ggplot(SumsHungerN , aes(x=logCtFm, y = cvByNHung)) + geom_point(aes(colour = NestID), shape = 16) + 
+ggplot(SumsHungerN , aes(x=logCtFm^2, y = cvByNHung)) + geom_point(aes(colour = NestID), shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
 		ggtitle(paste("CV hunger")) + ylim(-0.02, 0.70) + 
 		xlab("Log number of females") + ylab("Coefficient of variation of hunger") + mytheme+
@@ -184,14 +184,17 @@ ggplot(SpiNestAve , aes(x=logCtFm, y = meanHead)) + geom_point(aes(colour = Nest
 ###single females against multi-female nests
 
 
-pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests.pdf", height = 6, width = 6)
+pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests44.pdf", height = 6, width = 6)
 
-ggplot(Spis44, aes(x=type, y=hunger)) + geom_boxplot() +
-		ggtitle("Hunger 44.4 nests only ") + ylab("Hunger") + mytheme +theme(axis.title.x = element_blank())
+ggplot(Spis44, aes(x=type, y=hunger)) + geom_boxplot() + 
+		ggtitle("Hunger 44.4 nests only ") + ylab("Hunger") + mytheme +theme(axis.title.x = element_blank()) +
+		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single"))
 
 ggplot(Spis44, aes(x=type, y=logLeg)) + geom_boxplot() +
 		ggtitle("Leg Length 44.4 nests only ") + ylab("Log Leg Length") +
-		mytheme +  theme(axis.title.x = element_blank())
+		mytheme +  theme(axis.title.x = element_blank()) +
+		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single"))
+
 
 
 #grid.arrange(p1, p2, ncol =2, main = "Multiple vs (approx) single nests")

@@ -247,11 +247,59 @@ modelPlot(HungEatMod1)
 anova(HungEatMod1)
 summary(HungEatMod1)
 
+############################################TESTING IND INSTARS AND PREY SIZES ###########
+
+## sub1 and large prey
+
+EatBinlargeSub1 <- glmer(IndFeed ~ LogHunger + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "large")), 
+							family = binomial(logit))
+					
+EatBinlargeSub1Red <- glmer(IndFeed ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "large")), 
+							family = binomial(logit))	
+					
+anova(EatBinlargeSub1, EatBinlargeSub1Red)
+
+## sub1 and small prey
+
+EatBinsmallSub1 <- glmer(IndFeed ~ LogHunger + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "small")), 
+		family = binomial(logit))
+
+EatBinsmallSub1Red <- glmer(IndFeed ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "small")), 
+		family = binomial(logit))	
+
+anova(EatBinsmallSub1, EatBinsmallSub1Red)
+
+## Sub2 and large prey
+
+EatBinlargeSub2 <- glmer(IndFeed ~ LogHunger + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "large")), 
+		family = binomial(logit))
+
+EatBinlargeSub2Red <- glmer(IndFeed ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "large")), 
+		family = binomial(logit))	
+
+anova(EatBinlargeSub2, EatBinlargeSub2Red)
+
+## Sub2 and small prey
+
+EatBinsmallSub2 <- glmer(IndFeed ~ LogHunger + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "small")), 
+		family = binomial(logit))
+
+EatBinsmallSub2Red <- glmer(IndFeed ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "small")), 
+		family = binomial(logit))	
+
+anova(EatBinsmallSub2, EatBinsmallSub2Red)
+
+
+
 ############################################################################
 ##Testing pj's against treatment
 
 # linear model
-SubAveByTrial <-subset(AveByTrial)#, TrialID != "T3")
+SubAveByTrial <-subset(AveByTrial, TrialID != "T3")
 
 # testing as simple linear model
 PJMod1 <-  lmer(AsinPJEven ~ Treatment*Instar + (1|IndBoxID), SubAveByTrial,REML = FALSE)
@@ -337,8 +385,27 @@ mean(lrstat > number)
 #0.046 - 2000 iterations
 #0.0533 - 3000 iterations
 
+############## Testing just sub1 vs pj evenness 
 
-#### Individual fraction of time eating vs instar and prey
+PJModSub1 <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), (subset(SubAveByTrial, Instar == "Sub1")), 
+		REML = FALSE)
+
+PJModSub1Red <-  lmer(AsinPJEven ~ (1|IndBoxID), (subset(SubAveByTrial, Instar == "Sub1")), 
+		REML = FALSE)
+
+anova(PJModSub1, PJModSub1Red)
+
+############## Testing just sub2 vs pj evenness 
+
+PJModSub2 <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), (subset(SubAveByTrial, Instar == "Sub2")), 
+		REML = FALSE)
+
+PJModSub2Red <-  lmer(AsinPJEven ~ (1|IndBoxID), (subset(SubAveByTrial, Instar == "Sub2")), 
+		REML = FALSE)
+
+anova(PJModSub2, PJModSub2Red)
+
+############################ Individual fraction of time eating vs instar and prey##################
 ## Starting with the linear model
 
 SubBoxMorn <-subset(BoxComboMorn, FeedFraction>0 & TrialID != "T3")

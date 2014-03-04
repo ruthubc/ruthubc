@@ -87,69 +87,112 @@ modelPlot(SingMt44WeiRedMod) # normal but variances not great
 anova(SingMt44WeiRedMod, SingMt44WeiMod)
 
 
-##################################################################
-########## Leg Length vs nest size ###############################
+##########################################################################################################
+########## Leg Length vs nest size ########################################################################
 
 spidersMul <- subset(spiders, type == "multiple") #removing single females
 
-HungNestSzeMdNull <- lmer(logLeg ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
+LegNestSzeMdNull <- lmer(logLeg ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
 #getting AIC and p values and putting into list
-#HungNestNull <- multipleModel(HungNestSzeMdNull, HungNestSzeMdNull)
+#LegNestNull <- multipleModel(LegNestSzeMdNull, LegNestSzeMdNull)
 
-HungNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
+LegNestSzeMd1 <- lmer(logLeg ~ I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + 
 				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
-modelPlot(HungNestSzeMd1) # seems to be skwesnot sure it is so normal;not sure about the variances
+modelPlot(LegNestSzeMd1) # seems to be skwesnot sure it is so normal;not sure about the variances
 # I could check the different variance with that test
 
-anova(HungNestSzeMd1)  # The interactions matter!!
-summary(HungNestSzeMd1)
+anova(LegNestSzeMd1)  # The interactions matter!!
+summary(LegNestSzeMd1)
 
-HungNest1<- multipleModel(HungNestSzeMd1, HungNestSzeMdNull)
+LegNest1<- multipleModel(LegNestSzeMd1, LegNestSzeMdNull)
 
 ### Leg 2 removing squared term and interaction
-HungNestSzeMd2 <- lmer(logLeg ~ logCtFm + Instar + logCtFm:Instar 
+LegNestSzeMd2 <- lmer(logLeg ~ logCtFm + Instar + logCtFm:Instar 
 				 + (1|NestID), data = spidersMul, REML = FALSE)
 
-modelPlot(HungNestSzeMd2) # seems to be skwesnot sure it is so normal;not sure about the variances
+modelPlot(LegNestSzeMd2) # seems to be skwesnot sure it is so normal;not sure about the variances
 # I could check the different variance with that test
 
-anova(HungNestSzeMd2)  
-summary(HungNestSzeMd2)
+anova(LegNestSzeMd2)  
+summary(LegNestSzeMd2)
 
-HungNest2<- multipleModel(HungNestSzeMd2, HungNestSzeMdNull)
+LegNest2<- multipleModel(LegNestSzeMd2, LegNestSzeMdNull)
 
 ### Leg 3 removing interaction
-HungNestSzeMd3 <- lmer(logLeg ~ logCtFm + Instar 
+LegNestSzeMd3 <- lmer(logLeg ~ logCtFm + Instar 
 				+ (1|NestID), data = spidersMul, REML = FALSE)
 
-modelPlot(HungNestSzeMd3) # seems to be skwesnot sure it is so normal;not sure about the variances
+modelPlot(LegNestSzeMd3) # seems to be skwesnot sure it is so normal;not sure about the variances
 # I could check the different variance with that test
 
 
-anova(HungNestSzeMd3)  
-summary(HungNestSzeMd3)
+anova(LegNestSzeMd3)  
+summary(LegNestSzeMd3)
 
-HungNest3<- multipleModel(HungNestSzeMd3, HungNestSzeMdNull)
+LegNest3<- multipleModel(LegNestSzeMd3, LegNestSzeMdNull)
 
 
-LegTable<- as.data.frame(t(data.frame(HungNest1, HungNest2, HungNest3)))
+LegTable<- as.data.frame(t(data.frame(LegNest1, LegNest2, LegNest3)))
 colnames(LegTable)<-c("model", "AIC", "BIC", "pValue")
 
-write.table(LegTable, file="RuthEcuador2013/NestSize/Graphs/HungNestSizeStats.csv", sep=",",row.names=F)
-
-##drop 1..not sure how useful this is
-drop1(HungNestSzeMd1, scope ~ I(logCtFm^2):logCtFm:Instar, test = "Chi") #sig p = 0.00058	
-drop1(HungNestSzeMd1, scope ~ I(logCtFm^2):logCtFm, test = "Chi") # NOT sig 
-drop1(HungNestSzeMd1, scope ~ logCtFm:Instar, test = "Chi") # sig p = 0.0028
-drop1(HungNestSzeMd1, scope ~ I(logCtFm^2):Instar, test = "Chi") # sig p = 0.001238
-drop1(HungNestSzeMd1, scope ~ I(logCtFm^2), test = "Chi")# sig p = 0.0138
-drop1(HungNestSzeMd1, scope ~ logCtFm, test = "Chi") # sig p = 0.02566
-drop1(HungNestSzeMd1, scope ~ Instar, test = "Chi") # sig p = 0.00197
+write.table(LegTable, file="RuthEcuador2013/NestSize/Graphs/LegNestSizeStats.csv", sep=",",row.names=F)
 
 
-############### Testing Leg Length Nest Size individual terms
+
+############### Testing individual instars leg length vs nest size
+
+#Adult
+
+LegNestAdultMd1 <- lmer(logLeg ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "Adult"), REML = FALSE)
+
+LegNestAdultMdRed <- lmer(logLeg ~  (1|NestID), subset(spidersMul, Instar == "Adult"), REML = FALSE)
+
+anova(LegNestAdultMd1, LegNestAdultMdRed)
+
+#Sub2
+
+LegNestSub2Md1 <- lmer(logLeg ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "Sub2"), REML = FALSE)
+
+LegNestSub2MdRed <- lmer(logLeg ~  (1|NestID), subset(spidersMul, Instar == "Sub2"), REML = FALSE)
+
+
+#AdMale
+
+LegNestAdMaleMd1 <- lmer(logLeg ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "AdMale"), REML = FALSE)
+
+LegNestAdMaleMdRed <- lmer(logLeg ~  (1|NestID), subset(spidersMul, Instar == "AdMale"), REML = FALSE)
+
+anova(LegNestAdMaleMd1, LegNestAdMaleMdRed)
+
+#Juv4
+
+LegNestJuv4Md1 <- lmer(logLeg ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+
+LegNestJuv4MdRed <- lmer(logLeg ~  (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+
+anova(LegNestJuv4Md1, LegNestJuv4MdRed)
+
+#Sub1
+
+LegNestSub1Md1 <- lmer(logLeg ~ I(logCtFm^2)+  logCtFm + (1|NestID), subset(spidersMul, Instar == "Sub1"), REML = FALSE)
+
+anova(LegNestSub1Md1)
+
+LegNestSub1MdRed <- lmer(logLeg ~  (1|NestID), subset(spidersMul, Instar == "Sub1"), REML = FALSE)
+
+anova(LegNestSub1Md1, LegNestSub1MdRed)
+
+#Juv4
+
+LegNestJuv4Md1 <- lmer(logLeg ~ I(logCtFm^2)+  logCtFm + (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+
+anova(LegNestJuv4Md1)
+
+LegNestJuv4MdRed <- lmer(logLeg ~  (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+
+anova(LegNestJuv4Md1, LegNestJuv4MdRed)
 
 
 ########### Weight vs nest size ################################
@@ -254,9 +297,65 @@ anova(HungNestSzeMd1, HungNestSzeMd5a)
 
 modelPlot(HungNestSzeMd5a)
 
+############### Testing individual instars Hung length vs nest size
+
+#Adult
+
+HungNestAdultMd1 <- lmer(logHung ~   logCtFm + (1|NestID), subset(spidersMul, Instar == "Adult"), REML = FALSE)
+
+anova(HungNestAdultMd1)
+HungNestAdultMdRed <- lmer(logHung ~  (1|NestID), subset(spidersMul, Instar == "Adult"), REML = FALSE)
+
+anova(HungNestAdultMd1, HungNestAdultMdRed)
+
+#Sub2
+
+HungNestSub2Md1 <- lmer(logHung ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "Sub2"), REML = FALSE)
+
+HungNestSub2MdRed <- lmer(logHung ~  (1|NestID), subset(spidersMul, Instar == "Sub2"), REML = FALSE)
+
+anova(HungNestSub2Md1, HungNestSub2MdRed)
 
 
-############# CV of Leg by nest size####
+#AdMale
+
+HungNestAdMaleMd1 <- lmer(logHung ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "AdMale"), REML = FALSE)
+
+HungNestAdMaleMdRed <- lmer(logHung ~  (1|NestID), subset(spidersMul, Instar == "AdMale"), REML = FALSE)
+
+anova(HungNestAdMaleMd1, HungNestAdMaleMdRed)
+
+#Juv4
+
+HungNestJuv4Md1 <- lmer(logHung ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+
+HungNestJuv4MdRed <- lmer(logHung ~  (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+
+anova(HungNestJuv4Md1, HungNestJuv4MdRed)
+
+#Sub1
+
+HungNestSub1Md1 <- lmer(logHung ~ I(logCtFm^2)+  logCtFm + (1|NestID), subset(spidersMul, Instar == "Sub1"), REML = FALSE)
+
+anova(HungNestSub1Md1)
+
+HungNestSub1MdRed <- lmer(logHung ~  (1|NestID), subset(spidersMul, Instar == "Sub1"), REML = FALSE)
+
+anova(HungNestSub1Md1, HungNestSub1MdRed)
+
+#Juv4
+
+HungNestJuv4Md1 <- lmer(logHung ~ I(logCtFm^2)+  logCtFm + (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+
+anova(HungNestJuv4Md1)
+
+HungNestJuv4MdRed <- lmer(logHung ~  (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+
+anova(HungNestJuv4Md1, HungNestJuv4MdRed)
+
+
+
+################################# CV of Leg by nest size###############################################
 
 
 cvLegMod1<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
@@ -329,6 +428,84 @@ cvLegMod3 <- lmer(logcvByNLeg ~ logCtFm + Instar
 anova(cvLegMod3)
 
 anova(cvLegMod3, cvLegMod2)
+
+
+################ Testing seperate instars ####################################################
+
+
+###Adult
+cvLegAdultMod1<- lm(logcvByNLeg ~ I(logCtFm^2) + logCtFm, subset(SpiNestAve, Instar =="Adult"))
+
+anova(cvLegAdultMod1)
+
+cvLegAdultModSq1<- lm(logcvByNLeg ~ I(logCtFm^2), subset(SpiNestAve, Instar =="Adult"))
+cvLegAdultModRed<- lm(logcvByNLeg ~ 1, subset(SpiNestAve, Instar =="Adult"))
+
+anova(cvLegAdultModSq1, cvLegAdultModRed)
+
+###Sub2
+cvLegSub2Mod1<- lm(logcvByNLeg ~ I(logCtFm^2) + logCtFm, subset(SpiNestAve, Instar =="Sub2"))
+
+anova(cvLegSub2Mod1)
+
+cvLegSub2ModSq<- lm(logcvByNLeg ~ I(logCtFm^2), subset(SpiNestAve, Instar =="Sub2"))
+cvLegSub2ModRed<- lm(logcvByNLeg ~ 1, subset(SpiNestAve, Instar =="Sub2"))
+
+anova(cvLegSub2ModSq, cvLegSub2ModRed)
+
+cvLegSub2ModNS<- lm(logcvByNLeg ~ logCtFm, subset(SpiNestAve, Instar =="Sub2"))
+
+anova(cvLegSub2ModNS, cvLegSub2ModRed)
+
+###Sub1
+cvLegSub1Mod1<- lm(logcvByNLeg ~ I(logCtFm^2) + logCtFm, subset(SpiNestAve, Instar =="Sub1"))
+
+anova(cvLegSub1Mod1)
+
+cvLegSub1ModSq<- lm(logcvByNLeg ~ I(logCtFm^2), subset(SpiNestAve, Instar =="Sub1"))
+cvLegSub1ModRed<- lm(logcvByNLeg ~ 1, subset(SpiNestAve, Instar =="Sub1"))
+
+anova(cvLegSub1ModSq, cvLegSub1ModRed)
+
+cvLegSub1ModNS<- lm(logcvByNLeg ~ logCtFm, subset(SpiNestAve, Instar =="Sub1"))
+
+anova(cvLegSub1ModNS, cvLegSub1ModRed)
+
+###AdMale
+cvLegAdMaleMod1<- lm(logcvByNLeg ~ I(logCtFm^2) + logCtFm, subset(SpiNestAve, Instar =="AdMale"))
+
+anova(cvLegAdMaleMod1)
+anova(cvLegAdMaleMod1, cvLegMaleMod)
+
+cvLegAdMaleModSq<- lm(logcvByNLeg ~ I(logCtFm^2), subset(SpiNestAve, Instar =="AdMale"))
+cvLegAdMaleModRed<- lm(logcvByNLeg ~ 1, subset(SpiNestAve, Instar =="AdMale"))
+
+anova(cvLegAdMaleMod1, cvLegAdMaleModRed)
+anova(cvLegAdMaleModSq, cvLegAdMaleModRed)
+
+cvLegAdMaleModNS<- lm(logcvByNLeg ~ logCtFm, subset(SpiNestAve, Instar =="AdMale"))
+
+anova(cvLegAdMaleModNS, cvLegAdMaleModRed)
+anova(cvLegAdMaleModNS, cvLegAdMaleMod1)
+
+###Juv4
+cvLegJuv4Mod1<- lm(logcvByNLeg ~ I(logCtFm^2) + logCtFm, subset(SpiNestAve, Instar =="Juv4"))
+
+anova(cvLegJuv4Mod1)
+anova(cvLegJuv4Mod1, cvLegMaleMod)
+
+cvLegJuv4ModSq<- lm(logcvByNLeg ~ I(logCtFm^2), subset(SpiNestAve, Instar =="Juv4"))
+cvLegJuv4ModRed<- lm(logcvByNLeg ~ 1, subset(SpiNestAve, Instar =="Juv4"))
+
+anova(cvLegJuv4Mod1, cvLegJuv4ModRed)
+anova(cvLegJuv4ModSq, cvLegJuv4ModRed)
+
+cvLegJuv4ModNS<- lm(logcvByNLeg ~ logCtFm, subset(SpiNestAve, Instar =="Juv4"))
+
+anova(cvLegJuv4ModNS, cvLegJuv4ModRed)
+anova(cvLegJuv4ModNS, cvLegJuv4Mod1)
+
+
 
 ######## CV of weight by nest size #######
 
@@ -420,3 +597,95 @@ anova(cvHungMod1, cvHungMod7a)
 cvHungMod8a<- lmer(logcvByNHung ~ Instar+ (1|NestID), data = SpiNestAve, REML = FALSE)
 cvHungModComNull<- lmer(logcvByNHung ~ (1|NestID), data = SpiNestAve, REML = FALSE)
 anova(cvHungModComNull, cvHungMod8a)
+
+######### CV of hunger by individual instar
+
+##Adult
+cvHungModAdultFull<- lm(cvByNHung ~ I(logCtFm^2) + logCtFm, subset(SpiNestAve, Instar == "Adult"))
+anova(cvHungModAdultFull)
+
+##Sub2
+cvHungModSub2Full<- lm(cvByNHung ~ I(logCtFm^2) + logCtFm, subset(SpiNestAve, Instar == "Sub2"))
+anova(cvHungModSub2Full)
+
+
+##Sub1
+
+
+cvHungModSub1Red<- lm(cvByNHung ~ 1, subset(SpiNestAve, Instar == "Sub1"))
+
+cvHungModSub1Full<- lm(cvByNHung ~  logCtFm + I(logCtFm^2) , subset(SpiNestAve, Instar == "Sub1"))
+anova(cvHungModSub1Full)
+
+anova(cvHungModSub1Full, cvHungModSub1Red)
+
+cvHungModSub1Sq<- lm(cvByNHung ~ I(logCtFm^2), subset(SpiNestAve, Instar == "Sub1"))
+anova(cvHungModSub1Sq)
+anova( cvHungModSub1Full, cvHungModSub1Sq)
+anova(cvHungModSub1Sq,  cvHungModSub1Red) # don't understand why this is not significant
+
+
+
+cvHungModSub1NS<- lm(cvByNHung ~  logCtFm, subset(SpiNestAve, Instar == "Sub1"))
+anova(cvHungModSub1Full, cvHungModSub1NS)
+
+##AdMale
+
+
+cvHungModAdMaleRed<- lm(cvByNHung ~ 1, subset(SpiNestAve, Instar == "AdMale"))
+
+cvHungModAdMaleFull<- lm(cvByNHung ~  logCtFm + I(logCtFm^2) , subset(SpiNestAve, Instar == "AdMale"))
+anova(cvHungModAdMaleFull)
+
+anova(cvHungModAdMaleFull, cvHungModAdMaleRed)
+
+cvHungModAdMaleSq<- lm(cvByNHung ~ I(logCtFm^2), subset(SpiNestAve, Instar == "AdMale"))
+anova(cvHungModAdMaleSq)
+anova( cvHungModAdMaleFull, cvHungModAdMaleSq)
+anova(cvHungModAdMaleSq,  cvHungModAdMaleRed) # don't understand why this is not significant
+
+
+
+cvHungModAdMaleNS<- lm(cvByNHung ~  logCtFm, subset(SpiNestAve, Instar == "AdMale"))
+anova(cvHungModAdMaleFull, cvHungModAdMaleNS)
+
+##Juv4
+
+
+cvHungModJuv4Red<- lm(cvByNHung ~ 1, subset(SpiNestAve, Instar == "Juv4"))
+
+cvHungModJuv4Full<- lm(cvByNHung ~  logCtFm + I(logCtFm^2) , subset(SpiNestAve, Instar == "Juv4"))
+anova(cvHungModJuv4Full)
+
+anova(cvHungModJuv4Full, cvHungModJuv4Red)
+
+cvHungModJuv4Sq<- lm(cvByNHung ~ I(logCtFm^2), subset(SpiNestAve, Instar == "Juv4"))
+anova(cvHungModJuv4Sq)
+anova( cvHungModJuv4Full, cvHungModJuv4Sq)
+anova(cvHungModJuv4Sq,  cvHungModJuv4Red) 
+
+
+
+cvHungModJuv4NS<- lm(cvByNHung ~  logCtFm, subset(SpiNestAve, Instar == "Juv4"))
+anova(cvHungModJuv4Full, cvHungModJuv4NS)
+
+##Juv4
+
+
+cvHungModJuv4Red<- lm(cvByNHung ~ 1, subset(SpiNestAve, Instar == "Juv4"))
+
+cvHungModJuv4Full<- lm(cvByNHung ~  logCtFm + I(logCtFm^2) , subset(SpiNestAve, Instar == "Juv4"))
+anova(cvHungModJuv4Full)
+
+anova(cvHungModJuv4Full, cvHungModJuv4Red)
+
+cvHungModJuv4Sq<- lm(cvByNHung ~ I(logCtFm^2), subset(SpiNestAve, Instar == "Juv4"))
+anova(cvHungModJuv4Sq)
+anova( cvHungModJuv4Full, cvHungModJuv4Sq)
+anova(cvHungModJuv4Sq,  cvHungModJuv4Red) 
+
+
+cvHungModJuv4NS<- lm(cvByNHung ~  logCtFm, subset(SpiNestAve, Instar == "Juv4"))
+anova(cvHungModJuv4Full, cvHungModJuv4NS)
+
+
