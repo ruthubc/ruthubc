@@ -24,9 +24,11 @@ ggplot(BoxWeight, aes(x=(Weight.1)) ) + geom_histogram() + facet_wrap(~Instar)
 #########  Barplot Capture vs eating  ###################################################
 #####################################################################################
 
-CapVsEat <-subset(BoxCombo, select = c("FeedIndPos", "CaptureIndPos", "Treatment", "Instar") )
+CapVsEat <-subset(BoxCombo, select = c("FeedIndPos", "CaptureIndPos", "Treatment", "Instar", "LogHunger") )
 CapVsEat <-na.omit(CapVsEat)
 CapVsEat$FeedIndPos <- factor(CapVsEat$FeedIndPos, levels =c("y", "n"))
+CapVsEat$FeedAndCap <- paste("Cap", CapVsEat$CaptureIndPos, "Feed", CapVsEat$FeedIndPos)
+
 
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/CaptureVsFeed.pdf")
 
@@ -56,6 +58,8 @@ ggplot(data=CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) +
 				labels = c("No", "Yes")) + ggtitle("Prey Capture Vs Feeding by prey size") +
 		facet_wrap(~Instar)
 
+
+ggplot(data=subset(CapVsEat, FeedIndPos == "y"),  aes(x= FeedAndCap, y = LogHunger)) + geom_boxplot() + facet_wrap(~Instar)
 
 dev.off()
 
@@ -313,3 +317,5 @@ dev.off()
 ggplot(BoxComboMorn, aes((Hunger))) + geom_histogram()  + facet_wrap(~Instar)
 
 ggplot(BoxComboMorn, aes(x = Treatment, y=  Hunger)) + geom_boxplot() + facet_wrap(~Instar)
+
+
