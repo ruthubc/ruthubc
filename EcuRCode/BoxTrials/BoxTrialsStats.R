@@ -185,10 +185,34 @@ anova(TimeEatHunRankRed, TimeEatHunRank1) # not significant
 			#	Treatment:Instar + LogHunger:Treatment:Instar+  (1|Instar) + (1|Instar:IndBoxID) + 
 			#	(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
+
+## finding teh differences in hunger..perhaps I should do percentage difference?
+EatAtAllvsHngMn<- aggregate(BoxComboMorn$Hunger, by = list(BoxComboMorn$FeedIndPos, BoxComboMorn$Treatment, BoxComboMorn$Instar), 
+		FUN = mean, na.rm=TRUE)
+EatAtAllvsHngMn
+
+#function to give the absoulte difference and the percentage differences
+HungDiff<-function(table){
+	
+	for(i in c(2,4,6,8)){
+		
+		diff<-table[i, 4] - table[i-1, 4]
+		per<- ((table[i, 4] - table[i-1, 4])/ ((table[i, 4] + table[i-1, 4])/2)) *100 
+		print(paste(table[i, 2], table[i, 3], "diff:",  diff, ", %diff:", per))
+		
+	}
+	
+	
+}
+
+HungDiff(EatAtAllvsHngMn)
+
+
+######### Statistical tests
+
 EatBinMod1 <- glmer(IndFeed ~ LogHunger*Treatment*Instar + (1|Instar:IndBoxID) + 
 				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
-qqnorm(resid(EatBinMod1, main = "TimeHunMod4")) ; abline(0, 1)
 overdisp_fun(EatBinMod1)
 summary(EatBinMod1)
 anova(EatBinMod1) 
@@ -197,7 +221,7 @@ anova(EatBinMod1)
 EatBinMod2 <- glmer(IndFeed ~ LogHunger + Treatment+ Instar + LogHunger:Treatment+ (1|Instar:IndBoxID) + 
 				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
-qqnorm(resid(EatBinMod2, main = "EatBinMod2")) ; abline(0, 1)
+
 overdisp_fun(EatBinMod2)
 summary(EatBinMod2)
 anova(EatBinMod2)
@@ -215,7 +239,7 @@ anova(EatBinMod3)
 EatBinRedModInt <- glmer(IndFeed ~ LogHunger + Treatment + (1|Instar:IndBoxID) + 
 				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
-qqnorm(resid(EatBinRedModInt, main = "EatBinMod3")) ; abline(0, 1)
+
 overdisp_fun(EatBinRedModInt)
 
 anova(EatBinRedModInt, EatBinMod3) #very significant interaction effect
@@ -298,9 +322,30 @@ anova(EatBinsmallSub2, EatBinsmallSub2Red)
 ############################################################################
 ##Testing pj's against treatment
 
+
+
 # linear model
 SubAveByTrial <-subset(AveByTrial, TrialID != "T3")
 
+# mean differences
+PJTrtMn<-by(SubAveByTrial$PJEven, SubAveByTrial$Treatment, mean)
+PJTrtMn
+
+##overall difference
+PJTrtMn[1] -PJTrtMn[2]
+
+#difference within instars
+PJTrtInMn <- by(SubAveByTrial$PJEven, paste(SubAveByTrial$Instar, SubAveByTrial$Treatment), mean)
+PJTrtInMn
+
+PJTrtInMn[1]- PJTrtInMn[2]
+PJTrtInMn[3]- PJTrtInMn[4]
+
+#Difference within instars
+PJInsMn<-by(SubAveByTrial$PJEven, SubAveByTrial$Instar, mean)
+PJInsMn
+
+PJInsMn[1] - PJInsMn[2]
 # testing as simple linear model
 PJMod1 <-  lmer(AsinPJEven ~ Treatment*Instar + (1|IndBoxID), SubAveByTrial,REML = FALSE)
 
