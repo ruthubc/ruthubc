@@ -16,42 +16,57 @@ source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/OverDispersionFunction.R")
 #################################################################################
 ##### feeding vs prey capture
 
+
 #I haven't included interactions but they are not significant, nor is treatment or instar.
 #I made instar a random variable
 BoxComboCap <- subset(BoxComboMorn, IndFeed != "NA") # removing NA lines as the bootrstrapping can't deal
 
-CapMod1 <- glmer(IndCapture ~ IndFeed*Treatment*Instar + (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
 
+##numbers
+
+BoxComboCap$FedWords<-ifelse(BoxComboCap$FeedIndPos == "y", "Fed", "Did Not Feed")
+BoxComboCap$CapWords<-ifelse(BoxComboCap$CaptureIndPos == "y", "Cap", "Did Not Cap")
+CapVsFedTb<-table(BoxComboCap$FedWords,BoxComboCap$CapWords )
+
+
+
+## stats tests
+CapMod1 <- glmer(IndCapture ~ IndFeed*Treatment*Instar + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+
+overdisp_fun(CapMod1)
 summary(CapMod1)
 anova(CapMod1) 
-qqnorm(resid(CapMod1), main = "main") # not great but not bad
+
 
 ##Removing all interaction terms as they are massively not significant
 
-CapMod2 <- glmer(IndCapture ~ IndFeed + Treatment + Instar + (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+CapMod2 <- glmer(IndCapture ~ IndFeed + Treatment + Instar + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
 
+overdisp_fun(CapMod2)
 summary(CapMod2)
-anova(CapMod2) 
-qqnorm(resid(CapMod2), main = "main") # not great but not bad
+anova(CapMod2, CapMod1) 
+
 
 ##Removing treatment as it is very not significat from summary!
 
-CapMod3 <- glmer(IndCapture ~ IndFeed  + Instar + (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+CapMod3 <- glmer(IndCapture ~ IndFeed  + Treatment + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
 
+overdisp_fun(CapMod3)
 summary(CapMod3)
-anova(CapMod3) 
-qqnorm(resid(CapMod3), main = "main") # not great but not bad
+anova(CapMod3, CapMod2) 
 
-##Removing instar as it is very not significat from summary so we are just left with IndFeed!
 
-CapMod4 <- glmer(IndCapture ~ IndFeed+ (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+##Testing for effect of indfeed
 
+CapMod4 <- glmer(IndCapture ~ Treatment + Instar + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
+
+overdisp_fun(CapMod4)
 summary(CapMod4)
-qqnorm(resid(CapMod4), main = "main") # not great but not bad
+anova(CapMod4, CapMod2)
 
 RedCapMod <- glmer(IndCapture ~ 1+ (1|Instar:IndBoxID) + 
 				(1|Instar:IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
@@ -208,36 +223,36 @@ HungDiff<-function(table){
 HungDiff(EatAtAllvsHngMn)
 
 
-######### Statistical tests
+######### Statistical tests#######
 
-EatBinMod1 <- glmer(IndFeed ~ LogHunger*Treatment*Instar + (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+EatBinMod1 <- glmer(IndFeed ~ LogHunger*Treatment*Instar + (1:IndBoxID)+
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
 overdisp_fun(EatBinMod1)
 summary(EatBinMod1)
 anova(EatBinMod1) 
 
-#Removing 3-way interaction and treatment:Huger and instar:treatment
-EatBinMod2 <- glmer(IndFeed ~ LogHunger + Treatment+ Instar + LogHunger:Treatment+ (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+#Removing 3-way interaction and instar:Huger and instar:treatment (as they don't make sense)
+EatBinMod2 <- glmer(IndFeed ~ LogHunger + Treatment+ Instar + LogHunger:Treatment + LogHunger:Instar+
+				+ (1|IndBoxID)+ (1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
 
 overdisp_fun(EatBinMod2)
 summary(EatBinMod2)
 anova(EatBinMod2)
 
-#The only thing not significant is instar, so I am removing it
-EatBinMod3 <- glmer(IndFeed ~ LogHunger + Treatment + LogHunger:Treatment+ (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+#Removing Instar:hunger as not significant. Keeping instar in though because although not significat important.
+EatBinMod3 <- glmer(IndFeed ~ LogHunger + Treatment + Instar + Treatment:LogHunger +  (1|IndBoxID)+
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
-qqnorm(resid(EatBinMod3, main = "EatBinMod3")) ; abline(0, 1)
+
 overdisp_fun(EatBinMod3)
 summary(EatBinMod3)
 anova(EatBinMod3)
 
 # testing intereaction effect with reduced model
-EatBinRedModInt <- glmer(IndFeed ~ LogHunger + Treatment + (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+EatBinRedModInt <- glmer(IndFeed ~ LogHunger + Treatment + Instar + (1|IndBoxID)+
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
 
 overdisp_fun(EatBinRedModInt)
@@ -245,22 +260,30 @@ overdisp_fun(EatBinRedModInt)
 anova(EatBinRedModInt, EatBinMod3) #very significant interaction effect
 
 # testing treatment with reduced model
-EatBinRedModTreatment <- glmer(IndFeed ~ LogHunger  + (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+EatBinRedModTreatment <- glmer(IndFeed ~ LogHunger  + Instar + (1|IndBoxID)+
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
-qqnorm(resid(EatBinRedModTreatment, main = "EatBinRedModTreatment")) ; abline(0, 1)
 overdisp_fun(EatBinRedModTreatment)
 
 anova(EatBinRedModTreatment, EatBinMod3)
 
 #testing hunger with reduced model
-EatBinRedModHun <- glmer(IndFeed ~ Treatment  + (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+EatBinRedModHun <- glmer(IndFeed ~ Treatment  + Instar + (1|IndBoxID) +
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
-qqnorm(resid(EatBinRedModHun, main = "EatBinRedModHun")) ; abline(0, 1)
+overdisp_fun(EatBinRedModHun)
+summary(EatBinRedModHun)
+anova(EatBinRedModHun)
+anova(EatBinRedModHun, EatBinMod3)
+
+#testing instar with reduced model
+EatBinRedModHun <- glmer(IndFeed ~ Treatment  + LogHunger + LogHunger:Treatment + (1|IndBoxID)+ 
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+
 overdisp_fun(EatBinRedModHun)
 
 anova(EatBinRedModHun, EatBinMod3)
+
 
 ### Eating at all vs hunger but switching the variables to make a linear model
 
@@ -270,6 +293,8 @@ modelPlot(HungEatMod1)
 
 anova(HungEatMod1)
 summary(HungEatMod1)
+
+
 
 ############################################TESTING IND INSTARS AND PREY SIZES ###########
 
