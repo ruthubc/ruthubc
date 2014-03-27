@@ -22,16 +22,18 @@ for i in range(40):
 
 plt.title("mortality")
 
-a = 0.5
-mu = 2
-ymin = 0.1
+a = 0.1 #risk of death at size zero
+mu = 1
+ymin = 0.005 # risk of death at size 1
 
 m = -np.log(ymin/a)
 
-size = np.arange(0, 1+0.1, 0.1)
+size = np.arange(0, 1+0.01, 0.1)
 prob = a * np.exp(-mu * m * size)
 
 plt.plot(size, prob)
-plt.ylim([0,1])
+plt.ylim([0,0.12])
+plt.ylabel('Prob of death per time round')
+plt.xlabel('Individual size')
 
 plt.show()

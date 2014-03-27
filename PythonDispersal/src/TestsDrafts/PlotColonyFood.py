@@ -7,15 +7,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+plt.ylabel('Total amount of food in the colony')
+plt.xlabel('Group size')
 
-plt.ylabel('some numbers')
+c=0.01
+d=1
 
-c=0.2
-d=10
+print "max group size="
+print (d/c)
 
+mxFd = np.exp(-d) * np.power((d/c), d)
 
-x = np.arange(0, 30*(1/c), 1)
-y = np.exp(d-c*x) *np.power((c*x/d), d)
+x = np.arange(0, 10*(1/c), 1)
+#y = np.exp(d-c*x) *np.power((c*x/d), d)
+y = (1/mxFd) * np.power(x, d) * np.exp(-c*x)
 
 plt.plot(x, y)
 
