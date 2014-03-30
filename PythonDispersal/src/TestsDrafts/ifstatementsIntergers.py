@@ -3,14 +3,21 @@ Created on Mar 28, 2014
 
 @author: Ruth
 '''
+import numpy as np
 
-R = 1
+Fmx = 1 # food rank number 1 gets
+Fc = 0.5 # colony food
+c = 0.01 # slope i.e. the degree of contest competition (c in document)
+N = 50
 
-def func(R):
-    if R > 0:
-        return float(1.264)
-    else:
-        return 0
-    
-    
-print func(R)
+#y = (Fmx - c/2) + (np.sqrt(np.square(c/2-Fmx)-2*c*(N*Fc-Fmx))) / c
+
+y = (np.sqrt(np.square(c) + (4*c*Fmx) - (8*c*Fc*N) + (4*np.square(Fmx))))
+
+z = -c + 2*Fmx
+
+
+print y
+print z
+print y+z
+
