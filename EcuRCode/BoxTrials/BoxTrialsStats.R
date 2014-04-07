@@ -26,7 +26,8 @@ BoxComboCap <- subset(BoxComboMorn, IndFeed != "NA") # removing NA lines as the 
 
 BoxComboCap$FedWords<-ifelse(BoxComboCap$FeedIndPos == "y", "Fed", "Did Not Feed")
 BoxComboCap$CapWords<-ifelse(BoxComboCap$CaptureIndPos == "y", "Cap", "Did Not Cap")
-CapVsFedTb<-table(BoxComboCap$FedWords,BoxComboCap$CapWords )
+CapVsFedTb<-table(BoxComboCap$FedWords,BoxComboCap$CapWords, BoxComboCap$Treatment )
+CapVsFedTb
 
 
 
@@ -223,6 +224,17 @@ HungDiff<-function(table){
 HungDiff(EatAtAllvsHngMn)
 
 
+## finding teh differences in hunger..perhaps I should do percentage difference?
+CapturevsHngMn<- aggregate(BoxComboMorn$Hunger, by = list(BoxComboMorn$CaptureIndPos, BoxComboMorn$Treatment, BoxComboMorn$Instar), 
+		FUN = mean, na.rm=TRUE)
+CapturevsHngMn
+
+#function to give the absoulte difference and the percentage differences
+
+
+HungDiff(CapturevsHngMn)
+
+
 ######### Statistical tests#######
 
 EatBinMod1 <- glmer(IndFeed ~ LogHunger*Treatment*Instar + (1:IndBoxID)+
@@ -296,6 +308,7 @@ summary(HungEatMod1)
 
 
 
+
 ############################################TESTING IND INSTARS AND PREY SIZES ###########
 
 ## sub1 and large prey
@@ -341,6 +354,54 @@ EatBinsmallSub2Red <- glmer(IndFeed ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subs
 		family = binomial(logit))	
 
 anova(EatBinsmallSub2, EatBinsmallSub2Red)
+
+
+#########Testing individuals capture vs hunger
+
+## sub1 and large prey
+
+CapBinlargeSub1 <- glmer(IndCapture ~ LogHunger + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "large")), 
+		family = binomial(logit))
+
+CapBinlargeSub1Red <- glmer(IndCapture ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "large")), 
+		family = binomial(logit))	
+
+anova(CapBinlargeSub1, CapBinlargeSub1Red)
+
+## sub1 and small prey
+
+CapBinsmallSub1 <- glmer(IndCapture ~ LogHunger + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "small")), 
+		family = binomial(logit))
+
+CapBinsmallSub1Red <- glmer(IndCapture ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "small")), 
+		family = binomial(logit))	
+
+anova(CapBinsmallSub1, CapBinsmallSub1Red)
+
+## Sub2 and large prey
+
+CapBinlargeSub2 <- glmer(IndCapture ~ LogHunger + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "large")), 
+		family = binomial(logit))
+
+CapBinlargeSub2Red <- glmer(IndCapture ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "large")), 
+		family = binomial(logit))	
+
+anova(CapBinlargeSub2, CapBinlargeSub2Red)
+
+## Sub2 and small prey
+
+CapBinsmallSub2 <- glmer(IndCapture ~ LogHunger + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "small")), 
+		family = binomial(logit))
+
+CapBinsmallSub2Red <- glmer(IndCapture ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "small")), 
+		family = binomial(logit))	
+
+anova(CapBinsmallSub2, CapBinsmallSub2Red)
+
 
 
 

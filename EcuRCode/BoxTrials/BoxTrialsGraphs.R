@@ -175,6 +175,12 @@ ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = log10(1/Hung
 		facet_wrap(Instar ~ Treatment) + mytheme + ylab("Log Condition") + xlab("") +
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed")) 
 
+
+ggplot(subset(BoxComboMorn, IndCapture != "NA") , aes(x = IndCapture, y = log10(1/Hunger))) + geom_boxplot() + 
+		facet_wrap(Instar ~ Treatment) + mytheme + ylab("Log Condition") + xlab("") +
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Cap", "Did Not Cap")) 
+
+
 #TODO: hunger rank
 
 dev.off()
