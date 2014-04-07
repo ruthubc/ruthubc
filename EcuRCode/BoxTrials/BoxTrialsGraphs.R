@@ -171,6 +171,10 @@ ggplot(subset(BoxComboMorn, IndFeed == "y"), aes(x= LogHunger, y = TimeEatingLog
 		ggtitle("Total Time Eating against hunger level- zeros removed") + 
 		facet_wrap(Treatment~Instar, scales = "free_x")
 
+ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = log10(1/Hunger))) + geom_boxplot() + 
+		facet_wrap(Instar ~ Treatment) + mytheme + ylab("Log Condition") + xlab("") +
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed")) 
+
 #TODO: hunger rank
 
 dev.off()
