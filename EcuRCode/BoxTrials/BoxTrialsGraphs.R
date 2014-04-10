@@ -4,6 +4,7 @@ require(reshape2)
 library(nlme)
 library(gridExtra)
 library(histogram)
+require(scales)
 
 mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
@@ -30,6 +31,8 @@ CapVsEat$FeedIndPos <- factor(CapVsEat$FeedIndPos, levels =c("y", "n"))
 CapVsEat$FeedAndCap <- paste("Cap", CapVsEat$CaptureIndPos, "Feed", CapVsEat$FeedIndPos)
 
 
+
+
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/CaptureVsFeed.pdf")
 
 ##separate bars
@@ -43,12 +46,12 @@ ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 ##comparing the proportion of eaters and captures by TREATMENT
 ##separate bars
 ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
-		geom_bar(stat="bin", position="fill", colour = "black") + xlab("Participated in Prey Capture") + ylab("") + 
+		geom_bar(stat="bin", position="fill") + xlab("Participated in Prey Capture") + ylab("") + 
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
 				labels = c("Yes", "No")) + ggtitle("Prey Capture Vs Feeding") + mytheme +
-		facet_wrap(~Treatment)
+		facet_wrap(~Treatment) + scale_fill_manual("FeedIndPos", values = c("orange", "white"))
 
 ggplot(data=CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) +
 		geom_bar(stat="bin", position="fill", colour = "black") + 
@@ -58,8 +61,18 @@ ggplot(data=CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) +
 				labels = c("No", "Yes")) + ggtitle("Prey Capture Vs Feeding by prey size") +
 		facet_wrap(~Instar)
 
+ggplot(CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) + geom_histogram(aes(y=..count../sum(..count..)), colour ="black", fill = "purple3") +
+		xlab("Participated in Prey Capture") + ylab("Fracion that fed") + ylim(0, 1) +
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
+		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
+		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
+				labels = c("Yes", "No")) + ggtitle("Prey Capture Vs Feeding") + mytheme
 
-ggplot(data=subset(CapVsEat, FeedIndPos == "y"),  aes(x= FeedAndCap, y = LogHunger)) + geom_boxplot() + facet_wrap(~Instar)
+
+
+
+
+ggplot(data=subset(CapVsEat, FeedIndPos == "y"),  aes(x= FeedAndCap, y = LogHunger)) + geom_boxplot() + facet_wrap(~Instar + Treatment)
 
 dev.off()
 

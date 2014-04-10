@@ -21,6 +21,7 @@ source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/OverDispersionFunction.R")
 #I made instar a random variable
 BoxComboCap <- subset(BoxComboMorn, IndFeed != "NA") # removing NA lines as the bootrstrapping can't deal
 
+prop.table(BoxComboCap$IndFeed)
 
 ##numbers
 
@@ -29,7 +30,7 @@ BoxComboCap$CapWords<-ifelse(BoxComboCap$CaptureIndPos == "y", "Cap", "Did Not C
 CapVsFedTb<-table(BoxComboCap$FedWords,BoxComboCap$CapWords, BoxComboCap$Treatment )
 CapVsFedTb
 
-
+CapVsFedTb[1]
 
 ## stats tests
 CapMod1 <- glmer(IndCapture ~ IndFeed*Treatment*Instar + (1|IndBoxID) + 
@@ -142,6 +143,10 @@ TimeHunRedMod <- glmer(TotalTimeEating ~ Hunger + Treatment +  Instar  + (1|Inst
 #############################################################################
 #Time eating vs hunger given that they have fed .. not significant!! ZEROES REMOVED
 ##The zeros seem to matter in this case
+
+
+
+BoxComboTest <- subset(BoxComboMorn, BoxCombo$Test == TRUE)
 
 BoxMornFed <- subset(BoxComboMorn, TotalTimeEating > 0)
 

@@ -183,6 +183,8 @@ AveByTrial <- subset(AveByTrial, feedDur > 0)
 
 BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
 
+## using %n%
+#BoxCombo[BoxCombo$TrialID %in% c( "T1", "T2"),]
 
 		
 		
