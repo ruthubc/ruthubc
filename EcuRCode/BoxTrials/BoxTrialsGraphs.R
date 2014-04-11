@@ -6,7 +6,7 @@ library(gridExtra)
 library(histogram)
 require(scales)
 
-mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
+mytheme <-theme_bw(base_size=30)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
 
 
@@ -33,44 +33,43 @@ CapVsEat$FeedAndCap <- paste("Cap", CapVsEat$CaptureIndPos, "Feed", CapVsEat$Fee
 
 
 
-pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/CaptureVsFeed.pdf")
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/CaptureVsFeed.pdf", width = 10, height = 10)
 
-##separate bars
+##separate bars; sub 1 and 2 combined
 ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 		geom_bar(stat="bin", position="fill", colour = "black") + xlab("Participated in Prey Capture") + ylab("") + 
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
-				labels = c("Yes", "No")) + ggtitle("Prey Capture Vs Feeding") + mytheme
+				labels = c("Yes", "No"))  + mytheme
 
-##comparing the proportion of eaters and captures by TREATMENT
-##separate bars
+##just bottom bar
 ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
-		geom_bar(stat="bin", position="fill") + xlab("Participated in Prey Capture") + ylab("") + 
+		geom_bar(stat="bin", position="fill") + xlab("Participated in Prey Capture") + ylab("No. of Individuals That Fed") + 
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
-				labels = c("Yes", "No")) + ggtitle("Prey Capture Vs Feeding") + mytheme +
-		facet_wrap(~Treatment) + scale_fill_manual("FeedIndPos", values = c("orange", "white"))
+				labels = c("Yes", "No"))  + mytheme + scale_y_continuous(labels = percent)+
+		scale_fill_manual("FeedIndPos", values = c("darkblue", "white")) + theme(legend.position = "none")
+
+##comparing the proportion of eaters and captures by TREATMENT
+## no top bar
+ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
+		geom_bar(stat="bin", position="fill") + xlab("") + ylab("") + 
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
+		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
+		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
+				labels = c("Yes", "No"))  + mytheme   + scale_y_continuous(labels = percent) +
+		facet_wrap(~Treatment) + scale_fill_manual("FeedIndPos", values = c("darkblue", "white")) +
+		theme(legend.position = "none")
+
 
 ggplot(data=CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) +
 		geom_bar(stat="bin", position="fill", colour = "black") + 
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Involved with\nprey capture?", breaks = c("n", "y"),
-				labels = c("No", "Yes")) + ggtitle("Prey Capture Vs Feeding by prey size") +
-		facet_wrap(~Instar)
-
-ggplot(CapVsEat, aes(x=FeedIndPos, fill = CaptureIndPos)) + geom_histogram(aes(y=..count../sum(..count..)), colour ="black", fill = "purple3") +
-		xlab("Participated in Prey Capture") + ylab("Fracion that fed") + ylim(0, 1) +
-		scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
-		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
-		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
-				labels = c("Yes", "No")) + ggtitle("Prey Capture Vs Feeding") + mytheme
-
-
-
-
+				labels = c("No", "Yes"))  + facet_wrap(~Instar)
 
 ggplot(data=subset(CapVsEat, FeedIndPos == "y"),  aes(x= FeedAndCap, y = LogHunger)) + geom_boxplot() + facet_wrap(~Instar + Treatment)
 
@@ -172,7 +171,7 @@ ggplot(subset(BoxComboAve, SumIndEat>0), aes(x= Hunger, y = SumIndEat, colour = 
 
 dev.off()
 
-pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/FeedingAndHunger.pdf", width= 10)
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/FeedingAndHunger.pdf", width= 14, height =8.5)
 
 # hunger boxplot by ate or didn't
 ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = LogHunger)) + geom_boxplot() + 
@@ -191,7 +190,7 @@ ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = log10(1/Hung
 
 ggplot(subset(BoxComboMorn, IndCapture != "NA") , aes(x = IndCapture, y = log10(1/Hunger))) + geom_boxplot() + 
 		facet_wrap(Instar ~ Treatment) + mytheme + ylab("Log Condition") + xlab("") +
-		scale_x_discrete(breaks=c("y", "n"), labels=c("Cap", "Did Not Cap")) 
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Capture", "Didn't Capture")) 
 
 
 #TODO: hunger rank
@@ -321,7 +320,7 @@ t.test(AveByTrSub$Simpsons ~ AveByTrSub$Treatment)
 
 ggplot(AveByTrial, aes(AsinPJEven)) + geom_histogram()
 
-pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PJEven.pdf", width = 7, height =5.5)
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PJEven.pdf", width = 6, height =5)
 
 SubsetAveByTrial<- subset(AveByTrial, PJEven > -1)
 #(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
@@ -329,6 +328,7 @@ SubsetAveByTrial<- subset(AveByTrial, PJEven > -1)
 ggplot(SubsetAveByTrial, aes(x= Treatment, y =PJEven)) + geom_boxplot() + mytheme + ylab("Box evenness") + xlab("Prey Size")
 
 #ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + facet_wrap(~Instar) + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
+
 
 ggplot(SubsetAveByTrial, aes(x= Treatment, y =PJEven)) + geom_boxplot() + facet_wrap(~Instar) + mytheme + ylab("Box evenness") + xlab("Prey Size")
 
