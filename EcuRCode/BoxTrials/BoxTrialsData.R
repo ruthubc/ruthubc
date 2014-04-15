@@ -46,6 +46,14 @@ BoxCombo <- merge(FeedingWeights, Trials, by = c("TrialID"))
 BoxCombo<-transform(BoxCombo, TotBoxEating = ave(TotalTimeEating, TrialID, 
 				FUN = function(x) sum(x)))
 
+BoxCombo<-transform(BoxCombo, MinBoxHunger = ave(Hunger, TrialID, 
+				FUN = function(x) min(x)))
+
+BoxCombo<-transform(BoxCombo, DiffBoxHunger = ave(Hunger, TrialID, 
+				FUN = function(x) max (x) - min(x)))
+
+BoxCombo$RelHun <- (BoxCombo$Hunger - BoxCombo$MinBoxHunger) / BoxCombo$DiffBoxHunger
+
 BoxCombo$BoxFeedObs <- as.factor(ifelse(BoxCombo$TotBoxEating > 30, "y", "n")) #change to 15mins?30mins?
 
 # setting Total time eating to NA if TotBoxEating is NA
@@ -185,6 +193,12 @@ BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
 
 ## using %n%
 #BoxCombo[BoxCombo$TrialID %in% c( "T1", "T2"),]
+
+
+BoxComboEat <- subset(BoxComboMorn, FeedIndPos == "y" & CaptureIndPos != "NA" )
+
+
+
 
 		
 		

@@ -659,3 +659,24 @@ summary(BldMvCap1 )
 
 ## nothing... no point continuing
 
+
+### eating with prey capture vs not prey capture
+
+BoxComboEat <- BoxComboEat[!BoxComboEat$SpiderID == "sp336",]
+
+full<-glmer(RelHun ~ CaptureIndPos + Instar + Treatment + (1|IndBoxID) + (1|IndBoxID:SpiderID), 
+		BoxComboEat, family = binomial)
+
+
+summary(full)
+
+red<-glmer(RelHun ~ Instar + Treatment+ (1|IndBoxID) + (1|IndBoxID:SpiderID), 
+		BoxComboEat, family = binomial)
+
+summary(red)
+
+anova(full, red)
+
+
+
+
