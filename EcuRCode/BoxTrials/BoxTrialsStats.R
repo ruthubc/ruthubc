@@ -302,17 +302,133 @@ overdisp_fun(EatBinRedModHun)
 anova(EatBinRedModHun, EatBinMod3)
 
 
-### Eating at all vs hunger but switching the variables to make a linear model
-
-HungEatMod1 <- lmer(LogHunger ~ IndFeed*Treatment + (1|Instar:IndBoxID) + 
-				(1|Instar:IndBoxID:SpiderID), BoxComboMorn)
+############# Eating at all vs hunger but switching the variables to make a linear model ###################
+# Can't use BoxComboMorn and spiderID as random as I think there is not enough samples for spiderID
+#Therefore I am using BoxComboAve
+HungEatMod1 <- lmer(LogHunger ~ Feed*Treatment*Instar + (1|IndBoxID), BoxComboAve, REML = FALSE)
 modelPlot(HungEatMod1)
-
 anova(HungEatMod1)
 summary(HungEatMod1)
 
+#### Need to individually test these things!
+
+BoxAveFeed <- subset(BoxComboAve, Feed != "NA"  & LogCond != "NA")
+
+### Sub1 & Large
+
+EatSub1LgFull <- lmer(LogCond ~ Feed + (1|IndBoxID), subset(BoxAveFeed, 
+				Instar == "Sub1" & Treatment == "large"), REML = FALSE   )
+
+summary(EatSub1LgFull)
+
+EatSub1LgRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveFeed, 
+				Instar == "Sub1" & Treatment == "large"), REML = FALSE    )
+
+modelPlot(EatSub1LgRed)
+
+anova(EatSub1LgFull, EatSub1LgRed)
+
+### Sub2 & Large
+
+EatSub2LgFull <- lmer(LogCond ~ Feed + (1|IndBoxID), subset(BoxAveFeed, 
+				Instar == "Sub2" & Treatment == "large"), REML = FALSE   )
+
+summary(EatSub2LgFull)
+
+EatSub2LgRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveFeed, 
+				Instar == "Sub2" & Treatment == "large"), REML = FALSE    )
 
 
+anova(EatSub2LgFull, EatSub2LgRed)
+
+
+### Sub1 & small
+
+EatSub1SmFull <- lmer(LogCond ~ Feed + (1|IndBoxID), subset(BoxAveFeed, 
+				Instar == "Sub1" & Treatment == "small"), REML = FALSE   )
+
+summary(EatSub1SmFull)
+
+modelPlot(EatSub1SmFull)
+
+EatSub1SmRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveFeed, 
+				Instar == "Sub1" & Treatment == "small"), REML = FALSE    )
+
+
+
+anova(EatSub1SmFull, EatSub1SmRed)
+
+### Sub2 & small
+
+EatSub2SmFull <- lmer(LogCond ~ Feed + (1|IndBoxID), subset(BoxAveFeed, 
+				Instar == "Sub2" & Treatment == "small"), REML = FALSE   )
+
+modelPlot(EatSub2SmFull)
+summary(EatSub2SmFull)
+
+EatSub2SmRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveFeed, 
+				Instar == "Sub2" & Treatment == "small"), REML = FALSE    )
+
+
+anova(EatSub2SmFull, EatSub2SmRed)
+
+#################Testing condition individually with lmer and other way around! ########
+BoxAveCap <- subset(BoxComboAve, Cap != "NA"  & LogCond != "NA")
+
+### Sub1 & Large
+
+CapSub1LgFull <- lmer(LogCond ~ Cap + (1|IndBoxID), subset(BoxAveCap, 
+				Instar == "Sub1" & Treatment == "large"), REML = FALSE   )
+
+modelPlot(CapSub1LgFull)
+summary(CapSub1LgFull)
+
+CapSub1LgRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveCap, 
+				Instar == "Sub1" & Treatment == "large"), REML = FALSE    )
+
+anova(CapSub1LgFull, CapSub1LgRed)
+
+### Sub2 & Large
+
+CapSub2LgFull <- lmer(LogCond ~ Cap + (1|IndBoxID), subset(BoxAveCap, 
+				Instar == "Sub2" & Treatment == "large"), REML = FALSE   )
+
+summary(CapSub2LgFull)
+
+CapSub2LgRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveCap, 
+				Instar == "Sub2" & Treatment == "large"), REML = FALSE    )
+
+
+anova(CapSub2LgFull, CapSub2LgRed)
+
+
+### Sub1 & small
+
+CapSub1SmFull <- lmer(LogCond ~ Cap + (1|IndBoxID), subset(BoxAveCap, 
+				Instar == "Sub1" & Treatment == "small"), REML = FALSE   )
+
+summary(CapSub1SmFull)
+
+modelPlot(CapSub1SmFull)
+
+CapSub1SmRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveCap, 
+				Instar == "Sub1" & Treatment == "small"), REML = FALSE    )
+
+anova(CapSub1SmFull, CapSub1SmRed)
+
+### Sub2 & small
+
+CapSub2SmFull <- lmer(LogCond ~ Cap + (1|IndBoxID), subset(BoxAveCap, 
+				Instar == "Sub2" & Treatment == "small"), REML = FALSE   )
+
+modelPlot(CapSub2SmFull)
+summary(CapSub2SmFull)
+
+CapSub2SmRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveCap, 
+				Instar == "Sub2" & Treatment == "small"), REML = FALSE    )
+
+
+anova(CapSub2SmFull, CapSub2SmRed)
 
 ############################################TESTING IND INSTARS AND PREY SIZES ###########
 
