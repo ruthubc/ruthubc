@@ -305,10 +305,36 @@ anova(EatBinRedModHun, EatBinMod3)
 ############# Eating at all vs hunger but switching the variables to make a linear model ###################
 # Can't use BoxComboMorn and spiderID as random as I think there is not enough samples for spiderID
 #Therefore I am using BoxComboAve
-HungEatMod1 <- lmer(LogHunger ~ Feed*Treatment*Instar + (1|IndBoxID), BoxComboAve, REML = FALSE)
+
+BoxAveHug <- na.omit(subset(BoxComboAve, select = c( LogHunger, Feed, Treatment, Instar, IndBoxID)))
+
+
+
+HungEatMod1 <- lmer(LogHunger ~ Feed+Treatment+Instar + Feed:Treatment +
+				(1|IndBoxID), BoxAveHug, REML = FALSE)
 modelPlot(HungEatMod1)
 anova(HungEatMod1)
 summary(HungEatMod1)
+
+HungEatMod2 <- lmer(LogHunger ~ Feed+Treatment+Instar  +
+				(1|IndBoxID), BoxAveHug, REML = FALSE)
+
+anova(HungEatMod2, HungEatMod1)
+
+HungEatMod3 <- lmer(LogHunger ~ Treatment +Instar  +
+				(1|IndBoxID), BoxAveHug, REML = FALSE)
+
+anova(HungEatMod3, HungEatMod1)
+
+HungEatMod4 <- lmer(LogHunger ~ Feed +Instar  +
+				(1|IndBoxID), BoxAveHug, REML = FALSE)
+
+anova(HungEatMod4, HungEatMod1)
+
+HungEatMod5 <- lmer(LogHunger ~  Feed+Treatment + Feed:Treatment +
+				(1|IndBoxID), BoxAveHug, REML = FALSE)
+
+anova(HungEatMod5, HungEatMod1)
 
 #### Need to individually test these things!
 
@@ -372,8 +398,40 @@ EatSub2SmRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveFeed,
 
 anova(EatSub2SmFull, EatSub2SmRed)
 
-#################Testing condition individually with lmer and other way around! ########
+################## Testing condition vs capture overall
+
+### getting percentages
+
+CapAtAllvsCond<- aggregate((1/BoxComboAve$Hunger), by = list(BoxComboAve$Feed, BoxComboAve$Treatment, BoxComboAve$Instar), 
+		FUN = mean, na.rm=TRUE)
+CapAtAllvsCond
+
+HungDiff(CapAtAllvsCond)
+
 BoxAveCap <- subset(BoxComboAve, Cap != "NA"  & LogCond != "NA")
+
+CapConFull<- lmer(LogCond ~ Cap:Treatment + Cap+Treatment+Instar  +
+				(1|IndBoxID), BoxAveCap, REML = FALSE)
+
+summary(CapConFull)
+
+CapCon1<- lmer(LogCond ~ Cap +Treatment+Instar  +
+				(1|IndBoxID), BoxAveCap, REML = FALSE)
+
+anova(CapCon1, CapConFull)
+
+CapCon2<- lmer(LogCond ~  Treatment+Instar  +
+				(1|IndBoxID), BoxAveCap, REML = FALSE)
+
+anova(CapCon2, CapConFull)
+
+CapCon3<- lmer(LogCond ~  Cap +Instar  +
+				(1|IndBoxID), BoxAveCap, REML = FALSE)
+
+anova(CapCon3, CapConFull)
+
+#################Testing condition individually with capture lmer and other way around! ########
+
 
 ### Sub1 & Large
 
