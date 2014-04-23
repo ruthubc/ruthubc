@@ -344,12 +344,20 @@ ggplot(BoxComboMorn, aes(x = Treatment, y=  Hunger)) + geom_boxplot() + facet_wr
 
 ## if having eaten weight with capture
 
-ggplot(BoxComboEat, aes(x=CaptureIndPos, y = LogHunger)) + geom_boxplot()
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/HavingEaten-Capture.pdf", width = 6, height =5)
 
-ggplot(BoxComboEat, aes(x=CaptureIndPos, y = Rank.Hunger)) + geom_boxplot()
+ggplot(BoxComboEat, aes(x=CaptureIndPos, y = LogCond)) + geom_boxplot() + facet_wrap(~ Instar)
+
+ggplot(BoxComboEat, aes(x=CaptureIndPos, y = LogCond)) + geom_boxplot() + facet_wrap(~Treatment + Instar)
+
+#ggplot(BoxComboEat, aes(x=CaptureIndPos, y = Rank.Hunger)) + geom_boxplot() + facet_wrap(~Treatment)
+
+ggplot(BoxComboEat, aes(x=CaptureIndPos, y = RelHun)) + geom_boxplot()
 
 ggplot(BoxComboEat, aes(x=CaptureIndPos, y = RelHun)) + geom_boxplot() + facet_wrap(~Treatment)
 
+ggplot(BoxComboEat, aes(x=CaptureIndPos, y = RelHun)) + geom_boxplot() + facet_wrap(~Treatment+ Instar)
 
-ggplot(BoxComboEat, aes(x = Rank.Hunger))  + geom_histogram()
+dev.off()
+
 

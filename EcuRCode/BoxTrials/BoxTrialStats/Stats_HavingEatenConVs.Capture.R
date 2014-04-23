@@ -9,15 +9,15 @@
 BoxComboEat <- BoxComboEat[!BoxComboEat$SpiderID == "sp336",]
 BoxEatLarge<- BoxComboEat[BoxComboEat$Treatment == 'large',]
 
-full<-glmer(RelHun ~ CaptureIndPos + Instar  + (1|IndBoxID) + (1|IndBoxID:SpiderID), 
-		BoxEatLarge, family = binomial)
+full<-lmer(LogCond ~ CaptureIndPos + Instar  + (1|IndBoxID), 
+		BoxEatLarge)
 
-
+plot(full)
 summary(full)
 
-red<-glmer(RelHun ~ Instar + (1|IndBoxID) + (1|IndBoxID:SpiderID), 
-		BoxEatLarge, family = binomial)
+red<-lmer(LogCond ~ Instar + (1|IndBoxID), 
+		BoxEatLarge)
 
 summary(red)
-
+plot(full)
 anova(full, red)
