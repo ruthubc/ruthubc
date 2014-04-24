@@ -9,6 +9,9 @@ require(scales)
 mytheme <-theme_bw(base_size=30)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
 
+give.n <- function(x){
+	return(c(y = max(), vjust = 1 , label = length(x) ))
+}
 
 #### Box trails graphs. Code importing and manipulating the data is in BoxTrialsData.R
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
@@ -88,7 +91,7 @@ pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/NoAndDurationFeeding.pdf", onefile 
 		 stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
 		 ggtitle("Log of Total number of spiders fed on prey against prey size") +
 		 xlab("Prey Size") + ylab("Total number of spiders feeding on prey")  + 
-		 scale_y_log10()
+		 scale_y_log10() + stat_summary(fun.data = give.n, geom = "text")
 
 #Number feeding vs treatment 
 ggplot(AveByTrial, aes(x=Treatment, y=noFeed)) + geom_boxplot() + 
@@ -285,7 +288,7 @@ ggplot(subset(BoxComboAve, Feed != "NA"), aes(x=Move, fill = Feed)) +
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Moved", "Did Not Move")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Ate Food?", breaks = c("n", "y"),
-				labels = c("No", "Yes")) + facet_wrap(Instar~Treatment)
+				labels = c("No", "Yes")) + facet_wrap(Instar~Treatment) + geom_text(mean(x))
 
 ##Boldness against instar
 
@@ -325,12 +328,14 @@ pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PJEven.pdf", width = 6, height =5)
 SubsetAveByTrial<- subset(AveByTrial, PJEven > -1)
 #(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
 
-ggplot(SubsetAveByTrial, aes(x= Treatment, y =PJEven)) + geom_boxplot() + mytheme + ylab("Box evenness") + xlab("Prey Size")
+ggplot(SubsetAveByTrial, aes(x= Treatment, y =PJEven)) + geom_boxplot() + mytheme + ylab("Box evenness") + xlab("Prey Size")  + 
+		stat_summary(fun.y = "mean" , label = length(x), geom = "text")
 
 #ggplot(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + facet_wrap(~Instar) + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
 
 
-ggplot(SubsetAveByTrial, aes(x= Treatment, y =PJEven)) + geom_boxplot() + facet_wrap(~Instar) + mytheme + ylab("Box evenness") + xlab("Prey Size")
+ggplot(SubsetAveByTrial, aes(x= Treatment, y =PJEven)) + geom_boxplot() + facet_wrap(~Instar) + mytheme + ylab("Box evenness") + 
+		xlab("Prey Size")+ stat_summary(fun.data = give.n, geom = "text")
 
 dev.off()
 
@@ -341,6 +346,7 @@ ggplot(BoxComboMorn, aes((Hunger))) + geom_histogram()  + facet_wrap(~Instar)
 
 ggplot(BoxComboMorn, aes(x = Treatment, y=  Hunger)) + geom_boxplot() + facet_wrap(~Instar)
 
+BoxEatGraph <-subset(BoxComboMorn, FeedIndPos =="y" & BoxComboMorn$CaptureIndPos != "NA")
 
 ## if having eaten weight with capture
 
@@ -348,15 +354,19 @@ pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/HavingEaten-Capture.pdf", width = 6
 
 ggplot(BoxComboEat, aes(x=CaptureIndPos, y = LogCond)) + geom_boxplot() + facet_wrap(~ Instar)
 
-ggplot(BoxComboEat, aes(x=CaptureIndPos, y = LogCond)) + geom_boxplot() + facet_wrap(~Treatment + Instar)
+ggplot(BoxEatGraph, aes(x=CaptureIndPos, y = LogCond)) + geom_boxplot() + facet_wrap(~Treatment + Instar) +
+		stat_summary(fun.data = give.n, geom = "text")
+		
 
 #ggplot(BoxComboEat, aes(x=CaptureIndPos, y = Rank.Hunger)) + geom_boxplot() + facet_wrap(~Treatment)
 
-ggplot(BoxComboEat, aes(x=CaptureIndPos, y = RelHun)) + geom_boxplot()
+ggplot(BoxComboEat, aes(x=CaptureIndPos, y = RelHun)) + geom_boxplot() 
 
-ggplot(BoxComboEat, aes(x=CaptureIndPos, y = RelHun)) + geom_boxplot() + facet_wrap(~Treatment)
+ggplot(BoxComboEat, aes(x=Cap, y = Rank.Hunger)) + geom_boxplot() + facet_wrap(~Treatment) +
+		stat_summary(fun.data = give.n, geom = "text")
 
-ggplot(BoxComboEat, aes(x=CaptureIndPos, y = RelHun)) + geom_boxplot() + facet_wrap(~Treatment+ Instar)
+ggplot(BoxComboEat, aes(x=Cap, y = RelHun)) + geom_boxplot() + facet_wrap(~Treatment+ Instar) +
+		stat_summary(fun.data = give.n, geom = "text")
 
 dev.off()
 

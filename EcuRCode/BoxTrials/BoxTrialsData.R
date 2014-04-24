@@ -138,7 +138,7 @@ BoxCombo$IndFeedNum<- ifelse(BoxCombo$FeedIndPos=="y", 1,
 ######## Averages table combining different trials on same box    ###################
 #####################################################################################
 
-BoxComboAve<- ddply(BoxCombo, .(SpiderID, Rank.Weights, LogHunger, LogCond, Instar, Rank.Legs, IndBoxID,  Moulted., 
+BoxComboAve<- ddply(BoxCombo, .(SpiderID, Rank.Hunger, RelHun, LogHunger, LogCond, Instar, Rank.Legs, IndBoxID,  Moulted., 
 				AveBoldness, AvePokeRating, Treatment, Hunger, WeightDiffPer ), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(SpiderID)),
 		IndEatDur.Mean = mean(TotalTimeEating, na.rm = TRUE),
@@ -197,7 +197,7 @@ BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
 #BoxCombo[BoxCombo$TrialID %in% c( "T1", "T2"),]
 
 
-BoxComboEat <- subset(BoxComboMorn, FeedIndPos == "y" & CaptureIndPos != "NA" )
+BoxComboEat <- subset(BoxComboAve, Feed == "y" & Cap != "NA" )
 
 
 
