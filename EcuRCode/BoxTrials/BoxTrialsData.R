@@ -56,6 +56,8 @@ BoxCombo<-transform(BoxCombo, DiffBoxHunger = ave(Hunger, TrialID,
 
 BoxCombo$RelHun <- (BoxCombo$Hunger - BoxCombo$MinBoxHunger) / BoxCombo$DiffBoxHunger
 
+BoxCombo$RelCond <- 1- BoxCombo$RelHun
+
 BoxCombo$BoxFeedObs <- as.factor(ifelse(BoxCombo$TotBoxEating > 30, "y", "n")) #change to 15mins?30mins?
 
 # setting Total time eating to NA if TotBoxEating is NA
@@ -80,6 +82,7 @@ BoxCombo <- transform(BoxCombo, Rank.Legs = ave(LegLen.mm, TrialID,
 BoxCombo <- transform(BoxCombo, Rank.Hunger = ave(Hunger, TrialID, 
 				FUN = function(x) rank(x, ties.method = "average", na.last = "keep")))
 
+BoxCombo$Rank.Cond <- 11- BoxCombo$Rank.Hunger
 
 # simpsons diversity index >> incorrect should use Pielou J's
 BoxCombo$nn1 <-BoxCombo$TotalTimeEating * (BoxCombo$TotalTimeEating -1)
@@ -138,7 +141,7 @@ BoxCombo$IndFeedNum<- ifelse(BoxCombo$FeedIndPos=="y", 1,
 ######## Averages table combining different trials on same box    ###################
 #####################################################################################
 
-BoxComboAve<- ddply(BoxCombo, .(SpiderID, Rank.Hunger, RelHun, LogHunger, LogCond, Instar, Rank.Legs, IndBoxID,  Moulted., 
+BoxComboAve<- ddply(BoxCombo, .(SpiderID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, Rank.Legs, IndBoxID,  Moulted., 
 				AveBoldness, AvePokeRating, Treatment, Hunger, WeightDiffPer ), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(SpiderID)),
 		IndEatDur.Mean = mean(TotalTimeEating, na.rm = TRUE),
