@@ -14,7 +14,7 @@ mytheme <-theme_bw(base_size=30)  + theme(plot.title = element_text(vjust=2), pa
 		
 		
 give.n <- function(x){
-	return(c(y = max(), vjust = 1 , label = length(x) ))
+	return(c(y = mean(x), label = length(x) ))
 }
 
 #### Box trails graphs. Code importing and manipulating the data is in BoxTrialsData.R
@@ -366,10 +366,10 @@ ggplot(BoxComboEat, aes(x=Cap, y = LogCond)) + geom_boxplot() + facet_wrap(~Trea
 		
 		# stat_summary(fun.data = give.n, geom = "text") this adds sample sizes
 
-ggplot(BoxComboEat, aes(x=Cap, y = Rank.Cond)) + geom_boxplot() + facet_wrap(~Treatment) +
+ggplot(BoxMornFeedOnly, aes(x=CapAndFeed, y = Rank.Cond)) + geom_boxplot() + facet_wrap(~Treatment + Instar) +
 		ylab("Condition Rank in Box") + xlab("Captured Prey?") + mytheme +
 		scale_x_discrete(breaks = c("y", "n"),labels = c("Yes", "No"))
-		#stat_summary(fun.data = give.n, geom = "text")
+		stat_summary(fun.data = give.n, geom = "text")
 
 ggplot(BoxComboEat, aes(x=Cap, y = Rank.Cond)) + geom_boxplot() + facet_wrap(~Treatment+ Instar)+
 		ylab("Condition Rank in Box") + xlab("Captured Prey?") + mytheme +

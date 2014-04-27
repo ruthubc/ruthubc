@@ -18,7 +18,7 @@ summary(BoxEatCapFull)
 ### Just large
 BoxEatLarge<- BoxComboEat[BoxComboEat$Treatment == 'large',]
 
-full<-lmer(LogCond ~ Cap + Instar  + (1|IndBoxID), 
+full<-lmer(LogCond ~ Cap + Instar  + (1|IndBoxID) + (1|IndBoxID:TrialID), 
 		BoxEatLarge)
 
 plot(full)

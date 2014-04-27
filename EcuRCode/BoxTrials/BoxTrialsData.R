@@ -129,12 +129,28 @@ Feed <- data.table (IndFeed = c("y", "n", "n", NA), BoxFeedObs = c("y", "y", "n"
 		FeedIndPos = c("y", "n", NA, NA))
 BoxCombo <- merge(BoxCombo, Feed, by= c("IndFeed", "BoxFeedObs"))
 
+####### Cap Eat combined field
+#codes
+#C+E
+#NC+E
+#C+NE
+#NC+NE
+
+FdAndCp <- data.table (CaptureIndPos = c("y", "n", "y", "n", NA, NA, "y", "n", NA), 
+		FeedIndPos = c("y", "y", "n", "n", "n", "y", NA, NA, NA),
+		CapAndFeed = c("C+E", "NC+E", "C+NE", "NC+NE", NA, NA, NA, NA, NA))
+BoxCombo <- merge(BoxCombo, FdAndCp, by = c("CaptureIndPos", "FeedIndPos"))
+
+
+
 # changing y and n to 0 and 1 for aves taking into account when feeding or capture not observed
 BoxCombo$IndCapNum<- ifelse(BoxCombo$CaptureIndPos=="y", 1,
 		ifelse(BoxCombo$CaptureIndPos =="n", 0, NA))
 
 BoxCombo$IndFeedNum<- ifelse(BoxCombo$FeedIndPos=="y", 1,
 		ifelse(BoxCombo$FeedIndPos =="n", 0, NA))
+
+
 
 
 #####################################################################################
@@ -203,6 +219,16 @@ BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
 BoxComboEat <- subset(BoxComboAve, Feed == "y" & Cap != "NA" )
 
 
+
+### Checking for duplicated spider ID and capture and feed combined
+
+#BoxFdAndCap<-subset(BoxCombo, BoxCombo$CapAndFeed != "NA", select = c(TrialID,SpiderID, CapAndFeed))
+
+#BoxFdAndCap$Dups<-duplicated(BoxFdAndCap$SpiderID)
+
+#BoxFdAndCapTest <- BoxFdAndCap[BoxFdAndCap$Dups == "TRUE",]
+
+BoxMornFeedOnly<- subset(BoxComboMorn, IndFeed == "y" & CaptureIndPos != "NA" )
 
 
 		
