@@ -12,6 +12,7 @@ library(data.table)
 library(ggplot2)
 library(plyr)
 library(nlme)
+library(reshape)
 
 Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv", na.strings = NA)
 Feeding <-read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv", na.strings = NA)
@@ -216,7 +217,6 @@ BoxMornFeedOnly<- subset(BoxComboMorn, IndFeed == "y" & CaptureIndPos != "NA" )
 #averaging by spider as can't have spider as a random in lmer
 BoxFeedAve<- ddply(BoxMornFeedOnly, .(SpiderID, TrialID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, IndBoxID, 
 				Treatment, Hunger), summarise, 
-		N = length(!is.na(SpiderID)),
 		AveFeed = mean(IndFeedNum, na.rm=TRUE),
 		AveCap = mean(IndCapNum, na.rm= TRUE)
 )
@@ -226,11 +226,18 @@ BoxMornFeedOnly<-transform(BoxMornFeedOnly, CountFeed = ave(Weight.1, IndCapture
 				FUN = function(x) length(x)))
 
 
-BoxFeedRatio<- ddply(BoxMornFeedOnly, .(Treatment, TrialID, IndCapture, Instar), summarise, # need to discount trials where no feeding obs and eve
-		N = length(!is.na(SpiderID)),
-		NumFeed= mean(CountFeed, na.rm = TRUE),
-		Ratio = min(CountFeed)/max(CountFeed)
-
+BoxFeedRatio<- ddply(BoxMornFeedOnly, .(Treatment, TrialID, Instar, IndCapture, IndBoxID), summarise, # need to discount trials where no feeding obs and eve
+		NumFeed= mean(CountFeed, na.rm = TRUE)
 )
 
-	
+BoxFeedRatio<-reshape(BoxFeedRatio, timevar = "IndCapture", idvar = c("TrialID", "Treatment", "Instar", "IndBoxID" ), direction = "wide")
+
+
+BoxFeedRatio$NumFeed.n<-ifelse(is.na(BoxFeedRatio$NumFeed.n), 0, BoxFeedRatio$NumFeed.n)
+BoxFeedRatio$NumFeed.y<-ifelse(is.na(BoxFeedRatio$NumFeed.y), 0, BoxFeedRatio$NumFeed.y)
+
+
+BoxFeedRatio$Tot<-BoxFeedRatio$NumFeed.n + BoxFeedRatio$NumFeed.y
+BoxFeedRatio$PerNoCap<- BoxFeedRatio$NumFeed.n/BoxFeedRatio$Tot
+
+table(BoxFeedRatio$Treatment)

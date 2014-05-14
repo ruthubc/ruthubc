@@ -379,4 +379,4 @@ ggplot(BoxComboEat, aes(x=Cap, y = Rank.Cond)) + geom_boxplot() + facet_wrap(~Tr
 dev.off()
 
 
-ggplot(BoxFeedRatio, aes(x=IndCapture, y = NumFeed)) + geom_boxplot() + facet_wrap(~Treatment + Instar)
+ggplot(BoxFeedRatio, aes(x=Treatment, y = NumFeed.n)) + geom_boxplot()# + geom_point(position = "jitter") + facet_wrap(~Instar)

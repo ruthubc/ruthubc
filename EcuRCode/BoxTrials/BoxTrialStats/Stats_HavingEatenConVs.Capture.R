@@ -47,3 +47,11 @@ Smallred<-lmer(LogCond ~ Instar + (1|IndBoxID) + (1 | IndBoxID:TrialID),
 
 
 anova(Smallfull, Smallred)
+
+## checking ratio of capture's to non-capturers by treatment
+
+RatioFull<- glmer(PerNoCap ~ Treatment + Instar + (1|IndBoxID),	BoxFeedRatio, family = binomial)
+summary(RatioFull)
+
+RatioNull<-glmer(PerNoCap ~ Instar + (1|IndBoxID),	BoxFeedRatio, family = binomial)
+anova(RatioFull, RatioNull)
