@@ -129,7 +129,7 @@ Feed <- data.table (IndFeed = c("y", "n", "n", NA), BoxFeedObs = c("y", "y", "n"
 		FeedIndPos = c("y", "n", NA, NA))
 BoxCombo <- merge(BoxCombo, Feed, by= c("IndFeed", "BoxFeedObs"))
 
-####### Cap Eat combined field
+####### Capture and Eat combined field, needed to test whether  
 #codes
 #C+E
 #NC+E
@@ -151,13 +151,15 @@ BoxCombo$IndFeedNum<- ifelse(BoxCombo$FeedIndPos=="y", 1,
 		ifelse(BoxCombo$FeedIndPos =="n", 0, NA))
 
 
+### Removing the evening trials from box combo
 
+BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
 
 #####################################################################################
 ######## Averages table combining different trials on same box    ###################
 #####################################################################################
 
-BoxComboAve<- ddply(BoxCombo, .(SpiderID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, Rank.Legs, IndBoxID,  Moulted., 
+BoxComboAve<- ddply(BoxComboMorn, .(SpiderID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, Rank.Legs, IndBoxID,  Moulted., 
 				AveBoldness, AvePokeRating, Treatment, Hunger, WeightDiffPer ), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(SpiderID)),
 		IndEatDur.Mean = mean(TotalTimeEating, na.rm = TRUE),
@@ -208,28 +210,27 @@ subset(as.data.frame(table(AveByTrial$TrialID)), Freq >1)
 ##removing trials with no feeding dur
 AveByTrial <- subset(AveByTrial, feedDur > 0)
 
-### Removing the evening trials from box combo
-
-BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
-
-## using %n%
-#BoxCombo[BoxCombo$TrialID %in% c( "T1", "T2"),]
-
-
-BoxComboEat <- subset(BoxComboAve, Feed == "y" & Cap != "NA" )
-
-
-
-### Checking for duplicated spider ID and capture and feed combined
-
-#BoxFdAndCap<-subset(BoxCombo, BoxCombo$CapAndFeed != "NA", select = c(TrialID,SpiderID, CapAndFeed))
-
-#BoxFdAndCap$Dups<-duplicated(BoxFdAndCap$SpiderID)
-
-#BoxFdAndCapTest <- BoxFdAndCap[BoxFdAndCap$Dups == "TRUE",]
 
 BoxMornFeedOnly<- subset(BoxComboMorn, IndFeed == "y" & CaptureIndPos != "NA" )
 
+#averaging by spider as can't have spider as a random in lmer
+BoxFeedAve<- ddply(BoxMornFeedOnly, .(SpiderID, TrialID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, IndBoxID, 
+				Treatment, Hunger), summarise, 
+		N = length(!is.na(SpiderID)),
+		AveFeed = mean(IndFeedNum, na.rm=TRUE),
+		AveCap = mean(IndCapNum, na.rm= TRUE)
+)
+		
+#getting ratio of caps vs non-caps (arbartuary number field needed)	
+BoxMornFeedOnly<-transform(BoxMornFeedOnly, CountFeed = ave(Weight.1, IndCapture, TrialID, 
+				FUN = function(x) length(x)))
 
-		
-		
+
+BoxFeedRatio<- ddply(BoxMornFeedOnly, .(Treatment, TrialID, IndCapture, Instar), summarise, # need to discount trials where no feeding obs and eve
+		N = length(!is.na(SpiderID)),
+		NumFeed= mean(CountFeed, na.rm = TRUE),
+		Ratio = min(CountFeed)/max(CountFeed)
+
+)
+
+	
