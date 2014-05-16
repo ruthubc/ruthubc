@@ -181,24 +181,28 @@ dev.off()
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/FeedingAndHunger.pdf", width= 14, height =8.5)
 
 # hunger boxplot by ate or didn't
-ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = LogHunger)) + geom_boxplot() + 
+ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = LogHunger)) + geom_boxplot(aes(fill = IndFeed)) + 
 		facet_wrap(Instar ~ Treatment) + mytheme + ylab("Log Hunger") + xlab("")+
-		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed"))
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not\nFeed")) + coord_flip() +
+		guides(fill = FALSE)
+
 
 ggplot(subset(BoxComboMorn, IndFeed == "y"), aes(x= LogHunger, y = TimeEatingLog1, colour = Treatment)) + geom_point() +
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
 		ggtitle("Total Time Eating against hunger level- zeros removed") + 
 		facet_wrap(Treatment~Instar, scales = "free_x")
 
-ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = log10(1/Hunger))) + geom_boxplot() + 
+ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = log10(1/Hunger))) + geom_boxplot(aes(fill = IndFeed)) + 
 		facet_wrap(Instar ~ Treatment) + mytheme + ylab("Log Condition") + xlab("") +
-		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not Feed")) 
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not\nFeed")) + coord_flip() +
+		guides(fill = FALSE)
 
 
 ggplot(subset(BoxComboMorn, IndCapture != "NA") , aes(x = IndCapture, y = log10(1/Hunger))) + geom_boxplot() + 
 		facet_wrap(Instar ~ Treatment) + mytheme + ylab("Log Condition") + xlab("") +
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Capture", "Didn't Capture")) 
 
+ggplot(subset(BoxComboMorn, IndFeed != "NA"), aes(x=log10(1/Hunger), y = IndFeed))
 
 #TODO: hunger rank
 
@@ -379,4 +383,4 @@ ggplot(BoxComboEat, aes(x=Cap, y = Rank.Cond)) + geom_boxplot() + facet_wrap(~Tr
 dev.off()
 
 
-ggplot(BoxFeedRatio, aes(x=Treatment, y = NumFeed.n)) + geom_boxplot()# + geom_point(position = "jitter") + facet_wrap(~Instar)
+ggplot(BoxFeedRatio, aes(x=Treatment, y = NumFeed.n)) + geom_boxplot() # + geom_point(position = "jitter") + facet_wrap(~Instar)
