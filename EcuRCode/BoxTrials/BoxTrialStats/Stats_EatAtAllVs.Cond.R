@@ -54,7 +54,7 @@ overdisp_fun(EatBinMod1)
 summary(EatBinMod1)
 anova(EatBinMod1) 
 
-#Removing 3-way interaction and instar:Huger and instar:treatment (as they don't make sense)
+#Removing 3-way interaction and instar:Huger and instar:treatment (as they don't make sense and are insignificant)
 EatBinMod2 <- glmer(IndFeed ~ LogHunger + Treatment+ Instar + LogHunger:Treatment + LogHunger:Instar+
 				+ (1|IndBoxID)+ (1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
@@ -68,6 +68,7 @@ EatBinMod3 <- glmer(IndFeed ~ LogHunger + Treatment + Instar + Treatment:LogHung
 				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 
 
+anova(EatBinMod2, EatBinMod3)
 overdisp_fun(EatBinMod3)
 summary(EatBinMod3)
 anova(EatBinMod3)
@@ -202,3 +203,17 @@ EatSub2SmRed <- lmer(LogCond ~ 1+ (1|IndBoxID), subset(BoxAveFeed,
 
 
 anova(EatSub2SmFull, EatSub2SmRed)
+
+
+############Trying to make a logistic regression graph
+Graph.glmer <- glmer(IndFeed ~ LogHunger + Instar+ (1|IndBoxID)+
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+
+plot(BoxComboMorn$LogHunger, BoxComboMorn$IndFeed)
+curve(predict(Graph.glmer, data.frame(LogHunger=x), type = "resp"), add = TRUE)
+
+library(ez)
+ezPredict(fit = Graph.glmer)
+ezPlot(Graph.glmer)
+
+##NOTES look up package ez i.e. ezPredict etc.

@@ -62,7 +62,7 @@ ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 ##comparing the proportion of eaters and captures by TREATMENT
 ## no top bar
 ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
-		geom_bar(stat="bin", position="fill") + xlab("") + ylab("") + 
+		geom_bar(stat="bin", position="fill") + xlab("Participated in Prey Capture")+ ylab("Percentage of Individuals That Fed") + 
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
