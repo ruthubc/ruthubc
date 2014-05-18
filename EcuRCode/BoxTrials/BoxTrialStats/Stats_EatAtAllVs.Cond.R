@@ -108,6 +108,53 @@ overdisp_fun(EatBinRedModHun)
 anova(EatBinRedModHun, EatBinMod3)
 
 
+###################Testing  instar and condition separately####
+
+
+##########Large, sub1 ##########
+
+EatBinSub1largeFull <- glmer(IndFeed ~ LogCond + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+		subset(BoxComboMorn, Instar == "Sub1" & Treatment == "large"), family = binomial(logit))
+
+EatBinSub1largeRed <- glmer(IndFeed ~ 1 + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+		subset(BoxComboMorn, Instar == "Sub1" & Treatment == "large"), family = binomial(logit))
+
+anova(EatBinSub1largeFull, EatBinSub1largeRed)
+
+
+##########small, sub1 ##########
+
+EatBinSub1smallFull <- glmer(IndFeed ~ LogCond + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+		subset(BoxComboMorn, Instar == "Sub1" & Treatment == "small"), family = binomial(logit))
+
+EatBinSub1smallRed <- glmer(IndFeed ~ 1 + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+		subset(BoxComboMorn, Instar == "Sub1" & Treatment == "small"), family = binomial(logit))
+
+anova(EatBinSub1smallFull, EatBinSub1smallRed)
+
+##########Large, Sub2 ##########
+
+EatBinSub2largeFull <- glmer(IndFeed ~ LogCond + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+		subset(BoxComboMorn, Instar == "Sub2" & Treatment == "large"), family = binomial(logit))
+
+EatBinSub2largeRed <- glmer(IndFeed ~ 1 + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+		subset(BoxComboMorn, Instar == "Sub2" & Treatment == "large"), family = binomial(logit))
+
+anova(EatBinSub2largeFull, EatBinSub2largeRed)
+
+
+##########small, Sub2 ##########
+
+EatBinSub2smallFull <- glmer(IndFeed ~ LogCond + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+		subset(BoxComboMorn, Instar == "Sub2" & Treatment == "small"), family = binomial(logit))
+
+EatBinSub2smallRed <- glmer(IndFeed ~ 1 + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+		subset(BoxComboMorn, Instar == "Sub2" & Treatment == "small"), family = binomial(logit))
+
+anova(EatBinSub2smallFull, EatBinSub2smallRed)
+
+
+
 ############# Eating at all vs hunger but switching the variables to make a linear model ###################
 # Can't use BoxComboMorn and spiderID as random as I think there is not enough samples for spiderID
 #Therefore I am using BoxComboAve

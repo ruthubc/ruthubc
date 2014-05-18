@@ -97,44 +97,44 @@ anova(CapSub2SmFull, CapSub2SmRed)
 
 ## sub1 and large prey
 
-EatBinlargeSub1 <- glmer(IndFeed ~ LogHunger + (1|IndBoxID) + 
+EatBinlargeSub1 <- glmer(IndCapture ~ LogCond + (1|IndBoxID) + 
 				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "large")), 
 		family = binomial(logit))
 
-EatBinlargeSub1Red <- glmer(IndFeed ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "large")), 
+EatBinlargeSub1Red <- glmer(IndCapture ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "large")), 
 		family = binomial(logit))	
 
 anova(EatBinlargeSub1, EatBinlargeSub1Red)
 
 ## sub1 and small prey
 
-EatBinsmallSub1 <- glmer(IndFeed ~ LogHunger + (1|IndBoxID) + 
+EatBinsmallSub1 <- glmer(IndCapture ~ LogCond + (1|IndBoxID) + 
 				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "small")), 
 		family = binomial(logit))
 
-EatBinsmallSub1Red <- glmer(IndFeed ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "small")), 
+EatBinsmallSub1Red <- glmer(IndCapture ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub1" & Treatment == "small")), 
 		family = binomial(logit))	
 
 anova(EatBinsmallSub1, EatBinsmallSub1Red)
 
 ## Sub2 and large prey
 
-EatBinlargeSub2 <- glmer(IndFeed ~ LogHunger + (1|IndBoxID) + 
+EatBinlargeSub2 <- glmer(IndCapture ~ LogCond + (1|IndBoxID) + 
 				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "large")), 
 		family = binomial(logit))
 
-EatBinlargeSub2Red <- glmer(IndFeed ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "large")), 
+EatBinlargeSub2Red <- glmer(IndCapture ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "large")), 
 		family = binomial(logit))	
 
 anova(EatBinlargeSub2, EatBinlargeSub2Red)
 
 ## Sub2 and small prey
 
-EatBinsmallSub2 <- glmer(IndFeed ~ LogHunger + (1|IndBoxID) + 
+EatBinsmallSub2 <- glmer(IndCapture~ LogCond + (1|IndBoxID) + 
 				(1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "small")), 
 		family = binomial(logit))
 
-EatBinsmallSub2Red <- glmer(IndFeed ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "small")), 
+EatBinsmallSub2Red <- glmer(IndCapture ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (subset(BoxComboMorn, Instar =="Sub2" & Treatment == "small")), 
 		family = binomial(logit))	
 
 anova(EatBinsmallSub2, EatBinsmallSub2Red)
