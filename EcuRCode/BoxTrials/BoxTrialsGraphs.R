@@ -198,9 +198,11 @@ ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = log10(1/Hung
 		guides(fill = FALSE)
 
 
-ggplot(subset(BoxComboMorn, IndCapture != "NA") , aes(x = IndCapture, y = log10(1/Hunger))) + geom_boxplot() + 
+ggplot(subset(BoxComboMorn, IndCapture != "NA") , aes(x = IndCapture, y = log10(1/Hunger))) + geom_boxplot(aes(fill = IndCapture)) + 
 		facet_wrap(Instar ~ Treatment) + mytheme + ylab("Log Condition") + xlab("") +
-		scale_x_discrete(breaks=c("y", "n"), labels=c("Capture", "Didn't Capture")) 
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Capture", "Didn't Capture")) + coord_flip() +
+		guides(fill = FALSE)
+
 
 ggplot(subset(BoxComboMorn, IndFeed != "NA"), aes(x=log10(1/Hunger), y = IndFeed))
 
@@ -319,10 +321,6 @@ ggplot(BoxComboAve, aes(x=SumIndEat, y = WeightDiffPer)) + geom_point() +
 
 ggplot(AveByTrial, aes(x = Treatment, y = SimpAlt )) + geom_boxplot() + facet_wrap(~Instar)
 
-AveByTrSub<- subset(AveByTrial, Instar == "Sub1")
-
-t.test(AveByTrSub$Simpsons ~ AveByTrSub$Treatment)
-
 
 #####################################################################################
 ##### Pielou's J graphs
@@ -383,4 +381,5 @@ ggplot(BoxComboEat, aes(x=Cap, y = Rank.Cond)) + geom_boxplot() + facet_wrap(~Tr
 dev.off()
 
 
-ggplot(BoxFeedRatio, aes(x=Treatment, y = NumFeed.n)) + geom_boxplot() # + geom_point(position = "jitter") + facet_wrap(~Instar)
+ggplot(BoxFeedRatio, aes(x=Treatment, y = logCap.n)) + geom_boxplot()# + geom_point(position = "jitter") + facet_wrap(~Instar)
+

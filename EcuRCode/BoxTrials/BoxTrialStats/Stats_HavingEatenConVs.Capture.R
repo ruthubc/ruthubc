@@ -55,3 +55,75 @@ summary(RatioFull)
 
 RatioNull<-glmer(PerNoCap ~ Instar + (1|IndBoxID),	BoxFeedRatio, family = binomial)
 anova(RatioFull, RatioNull)
+
+################### Redoing the order with glmer
+
+BoxFed<-subset(BoxComboMorn, IndFeed == "y")
+
+FedCapFull.glmer <- glmer(IndCapture ~ Treatment+ LogCond + Instar +  Treatment*LogCond + (1|IndBoxID) + (1|IndBoxID:SpiderID),
+		BoxFed, family = binomial(logit))
+
+summary(FedCapFull.glmer)
+
+## Testing just the interaction
+FedCapInt.glmer <- glmer(IndCapture ~ Treatment+ LogCond + Instar  + (1|IndBoxID) + (1|IndBoxID:SpiderID),
+		BoxFed, family = binomial(logit))
+anova(FedCapFull.glmer, FedCapInt.glmer)
+
+## Testing the interaction and LogCond
+FedCapCond.glmer <- glmer(IndCapture ~ Treatment+ Instar  + (1|IndBoxID) + (1|IndBoxID:SpiderID),
+		BoxFed, family = binomial(logit))
+anova(FedCapFull.glmer, FedCapCond.glmer)
+
+## Testing the interaction and Treatment
+FedCapTreat.glmer <- glmer(IndCapture ~ LogCond+ Instar  + (1|IndBoxID) + (1|IndBoxID:SpiderID),
+		BoxFed, family = binomial(logit))
+anova(FedCapFull.glmer, FedCapTreat.glmer)
+
+## Testing Instar
+
+FedCapInstar.glmer <- glmer(IndCapture ~ Treatment+ LogCond +  Treatment*LogCond + (1|IndBoxID) + (1|IndBoxID:SpiderID),
+		BoxFed, family = binomial(logit))
+
+anova(FedCapFull.glmer, FedCapInstar.glmer)
+
+#####Testing condition for large prey
+FedCapLarge.glmer<-glmer(IndCapture ~ LogCond + Instar+ (1|IndBoxID) + (1|IndBoxID:SpiderID),
+		subset(BoxFed, Treatment == "large"), family = binomial(logit))
+
+summary(FedCapLarge.glmer)
+
+
+
+FedCapLargeRed.glmer<-glmer(IndCapture ~ Instar+ (1|IndBoxID) + (1|IndBoxID:SpiderID),
+		subset(BoxFed, Treatment == "large"), family = binomial(logit))
+
+anova(FedCapLarge.glmer, FedCapLargeRed.glmer)
+
+#####Testing condition for small prey
+FedCapsmall.glmer<-glmer(IndCapture ~ Rank.Cond + Instar+ (1|IndBoxID) + (1|IndBoxID:SpiderID),
+		subset(BoxFed, Treatment == "small"), family = binomial(logit))
+
+FedCapsmallRed.glmer<-glmer(IndCapture ~ Instar+ (1|IndBoxID) + (1|IndBoxID:SpiderID),
+		subset(BoxFed, Treatment == "small"), family = binomial(logit))
+
+anova(FedCapsmall.glmer, FedCapsmallRed.glmer)
+
+table(BoxFed$IndCapture, BoxFed$Treatment)
+
+
+##Difference in number that didn't capture but ate between treatments
+
+DifCap.lmer <- lmer(logCap.n ~ Treatment + Instar + (1|IndBoxID), BoxFeedRatio)
+modelPlot(DifCap.lmer)
+
+summary(DifCap.lmer)
+
+DifCapTreat.lmer <- lmer(logCap.n ~ Instar + (1|IndBoxID), BoxFeedRatio)
+anova(DifCap.lmer, DifCapTreat.lmer)
+
+## getting means
+by(BoxFeedRatio$logCap.n, BoxFeedRatio$Treatment, mean)
+
+BoxRatioStats = function(x) c(mean = (10^mean(x))-1, se = (10^sd(x)-1)/sqrt(length(x)), n = length(x), max = (10^max(x))-1)
+tapply(BoxFeedRatio$logCap.n, BoxFeedRatio$Treatment, BoxRatioStats)

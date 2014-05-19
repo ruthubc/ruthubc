@@ -186,3 +186,30 @@ CapBinsmallSub2Red <- glmer(IndCapture ~(1|IndBoxID) + (1|IndBoxID:SpiderID), (s
 
 anova(CapBinsmallSub2, CapBinsmallSub2Red)
 
+
+######## Testing overall model
+
+CapConFull.glmer <- glmer(IndCapture ~ LogCond+Instar+Treatment + LogCond*Treatment + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+summary(CapConFull.glmer)
+
+##Checking LogCond:Treatment
+
+CapConInter.glmer <- glmer(IndCapture ~ LogCond+Instar+Treatment + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+anova(CapConFull.glmer, CapConInter.glmer)
+
+###Checking LogCond + Treatment
+CapConCond.glmer <- glmer(IndCapture ~ Instar+Treatment + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+anova(CapConFull.glmer, CapConCond.glmer)
+
+###Checking LogCond + Treatment
+CapConTreat.glmer <- glmer(IndCapture ~ LogCond + Instar + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+anova(CapConFull.glmer, CapConTreat.glmer)
+
+#######Checking Instar
+CapConInstar.glmer <- glmer(IndCapture ~ LogCond+ Treatment + LogCond*Treatment + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+anova(CapConFull.glmer, CapConInstar.glmer)
