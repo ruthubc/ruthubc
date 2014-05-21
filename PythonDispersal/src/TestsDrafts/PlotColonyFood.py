@@ -10,13 +10,15 @@ import numpy as np
 plt.ylabel('Total amount of food in the colony')
 plt.xlabel('Group size')
 
-c=0.01
-d=1
+c=0.01 # a number that has something to do with optimum group size
+d=2 #level of skewdness
 
-print "max group size="
-print (d/c)
+print "d/c which is the optimum gp size =", (d/c)
 
-mxFd = np.exp(-d) * np.power((d/c), d)
+
+mxFd = np.exp(-d) * np.power((d/c), d) # used to scale the equation to make max food = 1
+
+print "max food = ", mxFd
 
 x = np.arange(0, 10*(1/c), 1)
 #y = np.exp(d-c*x) *np.power((c*x/d), d)

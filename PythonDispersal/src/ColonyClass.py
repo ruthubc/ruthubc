@@ -11,11 +11,8 @@ from SpiderClass import Spider
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, colony_list, total_size=0.0, total_instar=0.0,
-                 total_food=0.0):
+    def __init__(self, colony_list, total_food=0.0):
         self.colony_list = colony_list
-        self.total_size = total_size
-        self.total_instar = total_instar
         self.total_food = total_food
 
     def __str__(self):
@@ -26,37 +23,18 @@ class Colony(object):
         for i in range(len(self.colony_list)):
             print "i = %s: %s" % (i, self.colony_list[i])
 
-    def col_size(self):
-        '''calculates the total size of all spiders in a colony'''
-        self.total_size = 0.0
-        for i in range(len(self.colony_list)):
-            self.total_size += self.colony_list[i].size
-        return self.total_size
+    def MaxAndMin(self): #returns the max and min spider size
+        col_indSize = [i.size for i in self.colony_list]
+        size_max = max(col_indSize)
+        size_min = min(col_indSize)
+        return size_max, size_min #returns a tuple
 
-    def rel_size(self):
-        '''calculates the relative size of ind compared to colony
-        size varies between 0 and 1 to determine prop of food to ind'''
-        max = 0
-        self.col_size()  # getting total colony size
-        for i in range(len(self.colony_list)):
-            self.colony_list[i].rel_size = (self.colony_list[i].size
-                                            / self.total_size)
-
-        for k in range(len(self.colony_list)):
-            if self.colony_list[k].rel_size > max:
-                max = self.colony_list[k].rel_size
-
-        for j in range(len(self.colony_list)):
-            self.colony_list[j].rel_size = (self.colony_list[j].rel_size / max)
+    def update_col_relSize(self): #updates each spider with its relative size
+        maxSz = self.MaxAndMin()[0]
+        minSz = self.MaxAndMin()[1]
+        [i.update_relSize(i.cal_relSize(maxSz,minSz)) for i in self.colony_list]
 
 
-
-
-    def instar_sum(self):
-        '''calculates the total instar in the colony'''
-        for i in range(len(self.colony_list)):
-            self.total_instar += self.colony_list[i].instar
-        return self.total_instar
 
     def colony_food(self, car_cap, skew):
         '''total amount of food colony gets
@@ -109,3 +87,4 @@ class Colony(object):
         "increases age of spider by one"
         for i in range(len(self.colony_list)):
             self.colony_list[i].age += 1
+
