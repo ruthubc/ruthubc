@@ -27,3 +27,5 @@ y = (1/mxFd) * np.power(x, d) * np.exp(-c*x)
 plt.plot(x, y)
 
 plt.show()
+
+print (1/mxFd) * np.power(1, d) * np.exp(-c*1)

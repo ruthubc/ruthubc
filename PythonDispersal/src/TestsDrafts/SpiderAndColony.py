@@ -55,4 +55,13 @@ print"trying colony class"
 myCol.update_col_relSize()
 myCol.print_spiders()
 
+print len(myCol.colony_list)
 
+myCol.cal_colony_food(0.01, 2)
+
+print myCol.colony_food
+
+myCol.print_spiders()
+myCol.age_increment()
+print "gap"
+myCol.print_spiders()

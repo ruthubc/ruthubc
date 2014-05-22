@@ -11,9 +11,9 @@ from SpiderClass import Spider
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, colony_list, total_food=0.0):
+    def __init__(self, colony_list, colony_food=0.0):
         self.colony_list = colony_list
-        self.total_food = total_food
+        self.colony_food = colony_food
 
     def __str__(self):
         return "number of spiders in colony: %s" % (len(self.colony_list))
@@ -34,16 +34,20 @@ class Colony(object):
         minSz = self.MaxAndMin()[1]
         [i.update_relSize(i.cal_relSize(maxSz,minSz)) for i in self.colony_list]
 
+    def cal_colony_food(self, c, d): # calculates the food to the colony
+        N = len(self.colony_list)
+        mxFd = np.exp(-d) * np.power((d/c), d) # used to scale the equation to make max food = 1
+        cal_colFood = (1/mxFd) * np.power(N, d) * np.exp(-c*N)
+        self.colony_food = cal_colFood
+
+    def age_increment(self): # adds one to age of all spiders in colony
+        [i.age_add1() for i in self.colony_list]
+        
 
 
-    def colony_food(self, car_cap, skew):
-        '''total amount of food colony gets
-        skew > 1'''
-        col_tot_instar = self.instar_sum()  # total instar of colony
-        self.total_food = (np.exp(skew - car_cap * col_tot_instar) *
-                           np.power((car_cap * col_tot_instar / skew), skew))
-        return self.total_food
 
+
+## looked at until here.
     def ind_food(self):
         '''this right now is pure scramble competition'''
         for i in range(len(self.colony_list)):
@@ -55,12 +59,6 @@ class Colony(object):
         for i in range(len(self.colony_list)):
             self.colony_list[i].size = (1 - ((1 - self.colony_list[i].size) *
                                              np.exp(-growth_rate * self.colony_list[i].ind_food)))
-
-    def update_instar(self, instar_levels):
-        '''updating all instars in spider with predefined instar levels
-        function instar_inc from spider class'''
-        for i in range(len(self.colony_list)):
-            self.colony_list[i].instar_inc(instar_levels)
 
     def reproduction(self, no_offspring):
         '''adding new offspring to colony'''
@@ -83,8 +81,5 @@ class Colony(object):
 
         self.colony_list = [k for j, k in enumerate(self.colony_list) if j not in index]
 
-    def age_increment(self):
-        "increases age of spider by one"
-        for i in range(len(self.colony_list)):
-            self.colony_list[i].age += 1
+
 

@@ -36,13 +36,16 @@ class Spider(object):
 
     def size(self):
         return self.size
-    
+
     def cal_relSize(self, maxSize, minSize):
         x= (self.size-minSize)/(maxSize-minSize)
         return x
-    
+
     def update_relSize(self, x): # to update relative size
         self.rel_size = x
-        
+
+    def age_add1(self): # add one to the age of a spider
+        self.age += 1
+
 
 
