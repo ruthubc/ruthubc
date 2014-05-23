@@ -12,15 +12,16 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, age=0.0):
+    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, age=0.0, rank=1):
         '''defining the spider object'''
         self.size = size
         self.rel_size = rel_size
         self.ind_food = ind_food
         self.age = age  # incremented after each time tick.
+        self.rank = rank
 
     def __str__(self):
-        return "size: %s, rel size: %s, age: %s" % (self.size, self.rel_size, self.age)
+        return "size: %s, rel size: %s, age: %s, rank: %s, indFood: %s" % (self.size, self.rel_size, self.age, self.rank, self.ind_food)
 
 
     def death(self, max_age, mn_prob):  # making mortality age independent: need to define max age somewhere
@@ -46,6 +47,13 @@ class Spider(object):
 
     def age_add1(self): # add one to the age of a spider
         self.age += 1
+
+    def update_rank(self, x): # to update relative size
+        self.rank = x
+        
+    def update_indFood(self, x):
+        self.ind_food = x
+
 
 
 

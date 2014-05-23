@@ -6,15 +6,16 @@ Created on May 20, 2014
 from SpiderClass import Spider
 from ColonyClass import Colony
 import numpy as np
+import scipy.stats as ss
 
 ########### having a test of spider class ####
-spi1 = Spider(15.0, 0.2, 0.2, 4)
+spi1 = Spider(75.0, 0.2, 0.2, 4)
 
-spi2= Spider(2, 0.3, 0.2, 5)
+spi2= Spider(89, 0.3, 0.2, 5)
 
-spi3= Spider(25.6, 0.3, 0.2, 5)
+spi3= Spider(0.02, 0.3, 0.2, 5)
 
-spi4= Spider(7.6, 0.3, 0.2, 5)
+spi4= Spider(4, 0.3, 0.2, 5)
 
 
 
@@ -64,4 +65,39 @@ print myCol.colony_food
 myCol.print_spiders()
 myCol.age_increment()
 print "gap"
+myCol.print_spiders()
+'''
+sl = np.array(myCol.size_list())
+
+print sl
+
+sort =  sl.argsort()
+print "sort:", sort
+
+spiders = myCol.colony_list
+
+ranks = [2, 1, 3, 4]
+
+#[i.update_rank([2, 7, 3, 4][j]+=1]) for i in spiders]
+
+for i, j in zip(spiders, sort):
+    i.update_rank(j)
+    print i
+'''   
+myCol.update_rank()
+print "updated"
+myCol.print_spiders()
+'''
+sl = myCol.size_list()
+slnew = np.array(sl)
+print slnew
+print slnew.argsort()
+print "scipy try"
+print ss.rankdata(sl)
+'''
+
+update = [x for x in myCol.colony_list if x.rank > 2.0]
+
+[i.update_indFood(20) for i in myCol.colony_list if i.rank >2]
+print "indfood"
 myCol.print_spiders()
