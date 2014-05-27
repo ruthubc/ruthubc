@@ -98,6 +98,21 @@ print ss.rankdata(sl)
 
 update = [x for x in myCol.colony_list if x.rank > 2.0]
 
-[i.update_indFood(20) for i in myCol.colony_list if i.rank >2]
-print "indfood"
+#[i.update_indFood(20) for i in myCol.colony_list if i.rank >2]
+print "scramble comp"
+myCol.colony_food = 0.7
+myCol.scramble()
+
+print "colony food:", myCol.colony_food
+myCol.print_spiders()
+
+print "contest"
+myCol.colony_food = 0.5
+myCol.contest()
+print "colony food:", myCol.colony_food
+myCol.print_spiders()
+
+print "trying compeition function"
+myCol.colony_food = 0.74
+myCol.ind_food(1)
 myCol.print_spiders()

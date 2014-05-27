@@ -7,7 +7,7 @@ Created on Mar 28, 2014
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-from numpy import vectorize
+# from numpy import vectorize I can't remember what this did
 
 Fmx = 1 # food rank number 1 gets
 Fc = 0.5 # colony food

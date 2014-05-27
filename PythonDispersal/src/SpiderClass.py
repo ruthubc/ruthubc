@@ -53,6 +53,10 @@ class Spider(object):
         
     def update_indFood(self, x):
         self.ind_food = x
+        
+    def growth_eq(self):
+        self.size =        
+        (1 - ((1 - self.size) * np.exp(-growth_rate * self.colony_list[i].ind_food)))
 
 
 

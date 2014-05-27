@@ -52,17 +52,17 @@ class Colony(object):
         for i, j in zip(self.colony_list, Ranks):
             i.update_rank(j)
 
-######### this hasn't been checked!!!####################
     def scramble(self): #pure scramble comptition 
         [i.update_indFood(self.colony_food) for i in self.colony_list]
 
     def contest(self):
         fraction = len(self.colony_list) - (self.colony_food * len(self.colony_list))
         [i.update_indFood(1) for i in self.colony_list if i.rank > fraction] # need to check numbers?
-        #what happens if there are ties?
+        #what happens if there are ties? Fractions ??
+        
 
     def ind_food(self, comp): # comp: 0 = scramble, 1 = contest
-        [i.update_indFood(0) for i in self.colonylist] # updating all indfood to 0
+        [i.update_indFood(0) for i in self.colony_list] # updating all indfood to 0
         if comp == 0:
             self.scramble()
         elif comp == 1:
@@ -70,6 +70,11 @@ class Colony(object):
 ##############################################
 ## looked at until here.
 
+    def growth_eq(self):
+        self.colony_list[i].size = (1 - ((1 - self.colony_list[i].size) *
+                                             np.exp(-growth_rate * self.colony_list[i].ind_food)))
+        
+    
     def ind_growth(self, growth_rate):
         #non linear function that increases size based on food and current size
         for i in range(len(self.colony_list)):
