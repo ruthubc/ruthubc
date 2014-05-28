@@ -200,10 +200,12 @@ BoxComboAve$Cap <- factor(BoxComboAve$Cap, levels = c("y", "n") )
 AveByTrial <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, Instar, PJEven, AsinPJEven, IndBoxID ), summarise, 
 		N = sum(!is.na(IndFeed)),
 		noFeed=sum(!is.na(SpiderID[IndFeed== "y"])),
+		noCap = sum(!is.na(SpiderID[IndCapture== "y"])),
 		feedDur = sum(TotalTimeEating, na.rm =TRUE),
 		logFeedDur = log(feedDur),
 		logNoFeed = log(noFeed),
 		meanFeedDur = mean(TotalTimeEating, na.rm= TRUE)
+		
 )
 
 subset(as.data.frame(table(AveByTrial$TrialID)), Freq >1)
