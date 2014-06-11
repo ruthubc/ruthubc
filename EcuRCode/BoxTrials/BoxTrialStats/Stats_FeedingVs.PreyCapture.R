@@ -9,7 +9,6 @@
 #I made instar a random variable
 BoxComboCap <- subset(BoxComboMorn, IndFeed != "NA") # removing NA lines as the bootrstrapping can't deal
 
-prop.table(BoxComboCap$IndFeed)
 
 ##numbers
 
