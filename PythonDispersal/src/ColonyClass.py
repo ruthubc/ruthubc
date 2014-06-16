@@ -67,36 +67,23 @@ class Colony(object):
             self.scramble()
         elif comp == 1:
             self.contest()
-##############################################
-## looked at until here.
 
-    def growth_eq(self):
-        self.colony_list[i].size = (1 - ((1 - self.colony_list[i].size) *
-                                             np.exp(-growth_rate * self.colony_list[i].ind_food)))
-        
-    
-    def ind_growth(self, growth_rate):
-        #non linear function that increases size based on food and current size
-        for i in range(len(self.colony_list)):
-            self.colony_list[i].size = (1 - ((1 - self.colony_list[i].size) *
-                                             np.exp(-growth_rate * self.colony_list[i].ind_food)))
+    #TODO: need to test this more throughly
+    def apply_growth(self, growth_amt):
+        [i.growth_eq(growth_amt) for i in self.colony_list]
 
-    def reproduction(self, no_offspring):
+    def dying(self, old_age, prob):
+        [i.death(old_age, prob) for i in self.colony_list] # making spiders due to die
+        self.colony_list = [i for i in self.colony_list if i.die == 0] # removes spiders that are dead
+#TODO: check if I need to update the other aspects of colony
+
+    def reproduction(self, no_off, ad_size):
         #adding new offspring to colony
-        no_ads = len([spi for spi in self.colony_list if spi.instar >= 5])
-        no_new_ofs = no_offspring * no_ads
-        #offsp = [Spider()] * no_new_ofs
-        #self.colony_list = offsp + self.colony_list
-        new_spiders = list([Spider() for i in range(no_new_ofs)])
-        #self.colony_list([Spider() for i in range(no_new_ofs)])
+        no_ad = len([i for i in self.colony_list if i.size >= ad_size])
+        no_new_off = no_off * no_ad
+        new_spiders = list([Spider() for i in range(no_new_off)])
         self.colony_list = self.colony_list + new_spiders
 
-    def dying(self, ad_min, juv_max, curve, max_age):
-        #given the index of the individual in the colony list, deletes the spider at that location
-        for i in range(len(self.colony_list)):
-            mort = self.colony_list[i].death(ad_min, juv_max, curve, max_age)
-            index = []
-            if mort == 1:
-                index.append(i)
 
-        self.colony_list = [k for j, k in enumerate(self.colony_list) if j not in index]
+
+   ##     self.colony_list = [k for j, k in enumerate(self.colony_list) if j not in index]

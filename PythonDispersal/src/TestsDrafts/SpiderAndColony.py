@@ -9,13 +9,13 @@ import numpy as np
 import scipy.stats as ss
 
 ########### having a test of spider class ####
-spi1 = Spider(75.0, 0.2, 0.2, 4)
+spi1 = Spider(0.75, 0.2, 0.2, 4)
 
-spi2= Spider(89, 0.3, 0.2, 5)
+spi2= Spider(0.89, 0.3, 0.2, 5)
 
 spi3= Spider(0.02, 0.3, 0.2, 5)
 
-spi4= Spider(4, 0.3, 0.2, 5)
+spi4= Spider(0.4, 0.3, 0.2, 5)
 
 
 
@@ -26,8 +26,6 @@ colList = [spi1, spi2, spi3, spi4]
 for i in colList:
     print(i.size)
     
-
-spi1.death(11, 0.5)
 
 myCol = Colony(colList, 0)
 #print([elem.size for elem in colList])
@@ -115,4 +113,17 @@ myCol.print_spiders()
 print "trying compeition function"
 myCol.colony_food = 0.74
 myCol.ind_food(1)
+myCol.print_spiders()
+
+print"trying growth function"
+myCol.apply_growth(0.5)
+myCol.print_spiders()
+
+print "testing death"
+myCol.dying(7, 0.25)
+myCol.print_spiders()
+
+
+print "testing reproduction"
+myCol.reproduction(5, 0.8)
 myCol.print_spiders()

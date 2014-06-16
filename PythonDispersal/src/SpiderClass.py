@@ -12,28 +12,28 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, age=0.0, rank=1):
+    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, age=0.0, rank=1, die = 0):
         '''defining the spider object'''
         self.size = size
         self.rel_size = rel_size
         self.ind_food = ind_food
         self.age = age  # incremented after each time tick.
         self.rank = rank
+        self.die = die # 0 means not to die, 1 means die!
 
     def __str__(self):
-        return "size: %s, rel size: %s, age: %s, rank: %s, indFood: %s" % (self.size, self.rel_size, self.age, self.rank, self.ind_food)
+        return "size: %s, rel size: %s, age: %s, rank: %s, indFood: %s, die: %s" % (self.size, self.rel_size, self.age, self.rank, self.ind_food, self.die)
 
 
     def death(self, max_age, mn_prob):  # making mortality age independent: need to define max age somewhere
         ran = rndm.random()  # gives random numbers between 0 and 1
         if self.age > max_age:
-            x = 1  # you def die after a certain age
+            self.die = 1  # you def die after a certain age
         else:
             if ran > mn_prob:
-                x = 0
+                self.die = 0
             elif ran <= mn_prob:
-                x = 1
-        return x, ran
+                self.die = 1
 
     def size(self):
         return self.size
@@ -54,10 +54,10 @@ class Spider(object):
     def update_indFood(self, x):
         self.ind_food = x
         
-    def growth_eq(self):
-        self.size =        
-        (1 - ((1 - self.size) * np.exp(-growth_rate * self.colony_list[i].ind_food)))
-
+    def growth_eq(self, growth_rate):
+        term1 = 1-self.size
+        term2 = np.exp(-growth_rate * self.ind_food)
+        self.size = 1- (term1*term2)
 
 
 
