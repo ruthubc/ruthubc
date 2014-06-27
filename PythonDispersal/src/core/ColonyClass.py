@@ -4,9 +4,9 @@ Created on 2013-02-12
 @author: ruth
 '''
 
-#import numpy as np
-#import scipy.stats as ss
-from core.SpiderClass import Spider
+import numpy as np
+import scipy.stats as ss
+from SpiderClass import Spider
 
 
 class Colony(object):

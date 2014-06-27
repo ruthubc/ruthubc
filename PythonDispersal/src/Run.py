@@ -7,8 +7,9 @@ The acutal code
 '''
 
 import numpy as np
-from core.SpiderClass import Spider
+
 from core.ColonyClass import Colony
+from core.SpiderClass import Spider
 
 #Start with one adult spider in one colony
 

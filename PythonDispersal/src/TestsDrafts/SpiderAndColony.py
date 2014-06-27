@@ -3,8 +3,8 @@ Created on May 20, 2014
 
 @author: Ruth
 '''
-from SpiderClass import Spider
-from ColonyClass import Colony
+from core.SpiderClass import Spider
+from core.ColonyClass import Colony
 import numpy as np
 import scipy.stats as ss
 
