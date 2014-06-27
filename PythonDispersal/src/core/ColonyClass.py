@@ -4,9 +4,9 @@ Created on 2013-02-12
 @author: ruth
 '''
 
-import numpy as np
-import scipy.stats as ss
-from SpiderClass import Spider
+#import numpy as np
+#import scipy.stats as ss
+from core.SpiderClass import Spider
 
 
 class Colony(object):
@@ -23,7 +23,7 @@ class Colony(object):
         '''prints all instances of spider in the colony'''
         for i in range(len(self.colony_list)):
             print "i = %s: %s" % (i, self.colony_list[i])
-    
+
     def MaxAndMin(self): #returns the max and min spider size
         col_indSize = [i.size for i in self.colony_list] ## Maybe put this in a seperate function?
         size_max = max(col_indSize)
@@ -59,7 +59,6 @@ class Colony(object):
         fraction = len(self.colony_list) - (self.colony_food * len(self.colony_list))
         [i.update_indFood(1) for i in self.colony_list if i.rank > fraction] # need to check numbers?
         #what happens if there are ties? Fractions ??
-        
 
     def ind_food(self, comp): # comp: 0 = scramble, 1 = contest
         [i.update_indFood(0) for i in self.colony_list] # updating all indfood to 0
@@ -68,7 +67,7 @@ class Colony(object):
         elif comp == 1:
             self.contest()
 
-    #TODO: need to test this more throughly
+#TODO: need to test this more throughly
     def apply_growth(self, growth_amt):
         [i.growth_eq(growth_amt) for i in self.colony_list]
 
@@ -84,6 +83,3 @@ class Colony(object):
         new_spiders = list([Spider() for i in range(no_new_off)])
         self.colony_list = self.colony_list + new_spiders
 
-
-
-   ##     self.colony_list = [k for j, k in enumerate(self.colony_list) if j not in index]
