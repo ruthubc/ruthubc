@@ -24,6 +24,16 @@ class Colony(object):
         for i in range(len(self.colony_list)):
             print "i = %s: %s" % (i, self.colony_list[i])
 
+    def age_increment(self): # adds one to age of all spiders in colony
+        [i.age_add1() for i in self.colony_list]
+
+    def reproduction(self, no_off, ad_size): # ad_size is the size spiders have to be to reproduce
+        #adding new offspring to colony
+        no_ad = len([i for i in self.colony_list if i.size >= ad_size])
+        no_new_off = no_off * no_ad
+        new_spiders = list([Spider() for i in range(no_new_off)])
+        self.colony_list = self.colony_list + new_spiders
+
     def MaxAndMin(self): #returns the max and min spider size
         col_indSize = [i.size for i in self.colony_list] ## Maybe put this in a seperate function?
         size_max = max(col_indSize)
@@ -41,8 +51,7 @@ class Colony(object):
         cal_colFood = (1/mxFd) * np.power(N, d) * np.exp(-c*N)
         self.colony_food = cal_colFood
 
-    def age_increment(self): # adds one to age of all spiders in colony
-        [i.age_add1() for i in self.colony_list]
+
 
     def size_list(self):
         return [i.size for i in self.colony_list] ## Maybe put this in a seperate function?
@@ -76,10 +85,4 @@ class Colony(object):
         self.colony_list = [i for i in self.colony_list if i.die == 0] # removes spiders that are dead
 #TODO: check if I need to update the other aspects of colony
 
-    def reproduction(self, no_off, ad_size):
-        #adding new offspring to colony
-        no_ad = len([i for i in self.colony_list if i.size >= ad_size])
-        no_new_off = no_off * no_ad
-        new_spiders = list([Spider() for i in range(no_new_off)])
-        self.colony_list = self.colony_list + new_spiders
 
