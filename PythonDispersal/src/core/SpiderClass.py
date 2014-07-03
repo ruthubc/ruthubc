@@ -12,7 +12,7 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, age=0.0, rank=1, die = 0):
+    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, age=0.0, rank=1, die = 0, reproduce = 0):
         '''defining the spider object'''
         self.size = size
         self.rel_size = rel_size
@@ -20,10 +20,10 @@ class Spider(object):
         self.age = age  # incremented after each time tick.
         self.rank = rank
         self.die = die # 0 means not to die, 1 means die!
+        self.reproduce = reproduce # 0 = no, 1 = yes
 
     def __str__(self):
-        return "size: %s, rel size: %s, age: %s, rank: %s, indFood: %s, die: %s" % (self.size, self.rel_size, self.age, self.rank, self.ind_food, self.die)
-
+        return "size: %s, age: %s, rank: %s, indFood: %s, die: %s" % (self.size, self.age, self.rank, self.ind_food, self.die)
 
     def death(self, max_age, mn_prob):  # making mortality age independent: need to define max age somewhere
         ran = rndm.random()  # gives random numbers between 0 and 1
@@ -35,13 +35,13 @@ class Spider(object):
             elif ran <= mn_prob:
                 self.die = 1
 
-    def size(self):
-        return self.size
-
     def cal_relSize(self, maxSize, minSize):
         x= (self.size-minSize)/(maxSize-minSize)
         return x
 
+    def update_reproduce(self):
+        self.reproduce = 1
+    
     def update_relSize(self, x): # to update relative size
         self.rel_size = x
 

@@ -39,7 +39,7 @@ time= [0]
 size = [sz]
 
 
-for i in range(1,50):
+for i in np.range(1,50):
     sz = 1- ( (1-sz)*np.exp(-k * d_t) )
     time.append(i)
     size.append(sz)

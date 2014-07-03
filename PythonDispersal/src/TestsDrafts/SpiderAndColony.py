@@ -101,7 +101,7 @@ print "scramble comp"
 myCol.colony_food = 0.7
 myCol.scramble()
 
-print "colony food:", myCol.colony_food
+print "testing colony food:", myCol.colony_food
 myCol.print_spiders()
 
 print "contest"

@@ -12,12 +12,16 @@ from SpiderClass import Spider
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, colony_list, colony_food=0.0):
+    def __init__(self, colony_list, colony_food=0.0, colony_age = 0):
         self.colony_list = colony_list
         self.colony_food = colony_food
-
+        self.colony_age = colony_age
+        
     def __str__(self):
-        return "number of spiders in colony: %s" % (len(self.colony_list))
+        return "please use the function print_dets"
+
+    def col_age_increase(self):
+        self.colony_age += 1   
 
     def print_spiders(self):
         '''prints all instances of spider in the colony'''
@@ -28,46 +32,48 @@ class Colony(object):
         [i.age_add1() for i in self.colony_list]
 
     def reproduction(self, no_off, ad_size): # ad_size is the size spiders have to be to reproduce
-        #adding new offspring to colony
-        no_ad = len([i for i in self.colony_list if i.size >= ad_size])
+        #adding new offspring to colony        
+        no_ad = sum(i.size >=ad_size and i.reproduce == 0 for i in self.colony_list)# AND i.reproduce == 0])
+        [i.update_reproduce() for i in self.colony_list if i.size >= ad_size] #updates if adult already reproduced
         no_new_off = no_off * no_ad
         new_spiders = list([Spider() for i in range(no_new_off)])
         self.colony_list = self.colony_list + new_spiders
 
-    def MaxAndMin(self): #returns the max and min spider size
-        col_indSize = [i.size for i in self.colony_list] ## Maybe put this in a seperate function?
+    def cal_colony_food(self, c, d): # calculates and updates the food to the colony, 1/c = carrying capacity, d = level of skew
+        N = len(self.colony_list)
+        mxFd = np.exp(-d) * np.power((d/c), d) # used to scale the equation to make max food = 1
+        cal_colFood = (1/mxFd) * np.power(N, d) * np.exp(-c*N)
+        self.colony_food = cal_colFood
+                         
+    #TODO: Maybe just make these variable of colony
+    def MaxAndMinSize(self): #returns the max and min spider size
+        col_indSize= [i.size for i in self.colony_list]
         size_max = max(col_indSize)
         size_min = min(col_indSize)
         return size_max, size_min #returns a tuple
 
     def update_col_relSize(self): #updates each spider with its relative size
-        maxSz = self.MaxAndMin()[0]
-        minSz = self.MaxAndMin()[1]
+        maxSz = self.MaxAndMinSize()[0]
+        minSz = self.MaxAndMinSize()[1]
         [i.update_relSize(i.cal_relSize(maxSz,minSz)) for i in self.colony_list]
 
-    def cal_colony_food(self, c, d): # calculates the food to the colony
-        N = len(self.colony_list)
-        mxFd = np.exp(-d) * np.power((d/c), d) # used to scale the equation to make max food = 1
-        cal_colFood = (1/mxFd) * np.power(N, d) * np.exp(-c*N)
-        self.colony_food = cal_colFood
-
-
-
     def size_list(self):
-        return [i.size for i in self.colony_list] ## Maybe put this in a seperate function?
-
+        return [i.size for i in self.colony_list]        
+    
     def update_rank(self): #updates the rank of spiders # 1 lowest rank, May have to switch round;
-        Ranks =  ss.rankdata(self.size_list())
+        Ranks =  ss.rankdata(self.size_list(), method = 'ordinal')
+        #assins ties in order -> arbritary order.
         for i, j in zip(self.colony_list, Ranks):
             i.update_rank(j)
 
-    def scramble(self): #pure scramble comptition 
+    def scramble(self): #pure scramble competition
         [i.update_indFood(self.colony_food) for i in self.colony_list]
 
+#TODO: what happens if there are ties?
     def contest(self):
         fraction = len(self.colony_list) - (self.colony_food * len(self.colony_list))
         [i.update_indFood(1) for i in self.colony_list if i.rank > fraction] # need to check numbers?
-        #what happens if there are ties? Fractions ??
+
 
     def ind_food(self, comp): # comp: 0 = scramble, 1 = contest
         [i.update_indFood(0) for i in self.colony_list] # updating all indfood to 0
@@ -77,12 +83,23 @@ class Colony(object):
             self.contest()
 
 #TODO: need to test this more throughly
-    def apply_growth(self, growth_amt):
+    def apply_growth(self, growth_amt): # growth rate is the amount an individual grows per unit 
         [i.growth_eq(growth_amt) for i in self.colony_list]
 
     def dying(self, old_age, prob):
-        [i.death(old_age, prob) for i in self.colony_list] # making spiders due to die
+        [i.death(old_age, prob) for i in self.colony_list] # marking spiders due to die
         self.colony_list = [i for i in self.colony_list if i.die == 0] # removes spiders that are dead
 #TODO: check if I need to update the other aspects of colony
+
+    def MaxAndMinAges(self):
+        col_indAge= [i.age for i in self.colony_list]
+        age_max = max(col_indAge)
+        age_min = min(col_indAge)
+        return age_max, age_min #returns a tuple
+    
+    def print_dets(self):
+        return "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
+                                                                               self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food)
+        
 
 
