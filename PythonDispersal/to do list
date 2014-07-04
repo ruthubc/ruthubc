@@ -1,12 +1,16 @@
 to do notes:
 
-2) figure out how to initiate run_function for new colonies
-3) check out SimPy??
-4) find out how to write numbers to excel
-5) figure out dispersal
-7) Tidy the draft modules
-8) Find a better contest comp equation
-9) Think about what numbers I want to export and how to get those numbers
-10) write code for catrastophies
-11) think about threading or the best way to get multiple colonies running at the same time.
+* figure out how to initiate run_function for new colonies
+* check out SimPy??
+* find out how to write numbers to excel
+* figure out dispersal
+* Find a better contest comp equation
+* Think about what numbers I want to export and how to get those numbers
+* write code for catrastophies
+* think about threading or the best way to get multiple colonies running at the same time.
 check out: http://computationallegalstudies.com/2009/10/11/programming-dynamic-models-in-python/
+* Could have comp between the instars otherwise in contest comp the young will never get enough when there are adults about!
+	- assume only juvs and adults and that comp occurs between them - assume the juvs get fed by other means?
+* Then we can have it perhaps that individuals dispserse if they do not get fed for several time periods?????
+
+BOOK MUST GET http://link.springer.com.ezproxy.library.ubc.ca/chapter/10.1007/978-1-4757-0869-1_1
