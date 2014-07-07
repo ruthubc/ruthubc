@@ -242,3 +242,6 @@ BoxFeedRatio$NumFeed.y<-ifelse(is.na(BoxFeedRatio$NumFeed.y), 0, BoxFeedRatio$Nu
 BoxFeedRatio$Tot<-BoxFeedRatio$NumFeed.n + BoxFeedRatio$NumFeed.y
 BoxFeedRatio$PerNoCap<- BoxFeedRatio$NumFeed.n/BoxFeedRatio$Tot
 BoxFeedRatio$logCap.n <- log10(BoxFeedRatio$NumFeed.n+1)
+
+
+BoxMornFeedOrCap<- subset(BoxComboMorn, (IndFeed == "y" & CaptureIndPos != "NA") | (IndFeed !="NA" & CaptureIndPos=="y") )

@@ -4,7 +4,7 @@
 ###############################################################################
 
 
-by(AveByTrial$noFeed, AveByTrial$Treatment mean)
+by(AveByTrial$noFeed, AveByTrial$Treatment, mean)
 by(AveByTrial$noCap, AveByTrial$Treatment, mean)
 
 BoxRatioStats = function(x) c(mean = mean(x), se = (sd(x)/sqrt(length(x))), n = length(x), max = max(x))
@@ -25,3 +25,5 @@ CapNoFullMod <- lmer(noCap ~ Treatment + Instar+  (1|IndBoxID), AveByTrial, REML
 CapNoRedTreat <- lmer(noCap ~Instar+  (1|IndBoxID), AveByTrial, REML = FALSE )
 
 anova(CapNoFullMod, CapNoRedTreat)
+
+table(AveByTrial$Instar, AveByTrial$Treatment)
