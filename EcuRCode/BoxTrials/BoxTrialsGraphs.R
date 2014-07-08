@@ -193,7 +193,7 @@ ggplot(subset(BoxComboAve, SumIndEat>0), aes(x= Hunger, y = SumIndEat, colour = 
 
 dev.off()
 
-pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/FeedingAndHunger.pdf", width= 14, height =8.5)
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/FeedingAndHunger.pdf", width= 16, height =8.5)
 
 # hunger boxplot by ate or didn't
 ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = LogHunger)) + geom_boxplot(aes(fill = IndFeed)) + 
@@ -215,7 +215,7 @@ ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = log10(1/Hung
 
 ggplot(subset(BoxComboMorn, IndCapture != "NA") , aes(x = IndCapture, y = log10(1/Hunger))) + geom_boxplot(aes(fill = IndCapture)) + 
 		facet_grid(Instar ~ Treatment, labeller = Facet_label ) + mytheme + ylab("Log Condition") + xlab("") +
-		scale_x_discrete(breaks=c("y", "n"), labels=c("Capture", "Didn't Capture")) + coord_flip() +
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Capture", "Did Not\nCapture")) + coord_flip() +
 		guides(fill = FALSE)
 
 
