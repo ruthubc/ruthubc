@@ -56,5 +56,5 @@ for i in range(len(hlist)):
 
 mylist = [1]*5
 
-print mylist
+print hlist[2]
 

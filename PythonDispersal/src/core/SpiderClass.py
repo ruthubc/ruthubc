@@ -12,7 +12,7 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, age=0.0, rank=1, die = 0, reproduce = 0):
+    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, instar= 1, age=0.0, rank=1, die = 0, reproduce = 0):
         '''defining the spider object'''
         self.size = size
         self.rel_size = rel_size
@@ -58,6 +58,9 @@ class Spider(object):
         term1 = 1-self.size
         term2 = np.exp(-growth_rate * self.ind_food)
         self.size = 1- (term1*term2)
+        
+    def update_instar(self):
+        self.instar += 1
 
 
 

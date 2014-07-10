@@ -9,6 +9,8 @@ from core.ColonyClass import Colony
 from core.SpiderClass import Spider
 from numpy.oldnumeric.linear_algebra import inverse
 
+
+
 def run_function(colony,
         adult_size=0.8,
         number_offspring = 5,
@@ -17,7 +19,9 @@ def run_function(colony,
         comp_type = 1, # 0 = scramble and 1 = contest
         growth_per_food = 0.2, # max size =1
         age_die = 10,
-        prob_death = 0.01):
+        prob_death = 0.01,
+        cat_prob = 0.001,
+        cat_perc_die = 0.7):
     
     
     """updates colony age by one"""
@@ -43,4 +47,4 @@ def run_function(colony,
     
     """(4) death """
     
-    colony.dying(age_die, prob_death)
+    colony.dieOrCtphe(age_die, prob_death, cat_prob, cat_perc_die)

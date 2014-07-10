@@ -6,6 +6,7 @@ Created on 2013-02-12
 
 import numpy as np
 import scipy.stats as ss
+import random as rndm
 from SpiderClass import Spider
 
 
@@ -97,6 +98,17 @@ class Colony(object):
         age_min = min(col_indAge)
         return age_max, age_min #returns a tuple
     
+    #TODO: check is working!
+    def dieOrCtphe(self, old_age, die_prob, cat_prob, cat_perc_die):
+        ranNo = rndm.random() # gives random numbers between 0 and 1
+        if ranNo<cat_prob:
+            self.dying(old_age, cat_perc_die) # higher percentage of individuals die
+        else:
+            self.dying(old_age, die_prob) # normal death
+            
+            
+        
+
     def print_dets(self):
         return "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
                                                                                self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food)
