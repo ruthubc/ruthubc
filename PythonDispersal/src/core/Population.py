@@ -38,7 +38,7 @@ class ColonyPopulation(object):
         self.cat_perc_die = cat_perc_die
         self.inverse_carr_cap = 1/self.carrying_capacity #TODO: check that this creates floats
 
-    def run_function(self, i):
+    def ind_col_timestep(self, i):
             """updates colony age by one"""
             self.poplt_list[i].col_age_increase()
             """ updates the age of all spiders within the colony"""
@@ -59,16 +59,15 @@ class ColonyPopulation(object):
             self.poplt_list[i].dieOrCtphe(self.age_die, self.prob_death, self.cat_prob, self.cat_perc_die)
 
             """ (5) dispersal"""
-
-
-
-    def population_OneTimestep(self): #iterates through all colonies in popultion for one time step
+            
+    def allCols_OneTimestep(self): #iterates through all colonies in population for one time step
         for j in range(len(self.poplt_list)):
-            self.run_function(j)
+            self.ind_col_timestep(j)
 
-    def AddColony(self, colony): # appends a colony aka a dispersing spider to make a new colony
-        self.poplt_list.append(colony)
-        
-    def DelColony(self): #deletes a colony from the populatoin
-        #TODO: add this in
+    def DelColony(self): #deletes a colony from the population if it goes extinct
+        self.poplt_list = [i for i in self.poplt_list if self.poplt_list.col_alive == 'alive']        
+            
+    def add_new_cols(self, dispersal_list):
+        new_colonies = [Colony(i) for i in dispersal_list]
+        self.poplt_list = self.poplt_list + new_colonies
         

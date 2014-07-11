@@ -56,5 +56,9 @@ for i in range(len(hlist)):
 
 mylist = [1]*5
 
-print hlist[2]
+print hlist
+
+hlist = []
+if hlist:
+    print "list full"
 

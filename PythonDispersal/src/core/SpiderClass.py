@@ -12,7 +12,7 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, instar= 1, age=0.0, rank=1, die = 0, reproduce = 0):
+    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, instar= 1, age=0.0, rank=1, die = 0, reproduce = 0, disperse = 0):
         '''defining the spider object'''
         self.size = size
         self.rel_size = rel_size
@@ -20,7 +20,8 @@ class Spider(object):
         self.age = age  # incremented after each time tick.
         self.rank = rank
         self.die = die # 0 means not to die, 1 means die!
-        self.reproduce = reproduce # 0 = no, 1 = yes
+        self.reproduce = reproduce # 0 = no, 1 = yes, 2 = already reproduced
+        self.disperse = disperse # 0 = no, 1 = yes
 
     def __str__(self):
         return "size: %s, age: %s, rank: %s, indFood: %s, die: %s" % (self.size, self.age, self.rank, self.ind_food, self.die)
@@ -39,8 +40,22 @@ class Spider(object):
         x= (self.size-minSize)/(maxSize-minSize)
         return x
 
-    def update_reproduce(self):
+    def update_repr_One(self):
         self.reproduce = 1
+        
+    def update_repr_Two(self): #updates reproduction to two if it equals one
+        if self.reproduce == 1:
+            self.reproduce = 2 
+        
+    
+    def update_disperse(self):
+        self.disperse = 1
+        
+    def dispORrep (self, min_food): # disperses if gets less than min food, cond for reprod= 0 in colony class
+        if self.ind_food < min_food and self.disperse == 0:
+            self.update_disperse
+        else:
+            self.update_reproduce(1)
     
     def update_relSize(self, x): # to update relative size
         self.rel_size = x

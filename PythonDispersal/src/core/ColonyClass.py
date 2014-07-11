@@ -31,14 +31,24 @@ class Colony(object):
 
     def age_increment(self): # adds one to age of all spiders in colony
         [i.age_add1() for i in self.colony_list]
+        
+        
+    def reprodDisChoice(self, min_food, ad_size): # deciding whether to reproduce or disperse   
+        [i.dispORrep(min_food) for i in self.colony_list if i.size >= ad_size and i.reproduce == 0] 
+        
 
-    def reproduction(self, no_off, ad_size): # ad_size is the size spiders have to be to reproduce
-        #adding new offspring to colony        
-        no_ad = sum(i.size >=ad_size and i.reproduce == 0 for i in self.colony_list)# AND i.reproduce == 0])
-        [i.update_reproduce() for i in self.colony_list if i.size >= ad_size] #updates if adult already reproduced
+    def reproduction(self, no_off, ad_size): # ad_size is the size spiders have to be to reproduce      
+        no_ad = sum(i.size >=ad_size and i.reproduce == 1 for i in self.colony_list) # cals number of adults to reproduce
+        [i.update_rep_Two for i in self.colony_list]   #updates if adult already reproduced
         no_new_off = no_off * no_ad
         new_spiders = list([Spider() for i in range(no_new_off)])
-        self.colony_list = self.colony_list + new_spiders
+        self.colony_list = self.colony_list + new_spiders # adds new colony 
+
+    def spis_to_dis_lst(self, dispersal_list): #makes a list 
+        dispersers= [i for i in self.colony_list if i.disperse ==1]# if i.disperse == 1] #makes list of spiders who disperse
+        dispersal_list = dispersal_list + dispersers
+        return dispersal_list
+        
 
     def cal_colony_food(self, c, d): # calculates and updates the food to the colony, 1/c = carrying capacity, d = level of skew
         N = len(self.colony_list)
@@ -89,8 +99,9 @@ class Colony(object):
 
     def dying(self, old_age, prob):
         [i.death(old_age, prob) for i in self.colony_list] # marking spiders due to die
-        self.colony_list = [i for i in self.colony_list if i.die == 0] # removes spiders that are dead
+
 #TODO: check if I need to update the other aspects of colony
+
 
     def MaxAndMinAges(self):
         col_indAge= [i.age for i in self.colony_list]
@@ -106,11 +117,19 @@ class Colony(object):
         else:
             self.dying(old_age, die_prob) # normal death
             
-            
+    def removing_spiders(self):  
+        self.colony_list = [i for i in self.colony_list if i.die == 0 and i.disperse == 0] 
+        # removes spiders that are dead or have dispersed    
         
+    def col_alive(self):
+        if self.colony_list:
+            return 'alive'
+        else:
+            return 'dead'       
+         
 
     def print_dets(self):
-        return "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
+        print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
                                                                                self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food)
         
 
