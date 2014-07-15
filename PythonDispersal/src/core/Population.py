@@ -26,7 +26,8 @@ class ColonyPopulation(object):
                  cat_prob = 0.001,
                  cat_perc_die = 0.7,
                  instar_list = [0.5], # list of size transitions
-                 poplt_age = 0):
+                 poplt_age = 0,
+                 colony_number = 0):
         self.poplt_list = poplt_list
         self.adult_size = adult_size
         self.number_offspring = number_offspring
@@ -41,6 +42,7 @@ class ColonyPopulation(object):
         self.inverse_carr_cap = 1/self.carrying_capacity
         self.instar_list = instar_list
         self.poplt_age = poplt_age
+        self.colony_number = colony_number
 
     def ind_col_timestep(self, i):
             """updates colony age by one"""
@@ -69,9 +71,7 @@ class ColonyPopulation(object):
             export = [self.poplt_age] +  self.poplt_list[i].colony_export() 
             return export
 
-
-
-    def allCols_OneTimestep(self): #iterates through all colonies in population for one time step
+    def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for j in range(len(self.poplt_list)):
             self.ind_col_timestep(j)
 
@@ -79,9 +79,14 @@ class ColonyPopulation(object):
         self.poplt_list = [i for i in self.poplt_list if self.poplt_list.col_alive == 'alive']
 
     def add_new_cols(self, dispersal_list):
+        self.colony_number += 1  # TODO: add iterative colony number to each new colony created.
         new_colonies = [Colony(i) for i in dispersal_list]
         self.poplt_list = self.poplt_list + new_colonies
 
     def update_poplt_age(self):
         self.poplt_age += 1
-        
+
+    def poplt_dict(self):
+        poplt_dict = {'poplt_age': self.poplt_age,
+                      'comp_type': self.comp_type
+                      }

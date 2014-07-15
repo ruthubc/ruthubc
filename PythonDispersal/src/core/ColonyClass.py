@@ -13,12 +13,14 @@ from SpiderClass import Spider
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, colony_list, 
-                 colony_food = 0.0, 
-                 colony_age = 0):
+    def __init__(self, colony_list,
+                 colony_food=0.0,
+                 colony_age=0,
+                 colony_ID):
         self.colony_list = colony_list
         self.colony_food = colony_food
         self.colony_age = colony_age
+        self.colony_ID = colony_ID
 
     def __str__(self):
         return "please use the function print_dets"
@@ -31,22 +33,21 @@ class Colony(object):
         for i in range(len(self.colony_list)):
             print "i = %s: %s" % (i, self.colony_list[i])
 
-    def spider_age_increase(self): # adds one to age of all spiders in colony
+    def spider_age_increase(self):  # adds one to age of all spiders in colony
         [i.spi_age_add1 for i in self.colony_list]
 
-    def reprodDisChoice(self, min_food, ad_size): # deciding whether to reproduce or disperse   
-        [i.dispORrep(min_food) for i in self.colony_list if i.size >= ad_size and i.reproduce == 0] 
+    def reprodDisChoice(self, min_food, ad_size):  # deciding whether to reproduce or disperse
+        [i.dispORrep(min_food) for i in self.colony_list if i.size >= ad_size and i.reproduce == 0]
 
-
-    def reproduction(self, no_off, ad_size): # ad_size is the size spiders have to be to reproduce      
-        no_ad = sum(i.size >=ad_size and i.reproduce == 1 for i in self.colony_list) # cals number of adults to reproduce
-        [i.update_repr_Two for i in self.colony_list]   #updates if adult already reproduced
+    def reproduction(self, no_off, ad_size):  # ad_size is the size spiders have to be to reproduce
+        no_ad = sum(i.size >= ad_size and i.reproduce == 1 for i in self.colony_list)  # cals number of adults to reproduce
+        [i.update_repr_Two for i in self.colony_list]   # updates if adult already reproduced
         no_new_off = no_off * no_ad
-        new_spiders = list([Spider() for i in range(no_off)])
-        self.colony_list = self.colony_list + new_spiders # adds new colony 
+        new_spiders = list([Spider() for i in range(no_new_off)])
+        self.colony_list = self.colony_list + new_spiders  # adds new colony
 
-    def spis_to_dis_lst(self, dispersal_list): #makes a list 
-        dispersers= [i for i in self.colony_list if i.disperse ==1]# if i.disperse == 1] #makes list of spiders who disperse
+    def spis_to_dis_lst(self, dispersal_list):  # makes a list
+        dispersers = [i for i in self.colony_list if i.disperse ==1]# if i.disperse == 1] #makes list of spiders who disperse
         dispersal_list = dispersal_list + dispersers
         return dispersal_list
 
@@ -55,20 +56,20 @@ class Colony(object):
         function instar_inc from spider class'''
         [i.instar_inc(instar_levels) for i in self.colony_list]
 
-    def cal_colony_food(self, c, d): # calculates and updates the food to the colony, 1/c = carrying capacity, d = level of skew
+    def cal_colony_food(self, c, d):  # calculates and updates the food to the colony, 1/c = carrying capacity, d = level of skew
         N = len(self.colony_list)
         mxFd = np.exp(-d) * np.power((d/c), d) # used to scale the equation to make max food = 1
         cal_colFood = (1/mxFd) * np.power(N, d) * np.exp(-c*N)
         self.colony_food = cal_colFood
 
     #TODO: Maybe just make these variable of colony
-    def MaxAndMinSize(self): #returns the max and min spider size
+    def MaxAndMinSize(self):  # returns the max and min spider size
         col_indSize= [i.size for i in self.colony_list]
         size_max = max(col_indSize)
         size_min = min(col_indSize)
         return size_max, size_min #returns a tuple
 
-    def update_col_relSize(self): #updates each spider with its relative size
+    def update_col_relSize(self):  # updates each spider with its relative size
         maxSz = self.MaxAndMinSize()[0]
         minSz = self.MaxAndMinSize()[1]
         [i.update_relSize(i.cal_relSize(maxSz,minSz)) for i in self.colony_list]
@@ -112,20 +113,20 @@ class Colony(object):
         col_indAge= [i.age for i in self.colony_list]
         age_max = max(col_indAge)
         age_min = min(col_indAge)
-        return age_max, age_min #returns a tuple
-    
+        return age_max, age_min  # returns a tuple
+
     #TODO: check is working!
     def dieOrCtphe(self, old_age, die_prob, cat_prob, cat_perc_die):
-        ranNo = rndm.random() # gives random numbers between 0 and 1
-        if ranNo<cat_prob:
-            self.dying(old_age, cat_perc_die) # higher percentage of individuals die
+        ranNo = rndm.random()  # gives random numbers between 0 and 1
+        if ranNo < cat_prob:
+            self.dying(old_age, cat_perc_die)  # higher percentage of individuals die
         else:
-            self.dying(old_age, die_prob) # normal death
-            
+            self.dying(old_age, die_prob)  # normal death
+
     def removing_spiders(self):  
         self.colony_list = [i for i in self.colony_list if i.die == 0 and i.disperse == 0] 
         # removes spiders that are dead or have dispersed    
-        
+
     def col_alive(self):
         if self.colony_list:
             return 'alive'
@@ -135,9 +136,14 @@ class Colony(object):
     def print_dets(self):
         print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
                                                                                self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food)
- 
-    def colony_export(self): #TODO: not working
-        exportlist = [self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1], 
-                  self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food]
-        return exportlist
 
+    def colony_export(self):
+        colony_dict = {'colony_age': self.colony_age,
+                       'number_spiders': len(self.colony_list),
+                       'min_size': self.MaxAndMinSize()[0],
+                       'max_size': self.MaxAndMinSize()[1],
+                       'min_age' : self.MaxAndMinAges()[0],
+                       'max_age': self.MaxAndMinAges()[1],
+                       'colony_food':self.colony_food
+                       }
+        return colony_dict
