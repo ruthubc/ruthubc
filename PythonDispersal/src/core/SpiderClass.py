@@ -12,7 +12,7 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, rel_size=0.0, ind_food=0.0, instar= 1, age=0.0, rank=1, die = 0, reproduce = 0, disperse = 0):
+    def __init__(self, size=0.1, instar = 1, rel_size=0.0, ind_food=0.0, age=0.0, rank=1, die = 0, reproduce = 0, disperse = 0):
         '''defining the spider object'''
         self.size = size
         self.rel_size = rel_size
@@ -22,10 +22,16 @@ class Spider(object):
         self.die = die # 0 means not to die, 1 means die!
         self.reproduce = reproduce # 0 = no, 1 = yes, 2 = already reproduced
         self.disperse = disperse # 0 = no, 1 = yes
+        self.instar= instar
 
     def __str__(self):
         return "size: %s, age: %s, rank: %s, indFood: %s, die: %s" % (self.size, self.age, self.rank, self.ind_food, self.die)
 
+    def instar_inc(self, instar_levels_list):
+        for k in range(len(instar_levels_list)):
+            if (self.size >= instar_levels_list[k]):
+                self.instar = k + 1  # because starts at 0
+    
     def death(self, max_age, mn_prob):  # making mortality age independent: need to define max age somewhere
         ran = rndm.random()  # gives random numbers between 0 and 1
         if self.age > max_age:

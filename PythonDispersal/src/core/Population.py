@@ -14,29 +14,33 @@ class ColonyPopulation(object):
     '''
     List of all colonies in the population    '''
 
-    def __init__(self, poplt_list,
+    def __init__(self, poplt_list, # list of colonies
                  adult_size=0.8, 
                  number_offspring = 5, 
-                 carrying_capacity = 10.0, 
+                 carrying_capacity = 10.1,
                  cc_skew = 2,
                  comp_type = 1, # 0 = scramble and 1 = contest
                  growth_per_food = 0.2, # max size =1
                  age_die = 10,
                  prob_death = 0.01,
                  cat_prob = 0.001,
-                 cat_perc_die = 0.7):
+                 cat_perc_die = 0.7,
+                 instar_list = [0.5], # list of size transitions
+                 poplt_age = 0):
         self.poplt_list = poplt_list
-        self.adult_size = adult_size,
+        self.adult_size = adult_size
         self.number_offspring = number_offspring,
-        self.carrying_capacity = carrying_capacity,
-        self.cc_skew = cc_skew, 
-        self.comp_type = comp_type, # 0 = scramble and 1 = contest
-        self.growth_per_food = growth_per_food, # max size =1
-        self.age_die = age_die,
-        self.prob_death = prob_death,
-        self.cat_prob = cat_prob,
+        self.carrying_capacity = carrying_capacity
+        self.cc_skew = cc_skew 
+        self.comp_type = comp_type # 0 = scramble and 1 = contest
+        self.growth_per_food = growth_per_food # max size =1
+        self.age_die = age_die
+        self.prob_death = prob_death
+        self.cat_prob = cat_prob
         self.cat_perc_die = cat_perc_die
-        self.inverse_carr_cap = 1/self.carrying_capacity #TODO: check that this creates floats
+        self.inverse_carr_cap = 1/self.carrying_capacity
+        self.instar_list = instar_list
+        self.poplt_age = poplt_age
 
     def ind_col_timestep(self, i):
             """updates colony age by one"""
@@ -54,20 +58,30 @@ class ColonyPopulation(object):
 
             """(3) growth """
             self.poplt_list[i].apply_growth(self.growth_per_food)
+            self.poplt_list[i].update_instar(self.instar_list) #updating instar
 
             """(4) death """
             self.poplt_list[i].dieOrCtphe(self.age_die, self.prob_death, self.cat_prob, self.cat_perc_die)
 
             """ (5) dispersal"""
-            
+
+            """(6) exporting data"""
+            export = self.poplt_list[i].colony_export + [self.poplt_age]
+            return export
+
+
+
     def allCols_OneTimestep(self): #iterates through all colonies in population for one time step
         for j in range(len(self.poplt_list)):
             self.ind_col_timestep(j)
 
     def DelColony(self): #deletes a colony from the population if it goes extinct
-        self.poplt_list = [i for i in self.poplt_list if self.poplt_list.col_alive == 'alive']        
-            
+        self.poplt_list = [i for i in self.poplt_list if self.poplt_list.col_alive == 'alive']
+
     def add_new_cols(self, dispersal_list):
         new_colonies = [Colony(i) for i in dispersal_list]
         self.poplt_list = self.poplt_list + new_colonies
+
+    def update_poplt_age(self):
+        self.poplt_age += 1
         

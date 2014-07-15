@@ -13,11 +13,13 @@ from SpiderClass import Spider
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, colony_list, colony_food=0.0, colony_age = 0):
+    def __init__(self, colony_list, 
+                 colony_food = 0.0, 
+                 colony_age = 0):
         self.colony_list = colony_list
         self.colony_food = colony_food
         self.colony_age = colony_age
-        
+
     def __str__(self):
         return "please use the function print_dets"
 
@@ -31,11 +33,10 @@ class Colony(object):
 
     def age_increment(self): # adds one to age of all spiders in colony
         [i.age_add1() for i in self.colony_list]
-        
-        
+
     def reprodDisChoice(self, min_food, ad_size): # deciding whether to reproduce or disperse   
         [i.dispORrep(min_food) for i in self.colony_list if i.size >= ad_size and i.reproduce == 0] 
-        
+
 
     def reproduction(self, no_off, ad_size): # ad_size is the size spiders have to be to reproduce      
         no_ad = sum(i.size >=ad_size and i.reproduce == 1 for i in self.colony_list) # cals number of adults to reproduce
@@ -48,7 +49,11 @@ class Colony(object):
         dispersers= [i for i in self.colony_list if i.disperse ==1]# if i.disperse == 1] #makes list of spiders who disperse
         dispersal_list = dispersal_list + dispersers
         return dispersal_list
-        
+
+    def update_instar(self, instar_levels):
+        '''updating all instars in spider with predefined instar levels
+        function instar_inc from spider class'''
+        [i.instar_inc(instar_levels) for i in self.colony_list]
 
     def cal_colony_food(self, c, d): # calculates and updates the food to the colony, 1/c = carrying capacity, d = level of skew
         N = len(self.colony_list)
@@ -125,12 +130,15 @@ class Colony(object):
         if self.colony_list:
             return 'alive'
         else:
-            return 'dead'       
-         
+            return 'dead'
 
     def print_dets(self):
         print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
                                                                                self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food)
+        
+    def colony_export(self):
+        return [ (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1], 
+                  self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food) ]
         
 
 
