@@ -29,7 +29,7 @@ class ColonyPopulation(object):
                  poplt_age = 0):
         self.poplt_list = poplt_list
         self.adult_size = adult_size
-        self.number_offspring = number_offspring,
+        self.number_offspring = number_offspring
         self.carrying_capacity = carrying_capacity
         self.cc_skew = cc_skew 
         self.comp_type = comp_type # 0 = scramble and 1 = contest
@@ -46,7 +46,7 @@ class ColonyPopulation(object):
             """updates colony age by one"""
             self.poplt_list[i].col_age_increase()
             """ updates the age of all spiders within the colony"""
-            self.poplt_list[i].age_increment()
+            self.poplt_list[i].spider_age_increase()
 
             """ (1) Reproduction"""
             self.poplt_list[i].reproduction(self.number_offspring, self.adult_size)
@@ -54,7 +54,7 @@ class ColonyPopulation(object):
             """(2) feeding """
             self.poplt_list[i].cal_colony_food(self.inverse_carr_cap, self.cc_skew) #calculating how much food the colony gets
             self.poplt_list[i].update_rank()
-            self.colony.ind_food(self.comp_type) # 0 = scramble and 1 = contest
+            self.poplt_list[i].ind_food(self.comp_type) # 0 = scramble and 1 = contest
 
             """(3) growth """
             self.poplt_list[i].apply_growth(self.growth_per_food)
@@ -66,7 +66,7 @@ class ColonyPopulation(object):
             """ (5) dispersal"""
 
             """(6) exporting data"""
-            export = self.poplt_list[i].colony_export + [self.poplt_age]
+            export = [self.poplt_age] +  self.poplt_list[i].colony_export() 
             return export
 
 

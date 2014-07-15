@@ -48,15 +48,14 @@ class Spider(object):
 
     def update_repr_One(self):
         self.reproduce = 1
-        
+
     def update_repr_Two(self): #updates reproduction to two if it equals one
         if self.reproduce == 1:
             self.reproduce = 2 
-        
-    
+
     def update_disperse(self):
         self.disperse = 1
-        
+
     def dispORrep (self, min_food): # disperses if gets less than min food, cond for reprod= 0 in colony class
         if self.ind_food < min_food and self.disperse == 0:
             self.update_disperse
@@ -66,12 +65,12 @@ class Spider(object):
     def update_relSize(self, x): # to update relative size
         self.rel_size = x
 
-    def age_add1(self): # add one to the age of a spider
+    def spi_age_add1(self): # add one to the age of a spider
         self.age += 1
 
     def update_rank(self, x): # to update relative size
         self.rank = x
-        
+
     def update_indFood(self, x):
         self.ind_food = x
         

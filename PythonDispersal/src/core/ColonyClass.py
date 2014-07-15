@@ -24,15 +24,15 @@ class Colony(object):
         return "please use the function print_dets"
 
     def col_age_increase(self):
-        self.colony_age += 1   
+        self.colony_age += 1
 
     def print_spiders(self):
         '''prints all instances of spider in the colony'''
         for i in range(len(self.colony_list)):
             print "i = %s: %s" % (i, self.colony_list[i])
 
-    def age_increment(self): # adds one to age of all spiders in colony
-        [i.age_add1() for i in self.colony_list]
+    def spider_age_increase(self): # adds one to age of all spiders in colony
+        [i.spi_age_add1 for i in self.colony_list]
 
     def reprodDisChoice(self, min_food, ad_size): # deciding whether to reproduce or disperse   
         [i.dispORrep(min_food) for i in self.colony_list if i.size >= ad_size and i.reproduce == 0] 
@@ -40,9 +40,9 @@ class Colony(object):
 
     def reproduction(self, no_off, ad_size): # ad_size is the size spiders have to be to reproduce      
         no_ad = sum(i.size >=ad_size and i.reproduce == 1 for i in self.colony_list) # cals number of adults to reproduce
-        [i.update_rep_Two for i in self.colony_list]   #updates if adult already reproduced
+        [i.update_repr_Two for i in self.colony_list]   #updates if adult already reproduced
         no_new_off = no_off * no_ad
-        new_spiders = list([Spider() for i in range(no_new_off)])
+        new_spiders = list([Spider() for i in range(no_off)])
         self.colony_list = self.colony_list + new_spiders # adds new colony 
 
     def spis_to_dis_lst(self, dispersal_list): #makes a list 
@@ -60,7 +60,7 @@ class Colony(object):
         mxFd = np.exp(-d) * np.power((d/c), d) # used to scale the equation to make max food = 1
         cal_colFood = (1/mxFd) * np.power(N, d) * np.exp(-c*N)
         self.colony_food = cal_colFood
-                         
+
     #TODO: Maybe just make these variable of colony
     def MaxAndMinSize(self): #returns the max and min spider size
         col_indSize= [i.size for i in self.colony_list]
@@ -135,10 +135,9 @@ class Colony(object):
     def print_dets(self):
         print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
                                                                                self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food)
-        
-    def colony_export(self):
-        return [ (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1], 
-                  self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food) ]
-        
-
+ 
+    def colony_export(self): #TODO: not working
+        exportlist = [self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1], 
+                  self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food]
+        return exportlist
 
