@@ -4,7 +4,7 @@ Created on Jul 9, 2014
 @author: Ruth
 '''
 
-from core.Population import ColonyPopulation
+from core.PopulationClass import Poplt
 from core.ColonyClass import Colony
 from core.SpiderClass import Spider
 
@@ -17,7 +17,7 @@ start_colonies = [Colony([ad_spider])]
 print "inital colony one adult:"
 #start_colony.print_spiders()
 
-start_population = ColonyPopulation(start_colonies)
+start_population = Poplt(start_colonies)
 
 print start_population.carrying_capacity
 

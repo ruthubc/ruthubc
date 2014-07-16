@@ -10,7 +10,7 @@ from SpiderClass import Spider
 from ColonyClass import Colony
 
 
-class ColonyPopulation(object):
+class Poplt(object):
     '''
     List of all colonies in the population    '''
 
@@ -79,9 +79,9 @@ class ColonyPopulation(object):
         self.poplt_list = [i for i in self.poplt_list if self.poplt_list.col_alive == 'alive']
 
     def add_new_cols(self, dispersal_list):
-        self.colony_number += 1  # TODO: add iterative colony number to each new colony created.
-        new_colonies = [Colony(i) for i in dispersal_list]
-        self.poplt_list = self.poplt_list + new_colonies
+        for spider in dispersal_list:
+            self.colony_number += 1  # TODO: add iterative colony number to each new colony created.
+            self.poplt_list.extend([Colony(spider, self.colony_number)])
 
     def update_poplt_age(self):
         self.poplt_age += 1
@@ -90,3 +90,4 @@ class ColonyPopulation(object):
         poplt_dict = {'poplt_age': self.poplt_age,
                       'comp_type': self.comp_type
                       }
+        return poplt_dict

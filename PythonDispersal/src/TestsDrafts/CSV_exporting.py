@@ -74,6 +74,20 @@ resultFile = open("mypythonfile.csv",'wb')
 
 wr = csv.writer(resultFile, dialect='excel')
 
+class exportRow(object):
+    def __init__(self, write, result):
+        self.write = write
+        self.result = result
+        
+    def Write_to_file(self):
+        
+        
+        
+    
+    
+    
+    
+
 ROWNAMES = dict.keys(z)
 wr.writerow(ROWNAMES)
 ROW1= dict.values(z)

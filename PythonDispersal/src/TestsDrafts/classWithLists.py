@@ -14,4 +14,15 @@ class ListClass(object):
         '''
         Constructor
         '''
-        
+    x=0
+fruits = ['aaple', 'orange', 'pear', 'banana']
+
+fruits2=['peach', 'strawberry']
+
+for fruit in fruits:
+    x += 1
+    fruits2.extend([fruit])  
+    
+    print fruit
+    print x
+    print fruits2    

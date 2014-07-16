@@ -14,9 +14,9 @@ class Colony(object):
     '''making colony class'''
 
     def __init__(self, colony_list,
+                 colony_ID,
                  colony_food=0.0,
-                 colony_age=0,
-                 colony_ID):
+                 colony_age=0):
         self.colony_list = colony_list
         self.colony_food = colony_food
         self.colony_age = colony_age
