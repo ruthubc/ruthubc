@@ -53,3 +53,5 @@ for state, abbrev in states.items():
     
 
 print states.items()
+
+print states.values()

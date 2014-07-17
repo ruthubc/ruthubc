@@ -75,8 +75,8 @@ class Poplt(object):
         for j in range(len(self.poplt_list)):
             self.ind_col_timestep(j)
 
-    def DelColony(self): #deletes a colony from the population if it goes extinct
-        self.poplt_list = [i for i in self.poplt_list if self.poplt_list.col_alive == 'alive']
+    def DelColony(self): # deletes a colony from the population if it goes extinct
+        self.poplt_list = [i for i in self.poplt_list if self.poplt_list.col_alive == 'alive'] #pylint: disable=line-too-long
 
     def add_new_cols(self, dispersal_list):
         for spider in dispersal_list:
