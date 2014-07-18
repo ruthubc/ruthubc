@@ -8,6 +8,7 @@ import scipy.stats as ss
 import random as rndm
 from SpiderClass import Spider
 from ColonyClass import Colony
+from collections import OrderedDict
 import csv
 
 
@@ -16,6 +17,9 @@ class Poplt(object):
     List of all colonies in the population    '''
 
     def __init__(self, poplt_list, # list of colonies
+                 filename,
+                 dispersal_list = [],
+                 export_list = [],
                  adult_size=0.8, 
                  number_offspring = 5, 
                  carrying_capacity = 10.1,
@@ -28,8 +32,11 @@ class Poplt(object):
                  cat_perc_die = 0.7,
                  instar_list = [0.5], # list of size transitions
                  poplt_age = 0,
-                 colony_number = 0):
+                 colony_number = 1):
         self.poplt_list = poplt_list
+        self.filename = filename
+        self.export_list = export_list
+        self.dispersal_list = dispersal_list
         self.adult_size = adult_size
         self.number_offspring = number_offspring
         self.carrying_capacity = carrying_capacity
@@ -46,7 +53,7 @@ class Poplt(object):
         self.colony_number = colony_number
         self.colony_count = len(self.poplt_list)
 
-    def ind_col_timestep(self, i, list):
+    def ind_col_timestep(self, i):
             """updates colony age by one"""
             self.poplt_list[i].col_age_increase()
             """ updates the age of all spiders within the colony"""
@@ -71,8 +78,7 @@ class Poplt(object):
 
             """(6) exporting data"""
             # need to append colony dict values  to a list
-            self.poplt_list[i].colony_list_append(list)
-            
+            self.poplt_list[i].colony_list_append(self.export_list)
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for j in range(len(self.poplt_list)):
@@ -81,26 +87,33 @@ class Poplt(object):
     def DelColony(self): # deletes a colony from the population if it goes extinct
         self.poplt_list = [i for i in self.poplt_list if self.poplt_list.col_alive == 'alive'] #pylint: disable=line-too-long
 
-    def add_new_cols(self, dispersal_list):
-        for spider in dispersal_list:
+    def add_new_cols(self):
+        for spider in self.dispersal_list:
             self.colony_number += 1  # TODO: add iterative colony number to each new colony created.
             self.poplt_list.extend([Colony(spider, self.colony_number)])
 
-    def update_poplt_age(self):
+    def update_poplt_age(self): #adds one to the age
         self.poplt_age += 1
 
     def poplt_dict(self):
-        poplt_dict = {'poplt_age': self.poplt_age,
-                      'comp_type': self.comp_type
-                      }
-        return poplt_dict
-    
-    def poplt_export(self, list):
-        f = open('export.csv', 'ab')
+        d = OrderedDict()
+        d['poplt_age']= self.poplt_age,
+        d['comp_type']= self.comp_type
+        return d
+
+    def poplt_export(self):
+        f = open(self.filename, 'ab')
         appender = csv.writer(f)
+
+        for i in range (0, self.colony_count): # writes list to file
+            appender.writerow(self.poplt_dict().values() + self.export_list[i])
+
+        list = [] # clears the list
         
-        for i in range (0, self.colony_count):
-            appender.writerow(self.poplt_dict().values() + list[i])
-            
-            #TODO: clear the list after exporting it
         
+    def one_poplt_timestep(self, export_list):
+        #(1) colony update
+        self.allCols_OneTimestep()
+        
+        
+

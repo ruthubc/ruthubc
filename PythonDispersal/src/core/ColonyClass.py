@@ -76,8 +76,8 @@ class Colony(object):
         [i.update_relSize(i.cal_relSize(maxSz,minSz)) for i in self.colony_list]
 
     def size_list(self):
-        return [i.size for i in self.colony_list]        
-    
+        return [i.size for i in self.colony_list]
+
     def update_rank(self): #updates the rank of spiders # 1 lowest rank, May have to switch round;
         Ranks =  ss.rankdata(self.size_list(), method = 'ordinal')
         #assins ties in order -> arbritary order.
@@ -148,10 +148,8 @@ class Colony(object):
         d['max_age'] = self.MaxAndMinAges()[1]
         d['colony_food']= self.colony_food
         return d
-    
+
     def colony_list_append(self, exportList): # appends vaules of colony dict to a list
         exportList.append(self.colony_dict().values())
-        
-        
-        
-        
+
+

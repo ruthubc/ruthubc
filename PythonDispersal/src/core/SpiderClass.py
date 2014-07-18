@@ -31,7 +31,7 @@ class Spider(object):
         for k in range(len(instar_levels_list)):
             if (self.size >= instar_levels_list[k]):
                 self.instar = k + 1  # because starts at 0
-    
+
     def death(self, max_age, mn_prob):  # making mortality age independent: need to define max age somewhere
         ran = rndm.random()  # gives random numbers between 0 and 1
         if self.age > max_age:
@@ -61,7 +61,7 @@ class Spider(object):
             self.update_disperse
         else:
             self.update_reproduce(1)
-    
+
     def update_relSize(self, x): # to update relative size
         self.rel_size = x
 
@@ -73,12 +73,12 @@ class Spider(object):
 
     def update_indFood(self, x):
         self.ind_food = x
-        
+
     def growth_eq(self, growth_rate):
         term1 = 1-self.size
         term2 = np.exp(-growth_rate * self.ind_food)
         self.size = 1- (term1*term2)
-        
+
     def update_instar(self):
         self.instar += 1
 

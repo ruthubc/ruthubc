@@ -8,27 +8,19 @@ import csv
 from core.ColonyClass import Colony
 from core.SpiderClass import Spider
 from core.PopulationClass import Poplt
+from core.Functions import export_rownames
 
+filename = 'file.csv'
 
-#(1) open csv file and make writing object (or whatever it is)
+#(1) write rownames to csv file
 
-resultFile = open("mypythonfile.csv",'wb')
+export_rownames(filename) # creating file with rownames
 
-wr = csv.writer(resultFile, dialect='excel')
+#(2) Inital Population
 
+ad_spider = Spider(0.9)
 
-# best way to put the tiles in the csv file is jsut to create a fake population???
+start_col = Colony([ad_spider], 1) #TODO: link colony id between poplt and colony
 
-def fake_dict():
-    """make fake dictionary to write row names to file"""
-    fake_col = Colony([Spider()], 0)
-    fake_poplt = Poplt([fake_col])
-    fake_pop_dict = fake_poplt.poplt_dict()
-    fake_col_dict = fake_col.colony_export()
-    newdict = dict(fake_pop_dict.items() + fake_col_dict.items())
-    ROWNAMES = newdict.keys()
-    return ROWNAMES
-
-print fake_dict()
-wr.writerow(fake_dict()) #prints 
+start_pop = Poplt([start_col])
 
