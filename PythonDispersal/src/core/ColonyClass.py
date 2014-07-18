@@ -8,6 +8,7 @@ import numpy as np
 import scipy.stats as ss
 import random as rndm
 from SpiderClass import Spider
+from collections import OrderedDict
 
 
 class Colony(object):
@@ -137,13 +138,20 @@ class Colony(object):
         print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
                                                                                self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food)
 
-    def colony_export(self):
-        colony_dict = {'colony_age': self.colony_age,
-                       'number_spiders': len(self.colony_list),
-                       'min_size': self.MaxAndMinSize()[0],
-                       'max_size': self.MaxAndMinSize()[1],
-                       'min_age' : self.MaxAndMinAges()[0],
-                       'max_age': self.MaxAndMinAges()[1],
-                       'colony_food':self.colony_food
-                       }
-        return colony_dict
+    def colony_dict(self):
+        d = OrderedDict()
+        d['colony_age'] = self.colony_age
+        d['number_spiders']= len(self.colony_list)
+        d['min_size'] = self.MaxAndMinSize()[0]
+        d['max_size']= self.MaxAndMinSize()[1]
+        d['min_age'] = self.MaxAndMinAges()[0]
+        d['max_age'] = self.MaxAndMinAges()[1]
+        d['colony_food']= self.colony_food
+        return d
+    
+    def colony_list_append(self, exportList): # appends vaules of colony dict to a list
+        exportList.append(self.colony_dict().values())
+        
+        
+        
+        

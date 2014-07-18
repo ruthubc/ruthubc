@@ -8,6 +8,7 @@ import scipy.stats as ss
 import random as rndm
 from SpiderClass import Spider
 from ColonyClass import Colony
+import csv
 
 
 class Poplt(object):
@@ -43,8 +44,9 @@ class Poplt(object):
         self.instar_list = instar_list
         self.poplt_age = poplt_age
         self.colony_number = colony_number
+        self.colony_count = len(self.poplt_list)
 
-    def ind_col_timestep(self, i):
+    def ind_col_timestep(self, i, list):
             """updates colony age by one"""
             self.poplt_list[i].col_age_increase()
             """ updates the age of all spiders within the colony"""
@@ -68,8 +70,9 @@ class Poplt(object):
             """ (5) dispersal"""
 
             """(6) exporting data"""
-            export = [self.poplt_age] +  self.poplt_list[i].colony_export() 
-            return export
+            # need to append colony dict values  to a list
+            self.poplt_list[i].colony_list_append(list)
+            
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for j in range(len(self.poplt_list)):
@@ -91,3 +94,13 @@ class Poplt(object):
                       'comp_type': self.comp_type
                       }
         return poplt_dict
+    
+    def poplt_export(self, list):
+        f = open('export.csv', 'ab')
+        appender = csv.writer(f)
+        
+        for i in range (0, self.colony_count):
+            appender.writerow(self.poplt_dict().values() + list[i])
+            
+            #TODO: clear the list after exporting it
+        
