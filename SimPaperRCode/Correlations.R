@@ -1,7 +1,10 @@
 # TODO: Add comment
 # 
 # Author: Ruth
+# Outputting a table of the correlations at time lag = 0
 ###############################################################################
+
+
 
 library(tseries) # loading the package time series
 source("G:/PhDWork/RCode/SimPaperCode/SplineFunction.R")

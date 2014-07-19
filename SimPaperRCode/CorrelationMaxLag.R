@@ -1,6 +1,7 @@
 # TODO: Add comment
 # 
 # Author: Ruth
+# Outputs to file of correlation at maximum lag
 ###############################################################################
 
 library(TSA)
@@ -13,38 +14,53 @@ lam<-0.001
 
 fileNames<-read.csv("kinshipEvolution/DataAnalysis/fileNames.csv", quote="", col.names="filenames")
 
-DF<- data.frame(R = numeric (0), Beta = numeric(0), C = numeric(0),  KPvsCoopMax = numeric(0), KPvsCoopLag = numeric(0), KPvsGSMax = numeric(0), 
+DF<- data.frame(sample = numeric(0), R = numeric (0), Beta = numeric(0), C = numeric(0),  KPvsCoopMax = numeric(0), KPvsCoopLag = numeric(0), KPvsGSMax = numeric(0), 
 		KPvsGSLag = numeric(0),  KPvsRelMax = numeric(0), KPvsRelLag= numeric(0), GSvsRelMax= numeric(0), GSvsRelLag= numeric(0),
 		GSvsCoopMax= numeric(0), GSvsCoopLag= numeric(0), CoopvsResMax = numeric(0), CoopvsResLag = numeric(0), KinADF = numeric(0) , 
 		relADF =numeric(0), gsADF =numeric(0), coopADF =numeric(0))
 
 
-for (i in 1:nrow(fileNames)){
+for (i in 1:3){#nrow(fileNames)){
 	
-	file<-read.delim(as.character(fileNames[i,]))
+	largeFile<-read.delim(as.character(fileNames[i,]))
 	
-	file <- file[which (file$tick >=10000),]
+	largeFile <- largeFile[which (largeFile$tick >=10000),]
 	
-	file$avgCoop <- asin(sqrt(file$avgCoop))
-	file$rel<-asin(sqrt(file$rel))
-	file$kinPref<-asin(sqrt(file$kinPref))
-	file$avgGrSize<-log(file$avgGrSize)
+	largeFile$avgCoop <- asin(sqrt(largeFile$avgCoop))
+	largeFile$rel<-asin(sqrt(largeFile$rel))
+	largeFile$kinPref<-asin(sqrt(largeFile$kinPref))
+	largeFile$avgGrSize<-log(largeFile$avgGrSize)
 	
+	print ("large file number:")
 	print (i)
 	
-	R <- file[1, 4]
+	R <- largeFile[1, 4]
 	
-	Beta <- file[1, 5]
+	Beta <- largeFile[1, 5]
 	
-	C <- file[1, 6]
+	C <- largeFile[1, 6]
 	###########spline
 	
 	
 		for (j in c(8,10,12,13)){ # spline smoothing the time series
 		
-			file[,j]<- (fnSpline(lam, file$tick, file[,j]))$y
+			largeFile[,j]<- (fnSpline(lam, largeFile$tick, largeFile[,j]))$y
 		}
 	
+	### Splitting the files up into 5000 rows i.e. 8 different files
+	
+	numSample = as.integer(nrow(largeFile)/8) #calculates the number to be in the 8 samples
+	
+	for (k in 1:8) {
+		
+		startRow = (((k-1) * numSample) +1)
+		endRow =  (k * numSample)
+		file <-largeFile[startRow: endRow,]
+		print ("sample number:")
+		print (k)
+		print ("number of rows in file")
+		print (nrow(newFile)) # number of rows in dataframe
+		
 	
 	
 	a<-ccf(file$kinPref, file$avgCoop, lag.max=5000, plot = FALSE)
@@ -62,7 +78,7 @@ for (i in 1:nrow(fileNames)){
 	adf.test(as.ts(file$kinPref))
 
 	
-	list<-c(R, Beta, C,  
+	list<-c(k, R, Beta, C,  
 			as.numeric(a$acf[which.max(array(abs(a$acf)))]), as.numeric(a$lag[which.max(array(abs(a$acf)))]), 
 			as.numeric(b$acf[which.max(array(abs(b$acf)))]), as.numeric(b$lag[which.max(array(abs(b$acf)))]), 
 			as.numeric(c$acf[which.max(array(abs(c$acf)))]), as.numeric(c$lag[which.max(array(abs(c$acf)))]), 
@@ -72,11 +88,17 @@ for (i in 1:nrow(fileNames)){
 			adf.test(as.ts(file$kinPref))$p.value, adf.test(as.ts(file$rel))$p.value, 
 			adf.test(as.ts(file$avgGrSize))$p.value, adf.test(as.ts(file$avgCoop))$p.value)
 	
-	 DF[i,]<-list # adding row
+	nextRow = nrow(DF) +1
+	DF[(nextRow),]<-list # adding row
+
+	}
+
 
 }
 
-write.table(DF, "kinshipEvolution/Correlations/LagMeansTransSpline.csv", sep=",", row.names = FALSE)
+
+
+write.table(DF, "kinshipEvolution/Correlations/LagMeansTransSplineSamples2014.csv", sep=",", row.names = FALSE)
 
 
 ####means from graphs
@@ -90,3 +112,7 @@ meansAbs<-colMeans(abs(corrs))
 x<-data.frame(means, meansAbs)
 
 write.csv(x, "kinshipEvolution/Correlations/SplineMeans.csv")
+
+numSample = as.integer(nrow(file)/8)
+
+

@@ -1,6 +1,7 @@
 # TODO: Add comment
 # 
 # Author: Ruth
+# Makes graphs of maximum lag and maximum correlation by variable
 ###############################################################################
 
 source("Ruth/SplineFunction.R")
