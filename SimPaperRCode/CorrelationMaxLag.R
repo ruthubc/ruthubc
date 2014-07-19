@@ -20,7 +20,7 @@ DF<- data.frame(sample = numeric(0), R = numeric (0), Beta = numeric(0), C = num
 		relADF =numeric(0), gsADF =numeric(0), coopADF =numeric(0))
 
 
-for (i in 1:3){#nrow(fileNames)){
+for (i in 1:nrow(fileNames)){
 	
 	largeFile<-read.delim(as.character(fileNames[i,]))
 	
@@ -59,7 +59,7 @@ for (i in 1:3){#nrow(fileNames)){
 		print ("sample number:")
 		print (k)
 		print ("number of rows in file")
-		print (nrow(newFile)) # number of rows in dataframe
+		print (nrow(file)) # number of rows in dataframe
 		
 	
 	
