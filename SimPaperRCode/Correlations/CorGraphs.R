@@ -8,7 +8,26 @@ source("Ruth/SplineFunction.R")
 
 lambda <-0.01
 
-corrs<-read.csv("kinshipEvolution/Correlations/LagMeansTransNotSmMax5000New.csv")
+Corrs<-read.csv("kinshipEvolution/Correlations/LagMeansTransSplineSamples2014.csv")
+
+
+AveByParms <- ddply(Corrs,.(R, C, Beta), summarise,
+		KPvsCoopMax = mean(KPvsCoopMax),
+		KPvsCoopLag = mean(abs(KPvsCoopLag)),
+		KPvsGSMax = mean(KPvsGSMax),
+		KPvsGSLag = mean(abs(KPvsGSLag)),
+		KPvsRelMax = mean(KPvsRelMax),
+		KPvsRelLag = mean(abs(KPvsRelLag)),
+		GSvsRelMax = mean(GSvsRelMax),
+		GSvsRelLag = mean(abs(GSvsRelLag)),
+		GSvsCoopMax = mean(GSvsCoopMax),
+		GSvsCoopLag = mean(abs(GSvsCoopLag)),
+		CoopvsResMax = mean(CoopvsResMax),
+		CoopvsResLag = mean(abs(CoopvsResLag))
+
+)
+
+corrs<-AveByParms
 
 
 cols<-c("navy", "tomato1","purple", "green4", "orange") # colours for graph
@@ -19,7 +38,7 @@ lines<-c(2,3,4,5,6,7,8,9) #line type for graphs
 CC<-as.numeric(levels(as.factor(corrs$C)))
 Beta<-as.numeric(levels(as.factor(corrs$Beta)))
 
-pdf("G:/PhDWork/SimPapers/CorrGraphsNonSplineLA.pdf", onefile=TRUE)
+pdf("kinshipEvolution/Correlations/CorrGraphsSpline2014.pdf", onefile=TRUE)
 
 layout(matrix(c(1:6), 2, 3, byrow = TRUE))
 
@@ -28,7 +47,7 @@ for (i in c(12, 13, 14, 15, 10, 11)){
 	if (i %% 2==0) {
 		yaxislab <-"maximum correlation"
 		ylimits <- c(-1, 1)
-	} else{
+	} else{dev
 		yaxislab <- "Lag at maximum correlation"
 		ylimits<-c(-5000, 5000)
 	}
@@ -38,9 +57,9 @@ print(i)
 yParm<-i #column number 
 ylabel<-colnames(corrs)[yParm]
 
-fileName<- paste("C:/Users/Ruth/Desktop/CorrGraphs/", ylabel, ".pdf", sep="")
+#fileName<- paste("C:/Users/Ruth/Desktop/CorrGraphs/", ylabel, ".pdf", sep="")
 
-print(fileName)
+#print(fileName)
 
 
 ##
