@@ -3,29 +3,12 @@
 ###############################################################################
 library(plyr)
 
-Corrs<-read.csv("kinshipEvolution/Correlations/LagMeansTransSplineSamples2014.csv")
 
-
-AveByParms <- ddply(Corrs,.(R, C, Beta), summarise,
-		KPvsCoopMax = mean(KPvsCoopMax),
-		KPvsCoopLag = mean(abs(KPvsCoopLag)),
-		KPvsGSMax = mean(KPvsGSMax),
-		KPvsGSLag = mean(abs(KPvsGSLag)),
-		KPvsRelMax = mean(KPvsRelMax),
-		KPvsRelLag = mean(abs(KPvsRelLag)),
-		GSvsRelMax = mean(GSvsRelMax),
-		GSvsRelLag = mean(abs(GSvsRelLag)),
-		GSvsCoopMax = mean(GSvsCoopMax),
-		GSvsCoopLag = mean(abs(GSvsCoopLag)),
-		CoopvsResMax = mean(CoopvsResMax),
-		CoopvsResLag = mean(abs(CoopvsResLag))
-
-)
 
 
 # want 6 graphs
 
-pdf("kinshipEvolution/Correlations/LagVsCor.pdf", onefile = TRUE)
+pdf("kinshipEvolution/Correlations/LagVsCorNew.pdf", onefile = TRUE)
 
 layout(matrix(c(1:6), 2, 3, byrow = TRUE))
 

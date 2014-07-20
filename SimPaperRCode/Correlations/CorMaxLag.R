@@ -1,7 +1,7 @@
 # TODO: Add comment
 # 
 # Author: Ruth
-# Outputs to file of correlation at maximum lag
+# Outputs to file the correlation at maximum lag for each run
 ###############################################################################
 
 library(TSA)
@@ -98,7 +98,7 @@ for (i in 1:nrow(fileNames)){
 
 
 
-write.table(DF, "kinshipEvolution/Correlations/LagMeansTransSplineSamples2014.csv", sep=",", row.names = FALSE)
+write.table(DF, "kinshipEvolution/Correlations/LagMeansTransSplineSamples2014q.csv", sep=",", row.names = FALSE)
 
 
 ####means from graphs
