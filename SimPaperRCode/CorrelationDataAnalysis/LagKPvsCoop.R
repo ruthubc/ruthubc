@@ -5,6 +5,7 @@
 library (lme4)
 library(lmerTest)
 
+
 Corrls<-read.csv("kinshipEvolution/Correlations/LagMeansTransSplineSamples2014.csv")
 
 ##(1) Full model

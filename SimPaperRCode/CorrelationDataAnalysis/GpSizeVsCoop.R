@@ -3,18 +3,20 @@
 
 library (lme4)
 library(lmerTest)
+library(arm)
 
 Corrs<-read.csv("kinshipEvolution/Correlations/LagMeansTransSplineSamples2014.csv")
 Corrs$Run <- paste(Corrs$R, Corrs$Beta, Corrs$C) 
 
 
 ##(1) Full model
-lm1<-lmer(GSvsCoopMax~(R+ Beta+C)^3 + I(R^2) +I(R^3)  + I(Beta^2) +   I(Beta^3)+ I(C^2) + C*I(Beta^2) +
+lm1<-lmer(GSvsCoopMax~(R+ Beta+C)^3 + I(R^2) +I(R^3)  + I(Beta^2) + I(Beta^3)+ I(C^2)  + C*I(Beta^2) +
 				C*I(Beta^3) + C*I(R^2) +C*I(R^3) + Beta*I(R^2) +Beta*I(R^3)+ R*I(C^2)+ Beta*I(C^2) + 
 				R*I(Beta^2) +R*I(Beta^3) + (1|Run), Corrs, REML = FALSE)
 #see notes in R document Anova....  I am including an intercepts so no -1
 
-statsFun(lm1, 'n')
+statsFun(lm1, 'y')
+residuals(lm1)
 
 write.csv(as.matrix(anova(lm1)), file = "kinshipEvolution/Correlations/Stats/GSvsCoopCorrAnova.csv", na = "")
 
@@ -25,6 +27,7 @@ lm2<-lmer(GSvsCoopMax~(R+ Beta+C)^3 + I(R^2) +I(R^3)  + I(Beta^2) +   I(Beta^3)+
 				R*I(Beta^2) +R*I(Beta^3) + (1|Run), Corrs, REML = FALSE)
 
 statsFun(lm2, 'n')
+
 
 ## Removing R:I(Beta^2) and  R:I(Beta^3) 
 lm3<-lmer(GSvsCoopMax~(R+ Beta+C)^3 + I(R^2) +I(R^3)  + I(Beta^2) +   I(Beta^3)+ C*I(Beta^2) +
