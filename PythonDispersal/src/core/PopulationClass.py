@@ -17,7 +17,7 @@ class Poplt(object):
     List of all colonies in the population    '''
 
     def __init__(self, poplt_list, # list of colonies
-                 filename,
+                 filename = "",
                  dispersal_list = [],
                  export_list = [],
                  adult_size=0.8, 
@@ -75,17 +75,25 @@ class Poplt(object):
             self.poplt_list[i].dieOrCtphe(self.age_die, self.prob_death, self.cat_prob, self.cat_perc_die)
 
             """ (5) dispersal"""
+            
+            #TODO add dispersal
+            
+            # (6) mark dead colonies
+            self.poplt_list[i].col_alive()
 
             """(6) exporting data"""
             # need to append colony dict values  to a list
-            self.poplt_list[i].colony_list_append(self.export_list)
+            output_list = self.poplt_list[i].colony_list_to_append()
+            self.export_list = output_list #TODO FIX.. not working!
+            
+            print self.poplt_list[i].colony_dict()
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for j in range(len(self.poplt_list)):
             self.ind_col_timestep(j)
 
     def DelColony(self): # deletes a colony from the population if it goes extinct
-        self.poplt_list = [i for i in self.poplt_list if self.poplt_list.col_alive == 'alive'] #pylint: disable=line-too-long
+        self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive'] 
 
     def add_new_cols(self):
         for spider in self.dispersal_list:
@@ -97,7 +105,7 @@ class Poplt(object):
 
     def poplt_dict(self):
         d = OrderedDict()
-        d['poplt_age']= self.poplt_age,
+        d['poplt_age']= self.poplt_age
         d['comp_type']= self.comp_type
         return d
 
@@ -106,14 +114,28 @@ class Poplt(object):
         appender = csv.writer(f)
 
         for i in range (0, self.colony_count): # writes list to file
+            print self.export_list[i]
             appender.writerow(self.poplt_dict().values() + self.export_list[i])
 
         list = [] # clears the list
         
         
-    def one_poplt_timestep(self, export_list):
-        #(1) colony update
+    def one_poplt_timestep(self):
+        #(1) Add one to population age
+        self.update_poplt_age()
+        
+        #(2) Colony time step for all colonies
         self.allCols_OneTimestep()
+        
+        #(3) write data to file
+        self.poplt_export()
+        
+        #(4) Remove dead colonies from the population
+        self.DelColony()
+        
+        #(5) Make dispersed spiders into new colonies
+        self.add_new_cols()
+        
         
         
 

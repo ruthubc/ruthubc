@@ -17,11 +17,13 @@ class Colony(object):
     def __init__(self, colony_list,
                  colony_ID,
                  colony_food=0.0,
-                 colony_age=0):
+                 colony_age=0, 
+                 alive = 'alive'):
         self.colony_list = colony_list
         self.colony_food = colony_food
         self.colony_age = colony_age
         self.colony_ID = colony_ID
+        self.alive = alive
 
     def __str__(self):
         return "please use the function print_dets"
@@ -129,10 +131,9 @@ class Colony(object):
         # removes spiders that are dead or have dispersed    
 
     def col_alive(self):
-        if self.colony_list:
-            return 'alive'
-        else:
-            return 'dead'
+        if not self.colony_list:
+            self.alive = 'dead'
+
 
     def print_dets(self):
         print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
@@ -149,7 +150,7 @@ class Colony(object):
         d['colony_food']= self.colony_food
         return d
 
-    def colony_list_append(self, exportList): # appends vaules of colony dict to a list
-        exportList.append(self.colony_dict().values())
+    def colony_list_to_append(self): # appends vaules of colony dict to a list
+        return self.colony_dict().values()
 
 
