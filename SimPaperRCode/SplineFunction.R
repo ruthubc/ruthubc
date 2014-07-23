@@ -18,9 +18,12 @@ fnSpline<-function(my.lambda, xx, yy) {
 		
 		my.spar<-s0 + 0.0601*log(my.lambda) #getting the correct spar from my lambda  
 		
+		
 		my.spline<-smooth.spline(xx, y=yy, spar=my.spar)
+		
+		#spline.list <- list(my.spline$x, my.spline$y)
 		
 		
 	}      
-	return(my.spline)
+	return (my.spline$y)
 }

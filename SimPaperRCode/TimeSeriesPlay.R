@@ -19,7 +19,7 @@ crsCrl<-function(A, B){
 
 x=10000 # number of runs to remove before testing
 
-fileNames<-read.csv("D:/Dropbox/kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
+fileNames<-read.csv("kinshipEvolution/DataAnalysis/fileNames.csv", quote="")
 
 kinGr<-c()
 
