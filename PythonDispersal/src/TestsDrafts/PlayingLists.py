@@ -62,3 +62,18 @@ hlist = []
 if hlist:
     print "list full"
 
+list = [[1,2,3,4], [5,6,7,8], [9,10,11,12]]
+
+list2 = []
+
+list2.append(list[0])
+list2.append(list[1])
+list2.append(list[2])
+
+print "list zero"
+print list[0]
+
+print len(list2)
+
+for i in range(len(list2)):
+    print list2[i]
