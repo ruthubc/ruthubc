@@ -8,10 +8,10 @@ import csv
 from core.ColonyClass import Colony
 from core.SpiderClass import Spider
 from core.PopulationClass import Poplt
-from core.Functions import *#export_rownames
+from core.Functions import export_rownames
 
 filename = 'file.csv'
-sim_len = 20 # the number of runs for the simulation1
+sim_len = 5 # the number of runs for the simulation1
 
 #(1) write rownames to csv file
 
@@ -30,10 +30,12 @@ print start_col.colony_list_to_append()
 #(3) Repeated population timesteps
 
 for run in range(0, sim_len):
+    if not this_pop.poplt_list:
+        print "population has gone extinct"
+        break
     this_pop.one_poplt_timestep()
     print this_pop.poplt_age
 
-#TODO: put in code to stop if the population dies
 
 
 #(4) END

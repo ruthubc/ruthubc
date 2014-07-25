@@ -21,7 +21,7 @@ class Poplt(object):
                  dispersal_list = [],
                  export_list = [],
                  adult_size=0.8,
-                 number_offspring = 5,
+                 number_offspring = 1,
                  carrying_capacity = 10.1,
                  cc_skew = 2,
                  comp_type = 1, # 0 = scramble and 1 = contest
@@ -55,8 +55,10 @@ class Poplt(object):
         self.colony_count = len(self.poplt_list)
         self.min_food = min_food
 
-    def ind_col_timestep(self, i):
-
+    def ind_col_timestep(self, i): 
+        
+        ''' the reason I put this in the population is the population variables. I could still move anyway
+        '''
             # (1) age increase
 
             self.poplt_list[i].col_age_increase()  # updates colony age by one

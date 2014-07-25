@@ -12,7 +12,7 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, instar = 1, rel_size=0.0, ind_food=0.0, age=0.0, rank=1, die = 0, reproduce = 0, disperse = 0):
+    def __init__(self, size=0.1, instar = 1, rel_size=0.0, ind_food=0.0, age=3, rank=1, die = 0, reproduce = 0, disperse = 0):
         '''defining the spider object'''
         self.size = size
         self.rel_size = rel_size
@@ -54,10 +54,10 @@ class Spider(object):
             self.reproduce = 2
 
     def dispORrep (self, ad_size, min_food): # disperses if gets less than min food, min_food population variable
-        if self.size >= ad_size:
+        if self.size >= ad_size and self.reproduce == 0:
             if self.ind_food < min_food and self.disperse == 0:
                 self.disperse = 1
-            elif self.reproduce == 0:
+            else:
                 self.reproduce = 1
 
     def spi_age_add1(self): # add one to the age of a spider

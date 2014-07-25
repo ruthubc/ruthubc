@@ -1,8 +1,9 @@
 '''
-Created on May 20, 2014
+Created on Jul 25, 2014
 
-@author: Ruth
+@author: user
 '''
+
 from core.SpiderClass import Spider
 from core.ColonyClass import Colony
 import numpy as np
@@ -25,19 +26,4 @@ colList = [spi1, spi2, spi3, spi4]
 
 colony = Colony(colList, 4)
 
-#[i.spi_age_add1() for i in colony.colony_list]
 
-#colony.colony_list[1].spi_age_add1()
-
-#spi1.spi_age_add1()
-
-colony.col_age_increase()
-colony.col_age_increase()
-
-
-#colony.spider_age_increase()
-
-
-colony.print_spiders()
-
-print len(colList)
