@@ -48,8 +48,8 @@ class Colony(object):
         return [i.size for i in self.colony_list]
 
     def print_dets(self):
-        print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
-                                                                               self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food)
+        print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s, dispersal? : %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
+                                                                               self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food, self.dispersers)
 
     def colony_dict(self):  # the info about each colony to export
         d = OrderedDict()
@@ -83,6 +83,8 @@ class Colony(object):
 
     def spis_to_dis_lst(self):  # adds the dispersing spiders to the dispersers list
         self.dispersers = [i for i in self.colony_list if i.disperse == 1]
+        return self.dispersers
+        
     def update_instar(self, instar_levels): # updating all instars
         [i.instar_inc(instar_levels) for i in self.colony_list]
 
@@ -123,6 +125,7 @@ class Colony(object):
 
     def die_or_ctphe(self, old_age, die_prob, cat_prob, cat_perc_die):
         ranNo = rndm.random()  # gives random numbers between 0 and 1
+        print ranNo
         if ranNo < cat_prob:
             self.dying(old_age, cat_perc_die)  # higher percentage of individuals die
         else:

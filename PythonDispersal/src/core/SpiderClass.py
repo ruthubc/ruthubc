@@ -25,7 +25,7 @@ class Spider(object):
         self.instar= instar
 
     def __str__(self):
-        return "size: %s, age: %s, rank: %s, indFood: %s, die: %s" % (self.size, self.age, self.rank, self.ind_food, self.die)
+        return "size: %s, age: %s, rank: %s, indFood: %s, die: %s, disperse: %s" % (self.size, self.age, self.rank, self.ind_food, self.die, self.disperse)
 
     def instar_inc(self, instar_levels_list): # instar list is a population variable
         for k in range(len(instar_levels_list)):
