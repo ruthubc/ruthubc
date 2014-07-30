@@ -33,7 +33,7 @@ class Poplt(object):
                  instar_list = [0.5], # list of size transitions
                  poplt_age = 0,
                  colony_number = 1,
-                 min_food = 0.0):
+                 min_food = 0.1):
         self.poplt_list = poplt_list
         self.filename = filename
         self.export_list = export_list
@@ -52,9 +52,12 @@ class Poplt(object):
         self.instar_list = instar_list
         self.poplt_age = poplt_age
         self.colony_number = colony_number
-        self.colony_count = len(self.poplt_list)
+        #self.colony_count = len(self.poplt_list) This needs to be in the code to be reliable
         self.min_food = min_food
 
+    def __str__(self):
+        return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
+    
     def ind_col_timestep(self, i): 
 
         ''' the reason I put this in the population is the population variables. I could still move anyway

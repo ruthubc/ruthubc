@@ -25,8 +25,10 @@ class Colony(object):
         self.colony_food = colony_food
         self.colony_age = colony_age
         self.alive = alive
-        self.dispersers = []
+        self.dispersers = dispersers # TODO not sure I need this anymore.
 
+    def __str__(self):
+        return "ColID: %s, age: %s, col_food: %s, col_age: %s, alive?: %s" % (self.colony_ID, self.colony_food, self.colony_age, self.alive)
 
     def MaxAndMinAges(self):
         col_indAge= [i.age for i in self.colony_list]
