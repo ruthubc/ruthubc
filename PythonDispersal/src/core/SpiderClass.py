@@ -12,10 +12,9 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, instar = 1, rel_size=0.0, ind_food=0.0, age=3, rank=1, die = 0, reproduce = 0, disperse = 0):
+    def __init__(self, size=0.1, instar = 1, ind_food=0.0, age=3, rank=1, die = 0, reproduce = 0, disperse = 0):
         '''defining the spider object'''
         self.size = size
-        self.rel_size = rel_size
         self.ind_food = ind_food
         self.age = age  # incremented after each time tick.
         self.rank = rank
@@ -25,7 +24,7 @@ class Spider(object):
         self.instar= instar
 
     def __str__(self):
-        return "size: %s, age: %s, rank: %s, indFood: %s, die: %s, disperse: %s" % (self.size, self.age, self.rank, self.ind_food, self.die, self.disperse)
+        return "size: %s, age: %s, rank: %s, indFood: %s, die: %s, reproduce: %s, disperse: %s" % (self.size, self.age, self.rank, self.ind_food, self.die, self.reproduce, self.disperse)
 
     def instar_inc(self, instar_levels_list): # instar list is a population variable
         for k in range(len(instar_levels_list)):
@@ -50,10 +49,12 @@ class Spider(object):
         self.reproduce = 1
 
     def update_repr_Two(self):  # updates reproduction to 2 if it equals 1
+        #works checked aug 11th
         if self.reproduce == 1:
             self.reproduce = 2
 
     def dispORrep (self, ad_size, min_food): # disperses if gets less than min food, min_food population variable
+        #works!! (tested 11th Aug)
         if self.size >= ad_size and self.reproduce == 0:
             if self.ind_food < min_food and self.disperse == 0:
                 self.disperse = 1

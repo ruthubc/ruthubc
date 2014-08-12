@@ -25,7 +25,7 @@ class Poplt(object):
                  carrying_capacity = 10.1,
                  cc_skew = 2,
                  comp_type = 1, # 0 = scramble and 1 = contest
-                 growth_per_food = 0.2, # max size =1
+                 growth_per_food = 0.5, # max size =1
                  age_die = 10,
                  prob_death = 0.01,
                  cat_prob = 0.001,
@@ -80,8 +80,8 @@ class Poplt(object):
         self.poplt_list[i].die_or_ctphe(self.age_die, self.prob_death, self.cat_prob, self.cat_perc_die)
 
             # (5) dispersal or reproduction
-        self.poplt_list[i].rep_or_disp(self.min_food, self.adult_size) # marks each spider to reproduce or disperse
-        self.poplt_list[i].reproduction(self.number_offspring, self.adult_size) # new offspring added to colony
+        self.poplt_list[i].rep_or_disp(self.adult_size, self.min_food) # marks each spider to reproduce or disperse
+        self.poplt_list[i].reproduction(self.number_offspring) # new offspring added to colony
         print self.poplt_list[i].spis_to_dis_lst() # writes the spiders to the dispersal list colony variable
         self.dispersal_list.extend(self.poplt_list[i].spis_to_dis_lst()) # appends the colony dispersers to the population dispersers list
 
@@ -93,6 +93,8 @@ class Poplt(object):
         output_list = self.poplt_list[i].colony_list_to_append()
         self.export_list.append(output_list)
         print self.poplt_list[i].colony_dict()
+
+        self.poplt_list[i].print_spiders()
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for j in range(len(self.poplt_list)):

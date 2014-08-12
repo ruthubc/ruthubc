@@ -74,11 +74,14 @@ class Colony(object):
         [i.spi_age_add1() for i in self.colony_list]
 
     def rep_or_disp(self, ad_size, min_food,):  # deciding whether to reproduce or disperse
+        # works checked 11th Aug
         [i.dispORrep(ad_size, min_food) for i in self.colony_list]
 
-    def reproduction(self, no_off, ad_size):  # ad_size is the size spiders have to be to reproduce
+    def reproduction(self, no_off):  # ad_size is the size spiders have to be to reproduce
         no_ad = sum(i.reproduce == 1 for i in self.colony_list)  # calcs number of adults reproducing
-        [i.update_repr_Two for i in self.colony_list]   # updates reproduce to 2 if it is one.
+        print "number of reproducing adults:",
+        print no_ad
+        [j.update_repr_Two() for j in self.colony_list]   # updates reproduce to 2 if it is one. #TODO: NOT WORKING
         no_new_off = no_off * no_ad # calc the total number of new offspring for the colony
         new_spiders = list([Spider() for i in range(no_new_off)]) # makes the spiders
         self.colony_list = self.colony_list + new_spiders  # adds new colony
@@ -86,7 +89,7 @@ class Colony(object):
     def spis_to_dis_lst(self):  # adds the dispersing spiders to the dispersers list
         self.dispersers = [i for i in self.colony_list if i.disperse == 1]
         return self.dispersers
-        
+
     def update_instar(self, instar_levels): # updating all instars
         [i.instar_inc(instar_levels) for i in self.colony_list]
 
