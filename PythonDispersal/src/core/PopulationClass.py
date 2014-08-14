@@ -30,7 +30,7 @@ class Poplt(object):
                  prob_death = 0.01,
                  cat_prob = 0.001,
                  cat_perc_die = 0.7,
-                 instar_list = [0.5], # list of size transitions
+                 instar_list = [0.5, 0.7], # list of size transitions
                  poplt_age = 0,
                  colony_number = 1,
                  min_food = 0.1):
@@ -68,13 +68,14 @@ class Poplt(object):
         self.poplt_list[i].spider_age_increase()  # updates the age of all spiders within the colony
 
             #(2) feeding
-        self.poplt_list[i].cal_colony_food(self.inverse_carr_cap, self.cc_skew) #calculating how much food the colony gets
+        self.poplt_list[i].update_instar(self.instar_list) #updating instar
         self.poplt_list[i].update_rank()
+        self.poplt_list[i].cal_colony_food(self.inverse_carr_cap, self.cc_skew) #calculating how much food the colony gets
         self.poplt_list[i].ind_food(self.comp_type) # 0 = scramble and 1 = contest
 
             # (3) growth
         self.poplt_list[i].apply_growth(self.growth_per_food)
-        self.poplt_list[i].update_instar(self.instar_list) #updating instar
+
 
             # (4) death or catastrophe
         self.poplt_list[i].die_or_ctphe(self.age_die, self.prob_death, self.cat_prob, self.cat_perc_die)

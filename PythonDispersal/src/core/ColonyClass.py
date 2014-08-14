@@ -46,8 +46,8 @@ class Colony(object):
         for i in range(len(self.colony_list)):
             print "i = %s: %s" % (i, self.colony_list[i])
 
-    def size_list(self):  # returns a list of the size of all individuals in the colony
-        return [i.size for i in self.colony_list]
+    def size_list(self, instar):  # returns a list of the size of all individuals in the colony
+        return [i.size for i in self.colony_list if i.instar == instar]
 
     def print_dets(self):
         print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s, dispersal? : %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
@@ -64,8 +64,6 @@ class Colony(object):
         d['max_age'] = self.MaxAndMinAges()[1]
         d['colony_food']= self.colony_food
         return d
-
-
 
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
@@ -100,18 +98,28 @@ class Colony(object):
         self.colony_food = cal_colFood
 
     #TODO: Maybe just make these variable of colony???
+    
+    def colony_instars(self):
+        all_instars = [i.instar for i in self.colony_list]
+        unq_instars = list(set(all_instars)) # getting unique instars in colony
+        return unq_instars 
+
 
     def update_rank(self):  # updates the rank of spiders # 1 lowest rank,if ties,rank in order in list
-        Ranks =  ss.rankdata(self.size_list(), method = 'ordinal')  # assigns ties in order -> arbritary order.
-        for i, j in zip(self.colony_list, Ranks):
-            i.update_rank(j)
+        for k in self.colony_instars(): # ranks individuals within ranks
+            Ranks = ss.rankdata(self.size_list(k), method = 'ordinal')  # assigns ties in order -> arbritary order.
+            spds_instr = [i for i in self.colony_list if i.instar == k]
+            for i, j in zip(spds_instr, Ranks):
+                i.update_rank(j)
 
     def scramble(self):  # pure scramble competition, everyone gets the same
         [i.update_indFood(self.colony_food) for i in self.colony_list]
 
     def contest(self): # the highest ranks get 1 food, everyone else gets zero
-        fraction = len(self.colony_list) - (self.colony_food * len(self.colony_list))
-        [i.update_indFood(1) for i in self.colony_list if i.rank > fraction] # need to check numbers?
+        for k in self.colony_instars():
+            insr_len = [j for j in self.colony_list if j.instar == k]
+            fraction = len(insr_len) - (self.colony_food * len(insr_len))
+            [i.update_indFood(1) for i in self.colony_list if i.rank > fraction and i.instar == k] # need to check numbers?
 
     def ind_food(self, comp): # comp: 0 = scramble, 1 = contest
         [i.update_indFood(0) for i in self.colony_list] # updating all indfood to 0

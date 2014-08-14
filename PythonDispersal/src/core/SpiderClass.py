@@ -24,12 +24,12 @@ class Spider(object):
         self.instar= instar
 
     def __str__(self):
-        return "size: %s, age: %s, rank: %s, indFood: %s, die: %s, reproduce: %s, disperse: %s" % (self.size, self.age, self.rank, self.ind_food, self.die, self.reproduce, self.disperse)
+        return "size: %s, age: %s, rank: %s, instar: %s, indFood: %s, die: %s, reproduce: %s, disperse: %s" % (self.size, self.age, self.rank, self.instar, self.ind_food, self.die, self.reproduce, self.disperse)
 
     def instar_inc(self, instar_levels_list): # instar list is a population variable
         for k in range(len(instar_levels_list)):
             if (self.size >= instar_levels_list[k]):
-                self.instar = k + 1  # because starts at 0
+                self.instar = k + 2  # because starts at 0
 
     def death(self, max_age, mn_prob):  # making mortality age independent: need to define max age somewhere
         ran = rndm.random()  # gives random numbers between 0 and 1

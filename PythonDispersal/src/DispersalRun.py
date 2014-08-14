@@ -11,7 +11,7 @@ from core.PopulationClass import Poplt
 from core.Functions import export_rownames
 
 filename = 'file.csv'
-sim_len = 5 # the number of runs for the simulation1
+sim_len = 5 # the number of runs for the simulation
 
 #(1) write rownames to csv file
 

@@ -10,36 +10,37 @@ import numpy as np
 import scipy.stats as ss
 
 ########### having a test of spider class ####
-spi1 = Spider(0.75, 0.2, 0.2, 4)
+spi1 = Spider(0.1, 1, 0.2, 4)
 
-spi2 = Spider(0.89, 0.3, 0.2, 5)
+spi2 = Spider(0.2, 1, 0.2, 5)
 
-spi3 = Spider(0.02, 0.3, 0.2, 5)
+spi3 = Spider(0.3, 2, 0.2, 5)
 
-spi4 = Spider(0.4, 0.3, 0.2, 5)
+spi4 = Spider(0.4, 2, 0.2, 5)
+
+spi5 = Spider(0.7, 2, 0.2, 5)
 
 
 
 ## having a test of colony class
 
-colList = [spi1, spi2, spi3, spi4]
+colList = [spi1, spi2, spi3, spi4, spi5]
+col= Colony(colList, 1)
 
-colony = Colony(colList, 4)
+print col.size_list(3)
 
-#[i.spi_age_add1() for i in colony.colony_list]
+listg = [2,5,2,6,9,7,8, 1, 9 ,7 , 1]
 
-#colony.colony_list[1].spi_age_add1()
+setg = list(set(listg))
 
-#spi1.spi_age_add1()
+print listg
 
-colony.col_age_increase()
-colony.col_age_increase()
+col.update_rank()
 
+col.print_spiders()
 
-MyPop = Poplt([colony])
+print [j for j in col.colony_list if j.instar == 1]
 
-print MyPop
-#colony.spider_age_increase()
-
+#print [f for f in listg if f ==7]
 
 
