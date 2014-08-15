@@ -34,6 +34,7 @@ for run in range(0, sim_len):
         print "population has gone extinct"
         break
     this_pop.one_poplt_timestep()
+    print "population age:", 
     print this_pop.poplt_age
 
 

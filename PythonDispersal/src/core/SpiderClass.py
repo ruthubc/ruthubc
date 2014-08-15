@@ -74,6 +74,10 @@ class Spider(object):
         term1 = 1-self.size
         term2 = np.exp(-growth_rate * self.ind_food)
         self.size = 1- (term1*term2)
+        
+    def dis_to_two(self):
+        self.disperse = 2
+        
 
 
 

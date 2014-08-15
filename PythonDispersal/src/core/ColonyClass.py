@@ -28,7 +28,7 @@ class Colony(object):
         self.dispersers = dispersers # TODO not sure I need this anymore.
 
     def __str__(self):
-        return "ColID: %s, age: %s, col_food: %s, col_age: %s, alive?: %s" % (self.colony_ID, self.colony_food, self.colony_age, self.alive)
+        return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
 
     def MaxAndMinAges(self):
         col_indAge= [i.age for i in self.colony_list]
@@ -98,7 +98,7 @@ class Colony(object):
         self.colony_food = cal_colFood
 
     #TODO: Maybe just make these variable of colony???
-    
+
     def colony_instars(self):
         all_instars = [i.instar for i in self.colony_list]
         unq_instars = list(set(all_instars)) # getting unique instars in colony
@@ -145,7 +145,7 @@ class Colony(object):
             self.dying(old_age, die_prob)  # normal death
 
     def removing_spiders(self):  # removes spiders that are dead or have dispersed
-        self.colony_list = [i for i in self.colony_list if i.die == 0 and i.disperse == 0] 
+        self.colony_list = [i for i in self.colony_list if i.die == 0 and i.disperse != 1] 
 
     def col_alive(self): # testing whether colony is dead
         if not self.colony_list:
