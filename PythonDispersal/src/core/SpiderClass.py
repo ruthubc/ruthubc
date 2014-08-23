@@ -12,7 +12,7 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, instar = 1, ind_food=0.0, age=3, rank=1, die = 0, reproduce = 0, disperse = 0):
+    def __init__(self, size=0.1, instar = 1, ind_food=0.0, age=0, rank=1, die = 0, reproduce = 0, disperse = 0):
         '''defining the spider object'''
         self.size = size
         self.ind_food = ind_food

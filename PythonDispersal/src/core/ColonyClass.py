@@ -48,6 +48,9 @@ class Colony(object):
 
     def size_list(self, instar):  # returns a list of the size of all individuals in the colony
         return [i.size for i in self.colony_list if i.instar == instar]
+    
+    def food_list(self):  # returns a list of the size of all individuals in the colony
+        return [i.ind_food for i in self.colony_list]
 
     def print_dets(self):
         print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s, dispersal? : %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
@@ -107,7 +110,9 @@ class Colony(object):
 
     def update_rank(self):  # updates the rank of spiders # 1 lowest rank,if ties,rank in order in list
         for k in self.colony_instars(): # ranks individuals within ranks
-            Ranks = ss.rankdata(self.size_list(k), method = 'ordinal')  # assigns ties in order -> arbritary order.
+            #Ranks = ss.rankdata(self.size_list(k), method = 'ordinal')  # assigns ties in order -> arbritary order.
+            PreRanks = np.argsort(self.size_list(k))
+            Ranks = np.argsort(PreRanks)
             spds_instr = [i for i in self.colony_list if i.instar == k]
             for i, j in zip(spds_instr, Ranks):
                 i.update_rank(j)
