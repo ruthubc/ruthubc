@@ -30,6 +30,9 @@ class Colony(object):
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
 
+    def tot_col_fd(self):
+        return self.colony_food * len(self.colony_list)
+    
     def MaxAndMinAges(self):
         col_indAge= [i.age for i in self.colony_list]
         age_max = max(col_indAge)
@@ -51,6 +54,9 @@ class Colony(object):
     
     def food_list(self):  # returns a list of the size of all individuals in the colony
         return [i.ind_food for i in self.colony_list]
+    
+    def rank_list(self):  # returns a list of the size of all individuals in the colony
+        return [i.rank for i in self.colony_list]
 
     def print_dets(self):
         print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s, dispersal? : %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
@@ -68,6 +74,9 @@ class Colony(object):
         d['colony_food']= self.colony_food
         return d
 
+    def num_spi(self):
+        return len(self.colony_list)
+    
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
