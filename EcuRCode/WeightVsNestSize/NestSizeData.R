@@ -2,6 +2,7 @@
 # Author: Ruth
 ###############################################################################
 
+library('plyr')
 
 spiderData <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 
