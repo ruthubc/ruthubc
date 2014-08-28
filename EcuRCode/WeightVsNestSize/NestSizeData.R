@@ -31,6 +31,7 @@ spiders$logWeight <- log10(spiders$Weight.mg)
 spiders$logCtFm <- log10(spiders$CountFemales)
 spiders$logLeg<- log10(spiders$LegLen.mm)
 spiders$logHead <-log10(spiders$HeadLength.mm)
+
 spiders$logAbdm<- log10(spiders$AbdmLen.mm)
 spiders$logHung <- log10(spiders$hunger)
 

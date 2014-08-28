@@ -4,9 +4,10 @@
 ###############################################################################
 
 
-# testing to see if inter-individual distance would be better than
+# testing to see if inter-individual distance would be better than regular cv,
+#BUT I think this may actually be variance.
 
-list = c(1,2,3,7,5,6)
+list = c(1,2,3,7,5,166)
 results = c()
 
 for (i in 1:length(list)){
@@ -24,9 +25,14 @@ for (i in 1:length(list)){
 	}
 	
 	
-	print ("nest item in list")
+	print ("next item in list")
 }
 
 results
 
-sum(results)
+tot <- sum(results)
+num <- length(results)
+
+newCV = tot/num
+
+print (newCV)

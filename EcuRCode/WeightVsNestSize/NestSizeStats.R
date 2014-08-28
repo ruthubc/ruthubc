@@ -141,7 +141,7 @@ write.table(LegTable, file="RuthEcuador2013/NestSize/Graphs/LegNestSizeStats.csv
 
 
 
-############### Testing individual instars leg length vs nest size
+############### Testing  leg length vs nest size for each seperate instar
 
 #Adult
 
@@ -236,7 +236,6 @@ WgtNest3<- multipleModel(WgtNestSzMd3,WgtNestSzMdNull)
 WgtTable<- as.data.frame(t(data.frame(WgtNest1, WgtNest2, WgtNest3)))
 colnames(WgtTable)<-c("model", "AIC", "BIC", "pValue")
 write.table(WgtTable, file="RuthEcuador2013/NestSize/Graphs/WeightNestSizeStats.csv", sep=",",row.names=F)
-
 
 ### Hunger vs nest size
 
@@ -542,6 +541,8 @@ cvWgtMod4<- lmer(logCVByNWei ~ I(logCtFm^2) + Instar +
 
 anova(cvWgtMod4)
 multipleModel(cvWgtMod4, cvWgtModNull)
+
+
 
 ######## CV of hunger by nest size #######
 
