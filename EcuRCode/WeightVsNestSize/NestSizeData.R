@@ -76,7 +76,9 @@ SpiNestAve <- subset(SpiNestAve, type == "multiple")
 ##removing NA's from SpiNestAve
 SpiNestAve <- na.omit(SpiNestAve)
 
-spidersMul <- subset(spiders, type == "multiple") #removing single females\
+spidersMul <- subset(spiders, type == "multiple") #removing single females
+spidersMul$NestID <- factor(spidersMul$NestID)
+
 
 ### data for single vs multiple nests
 spidersSglMt <- subset(spiders, Instar == "Adult")
