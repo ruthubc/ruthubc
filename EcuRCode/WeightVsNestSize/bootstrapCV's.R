@@ -10,6 +10,8 @@
 # start with just the adults, need to make a list of all the values for each nest
 #still need a minimum number 
 
+library("matrixStats")
+
 bootFunction <- function(nestID, weightList, noInSamp, nboots){
 
 outputDF <- data.frame(matrix(NA, nrow = 0, ncol = (noInSamp +1)))
@@ -57,8 +59,9 @@ for (g in 2:ncol(bootWeights)){ #converts the numbers to numbers
 
 bootWeights$means <- rowMeans(bootWeights[,2:(sampleSize + 1)])
 
+bootWeightsCVs <- rowSds(bootWeights[,2:(sampleSize + 1)])
 
-
+transform(bootWeights, SD=rowSds(bootWeights, na.rm=TRUE))
 
 ############# Test Function  ###########
 
