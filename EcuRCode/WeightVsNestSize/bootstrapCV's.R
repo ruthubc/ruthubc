@@ -10,7 +10,7 @@
 # start with just the adults, need to make a list of all the values for each nest
 #still need a minimum number 
 
-library("matrixStats")
+library("plyr")
 
 bootFunction <- function(nestID, weightList, noInSamp, nboots){
 
@@ -37,7 +37,7 @@ bootNests <- levels(spidersAdult$NestID)
 
 bootWeights <- data.frame(matrix(NA, nrow = 0, ncol = (sampleSize +1)))
 sampleSize <- 8
-nboots <- 10
+nboots <- 100
 
 for(i in bootNests){
 	
@@ -48,8 +48,6 @@ for(i in bootNests){
 	bootWeights <- rbind(bootWeightsNew, bootWeights)
 }
 
-bootWeights$X2 <- as.numeric(bootWeights$X2)
-
 for (g in 2:ncol(bootWeights)){ #converts the numbers to numbers
 	
 	bootWeights[,g] <- as.numeric(bootWeights[,g])
@@ -59,9 +57,28 @@ for (g in 2:ncol(bootWeights)){ #converts the numbers to numbers
 
 bootWeights$means <- rowMeans(bootWeights[,2:(sampleSize + 1)])
 
-bootWeightsCVs <- rowSds(bootWeights[,2:(sampleSize + 1)])
+bootWeights$sum <- rowSums(bootWeights[,2:(sampleSize + 1)])
+bootWeights$cv <- 0
 
-transform(bootWeights, SD=rowSds(bootWeights, na.rm=TRUE))
+
+for (r in 1:nrow(bootWeights)){
+sdSum <- 0	
+	mean <- bootWeights$means[r]
+
+	for (c in 2:sampleSize){
+		btwt <- bootWeights[r, c]
+		indSd <- (btwt - mean)^2
+		sdSum <- sdSum + indSd
+		
+	}
+stddev <- sqrt(sdSum/sampleSize)
+bootWeights$cv[r] <- stddev/mean
+	
+}
+
+
+
+ddply(bootWeights, ~ X1, summarise, mean = mean (cv), sd = sd(cv))
 
 ############# Test Function  ###########
 
