@@ -36,7 +36,7 @@ def run(filename, sim_len):
         print "population age:", 
         print this_pop.poplt_age
 
-        #(4) END
-        print "end, check file"
+    #(4) END
+    print "end, check file"
 
 

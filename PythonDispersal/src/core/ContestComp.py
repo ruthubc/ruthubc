@@ -45,16 +45,16 @@ def contest_few_inds(colony):
     colony.colony_list[minRankInx].ind_food = colony.tot_col_fd()
     
         
-def contest(colony):
-    if colony.tot_col_fd() < 1.0:
+def mid_contest(self):
+    if self.tot_col_fd() < 1.0:
         print "few inds"
-        contest_few_inds(colony)
+        self.contest_few_inds()
     else:
-        m = find_m(colony)
+        m = self.find_m()
         print "lots inds m:",
-        print m
-        [contest_many_ind(i, m) for i in col.colony_list]
-        replacing_min_fd(colony)
+        print m     
+        [spi.contest_many_ind( m) for spi in self.colony_list]
+        self.replacing_min_fd()
         
         
 
@@ -71,7 +71,7 @@ u = Spider(rank = 5)
 col = Colony([jon, peter, sue, ir, u, brad], 4, colony_food = 0.6)
 print "tot col food:",
 print col.tot_col_fd()
-contest(col)
+col.ind_food(1)
 
 print col.food_list()
 

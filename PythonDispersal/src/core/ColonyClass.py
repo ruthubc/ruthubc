@@ -104,7 +104,8 @@ class Colony(object):
         [i.instar_inc(instar_levels) for i in self.colony_list]
 
     def cal_colony_food(self, c, d):  # calculates and updates the food to the colony, 1/c = carrying capacity, d = level of skew
-        N = len(self.colony_list)
+        NonJuv = [spi.instar for spi in self.colony_list if spi.instar != 1] # juvs don't contribute to food
+        N = len(NonJuv)
         mxFd = np.exp(-d) * np.power((d/c), d) # used to scale the equation to make max food = 1
         cal_colFood = (1/mxFd) * np.power(N, d) * np.exp(-c*N)
         self.colony_food = cal_colFood
@@ -129,18 +130,23 @@ class Colony(object):
     def scramble(self):  # pure scramble competition, everyone gets the same
         [i.update_indFood(self.colony_food) for i in self.colony_list]
 
-    def contest(self): # the highest ranks get 1 food, everyone else gets zero
+    def full_contest(self): # the highest ranks get 1 food, everyone else gets zero
         for k in self.colony_instars():
             insr_len = [j for j in self.colony_list if j.instar == k]
             fraction = len(insr_len) - (self.colony_food * len(insr_len))
             [i.update_indFood(1) for i in self.colony_list if i.rank > fraction and i.instar == k] # need to check numbers?
 
-    def ind_food(self, comp): # comp: 0 = scramble, 1 = contest
+    def ind_food(self, comp): # comp: 0 = scramble, 1 = mid_contest, 2 = full contest
         [i.update_indFood(0) for i in self.colony_list] # updating all indfood to 0
         if comp == 0:
+            print "scramble"
             self.scramble()
         elif comp == 1:
-            self.contest()
+            print "mid_contest"
+            self.mid_contest()
+        elif comp == 2:
+            print "full contest"
+            self.full_contest()
 
 #TODO: need to test this more throughly
     def apply_growth(self, growth_amt): # grows every spider in the colony
@@ -167,5 +173,40 @@ class Colony(object):
 
     def colony_list_to_append(self): # returns dictionary values
         return self.colony_dict().values()
+    
+    def find_m(self): # finding the gradient 
+        if self.colony_food < 0.5:
+            m = 1/(2*self.colony_food*self.num_spi()-1)
+        else :
+            m = -(2*(self.colony_food-1))/ (self.num_spi() -1) # everyone gets fed if food_tot >=  0.5
+        return m
+#TODO: put in exception if m is below or zero!
+
+
+    
+    def replacing_min_fd(self): # replacing the minimum amount to make sure the numbers add up
+        minFdInx = self.food_list().index(min(x for x in self.food_list() if x != 0)) # gets the index of the last spider to be fed
+        minSpiFd = self.food_list()[minFdInx]
+        tot_ind_fd = sum(self.food_list())
+        corrMinAmt = self.tot_col_fd() - (tot_ind_fd - minSpiFd)
+        corrMinAmt = round(corrMinAmt, 4)
+        self.colony_list[minFdInx].ind_food = corrMinAmt
+
+
+    def contest_few_inds(self):
+        minRankInx = self.rank_list().index(min(self.rank_list()))
+        self.colony_list[minRankInx].ind_food = self.tot_col_fd()
+    
+        
+    def mid_contest(self):
+        if self.tot_col_fd() < 1.0:
+            print "few inds"
+            self.contest_few_inds()
+        else:
+            m = self.find_m()
+            print "lots inds m:",
+            print m
+            [spi.contest_many_ind(m) for spi in self.colony_list]
+            self.replacing_min_fd()
 
 

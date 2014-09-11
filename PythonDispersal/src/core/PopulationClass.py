@@ -76,7 +76,7 @@ class Poplt(object):
         self.poplt_list[i].update_instar(self.instar_list) #updating instar
         self.poplt_list[i].update_rank()
         self.poplt_list[i].cal_colony_food(self.inverse_carr_cap, self.cc_skew) #calculating how much food the colony gets
-        self.poplt_list[i].ind_food(self.comp_type) # 0 = scramble and 1 = contest
+        self.poplt_list[i].ind_food(self.comp_type) # 0 = scramble and 2 = mid contest, 3 = full contest
 
             # (3) growth
         self.poplt_list[i].apply_growth(self.growth_per_food)

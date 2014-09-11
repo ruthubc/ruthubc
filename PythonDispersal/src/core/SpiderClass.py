@@ -78,6 +78,14 @@ class Spider(object):
     def dis_to_two(self):
         self.disperse = 2
         
+    def contest_many_ind(self, m): #find the rank for each spider
+        food = 1- m * self.rank
+        if food < 0:
+            Fd_ind = 0
+        else:
+            Fd_ind =  round(food, 4)
+        self.ind_food = Fd_ind
+        
 
 
 
