@@ -12,7 +12,7 @@
 # linear model
 SubAveByTrial <-subset(AveByTrial, TrialID != "T3")
 
-# mean differences
+# mean differences between prey size
 PJTrtMn<-by(SubAveByTrial$PJEven, SubAveByTrial$Treatment, mean)
 PJTrtMn
 
@@ -72,7 +72,7 @@ overdisp_fun(PJRedModTreat) # underdispersed
 summary(PJRedModTreat)	
 
 anova(PJRedModTreat, PJMod1)
-anova(PJMod4, PJRedModTreat)
+anova(PJMod4, PJRedModTreat) #mod4 has no interaction as interaction is not significant
 
 #### Testing against reduced model
 PJRedModIns <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), SubAveByTrial)

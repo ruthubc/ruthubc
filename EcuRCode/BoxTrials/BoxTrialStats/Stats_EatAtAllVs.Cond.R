@@ -264,3 +264,35 @@ ezPredict(fit = Graph.glmer)
 ezPlot(Graph.glmer)
 
 ##NOTES look up package ez i.e. ezPredict etc.
+
+
+### October 2014 ###
+
+### Small - instars combined
+
+EatSmallFull <- lmer(LogCond ~ Feed + Instar+  (1|IndBoxID), subset(BoxAveFeed, 
+				Treatment == "small"), REML = FALSE   )
+
+modelPlot(EatSmallFull)
+summary(EatSmallFull)
+
+EatSmallRed <- lmer(LogCond ~ 1+ Instar + (1|IndBoxID), subset(BoxAveFeed, 
+				Treatment == "small"), REML = FALSE    )
+
+
+anova(EatSmallFull, EatSmallRed)
+
+### large - instars combined
+
+EatlargeFull <- lmer(LogCond ~ Feed + Instar+  (1|IndBoxID), subset(BoxAveFeed, 
+				Treatment == "large"), REML = FALSE   )
+
+modelPlot(EatlargeFull)
+summary(EatlargeFull)
+
+EatlargeRed <- lmer(LogCond ~ 1+ Instar + (1|IndBoxID), subset(BoxAveFeed, 
+				Treatment == "large"), REML = FALSE    )
+
+
+anova(EatlargeFull, EatlargeRed)
+
