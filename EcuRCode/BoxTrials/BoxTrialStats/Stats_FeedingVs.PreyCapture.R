@@ -17,6 +17,10 @@ BoxComboCap$CapWords<-ifelse(BoxComboCap$CaptureIndPos == "y", "Cap", "Did Not C
 CapVsFedTb<-table(BoxComboCap$FedWords,BoxComboCap$CapWords, BoxComboCap$Treatment )
 CapVsFedTb
 
+CapVsFedOverall<-table(BoxComboCap$FedWords,BoxComboCap$CapWords)
+CapVsFedOverall
+
+
 CapVsFedTb[1]
 
 ## stats tests

@@ -6,8 +6,9 @@
 
 ### eating with prey capture vs not prey capture
 
-BoxComboEat <- BoxComboEat[!BoxComboEat$SpiderID == "sp336",]# removed this spider as hunger etc. = NA
+BoxComboEat <- BoxComboEat[!BoxComboEat$SpiderID == "sp366",]# removed this spider as hunger etc. = NA
 
+BoxMornFeedOrCap <- BoxMornFeedOrCap [!BoxMornFeedOrCap$SpiderID == "sp366",]# removed this spider as hunger etc. = NA
 ## checking ratio of capture's to non-capturers by treatment
 
 RatioFull<- glmer(PerNoCap ~ Treatment + Instar + (1|IndBoxID),	BoxFeedRatio, family = binomial)
@@ -179,3 +180,51 @@ Smallred<-lmer(LogCond ~ Instar + (1|IndBoxID) + (1 | IndBoxID:TrialID),
 
 anova(Smallfull, Smallred)
 
+## Now doing the analysis with all individuals whether they fed or captured
+
+table(BoxMornFeedOrCap$SpiderID) # multiple spiders? How do I deal with this?
+
+table(BoxMornFeedOrCap$IndCapNum)
+
+### Small
+Smallfull<-lmer(LogCond ~ IndCapNum + Instar  + (1|IndBoxID) + (1 | IndBoxID:TrialID), 
+		subset(BoxMornFeedOrCap, Treatment == "small"))
+
+
+modelPlot(Smallfull)
+summary(Smallfull)
+
+Smallred<-lmer(LogCond ~  Instar  + (1|IndBoxID) + (1 | IndBoxID:TrialID), 
+		subset(BoxMornFeedOrCap, Treatment == "small"))
+
+
+anova(Smallfull, Smallred) # no difference in condition
+
+### large
+largefull<-lmer(LogCond ~ CapAndFeed + Instar  + (1|IndBoxID) + (1 | IndBoxID:TrialID), 
+		subset(BoxMornFeedOrCap, Treatment == "large"))
+
+
+modelPlot(largefull)
+summary(largefull)
+
+largered<-lmer(LogCond ~  Instar + (1|IndBoxID) + (1 | IndBoxID:TrialID), 
+		subset(BoxMornFeedOrCap, Treatment == "large"))
+
+
+anova(largefull, largered) # no difference in condition
+
+ddply(subset(BoxMornFeedOrCap, Treatment == "small"), ~CapAndFeed, summarise, mean = mean(Rank.Cond))
+
+
+## overall
+
+Allfull<-lmer(LogCond ~ CapAndFeed*Instar  + (1|IndBoxID) + (1 | IndBoxID:TrialID), 
+		BoxMornFeedOrCap)
+
+summary(Allfull)
+
+AllRed<-lmer(LogCond ~  Instar  + (1|IndBoxID) + (1 | IndBoxID:TrialID), 
+		BoxMornFeedOrCap)
+
+anova(Allfull, AllRed)
