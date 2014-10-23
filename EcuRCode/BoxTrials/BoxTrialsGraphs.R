@@ -219,9 +219,23 @@ ggplot(subset(BoxComboMorn, IndCapture != "NA") , aes(x = IndCapture, y = log10(
 		guides(fill = FALSE)
 
 
-ggplot(subset(BoxComboMorn, IndFeed != "NA"), aes(x=log10(1/Hunger), y = IndFeed))
+## boxplot with rank and instar combined
+ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = Rank.Cond)) + geom_boxplot(aes(fill = IndFeed)) + 
+		facet_grid(~Treatment ) + mytheme + ylab("Condition Rank") + xlab("") +
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Fed", "Did Not\nFeed")) + coord_flip() +
+		guides(fill = FALSE)
 
-#TODO: hunger rank
+
+ggplot(subset(BoxComboMorn, IndCapture != "NA") , aes(x = IndCapture, y = Rank.Cond)) + geom_boxplot(aes(fill = IndCapture)) + 
+		facet_grid(~Treatment ) + mytheme + ylab("Condition Rank") + xlab("") +
+		scale_x_discrete(breaks=c("y", "n"), labels=c("Capture", "Did Not\nCapture")) + coord_flip() +
+		guides(fill = FALSE)
+
+## Logistic regression
+
+ggplot(subset(BoxComboMorn, IndFeed != "NA"), aes(x = LogCond, y = IndFeedNum, colour = Instar)) + geom_point() + 
+		stat_smooth(method="glm", family="binomial", se=TRUE) +  facet_wrap(~Treatment, scales = "free" ) 
+
 
 dev.off()
 
