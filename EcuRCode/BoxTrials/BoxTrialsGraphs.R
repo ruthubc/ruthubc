@@ -226,16 +226,20 @@ ggplot(subset(BoxComboMorn, IndFeed != "NA") , aes(x = IndFeed, y = Rank.Cond)) 
 		guides(fill = FALSE)
 
 
-ggplot(subset(BoxComboMorn, IndCapture != "NA") , aes(x = IndCapture, y = Rank.Cond)) + geom_boxplot(aes(fill = IndCapture)) + 
+ggplot(subset(BoxComboAve, IndCapture != "NA") , aes(x = IndCapture, y = Rank.Cond)) + geom_boxplot(aes(fill = IndCapture)) + 
 		facet_grid(~Treatment ) + mytheme + ylab("Condition Rank") + xlab("") +
 		scale_x_discrete(breaks=c("y", "n"), labels=c("Capture", "Did Not\nCapture")) + coord_flip() +
 		guides(fill = FALSE)
 
 ## Logistic regression
 
-ggplot(subset(BoxComboMorn, IndFeed != "NA"), aes(x = LogCond, y = IndFeedNum, colour = Instar)) + geom_point() + 
-		stat_smooth(method="glm", family="binomial", se=TRUE) +  facet_wrap(~Treatment, scales = "free" ) 
+ggplot(subset(BoxComboMorn, IndFeed != "NA"), aes(x = Cond.Scal, y = IndFeedNum, colour = Treatment)) + geom_point() + 
+		stat_smooth(method="glm", family="binomial", se=FALSE) + mytheme #+  facet_wrap(~Instar, scales = "free" ) 
 
+ggplot(subset(BoxComboMorn, IndFeed != "NA"), aes(x = Cond.Scal, y = IndCapNum, colour = Treatment)) + geom_point() + 
+		stat_smooth(method="glm", family="binomial", se=FALSE) + mytheme
+
+#ggplot(Weights, aes(x = Cond.Scal, fill = Instar)) + geom_histogram()
 
 dev.off()
 

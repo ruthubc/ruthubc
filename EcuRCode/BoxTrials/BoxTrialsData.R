@@ -38,6 +38,16 @@ Weights$LogCond <- log10(Weights$Cond)
 Weights$WeightDiffPer <- Weights$WeightDiff/Weights$Weight.1
 Weights$LogWeight1 <- log(Weights$Weight.1)
 
+######### Scaling condition for instars so can plot together! ##########
+
+Sub1Weights <- subset(Weights, Instar =="Sub1", select = c("SpiderID", "LogCond"))
+Sub1Weights$Cond.Scal <- scale(Sub1Weights$LogCond,  center = TRUE, scale = TRUE)[,1]
+Sub2Weights <- subset(Weights, Instar =="Sub2", select = c("SpiderID", "LogCond"))
+Sub2Weights$Cond.Scal <- scale(Sub2Weights$LogCond,  center = TRUE, scale = TRUE)[,1]
+Scaled <- rbind(Sub2Weights, Sub1Weights)
+Scaled$LogCond <- NULL
+Weights <- merge(Scaled, Weights, by = c("SpiderID"))
+
 
 ##combining all tables
 FeedingWeights <- merge(Feeding, Weights, by = c("SpiderID"))
@@ -161,7 +171,7 @@ BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
 #####################################################################################
 
 BoxComboAve<- ddply(BoxComboMorn, .(SpiderID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, Rank.Legs, IndBoxID,  Moulted., 
-				AveBoldness, AvePokeRating, Treatment, Hunger, WeightDiffPer ), summarise, # need to discount trials where no feeding obs and eve
+				AveBoldness, AvePokeRating, Treatment, Hunger, WeightDiffPer, Cond.Scal ), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(SpiderID)),
 		IndEatDur.Mean = mean(TotalTimeEating, na.rm = TRUE),
 		SumIndEat = sum(TotalTimeEating, na.rm = TRUE),
@@ -245,3 +255,9 @@ BoxFeedRatio$logCap.n <- log10(BoxFeedRatio$NumFeed.n+1)
 
 
 BoxMornFeedOrCap<- subset(BoxComboMorn, (IndFeed == "y" & CaptureIndPos != "NA") | (IndFeed !="NA" & CaptureIndPos=="y") )
+
+SubAveByTrial <-subset(AveByTrial, TrialID != "T3") #taking out T3 as NA's etc.
+
+
+
+
