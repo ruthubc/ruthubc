@@ -364,7 +364,7 @@ ggplot(AveByTrial, aes(AsinPJEven)) + geom_histogram()
 
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PJEven.pdf", width = 12, height =10)
 
-SubsetAveByTrial<- subset(AveByTrial, PJEven > -1)
+SubsetAveByTrial<- subset(AveByTrial)#, PJEven > -1) # not sure why the - 1 is there.
 #(SubsetAveByTrial, aes(x= Treatment, y =AsinPJEven)) + geom_boxplot() + mytheme + ylab("asin of box evenness") + xlab("Prey Size")
 
 ggplot(SubsetAveByTrial, aes(x= Treatment, y =PJEven)) + geom_boxplot() + mytheme + ylab("Intragroup Evenness") + xlab("Prey Size")#  + 
