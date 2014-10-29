@@ -228,3 +228,28 @@ AllRed<-lmer(LogCond ~  Instar  + (1|IndBoxID) + (1 | IndBoxID:TrialID),
 		BoxMornFeedOrCap)
 
 anova(Allfull, AllRed)
+
+### It should actually be GLMER...LOOKING OVERALL
+
+GlmFull <- glmer(IndCapture ~ LogCond*Treatment + Instar +
+				(1|IndBoxID)+ (1|IndBoxID:SpiderID), BoxMornFeedOrCap, family = binomial(logit))
+
+summary (GlmFull)
+
+GlmRed <- glmer(IndCapture ~  LogCond + Treatment + Instar +
+				(1|IndBoxID)+ (1|IndBoxID:SpiderID), BoxMornFeedOrCap, family = binomial(logit))
+
+anova (GlmRed, GlmFull)
+
+#### LargePrey
+
+
+GlmFullLarge <- glmer(IndCapture ~  LogCond + Instar +
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOnly, Treatment == "large"), family = binomial(logit))
+
+summary (GlmFullLarge)
+
+GlmRedLarge <- glmer(IndCapture ~ Instar +
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOnly, Treatment == "large"), family = binomial(logit))
+
+anova (GlmRedLarge, GlmFullLarge)

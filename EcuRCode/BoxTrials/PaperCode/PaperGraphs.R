@@ -57,10 +57,12 @@ CapVsEat$FeedAndCap <- paste("Cap", CapVsEat$CaptureIndPos, "Feed", CapVsEat$Fee
 
 ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 		geom_bar(stat="bin", position="fill") + xlab("Participated in Prey Capture")+ ylab("Percentage of Individuals That Fed") + 
-		scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) + facet_wrap(~Treatment) 
+		 facet_wrap(~Treatment) + scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
 				labels = c("Yes", "No"))  + mytheme    + scale_fill_manual("FeedIndPos", values = c("darkblue", "white")) +
 		theme(legend.position = "none") + scale_y_continuous(labels = percent, expand = c(0.001,0.001) )
+
+
 
 dev.off()
