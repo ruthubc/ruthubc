@@ -417,7 +417,7 @@ ggplot(BoxMornFeedOnly, aes(x=CaptureIndPos, y = Rank.Cond)) + geom_boxplot() +
 		#stat_summary(fun.data = give.n, geom = "text")
 
 ggplot(BoxMornFeedOrCap, aes(x=CaptureIndPos, y = Rank.Cond)) + geom_boxplot() + 
-		facet_wrap(~Treatment + IndFeed) +
+		facet_wrap(~IndFeed) +
 		ylab("Condition Rank in Box") + xlab("Captured Prey?") + mytheme +
 		scale_x_discrete(breaks = c("y", "n"),labels = c("Yes", "No"))
 dev.off()
@@ -426,5 +426,5 @@ dev.off()
 ggplot(BoxFeedRatio, aes(x=Treatment, y = logCap.n)) + geom_boxplot()# + geom_point(position = "jitter") + facet_wrap(~Instar)
 
 
-
+table(BoxMornFeedOrCap$CapAndFeed)
 

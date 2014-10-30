@@ -15,17 +15,6 @@ mytheme <-theme_bw(base_size=30)  + theme(plot.title = element_text(vjust=2), pa
 		axis.title.y = element_text(vjust=0), plot.margin=unit(c(1,1,1.5,1.2),"cm"), 
 		panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1)) +  theme(strip.background = element_rect(fill = 'white'))
 
-Facet_label <- function(var, value){
-	value <- as.character(value)
-	if (var=="Treatment") { 
-		value[value=="large"] <- "Large Prey"
-		value[value=="small"]   <- "Small Prey"
-	} else if (var=="Instar") {
-		value[value=="Sub1"] <- "Subadult 1"
-		value[value=="Sub2"]   <- "Subadult 2"
-	}
-	return(value)
-}
 
 
 ### Box evenness vs prey size box plot
