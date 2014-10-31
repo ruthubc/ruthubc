@@ -7,6 +7,22 @@
 #### Box trails graphs. Code importing and manipulating the data is in BoxTrialsData.R
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
 
+## Function calculating percentage difference on a aggregate table
+
+PerDiff<-function(table){
+	
+	for(i in c(2,4)){
+		
+		diff<-table[i-1, 3] - table[i, 3]
+		per<- ((table[i-1, 3] - table[i, 3])/ ((table[i-1, 3] + table[i, 3])/2)) *100 
+		print(paste(table[i, 2], "diff:",  diff, ", %diff:", per))
+		
+	}
+	
+	
+}
+
+
 #######################################################################################
 # Evenness vs prey size
 
@@ -70,6 +86,13 @@ anova(EatBinsmallFull, EatBinsmallRed)
 
 
 
+############## Percentage difference in condition between feeders and non-feeders
+
+EatConDiff<- aggregate(BoxComboMorn$Cond, by = list(BoxComboMorn$FeedIndPos, BoxComboMorn$Treatment), 
+		FUN = mean, na.rm=TRUE)
+
+PerDiff(EatConDiff)
+
 ################ Capture vs condition
 
 
@@ -83,7 +106,7 @@ CapConInter.glmer <- glmer(IndCapture ~ LogCond+Instar+Treatment + (1|IndBoxID) 
 				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 anova(CapConFull.glmer, CapConInter.glmer)
 
-###Checking LogCond + Treatment
+###Checking LogCond
 CapConCond.glmer <- glmer(IndCapture ~ Instar+Treatment + (1|IndBoxID) + 
 				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 anova(CapConFull.glmer, CapConCond.glmer)
@@ -92,5 +115,14 @@ anova(CapConFull.glmer, CapConCond.glmer)
 CapConTreat.glmer <- glmer(IndCapture ~ LogCond + Instar + (1|IndBoxID) + 
 				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
 anova(CapConFull.glmer, CapConTreat.glmer)
+
+### Percentage difference
+
+EatConDiff<- aggregate(BoxComboMorn$Cond, by = list(BoxComboMorn$CaptureIndPos, BoxComboMorn$Treatment), 
+		FUN = mean, na.rm=TRUE)
+
+PerDiff(EatConDiff)
+
+### Just small prey 
 
 

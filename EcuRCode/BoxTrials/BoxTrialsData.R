@@ -260,4 +260,4 @@ SubAveByTrial <-subset(AveByTrial, TrialID != "T3") #taking out T3 as NA's etc.
 
 
 
-
+BoxMornFeedOrCap$CapAndFeed <- as.factor(BoxMornFeedOrCap$CapAndFeed)

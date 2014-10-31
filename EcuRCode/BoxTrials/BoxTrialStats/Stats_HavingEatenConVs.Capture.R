@@ -236,13 +236,19 @@ GlmFull <- glmer(IndCapture ~ LogCond*Treatment + Instar +
 
 summary (GlmFull)
 
-GlmRed <- glmer(IndCapture ~  LogCond + Treatment + Instar +
+GlmRed <- glmer(IndCapture ~  Treatment + Instar +
 				(1|IndBoxID)+ (1|IndBoxID:SpiderID), BoxMornFeedOrCap, family = binomial(logit))
 
 anova (GlmRed, GlmFull)
 
+GlmRedInt <- glmer(IndCapture ~  Treatment + Instar + LogCond +
+				(1|IndBoxID)+ (1|IndBoxID:SpiderID), BoxMornFeedOrCap, family = binomial(logit))
+
+anova (GlmRedInt, GlmFull)
+
 #### LargePrey
 
+table(BoxMornFeedOrCap$CapAndFeed)
 
 GlmFullLarge <- glmer(IndCapture ~  LogCond + Instar +
 				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOnly, Treatment == "large"), family = binomial(logit))
@@ -253,3 +259,18 @@ GlmRedLarge <- glmer(IndCapture ~ Instar +
 				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOnly, Treatment == "large"), family = binomial(logit))
 
 anova (GlmRedLarge, GlmFullLarge)
+
+
+### testing with 3 categorical variables
+
+BoxMornFeedOrCap$CapAndFeed<- as.factor(BoxMornFeedOrCap$CapAndFeed)
+
+GlmFeedAndCap<- glmer(CapAndFeed ~  LogCond + Instar + 
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "large"), family = binomial(logit))
+
+summary(GlmFeedAndCap)
+
+GlmFeedAndCapRed<- glmer(CapAndFeed ~  Instar + 
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "large"), family = binomial(logit))
+
+anova(GlmFeedAndCap, GlmFeedAndCapRed )
