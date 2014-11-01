@@ -218,30 +218,5 @@ anova(CapConFull.glmer, CapConInstar.glmer)
 
 ############# Testing prey size separately ###
 
-CapSmallFull <- lmer(LogCond ~ Cap + Instar + (1|IndBoxID), subset(BoxAveCap, 
-				Treatment == "small"), REML = FALSE   )
-
-modelPlot(CapSmallFull)
-summary(CapSmallFull)
-
-CapSmallRed <- lmer(LogCond ~ Instar +  (1|IndBoxID), subset(BoxAveCap, 
-				Treatment == "small"), REML = FALSE    )
-
-
-anova(CapSmallFull, CapSmallRed)
-
-
-############# LargePrey
-
-CaplargeFull <- lmer(LogCond ~ Cap + Instar + (1|IndBoxID), subset(BoxAveCap, 
-				Treatment == "large"), REML = FALSE   )
-
-modelPlot(CaplargeFull)
-summary(CaplargeFull)
-
-CaplargeRed <- lmer(LogCond ~ Instar +  (1|IndBoxID), subset(BoxAveCap, 
-				Treatment == "large"), REML = FALSE    )
-
-
-anova(CaplargeFull, CaplargeRed)
+you
 

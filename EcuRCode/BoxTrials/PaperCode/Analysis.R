@@ -125,4 +125,24 @@ PerDiff(EatConDiff)
 
 ### Just small prey 
 
+CapConCond.small <- glmer(IndCapture ~ Instar+LogCond + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), subset(BoxComboMorn, Treatment == 'small'), family = binomial(logit))
 
+CapConCond.smallRed <- glmer(IndCapture ~ Instar + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), subset(BoxComboMorn, Treatment == 'small'), family = binomial(logit))
+
+anova(CapConCond.small, CapConCond.smallRed)
+
+
+### Just large prey 
+
+CapConCond.large <- glmer(IndCapture ~ Instar+LogCond + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), subset(BoxComboMorn, Treatment == 'large'), family = binomial(logit))
+
+CapConCond.largeRed <- glmer(IndCapture ~ Instar + (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), subset(BoxComboMorn, Treatment == 'large'), family = binomial(logit))
+
+anova(CapConCond.large, CapConCond.largeRed)
+
+
+###
