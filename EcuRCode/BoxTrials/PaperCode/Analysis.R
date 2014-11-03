@@ -145,4 +145,36 @@ CapConCond.largeRed <- glmer(IndCapture ~ Instar + (1|IndBoxID) +
 anova(CapConCond.large, CapConCond.largeRed)
 
 
-###
+##### The removing non- participants , cheaters vs altrusits vs others.
+
+table(BoxMornFeedOrCap$CapAndFeed, BoxMornFeedOrCap$Treatment)
+
+
+
+## Small prey
+
+
+
+GlmFeedAndCapSm<- glmer(CapAndFeed ~  LogCond + Instar + 
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "small"), family = binomial(logit))
+
+summary(GlmFeedAndCapSm)
+
+GlmFeedAndCapRedSm<- glmer(CapAndFeed ~  Instar + 
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "small"), family = binomial(logit))
+
+anova(GlmFeedAndCapSm, GlmFeedAndCapRedSm )
+
+
+## large prey
+
+
+GlmFeedAndCapLg<- glmer(CapAndFeed ~  LogCond + Instar + 
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "large"), family = binomial(logit))
+
+summary(GlmFeedAndCap)
+
+GlmFeedAndCapRedLg<- glmer(CapAndFeed ~  Instar + 
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "large"), family = binomial(logit))
+
+anova(GlmFeedAndCapLg, GlmFeedAndCapRedLg )
