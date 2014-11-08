@@ -20,7 +20,7 @@ mytheme <-theme_bw(base_size=30)  + theme(plot.title = element_text(vjust=2), pa
 ### Box evenness vs prey size box plot
 
 
-pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PaperGraphs.pdf", width = 10, height = 10)
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PaperGraphs.pdf", width =7, height =7)
 
 ggplot(AveByTrial, aes(x= Treatment, y =PJEven)) + stat_boxplot(geom ='errorbar') + geom_boxplot() + 
 		mytheme + ylab("Intragroup Evenness") + xlab("Prey Size") + ylim(0,1)
@@ -29,11 +29,13 @@ ggplot(AveByTrial, aes(x= Treatment, y =PJEven)) + stat_boxplot(geom ='errorbar'
 ## Logistic plot of feed vs condition
 
 ggplot(subset(BoxComboMorn, IndFeed != "NA"), aes(x = Cond.Scal, y = IndFeedNum, linetype = Treatment)) + geom_point(aes(shape = Treatment)) + 
-		stat_smooth(method="glm", family="binomial", se=FALSE, colour = "black") + mytheme + xlab("Log Condition Scaled") + ylab("Fed")
+		stat_smooth(method="glm", family="binomial", se=FALSE, colour = "black") + mytheme + xlab("Log Condition Scaled") + ylab("Individual Fed?") +
+		scale_shape_discrete(name = "Prey Size") + scale_linetype_discrete(name = "Prey Size")
 
 
 ggplot(subset(BoxComboMorn, IndFeed != "NA"), aes(x = Cond.Scal, y = IndCapNum, linetype = Treatment)) + geom_point(aes(shape = Treatment)) + 
-		stat_smooth(method="glm", family="binomial", se=FALSE, colour = "black") + mytheme + xlab("Log Condition Scaled") + ylab("Captured")
+		stat_smooth(method="glm", family="binomial", se=FALSE, colour = "black") + mytheme + xlab("Log Condition Scaled") + ylab("Individual Captured?")  +
+		scale_shape_discrete(name = "Prey Size") + scale_linetype_discrete(name = "Prey Size")
 
 ## Prey capture 
 
