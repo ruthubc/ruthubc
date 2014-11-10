@@ -22,6 +22,9 @@ PerDiff<-function(table){
 	
 }
 
+### 
+table(BoxComboMorn$IndBoxID)
+
 
 #######################################################################################
 # Evenness vs prey size
