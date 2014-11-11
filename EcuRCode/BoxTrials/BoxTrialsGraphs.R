@@ -416,15 +416,19 @@ ggplot(BoxMornFeedOnly, aes(x=CaptureIndPos, y = Rank.Cond)) + geom_boxplot() +
 		scale_x_discrete(breaks = c("y", "n"),labels = c("Yes", "No"))
 		#stat_summary(fun.data = give.n, geom = "text")
 
-ggplot(BoxMornFeedOrCap, aes(x=CapAndFeed, y = Rank.Cond)) + geom_boxplot() + 
-		facet_wrap(~Treatment) +
-		ylab("Condition Rank in Box") + xlab("Captured Prey?") + mytheme + coord_flip()# +
-		#scale_x_discrete(breaks = c("y", "n"),labels = c("Yes", "No"))
+
+
+ggplot(BoxMornFeedOrCap, aes(x=CapAndFeed2, y = Cond.Scal)) + geom_boxplot() + 
+		facet_wrap(~Treatment) + coord_flip() +
+		ylab("Scaled Condition") + xlab("") + mytheme + 
+		scale_x_discrete(breaks = c("NC+E", "C+NE", "C+E"),labels = c("Eat, No Capture", "No Eat, Capture", "Eat, Capture"))
+		
+
+
+
 dev.off()
 
 
-ggplot(BoxFeedRatio, aes(x=Treatment, y = logCap.n)) + geom_boxplot()# + geom_point(position = "jitter") + facet_wrap(~Instar)
+### Numbers of each within box
 
-
-table(BoxMornFeedOrCap$CapAndFeed, BoxMornFeedOrCap$Treatment)
-
+ggplot(FdCapByTrial, aes(x = Treatment, y = value)) + geom_boxplot() + facet_wrap(~variable)

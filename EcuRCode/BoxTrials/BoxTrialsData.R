@@ -261,3 +261,19 @@ SubAveByTrial <-subset(AveByTrial, TrialID != "T3") #taking out T3 as NA's etc.
 
 
 BoxMornFeedOrCap$CapAndFeed <- as.factor(BoxMornFeedOrCap$CapAndFeed)
+
+BoxMornFeedOrCap$CapAndFeed2 <- factor(BoxMornFeedOrCap$CapAndFeed, levels = c("C+NE", "NC+E", "C+E")) # changing the order for the graph
+
+
+AveFdOrCap <- ddply(BoxComboMorn, .(TrialID, Treatment), summarise, 
+		CapNoEat =sum(!is.na(SpiderID[CapAndFeed== "C+NE"])),
+		NoCapEat = sum(!is.na(SpiderID[CapAndFeed== "NC+E"])),
+		CapEat = sum(!is.na(SpiderID[CapAndFeed== "C+E"])),
+		NoCapNoEat = sum(!is.na(SpiderID[CapAndFeed== "NC+NE"]))
+
+
+)
+
+table(BoxComboMorn$CapAndFeed)
+
+FdCapByTrial<- melt(AveFdOrCap, id = c("TrialID", "Treatment"))

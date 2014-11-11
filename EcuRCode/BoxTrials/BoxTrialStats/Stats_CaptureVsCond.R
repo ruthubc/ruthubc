@@ -218,5 +218,3 @@ anova(CapConFull.glmer, CapConInstar.glmer)
 
 ############# Testing prey size separately ###
 
-you
-

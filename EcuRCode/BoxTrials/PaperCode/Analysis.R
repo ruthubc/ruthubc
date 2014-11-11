@@ -23,7 +23,12 @@ PerDiff<-function(table){
 }
 
 ### 
-table(BoxComboMorn$IndBoxID)
+nlevels(BoxComboMorn$IndBoxID, BoxComboMorn$Treatment)
+unique(BoxComboMorn$IndBoxID)
+
+ddply(BoxComboMorn,. (Treatment),
+		summarise,
+		BoxCount = length(unique(IndBoxID)))
 
 
 #######################################################################################

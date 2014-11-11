@@ -20,7 +20,7 @@ mytheme <-theme_bw(base_size=30)  + theme(plot.title = element_text(vjust=2), pa
 ### Box evenness vs prey size box plot
 
 
-pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PaperGraphs.pdf", width =7, height =7)
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PaperGraphs.pdf", width =10, height =10, unit)
 
 ggplot(AveByTrial, aes(x= Treatment, y =PJEven)) + stat_boxplot(geom ='errorbar') + geom_boxplot() + 
 		mytheme + ylab("Intragroup Evenness") + xlab("Prey Size") + ylim(0,1)
@@ -54,6 +54,15 @@ ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 				labels = c("Yes", "No"))  + mytheme    + scale_fill_manual("FeedIndPos", values = c("darkblue", "white")) +
 		theme(legend.position = "none") + scale_y_continuous(labels = percent, expand = c(0.001,0.001) )
 
+dev.off()
+
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PaperGraphs_FeedOrCap.pdf", width =17, height =9, unit)
+
+####  Cap or Feed
+ggplot(BoxMornFeedOrCap, aes(x=CapAndFeed2, y = Cond.Scal))  + stat_boxplot(geom ='errorbar') + geom_boxplot() + 
+		facet_wrap(~Treatment) + coord_flip() +
+		ylab("Scaled Condition") + xlab("") + mytheme + theme(axis.text.y=element_text(angle=45)) +
+		scale_x_discrete(breaks = c("NC+E", "C+NE", "C+E"),labels = c("Eat, No Capture", "No Eat, Capture", "Eat, Capture"))
 
 
 dev.off()
