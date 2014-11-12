@@ -65,10 +65,10 @@ dev.off()
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PaperGraphs_FeedOrCap.pdf", width =17, height =9, unit)
 
 ####  Cap or Feed
-ggplot(BoxMornFeedOrCap, aes(x=CapAndFeed2, y = Cond.Scal))  + stat_boxplot(geom ='errorbar') + geom_boxplot() + 
+ggplot(BoxComboMorn, aes(x=CapAndFeed, y = Cond.Scal))  + stat_boxplot(geom ='errorbar') + geom_boxplot() + 
 		facet_wrap(~Treatment) + coord_flip() +
-		ylab("Scaled Condition") + xlab("") + mytheme + theme(axis.text.y=element_text(angle=45)) +
-		scale_x_discrete(breaks = c("NC+E", "C+NE", "C+E"),labels = c("Eat, No Capture", "No Eat, Capture", "Eat, Capture"))
+		ylab("Scaled Condition") + xlab("") + mytheme + theme(axis.text.y=element_text(angle=45))# +
+		#scale_x_discrete(breaks = c("NC+E", "C+NE", "C+E"),labels = c("Eat, No Capture", "No Eat, Capture", "Eat, Capture"))
 
 
 dev.off()

@@ -278,7 +278,6 @@ table(BoxComboMorn$CapAndFeed)
 
 FdCapByTrial<- melt(AveFdOrCap, id = c("TrialID", "Treatment", "IndBoxID", "Instar"))
 
-'''
 FdCap_labeller <- function(var, value){
 	value <- as.character(value)
 	if (var == "variable" ){
@@ -289,7 +288,7 @@ FdCap_labeller <- function(var, value){
 	}
 	return(value)
 }
-'''
+
 #FdCapByTrial$name <- FdCap_labeller('variable', FdCapByTrial$variable)
 
 
