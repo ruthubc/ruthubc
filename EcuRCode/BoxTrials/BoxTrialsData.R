@@ -265,7 +265,7 @@ BoxMornFeedOrCap$CapAndFeed <- as.factor(BoxMornFeedOrCap$CapAndFeed)
 BoxMornFeedOrCap$CapAndFeed2 <- factor(BoxMornFeedOrCap$CapAndFeed, levels = c("C+NE", "NC+E", "C+E")) # changing the order for the graph
 
 
-AveFdOrCap <- ddply(BoxComboMorn, .(TrialID, Treatment), summarise, 
+AveFdOrCap <- ddply(BoxComboMorn, .(TrialID, Treatment, IndBoxID, Instar), summarise, 
 		CapNoEat =sum(!is.na(SpiderID[CapAndFeed== "C+NE"])),
 		NoCapEat = sum(!is.na(SpiderID[CapAndFeed== "NC+E"])),
 		CapEat = sum(!is.na(SpiderID[CapAndFeed== "C+E"])),
@@ -276,4 +276,46 @@ AveFdOrCap <- ddply(BoxComboMorn, .(TrialID, Treatment), summarise,
 
 table(BoxComboMorn$CapAndFeed)
 
-FdCapByTrial<- melt(AveFdOrCap, id = c("TrialID", "Treatment"))
+FdCapByTrial<- melt(AveFdOrCap, id = c("TrialID", "Treatment", "IndBoxID", "Instar"))
+
+'''
+FdCap_labeller <- function(var, value){
+	value <- as.character(value)
+	if (var == "variable" ){
+		value[value == "CapNoEat"] <- "Capture Not Eat"
+		value[value == "NoCapEat"] <- "No Capture Eat"
+		value[value == "CapEat"] <- "Capture And Eat"
+		value[value == "NoCapNoEat"] <- "No Capture No Eat"
+	}
+	return(value)
+}
+'''
+#FdCapByTrial$name <- FdCap_labeller('variable', FdCapByTrial$variable)
+
+
+FdCap_Capture <- function(var, value){
+	value <- as.character(value)
+	if (var == "variable" ){
+		value[value == "CapNoEat"] <- "Captured"
+		value[value == "NoCapEat"] <- "Did Not Capture"
+		value[value == "CapEat"] <- "Captured"
+		value[value == "NoCapNoEat"] <- "Did Not Capture"
+	}
+	return(value)
+}
+
+
+FdCap_Eat <- function(var, value){
+	value <- as.character(value)
+	if (var == "variable" ){
+		value[value == "CapNoEat"] <- "Did Not Feed"
+		value[value == "NoCapEat"] <- "Fed"
+		value[value == "CapEat"] <- "Fed"
+		value[value == "NoCapNoEat"] <- "Did Not Feed"
+	}
+	return(value)
+}
+
+
+FdCapByTrial$Cap <- FdCap_Capture('variable', FdCapByTrial$variable)
+FdCapByTrial$Eat <- FdCap_Eat('variable', FdCapByTrial$variable)

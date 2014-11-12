@@ -54,6 +54,12 @@ ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 				labels = c("Yes", "No"))  + mytheme    + scale_fill_manual("FeedIndPos", values = c("darkblue", "white")) +
 		theme(legend.position = "none") + scale_y_continuous(labels = percent, expand = c(0.001,0.001) )
 
+
+#number feeding and capturing prey per box
+ggplot(FdCapByTrial, aes(x = Treatment, y = value)) + geom_boxplot() + facet_grid(Cap ~ Eat) + mytheme + ylab("Number of spiders") + 
+		xlab("Prey Size") + scale_y_continuous(limits = c(0, 10))
+
+
 dev.off()
 
 pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PaperGraphs_FeedOrCap.pdf", width =17, height =9, unit)

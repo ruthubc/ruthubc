@@ -431,4 +431,7 @@ dev.off()
 
 ### Numbers of each within box
 
-ggplot(FdCapByTrial, aes(x = Treatment, y = value)) + geom_boxplot() + facet_wrap(~variable)
+
+ggplot(FdCapByTrial, aes(x = Treatment, y = value)) + geom_boxplot() + facet_grid(Cap ~ Eat) + mytheme + ylab("Number of spiders") + 
+		xlab("Prey Size")
+		

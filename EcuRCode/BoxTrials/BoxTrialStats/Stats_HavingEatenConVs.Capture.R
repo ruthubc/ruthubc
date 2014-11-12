@@ -274,3 +274,71 @@ GlmFeedAndCapRed<- glmer(CapAndFeed ~  Instar +
 				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "large"), family = binomial(logit))
 
 anova(GlmFeedAndCap, GlmFeedAndCapRed )
+
+
+### Testing if there is a difference in the average number in each catorary 
+
+FrCtsGlm <- glmer(value ~ variable + Instar + Treatment + variable:Treatment + (1|IndBoxID), FdCapByTrial, family = poisson )
+
+summary(FrCtsGlm)
+overdisp_fun(FrCtsGlm) # fine. Not overdispersed
+
+FrCtsGlmInt <- glmer(value ~ variable + Instar + Treatment  + (1|IndBoxID), FdCapByTrial, family = poisson )
+
+anova(FrCtsGlmInt, FrCtsGlm)
+
+
+#Levels: "CapNoEat"   "NoCapEat"   "CapEat"     "NoCapNoEat"
+### PostHoc- testing Cap And Eat 
+
+FrCtsGlmCE <- glmer(value ~  Instar + Treatment + (1|IndBoxID), 
+		subset(FdCapByTrial, variable == "CapEat"), family = poisson )
+
+summary(FrCtsGlmCE)
+overdisp_fun(FrCtsGlmCE) # not over dispersed
+
+FrCtsGlmCERed <- glmer(value ~  Instar  + (1|IndBoxID), 
+		subset(FdCapByTrial, variable == "CapEat"), family = poisson )
+
+anova(FrCtsGlmCE,FrCtsGlmCERed) # not significant
+
+# Testing NoCapEat
+FrCtsGlmNCE <- glmer(value ~  Instar + Treatment + (1|IndBoxID), 
+		subset(FdCapByTrial, variable == "NoCapEat"), family = poisson )
+
+summary(FrCtsGlmNCE)
+overdisp_fun(FrCtsGlmNCE) # not overdispersed
+
+FrCtsGlmNCERed <- glmer(value ~  Instar  + (1|IndBoxID), 
+		subset(FdCapByTrial, variable == "NoCapEat"), family = poisson )
+
+anova(FrCtsGlmNCE,FrCtsGlmNCERed) 
+
+
+# Testing NoCapNoEat
+FrCtsGlmNCNE <- glmer(value ~  Instar + Treatment + (1|IndBoxID), 
+		subset(FdCapByTrial, variable == "NoCapNoEat"), family = poisson )
+
+summary(FrCtsGlmNCNE)
+overdisp_fun(FrCtsGlmNCNE) # not overdispersed
+
+FrCtsGlmNCNERed <- glmer(value ~  Instar  + (1|IndBoxID), 
+		subset(FdCapByTrial, variable == "NoCapNoEat"), family = poisson )
+
+anova(FrCtsGlmNCNE,FrCtsGlmNCNERed) # not significant
+
+
+# Testing CapNoEat
+FrCtsGlmCNE <- glmer(value ~  Instar + Treatment + (1|IndBoxID), 
+		subset(FdCapByTrial, variable == "CapNoEat"), family = poisson )
+
+summary(FrCtsGlmCNE)
+overdisp_fun(FrCtsGlmCNE) # not overdispersed
+
+FrCtsGlmCNERed <- glmer(value ~  Instar  + (1|IndBoxID), 
+		subset(FdCapByTrial, variable == "CapNoEat"), family = poisson )
+
+anova(FrCtsGlmCNE,FrCtsGlmCNERed) 
+
+
+table(AveFdOrCap$CapNoEat, AveFdOrCap$Treatment)
