@@ -255,4 +255,9 @@ FrCtsGlmCNERed <- glmer(value ~  Instar  + (1|IndBoxID),
 anova(FrCtsGlmCNE,FrCtsGlmCNERed) 
 
 
-table(AveFdOrCap$CapNoEat, AveFdOrCap$Treatment)
+table(AveFdOrCap$NoCapNoEat, AveFdOrCap$Treatment)
+
+#the number of spiders
+table(BoxComboMorn$CapAndFeed)
+# the number of boxes that had each of the four catorgies. 
+tapply(BoxComboMorn$IndBoxID,BoxComboMorn$CapAndFeed, function(x) length(unique(x)))
