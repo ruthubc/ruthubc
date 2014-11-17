@@ -6,7 +6,7 @@
 
 ### eating with prey capture vs not prey capture
 
-BoxComboEat <- BoxComboEat[!BoxComboEat$SpiderID == "sp366",]# removed this spider as hunger etc. = NA
+BoxComboEat <- BoxMornFeedOnly[!BoxMornFeedOnly$SpiderID == "sp366",]# removed this spider as hunger etc. = NA
 
 BoxMornFeedOrCap <- BoxMornFeedOrCap [!BoxMornFeedOrCap$SpiderID == "sp366",]# removed this spider as hunger etc. = NA
 ## checking ratio of capture's to non-capturers by treatment
@@ -22,13 +22,13 @@ anova(RatioFull, RatioNull)
 
 
 FedCapFull.glmer <- glmer(IndCapture ~ Treatment+ LogCond + Instar +  Treatment*LogCond + (1|IndBoxID) + (1|IndBoxID:SpiderID),
-		BoxMornFeedOrCap, family = binomial(logit))
+		BoxComboEat, family = binomial(logit))
 
 summary(FedCapFull.glmer)
 
 ## Testing just the interaction
 FedCapInt.glmer <- glmer(IndCapture ~ Treatment+ LogCond + Instar  + (1|IndBoxID) + (1|IndBoxID:SpiderID),
-		BoxMornFeedOrCap, family = binomial(logit))
+		BoxComboEat, family = binomial(logit))
 anova(FedCapFull.glmer, FedCapInt.glmer)
 
 ## Testing the interaction and LogCond

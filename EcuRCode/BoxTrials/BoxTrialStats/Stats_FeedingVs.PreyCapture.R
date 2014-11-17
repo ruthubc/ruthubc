@@ -34,7 +34,7 @@ anova(CapMod1)
 
 ##Removing all interaction terms as they are massively not significant
 
-CapMod2 <- glmer(IndCapture ~ IndFeed + Treatment + Instar + (1|IndBoxID) + 
+CapMod2 <- glmer(IndCapture ~ IndFeed + Treatment + Instar + IndFeed:Treatment+  (1|IndBoxID) + 
 				(1|IndBoxID:SpiderID), BoxComboCap, family = binomial(logit))
 
 overdisp_fun(CapMod2)
