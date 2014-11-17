@@ -101,6 +101,36 @@ EatConDiff<- aggregate(BoxComboMorn$Cond, by = list(BoxComboMorn$FeedIndPos, Box
 
 PerDiff(EatConDiff)
 
+
+
+###########################################
+# Capture vs feeding
+
+##numbers
+
+BoxComboCap$FedWords<-ifelse(BoxComboCap$FeedIndPos == "y", "Fed", "Did Not Feed")
+BoxComboCap$CapWords<-ifelse(BoxComboCap$CaptureIndPos == "y", "Cap", "Did Not Cap")
+
+table(BoxComboMorn$IndCapture, BoxComboMorn$IndFeed)
+
+
+### Stats Tests
+CapFdGlmer <- glmer(IndCapture ~ IndFeed + Treatment + Instar + IndFeed:Treatment+  (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+
+summary(CapFdGlmer)
+
+CapFdGlmerInt <- glmer(IndCapture ~ IndFeed + Treatment + Instar +  (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+
+anova(CapFdGlmer, CapFdGlmerInt)
+
+
+CapFdGlmerFd <- glmer(IndCapture ~ Treatment + Instar +  (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+
+anova(CapFdGlmer, CapFdGlmerFd)
+
 ################ Capture vs condition
 
 
@@ -260,4 +290,4 @@ table(AveFdOrCap$NoCapNoEat, AveFdOrCap$Treatment)
 #the number of spiders
 table(BoxComboMorn$CapAndFeed)
 # the number of boxes that had each of the four catorgies. 
-tapply(BoxComboMorn$IndBoxID,BoxComboMorn$CapAndFeed, function(x) length(unique(x)))
+tapply(BoxComboMorn$SpiderID,BoxComboMorn$CapAndFeed, function(x) length(unique(x)))
