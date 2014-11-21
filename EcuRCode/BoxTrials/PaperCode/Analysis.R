@@ -30,6 +30,10 @@ ddply(BoxComboMorn,. (Treatment),
 		summarise,
 		BoxCount = length(unique(IndBoxID)))
 
+### Means of 
+ddply(AveByTrial,. (Treatment),
+		summarise,
+		BoxCount = mean(AsinPJEven))
 
 #######################################################################################
 # Evenness vs prey size
