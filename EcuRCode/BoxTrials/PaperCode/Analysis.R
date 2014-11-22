@@ -30,10 +30,14 @@ ddply(BoxComboMorn,. (Treatment),
 		summarise,
 		BoxCount = length(unique(IndBoxID)))
 
-### Means of 
+
+
+
+### Means of intrabox evenness by prey size
 ddply(AveByTrial,. (Treatment),
 		summarise,
-		BoxCount = mean(AsinPJEven))
+		mean = mean(AsinPJEven), SE = sd(AsinPJEven)/sqrt(length(AsinPJEven)))
+
 
 #######################################################################################
 # Evenness vs prey size
@@ -49,6 +53,20 @@ anova(PJMod4, PJRedModTreat)
 
 #####################################################################################
 ## Condition vs feeding
+
+##### Means and se's 
+ddply(BoxComboMorn,. (FeedIndPos),
+		summarise,
+		mean = mean(Cond.Scal, na.rm = TRUE), SE = sd(Cond.Scal, na.rm = TRUE)/sqrt(length(Cond.Scal)))
+
+## Combining errors http://www.met.reading.ac.uk/~swrhgnrj/combining_errors.pdf
+ddply(BoxComboMorn,. (Treatment, FeedIndPos),
+		summarise,
+		mean = mean(Cond.Scal, na.rm = TRUE), SE = sd(Cond.Scal, na.rm = TRUE)/sqrt(length(Cond.Scal)))
+
+
+mean(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "y" & BoxComboMorn$Treatment == "large"], na.rm = TRUE)
+
 
 # removing interactions as they either are insignificant or don't make sense
 EatBinMod3 <- glmer(IndFeed ~ LogHunger + Treatment + Instar + Treatment:LogHunger +  (1|IndBoxID)+
