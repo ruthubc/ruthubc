@@ -64,8 +64,41 @@ ddply(BoxComboMorn,. (Treatment, FeedIndPos),
 		summarise,
 		mean = mean(Cond.Scal, na.rm = TRUE), SE = sd(Cond.Scal, na.rm = TRUE)/sqrt(length(Cond.Scal)))
 
+### Getting the difference in the mean condition between feeders and non-feeders and the standard error of that.
 
-mean(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "y" & BoxComboMorn$Treatment == "large"], na.rm = TRUE)
+#### LARGE PREY
+lenLFd <- length(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "y" & BoxComboMorn$Treatment == "large"])
+lenLNonFd <- length(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "n" & BoxComboMorn$Treatment == "large"])
+
+condLFdMn <-mean(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "y" & BoxComboMorn$Treatment == "large"], na.rm = TRUE)
+condLNonFdMn <-mean(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "n" & BoxComboMorn$Treatment == "large"], na.rm = TRUE)
+
+condLNonFdMn - condLFdMn # difference in mean condition for large prey
+
+condLFdSD <-(sd(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "y" & BoxComboMorn$Treatment == "large"], na.rm = TRUE) ) / 
+		sqrt(lenLFd)
+condLNonFdSD <-sd(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "n" & BoxComboMorn$Treatment == "large"], na.rm = TRUE) /
+		sqrt(lenLNonFd)
+
+sqrt(condLFdSD^ 2 +  condLNonFdSD ^ 2)
+
+
+#### Small PREY
+lenSFd <- length(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "y" & BoxComboMorn$Treatment == "small"])
+lenSNonFd <- length(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "n" & BoxComboMorn$Treatment == "small"])
+
+condSFdMn <-mean(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "y" & BoxComboMorn$Treatment == "small"], na.rm = TRUE)
+condSNonFdMn <-mean(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "n" & BoxComboMorn$Treatment == "small"], na.rm = TRUE)
+
+condSNonFdMn - condSFdMn # difference in mean condition for small prey
+
+condSFdSD <-(sd(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "y" & BoxComboMorn$Treatment == "small"], na.rm = TRUE) ) / 
+		sqrt(lenSFd)
+condSNonFdSD <-sd(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "n" & BoxComboMorn$Treatment == "small"], na.rm = TRUE) /
+		sqrt(lenSNonFd)
+
+sqrt(condSFdSD^ 2 +  condSNonFdSD ^ 2)
+
 
 
 # removing interactions as they either are insignificant or don't make sense
@@ -155,6 +188,44 @@ anova(CapFdGlmer, CapFdGlmerFd)
 
 ################ Capture vs condition
 
+
+
+############## Difference in mean scaled condition between capturers and non-capturers
+
+#### LARGE PREY
+lenLCp <- length(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "y" & BoxComboMorn$Treatment == "large"])
+lenLNonCp <- length(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "n" & BoxComboMorn$Treatment == "large"])
+
+condLCpMn <-mean(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "y" & BoxComboMorn$Treatment == "large"], na.rm = TRUE)
+condLNonCpMn <-mean(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "n" & BoxComboMorn$Treatment == "large"], na.rm = TRUE)
+
+condLNonCpMn - condLCpMn # difference in mean condition for large prey
+
+condLCpSD <-(sd(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "y" & BoxComboMorn$Treatment == "large"], na.rm = TRUE) ) / 
+		sqrt(lenLCp)
+condLNonCpSD <-sd(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "n" & BoxComboMorn$Treatment == "large"], na.rm = TRUE) /
+		sqrt(lenLNonCp)
+
+sqrt(condLCpSD^ 2 +  condLNonCpSD ^ 2)
+
+
+#### Small PREY
+lenSCp <- length(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "y" & BoxComboMorn$Treatment == "small"])
+lenSNonCp <- length(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "n" & BoxComboMorn$Treatment == "small"])
+
+condSCpMn <-mean(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "y" & BoxComboMorn$Treatment == "small"], na.rm = TRUE)
+condSNonCpMn <-mean(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "n" & BoxComboMorn$Treatment == "small"], na.rm = TRUE)
+
+condSNonCpMn - condSCpMn # difference in mean condition for small prey
+
+condSCpSD <-(sd(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "y" & BoxComboMorn$Treatment == "small"], na.rm = TRUE) ) / 
+		sqrt(lenSCp)
+condSNonCpSD <-sd(BoxComboMorn$Cond.Scal [BoxComboMorn$CaptureIndPos == "n" & BoxComboMorn$Treatment == "small"], na.rm = TRUE) /
+		sqrt(lenSNonCp)
+
+sqrt(condSCpSD^ 2 +  condSNonCpSD ^ 2)
+
+############### Stats tests GLMER
 
 CapConFull.glmer <- glmer(IndCapture ~ LogCond+Instar+Treatment + LogCond*Treatment + (1|IndBoxID) + 
 				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
