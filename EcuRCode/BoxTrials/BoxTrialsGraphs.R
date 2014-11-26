@@ -418,10 +418,10 @@ ggplot(BoxMornFeedOnly, aes(x=CaptureIndPos, y = Rank.Cond)) + geom_boxplot() +
 
 
 
-ggplot(BoxMornFeedOrCap, aes(x=CapAndFeed2, y = Cond.Scal)) + geom_boxplot() + 
-		facet_wrap(~Treatment) + coord_flip() +
-		ylab("Scaled Condition") + xlab("") + mytheme + 
-		scale_x_discrete(breaks = c("NC+E", "C+NE", "C+E"),labels = c("Eat, No Capture", "No Eat, Capture", "Eat, Capture"))
+ggplot(BoxMornFeedOnly, aes(x=CapAndFeed, y = Cond.Scal)) + stat_boxplot(geom ='errorbar') + geom_boxplot() + 
+		facet_wrap(~Treatment) + coord_flip() + 
+		ylab("Scaled Condition") + xlab("") + mytheme + theme(axis.text.y=element_text(angle=45)) +
+		scale_x_discrete(breaks = c("NC+E", "C+NE", "C+E"),labels = c("Cheater", "No Eat, Capture", "Cooperator"))
 		
 
 

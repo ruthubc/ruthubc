@@ -7,30 +7,16 @@
 #### Box trails graphs. Code importing and manipulating the data is in BoxTrialsData.R
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
 
-## Function calculating percentage difference on a aggregate table
 
-PerDiff<-function(table){
-	
-	for(i in c(2,4)){
-		
-		diff<-table[i-1, 3] - table[i, 3]
-		per<- ((table[i-1, 3] - table[i, 3])/ ((table[i-1, 3] + table[i, 3])/2)) *100 
-		print(paste(table[i, 2], "diff:",  diff, ", %diff:", per))
-		
-	}
-	
-	
-}
-
-### 
-nlevels(BoxComboMorn$IndBoxID, BoxComboMorn$Treatment)
-unique(BoxComboMorn$IndBoxID)
-
+## number of boxes per treatment
 ddply(BoxComboMorn,. (Treatment),
 		summarise,
 		BoxCount = length(unique(IndBoxID)))
 
-
+## number of boxes with prey capture
+ddply(BoxComboMorn[BoxComboMorn$CaptureIndPos == 'y',],. (Treatment),
+		summarise,
+		BoxCount = length(unique(IndBoxID)))
 
 
 ### Means of intrabox evenness by prey size
