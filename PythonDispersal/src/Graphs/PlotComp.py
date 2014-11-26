@@ -10,8 +10,8 @@ import random
 # from numpy import vectorize I can't remember what this did
 
 Fmx = 1 # food rank number 1 gets
-Fc = 0.5 # colony food
-c = 0.01 # slope i.e. the degree of contest competition (c in document)
+Fc = 0.4 # colony food
+c = 0.0195 # slope i.e. the degree of contest competition (c in document)
 N = 50
 
 
