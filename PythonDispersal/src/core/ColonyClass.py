@@ -32,7 +32,7 @@ class Colony(object):
 
     def tot_col_fd(self):
         return self.colony_food * len(self.colony_list)
-    
+
     def MaxAndMinAges(self):
         col_indAge= [i.age for i in self.colony_list]
         age_max = max(col_indAge)
@@ -76,7 +76,7 @@ class Colony(object):
 
     def num_spi(self):
         return len(self.colony_list)
-    
+
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
@@ -173,7 +173,7 @@ class Colony(object):
 
     def colony_list_to_append(self): # returns dictionary values
         return self.colony_dict().values()
-    
+
     def find_m(self): # finding the gradient 
         if self.colony_food < 0.5:
             m = 1/(2*self.colony_food*self.num_spi()-1)
@@ -183,7 +183,7 @@ class Colony(object):
 #TODO: put in exception if m is below or zero!
 
 
-    
+
     def replacing_min_fd(self): # replacing the minimum amount to make sure the numbers add up
         minFdInx = self.food_list().index(min(x for x in self.food_list() if x != 0)) # gets the index of the last spider to be fed
         minSpiFd = self.food_list()[minFdInx]

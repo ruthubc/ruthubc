@@ -70,7 +70,7 @@ class Poplt(object):
             # (1) age increase
 
         self.poplt_list[i].col_age_increase()  # updates colony age by one
-        self.poplt_list[i].spider_age_increase()  # updates the age of all spiders within the colony
+        #self.poplt_list[i].spider_age_increase()  # updates the age of all spiders within the colony
 
             #(2) feeding
         self.poplt_list[i].update_instar(self.instar_list) #updating instar
@@ -83,7 +83,7 @@ class Poplt(object):
 
 
             # (4) death or catastrophe
-        self.poplt_list[i].die_or_ctphe(self.age_die, self.prob_death, self.cat_prob, self.cat_perc_die)
+        #self.poplt_list[i].die_or_ctphe(self.age_die, self.prob_death, self.cat_prob, self.cat_perc_die)
 
             # (5) dispersal or reproduction
         self.poplt_list[i].rep_or_disp(self.adult_size, self.min_food) # marks each spider to reproduce or disperse
