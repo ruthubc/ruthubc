@@ -20,7 +20,6 @@ class Poplt(object):
                  filename = "",
                  dispersal_list = [],
                  export_list = [],
-                 adult_size=0.6, # size at reproduction or dispersal
                  number_offspring = 2,
                  carrying_capacity = 10.1,
                  cc_skew = 2,
@@ -30,7 +29,7 @@ class Poplt(object):
                  prob_death = 0.01,
                  cat_prob = 0.001,
                  cat_perc_die = 0.7,
-                 instar_list = [0.5, 0.7], # list of size transitions
+                 num_instars = 2,
                  poplt_age = 0,
                  colony_number = 1,
                  min_food = 1.2):
@@ -38,7 +37,6 @@ class Poplt(object):
         self.filename = filename
         self.export_list = export_list
         self.dispersal_list = dispersal_list
-        self.adult_size = adult_size
         self.number_offspring = number_offspring
         self.carrying_capacity = carrying_capacity
         self.cc_skew = cc_skew 
@@ -49,7 +47,7 @@ class Poplt(object):
         self.cat_prob = cat_prob
         self.cat_perc_die = cat_perc_die
         self.inverse_carr_cap = 1/self.carrying_capacity
-        self.instar_list = instar_list
+        self.num_instars = num_instars
         self.poplt_age = poplt_age
         self.colony_number = colony_number
         #self.colony_count = len(self.poplt_list) This needs to be in the code to be reliable
@@ -63,23 +61,41 @@ class Poplt(object):
         [k.dis_to_two() for k in dispersing_spis]
         self.dispersal_list.extend(dispersing_spis) # appends the colony dispersers to the population dispersers list
 
-    def ind_col_timestep(self, i): 
+    def ind_col_timestep(self, i):
 
         ''' the reason I put this in the population is the population variables. I could still move anyway
         '''
             # (1) age increase
 
         self.poplt_list[i].col_age_increase()  # updates colony age by one
-        #self.poplt_list[i].spider_age_increase()  # updates the age of all spiders within the colony
 
-            #(2) feeding
-        self.poplt_list[i].update_instar(self.instar_list) #updating instar
+
+            #(2) Food
+
         self.poplt_list[i].update_rank()
         self.poplt_list[i].cal_colony_food(self.inverse_carr_cap, self.cc_skew) #calculating how much food the colony gets
         self.poplt_list[i].ind_food(self.comp_type) # 0 = scramble and 2 = mid contest, 3 = full contest
 
-            # (3) growth
-        self.poplt_list[i].apply_growth(self.growth_per_food)
+            # (3) adults reproduce or disperse and reproduce, then die
+
+            # (4) old juvs moult or die
+            
+            # (5) new juvs added to colony
+            
+            # (5) marking dead colonies (colonies with no spiders) 
+        self.poplt_list[i].col_alive()
+            
+            
+            # (7) exporting the data (appending colony info to form to list to export)
+        output_list = self.poplt_list[i].colony_list_to_append()
+        self.export_list.append(output_list)
+        print self.poplt_list[i].colony_dict()
+
+        self.poplt_list[i].print_spiders()
+            
+            
+            
+            
 
 
             # (4) death or catastrophe
@@ -90,15 +106,10 @@ class Poplt(object):
         self.poplt_list[i].reproduction(self.number_offspring) # new offspring added to colony
         self.update_dispersal_list(i) # adds dispersing spiders to list and updates their disperse to 2
 
-            # (6) marking dead colonies (colonies with no spiders)
+            # (6) marking dead colonies (colonies with no spiders) 
         self.poplt_list[i].col_alive()
 
-            # (7) appending colony info to form to list to export
-        output_list = self.poplt_list[i].colony_list_to_append()
-        self.export_list.append(output_list)
-        print self.poplt_list[i].colony_dict()
 
-        self.poplt_list[i].print_spiders()
 
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
@@ -107,7 +118,7 @@ class Poplt(object):
         print self.poplt_dict()
 
     def del_colony(self): # deletes a colony from the population if it goes extinct
-        #works, checked Aug 14th
+        #works, checked Aug 14th        j
         self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive']
 
     def add_new_cols(self): # sets up the dispersing spiders as new colonies

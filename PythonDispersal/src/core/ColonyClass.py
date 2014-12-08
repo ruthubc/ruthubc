@@ -39,6 +39,7 @@ class Colony(object):
         age_min = min(col_indAge)
         return age_max, age_min  # returns a tuple
 
+#TODO: delete
     def MaxAndMinSize(self):  # returns the max and min spider size
         col_indSize= [i.size for i in self.colony_list]
         size_max = max(col_indSize)
@@ -49,28 +50,24 @@ class Colony(object):
         for i in range(len(self.colony_list)):
             print "i = %s: %s" % (i, self.colony_list[i])
 
+#TODO: delete
     def size_list(self, instar):  # returns a list of the size of all individuals in the colony
         return [i.size for i in self.colony_list if i.instar == instar]
-    
-    def food_list(self):  # returns a list of the size of all individuals in the colony
-        return [i.ind_food for i in self.colony_list]
+
+    def juvFd_list(self):  # returns a list of the juv food of all individuals in the colony
+        return [i.juv_fd for i in self.colony_list]
     
     def rank_list(self):  # returns a list of the size of all individuals in the colony
         return [i.rank for i in self.colony_list]
 
     def print_dets(self):
-        print "# col age: %s, spis: %s, size(max: %s, min: %s), age(max: %s, min: %s), colony food: %s, dispersal? : %s " % (self.colony_age, len(self.colony_list), self.MaxAndMinSize()[0], self.MaxAndMinSize()[1],
-                                                                               self.MaxAndMinAges()[0], self.MaxAndMinAges()[1], self.colony_food, self.dispersers)
+        print "# col age: %s, spis: %s, colony food: %s, dispersal? : %s " % (self.colony_age, len(self.colony_list), self.colony_food, self.dispersers)
 
     def colony_dict(self):  # the info about each colony to export
         d = OrderedDict()
         d['colony_ID'] = self.colony_ID
         d['colony_age'] = self.colony_age
         d['number_spiders']= len(self.colony_list)
-        d['min_size'] = self.MaxAndMinSize()[0]
-        d['max_size']= self.MaxAndMinSize()[1]
-        d['min_age'] = self.MaxAndMinAges()[0]
-        d['max_age'] = self.MaxAndMinAges()[1]
         d['colony_food']= self.colony_food
         return d
 
@@ -80,12 +77,13 @@ class Colony(object):
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
+#TODO: delete
     def spider_age_increase(self):  # adds one to the age of all spiders in colony
         [i.spi_age_add1() for i in self.colony_list]
 
-    def rep_or_disp(self, ad_size, min_food,):  # deciding whether to reproduce or disperse
+    def rep_or_disp(self, ad_min_fd, ad_max_fd):  # deciding whether to reproduce or disperse
         # works checked 11th Aug
-        [i.dispORrep(ad_size, min_food) for i in self.colony_list]
+        [i.dispORrep(ad_min_fd, ad_max_fd) for i in self.colony_list]
 
     def reproduction(self, no_off):  # ad_size is the size spiders have to be to reproduce
         no_ad = sum(i.reproduce == 1 for i in self.colony_list)  # calcs number of adults reproducing
@@ -174,7 +172,7 @@ class Colony(object):
     def colony_list_to_append(self): # returns dictionary values
         return self.colony_dict().values()
 
-    def find_m(self): # finding the gradient 
+    def find_m(self): # finding the gradient for the competition equation
         if self.colony_food < 0.5:
             m = 1/(2*self.colony_food*self.num_spi()-1)
         else :

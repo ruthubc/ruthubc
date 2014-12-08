@@ -12,38 +12,34 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, size=0.1, instar = 1, ind_food=0.0, age=0, rank=1, die = 0, reproduce = 0, disperse = 0):
+    def __init__(self, instar = 1, juv_fd=0.0, ad_fd =0.0, rank=1, die = 0, reproduce = 0, disperse = 0):
         '''defining the spider object'''
-        self.size = size
-        self.ind_food = ind_food
-        self.age = age  # incremented after each time tick.
+        self.instar = instar
+        self.juv_fd = juv_fd
+        self.ad_fd = ad_fd
         self.rank = rank
         self.die = die # 0 means not to die, 1 means die!
         self.reproduce = reproduce # 0 = no, 1 = yes, 2 = already reproduced
         self.disperse = disperse # 0 = no, 1 = yes
-        self.instar= instar
 
     def __str__(self):
-        return "size: %s, age: %s, rank: %s, instar: %s, indFood: %s, die: %s, reproduce: %s, disperse: %s" % (self.size, self.age, self.rank, self.instar, self.ind_food, self.die, self.reproduce, self.disperse)
+        return "age: %s, rank: %s, instar: %s, , die: %s, reproduce: %s, disperse: %s" % ( self.age, self.rank, self.instar, self.die, self.reproduce, self.disperse)
 
     def instar_inc(self, instar_levels_list): # instar list is a population variable
         for k in range(len(instar_levels_list)):
             if (self.size >= instar_levels_list[k]):
                 self.instar = k + 2  # because starts at 0
 
-    def death(self, max_age, mn_prob):  # making mortality age independent: need to define max age somewhere
-        ran = rndm.random()  # gives random numbers between 0 and 1
-        if self.age > max_age:
-            self.die = 1  # you def die after a certain age
-        else:
-            if ran > mn_prob:
-                self.die = 0
-            elif ran <= mn_prob:
-                self.die = 1
+    def juv_mltORDth(self, jv_min_fd):  # if juv doesn't get enough food she dies before turning into an adult
+        if self.juv_fd < jv_min_fd:
+            self.die = 1
+        else: # increase instar
+            self.instar += 1
+            
+    def ad_death(self, num_instars): # kills all adults, num_instars comes from PopulationClass
+        if self.instar == num_instars:
+            self.die = 1
 
-    def cal_relSize(self, maxSize, minSize):  # calculating relative size, but i don't think 
-        x= (self.size-minSize)/(maxSize-minSize)
-        return x
 
     def update_repr_One(self):  # updates self.reproduce to one
         self.reproduce = 1
@@ -53,16 +49,9 @@ class Spider(object):
         if self.reproduce == 1:
             self.reproduce = 2
 
-    def dispORrep (self, ad_size, min_food): # disperses if gets less than min food, min_food population variable
-        #works!! (tested 11th Aug)
-        if self.size >= ad_size and self.reproduce == 0:
-            if self.ind_food < min_food and self.disperse == 0:
+    def dispORrep (self, ad_min_fd, ad_max_fd): # disperses if gets less than min food, min_food population variable
+        if self.ad_fd >= ad_min_fd and self.ad_fd <= ad_max_fd:
                 self.disperse = 1
-            else:
-                self.reproduce = 1
-
-    def spi_age_add1(self): # add one to the age of a spider
-        self.age += 1
 
     def update_rank(self, x): # to update relative rank to x
         self.rank = x
@@ -70,14 +59,17 @@ class Spider(object):
     def update_indFood(self, x):
         self.ind_food = x
 
+
+#TODO: remove this equation
     def growth_eq(self, growth_rate): # individual growth equation, growth rate poplt variable
         term1 = 1-self.size
         term2 = np.exp(-growth_rate * self.ind_food)
         self.size = 1- (term1*term2)
-        
-    def dis_to_two(self):
+
+#TODO: remove this function??
+    def dis_to_two(self): # not sure we will need this anymore as all adults will die after one generation
         self.disperse = 2
-        
+
     def contest_many_ind(self, m): #find the rank for each spider
         food = 1- m * self.rank
         if food < 0:
@@ -85,7 +77,7 @@ class Spider(object):
         else:
             Fd_ind =  round(food, 4)
         self.ind_food = Fd_ind
-        
+
 
 
 
