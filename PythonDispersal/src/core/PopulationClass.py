@@ -79,23 +79,21 @@ class Poplt(object):
             # (3) adults reproduce or disperse and reproduce, then die
 
             # (4) old juvs moult or die
-            
+
             # (5) new juvs added to colony
-            
+
             # (5) marking dead colonies (colonies with no spiders) 
         self.poplt_list[i].col_alive()
-            
-            
+
+
             # (7) exporting the data (appending colony info to form to list to export)
         output_list = self.poplt_list[i].colony_list_to_append()
         self.export_list.append(output_list)
         print self.poplt_list[i].colony_dict()
 
         self.poplt_list[i].print_spiders()
-            
-            
-            
-            
+
+
 
 
             # (4) death or catastrophe
