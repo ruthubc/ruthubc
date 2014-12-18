@@ -7,8 +7,9 @@ Created on 2013-02-10
 
 class Pet(object):
     "making class pet"
-    def __init__(self, name, species):
+    def __init__(self, name, species, id = "1d"):
         self.name = name
+        self.id = id
         self.species = species
 
     def getName(self):
@@ -16,7 +17,7 @@ class Pet(object):
 
     def getSpecies(self):
         return self.species
-    
+
     def addingSomething(self, number):
         self.species += number
 
@@ -51,10 +52,42 @@ class Dog(Pet):
     def chasesCats(self):
         return self.chases_cats
 
-'''
 pete= Dog("pete", True)
 
 print pete.chases_cats
+
+print pete.getName()
+
+print pete.id
+
+class Cat(Dog):
+    def __init__(self, name, running_cat):
+        Dog.__init__(self, name, False)
+        self.running_cat = running_cat
+ 
+
+list2 = ["pete", True]
+print list2[1]
+
+peter = Dog(list2[0], list2[1])
+
+class Test(object):
+        def __init__(self, inputlst):
+            self.name = inputlst[0]
+            self.id = inputlst[1]
+            self.sec = inputlst[2]
+            
+        def spiderList(self):
+            return [self.name, self.id, self.sec]
+
+list3 = ['apily', 45, 'sed43']
+
+apluy = Test(list3)
+
+print apluy.name
+
+print apluy.spiderList()
+
 '''
    
 class extends(Pet):
@@ -71,3 +104,5 @@ jon = Pet("jon", "cat")
 li = extends(jon, 'donut')
 
 print li.name
+
+'''

@@ -12,7 +12,7 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, instar = 1, juv_fd=0.0, ad_fd =0.0, rank=1, die = 0, reproduce = 0, disperse = 0):
+    def __init__(self, instar = 1, juv_fd=0.0, ad_fd =0.0, rank=1, die = 0, reproduce = 0, disperse = 0, ):
         '''defining the spider object'''
         self.instar = instar
         self.juv_fd = juv_fd
@@ -59,7 +59,8 @@ class Spider(object):
     def update_indFood(self, x):
         self.ind_food = x
 
-
+    def juv_MltOrDie(self,sz):
+        if self.ind_food < self.juv_fd  
 
 
 
