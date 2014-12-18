@@ -77,12 +77,18 @@ class Poplt(object):
         self.poplt_list[i].ind_food(self.comp_type) # 0 = scramble and 2 = mid contest, 3 = full contest
 
             # (3) adults reproduce or disperse and reproduce, then die
+        #dispersal decision
+        #dispersal list
+        #make new colonies from disperses
+        #all adults within the population reproduce, juvs put into array, or just marked new/old
 
             # (4) old juvs moult or die
+        #new function: juvs reach specific size and moult or die
 
             # (5) new juvs added to colony
+        #new function
 
-            # (5) marking dead colonies (colonies with no spiders) 
+            # (6) marking dead colonies (colonies with no spiders) 
         self.poplt_list[i].col_alive()
 
 

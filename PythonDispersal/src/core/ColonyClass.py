@@ -101,11 +101,12 @@ class Colony(object):
     def update_instar(self, instar_levels): # updating all instars
         [i.instar_inc(instar_levels) for i in self.colony_list]
 
-    def cal_colony_food(self, c, d):  # calculates and updates the food to the colony, 1/c = carrying capacity, d = level of skew
-        NonJuv = [spi.instar for spi in self.colony_list if spi.instar != 1] # juvs don't contribute to food
-        N = len(NonJuv)
-        mxFd = np.exp(-d) * np.power((d/c), d) # used to scale the equation to make max food = 1
-        cal_colFood = (1/mxFd) * np.power(N, d) * np.exp(-c*N)
+    def cal_colony_food(self, F_Ln, K):  # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
+        NonJuv = [spi.instar for spi in self.colony_list if spi.instar != 1] # juvs don't contribute to food, 1 = juv
+        N = len(NonJuv) -1 # to male F_Ln actually lone ind food rather than colony of size
+        K = K-1 # same reason
+        int = 1/(1-F_Ln)
+        cal_colFood = (int + (1-N/K)*(-1-N/K))/int
         self.colony_food = cal_colFood
 
     #TODO: Maybe just make these variable of colony???

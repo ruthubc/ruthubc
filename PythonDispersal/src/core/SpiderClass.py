@@ -35,7 +35,7 @@ class Spider(object):
             self.die = 1
         else: # increase instar
             self.instar += 1
-            
+
     def ad_death(self, num_instars): # kills all adults, num_instars comes from PopulationClass
         if self.instar == num_instars:
             self.die = 1
@@ -60,11 +60,8 @@ class Spider(object):
         self.ind_food = x
 
 
-#TODO: remove this equation
-    def growth_eq(self, growth_rate): # individual growth equation, growth rate poplt variable
-        term1 = 1-self.size
-        term2 = np.exp(-growth_rate * self.ind_food)
-        self.size = 1- (term1*term2)
+
+
 
 #TODO: remove this function??
     def dis_to_two(self): # not sure we will need this anymore as all adults will die after one generation
