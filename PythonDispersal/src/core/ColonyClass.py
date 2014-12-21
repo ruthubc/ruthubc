@@ -8,19 +8,23 @@ import numpy as np
 import scipy.stats as ss
 import random as rndm
 from SpiderClass import Spider
+from JuvClass import Juv
+from AdultClass import Adult
 from collections import OrderedDict
 
 
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, colony_list,
+    def __init__(self, ad_list = [],
+                 juv_list =[],
                  colony_ID,
                  colony_food=0.0,
-                 colony_age=0, 
+                 colony_age=0,
                  alive = 'alive',
                  dispersers = []):
-        self.colony_list = colony_list
+        self.ad_list = ad_list
+        self.juv_list = juv_list
         self.colony_ID = colony_ID
         self.colony_food = colony_food
         self.colony_age = colony_age
@@ -30,16 +34,10 @@ class Colony(object):
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
 
-    def tot_col_fd(self):
+    def tot_col_fd(self): # amt of food per capita
         return self.colony_food * len(self.colony_list)
 
-    def MaxAndMinAges(self):
-        col_indAge= [i.age for i in self.colony_list]
-        age_max = max(col_indAge)
-        age_min = min(col_indAge)
-        return age_max, age_min  # returns a tuple
-
-#TODO: delete
+#TODO: change to max and min food???
     def MaxAndMinSize(self):  # returns the max and min spider size
         col_indSize= [i.size for i in self.colony_list]
         size_max = max(col_indSize)
@@ -50,13 +48,10 @@ class Colony(object):
         for i in range(len(self.colony_list)):
             print "i = %s: %s" % (i, self.colony_list[i])
 
-#TODO: delete
-    def size_list(self, instar):  # returns a list of the size of all individuals in the colony
-        return [i.size for i in self.colony_list if i.instar == instar]
-
     def juvFd_list(self):  # returns a list of the juv food of all individuals in the colony
-        return [i.juv_fd for i in self.colony_list]
-    
+        return [i.juv_fd for i in self.juv_list]
+
+    #TODO: delete or update for juv and ad seperaterly
     def rank_list(self):  # returns a list of the size of all individuals in the colony
         return [i.rank for i in self.colony_list]
 
@@ -67,43 +62,33 @@ class Colony(object):
         d = OrderedDict()
         d['colony_ID'] = self.colony_ID
         d['colony_age'] = self.colony_age
-        d['number_spiders']= len(self.colony_list)
+        d['number_ads']= len(self.ad_list)
+        d['number_juvs']= len(self.juv_list)
         d['colony_food']= self.colony_food
         return d
-
-    def num_spi(self):
-        return len(self.colony_list)
 
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
-#TODO: delete
-    def spider_age_increase(self):  # adds one to the age of all spiders in colony
-        [i.spi_age_add1() for i in self.colony_list]
-
     def rep_or_disp(self, ad_min_fd, ad_max_fd):  # deciding whether to reproduce or disperse
         # works checked 11th Aug
-        [i.dispORrep(ad_min_fd, ad_max_fd) for i in self.colony_list]
+        [i.disperseChoice(ad_min_fd, ad_max_fd) for i in self.colony_list]
 
-    def reproduction(self, no_off):  # ad_size is the size spiders have to be to reproduce
+    #TODO: fix function
+    def reproduction(self, no_off):  # now all adults reproduce, number of offspring depend on adult size
         no_ad = sum(i.reproduce == 1 for i in self.colony_list)  # calcs number of adults reproducing
         print "number of reproducing adults:",
         print no_ad
-        [j.update_repr_Two() for j in self.colony_list]   # updates reproduce to 2 if it is one. #TODO: NOT WORKING
         no_new_off = no_off * no_ad # calc the total number of new offspring for the colony
         new_spiders = list([Spider() for i in range(no_new_off)]) # makes the spiders
         self.colony_list = self.colony_list + new_spiders  # adds new colony
 
     def spis_to_dis_lst(self):  # adds the dispersing spiders to the dispersers list
-        self.dispersers = [i for i in self.colony_list if i.disperse == 1]
+        self.dispersers = [i for i in self.ad_list if i.disperse == 1]
         return self.dispersers
 
-    def update_instar(self, instar_levels): # updating all instars
-        [i.instar_inc(instar_levels) for i in self.colony_list]
-
     def cal_colony_food(self, F_Ln, K):  # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
-        NonJuv = [spi.instar for spi in self.colony_list if spi.instar != 1] # juvs don't contribute to food, 1 = juv
-        N = len(NonJuv) -1 # to male F_Ln actually lone ind food rather than colony of size
+        N = len(self.juv_list) -1 # to male F_Ln actually lone ind food rather than colony of size
         K = K-1 # same reason
         int = 1/(1-F_Ln)
         cal_colFood = (int + (1-N/K)*(-1-N/K))/int
@@ -118,11 +103,10 @@ class Colony(object):
 
 
     def update_rank(self):  # updates the rank of spiders # 1 lowest rank,if ties,rank in order in list
-        for k in self.colony_instars(): # ranks individuals within ranks
-            #Ranks = ss.rankdata(self.size_list(k), method = 'ordinal')  # assigns ties in order -> arbritary order.
-            PreRanks = np.argsort(self.size_list(k))
-            Ranks = np.argsort(PreRanks)
-            spds_instr = [i for i in self.colony_list if i.instar == k]
+        #Ranks = ss.rankdata(self.size_list(k), method = 'ordinal')  # assigns ties in order -> arbritary order.
+        PreRanks = np.argsort(self.size_list(k))
+        Ranks = np.argsort(PreRanks)
+        spds_instr = [i for i in self.ad_list]
             for i, j in zip(spds_instr, Ranks):
                 i.update_rank(j)
 

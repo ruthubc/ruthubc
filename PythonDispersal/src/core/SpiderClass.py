@@ -23,14 +23,10 @@ class Spider(object):
     def SpiderList(self):
         return [self.rank, self.die]
 
-    def update_repr_One(self):  # updates self.reproduce to one
-        self.reproduce = 1
 
     def update_rank(self, x): # to update relative rank to x
         self.rank = x
 
-    def update_indFood(self, x):
-        self.ind_food = x
 
 
     def contest_many_ind(self, m): #find the rank for each spider
