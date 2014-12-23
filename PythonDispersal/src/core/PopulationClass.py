@@ -87,8 +87,10 @@ class Poplt(object):
 
             # (5) new juvs added to colony
         #new function
+        
+        # (6) making new juvs and new adults into old adults and old juvs
 
-            # (6) marking dead colonies (colonies with no spiders) 
+            # (7) marking dead colonies (colonies with no spiders) 
         self.poplt_list[i].col_alive()
 
 

@@ -18,6 +18,8 @@ class Colony(object):
 
     def __init__(self, ad_list = [],
                  juv_list =[],
+                 new_ad_list = [],
+                 new_juv_list = [],
                  colony_ID,
                  colony_food=0.0,
                  colony_age=0,
@@ -25,6 +27,8 @@ class Colony(object):
                  dispersers = []):
         self.ad_list = ad_list
         self.juv_list = juv_list
+        self.new_ad_list=  new_ad_list,
+        self.new_juv_list = new_juv_list,
         self.colony_ID = colony_ID
         self.colony_food = colony_food
         self.colony_age = colony_age
@@ -44,19 +48,12 @@ class Colony(object):
         size_min = min(col_indSize)
         return size_max, size_min #returns a tuple
 
-    def print_spiders(self):  #  prints all instances of spider in the colony
-        for i in range(len(self.colony_list)):
-            print "i = %s: %s" % (i, self.colony_list[i])
-
-    def juvFd_list(self):  # returns a list of the juv food of all individuals in the colony
-        return [i.juv_fd for i in self.juv_list]
-
-    #TODO: delete or update for juv and ad seperaterly
-    def rank_list(self):  # returns a list of the size of all individuals in the colony
-        return [i.rank for i in self.colony_list]
+    def print_adults(self):  #  prints all instances of spider in the colony
+        for i in range(len(self.ad_list)):
+            print "i = %s: %s" % (i, self.ad_list[i])
 
     def print_dets(self):
-        print "# col age: %s, spis: %s, colony food: %s, dispersal? : %s " % (self.colony_age, len(self.colony_list), self.colony_food, self.dispersers)
+        print "# col age: %s, ads: %s, juvs: %s, colony food: %s, dispersal? : %s " % (self.colony_age, len(self.ad_list), len(self.juv_list),self.colony_food, self.dispersers)
 
     def colony_dict(self):  # the info about each colony to export
         d = OrderedDict()
@@ -71,17 +68,15 @@ class Colony(object):
         self.colony_age += 1
 
     def rep_or_disp(self, ad_min_fd, ad_max_fd):  # deciding whether to reproduce or disperse
-        # works checked 11th Aug
-        [i.disperseChoice(ad_min_fd, ad_max_fd) for i in self.colony_list]
+        [i.disperseChoice(ad_min_fd, ad_max_fd) for i in self.ad_list]
 
-    #TODO: fix function
-    def reproduction(self, no_off):  # now all adults reproduce, number of offspring depend on adult size
-        no_ad = sum(i.reproduce == 1 for i in self.colony_list)  # calcs number of adults reproducing
-        print "number of reproducing adults:",
-        print no_ad
-        no_new_off = no_off * no_ad # calc the total number of new offspring for the colony
-        new_spiders = list([Spider() for i in range(no_new_off)]) # makes the spiders
-        self.colony_list = self.colony_list + new_spiders  # adds new colony
+    #TODO: test function
+    def reproduction(self, OMin, OMax, SMin, SMax):  # now all adults reproduce, number of offspring depend on adult size
+        off_list = []
+        [i.noOffspring(OMin, OMax, SMin, SMax) for i in self.ad_list]
+        off_list = [i.no_off for i in self.ad_list]
+        no_new_off = sum(off_list) # calc the total number of new offspring for the colony
+        self.juv_list = list([Juv() for i in range(no_new_off)]) # puts the new offspring into the colony
 
     def spis_to_dis_lst(self):  # adds the dispersing spiders to the dispersers list
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
@@ -96,19 +91,24 @@ class Colony(object):
 
     #TODO: Maybe just make these variable of colony???
 
-    def colony_instars(self):
-        all_instars = [i.instar for i in self.colony_list]
-        unq_instars = list(set(all_instars)) # getting unique instars in colony
-        return unq_instars 
-
-
-    def update_rank(self):  # updates the rank of spiders # 1 lowest rank,if ties,rank in order in list
+    def ad_rnk_assign(self):  # updates the rank of spiders # 1 lowest rank,if ties,rank in order in list
         #Ranks = ss.rankdata(self.size_list(k), method = 'ordinal')  # assigns ties in order -> arbritary order.
-        PreRanks = np.argsort(self.size_list(k))
+        PreRanks = np.argsort(self.tot_fd_list()) # I might need to use juv food instead of tot_food
         Ranks = np.argsort(PreRanks)
         spds_instr = [i for i in self.ad_list]
-            for i, j in zip(spds_instr, Ranks):
-                i.update_rank(j)
+        for i, j in zip(spds_instr, Ranks):
+            i.update_rank(j)
+
+    def juv_rnk_assign(self): # all juvs are the same size so ranked by location in list i.e randomly
+        for index in enumerate(self.juv_list):
+            i = index[0]
+            self.juv_list[i].rank = i
+
+    def moult(self, min_juvFd): # writing the new juvs to a new adults list
+        self.new_juv_list = [] # clearing the new juv list
+        moultList = [i for i in self.juv_list if i.juv_fd >= min_juvFd]
+        self.new_ad_list = [Adult(i.SpiderList(), tot_fd = i.juv_fd) for i in list] # making adults from juvs
+        self.juv_list = [] #emptying the old juv list
 
     def scramble(self):  # pure scramble competition, everyone gets the same
         [i.update_indFood(self.colony_food) for i in self.colony_list]
@@ -131,27 +131,9 @@ class Colony(object):
             print "full contest"
             self.full_contest()
 
-#TODO: need to test this more throughly
-    def apply_growth(self, growth_amt): # grows every spider in the colony
-        '''growth rate is the amount an individual grows per unit time'''
-        [i.growth_eq(growth_amt) for i in self.colony_list]  #
-
-    def dying(self, old_age, prob):
-        [i.death(old_age, prob) for i in self.colony_list] # marking spiders due to die
-
-    def die_or_ctphe(self, old_age, die_prob, cat_prob, cat_perc_die):
-        ranNo = rndm.random()  # gives random numbers between 0 and 1
-        print ranNo
-        if ranNo < cat_prob:
-            self.dying(old_age, cat_perc_die)  # higher percentage of individuals die
-        else:
-            self.dying(old_age, die_prob)  # normal death
-
-    def removing_spiders(self):  # removes spiders that are dead or have dispersed
-        self.colony_list = [i for i in self.colony_list if i.die == 0 and i.disperse != 1] 
-
+    #TODO: check if this actually works
     def col_alive(self): # testing whether colony is dead
-        if not self.colony_list:
+        if not self.ad_list and not self.juv_list:
             self.alive = 'dead'
 
     def colony_list_to_append(self): # returns dictionary values
@@ -175,12 +157,10 @@ class Colony(object):
         corrMinAmt = round(corrMinAmt, 4)
         self.colony_list[minFdInx].ind_food = corrMinAmt
 
-
     def contest_few_inds(self):
         minRankInx = self.rank_list().index(min(self.rank_list()))
         self.colony_list[minRankInx].ind_food = self.tot_col_fd()
-    
-        
+
     def mid_contest(self):
         if self.tot_col_fd() < 1.0:
             print "few inds"

@@ -11,8 +11,8 @@ from SpiderClass import Spider
 
 class Juv(Spider):
 
-    def __init__(self, rank, die, juv_fd):
-        Spider.__init__(self, rank, die)
+    def __init__(self, SpiderList = [0, 0], juv_fd =0): # spider list = rank , die
+        Spider.__init__(self, SpiderList[0], SpiderList[1])
         self.juv_fd = juv_fd
 
     def juv_mltORDth(self, jv_min_fd):  # if juv doesn't get enough food she dies before turning into an adult
