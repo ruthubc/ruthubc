@@ -4,7 +4,7 @@ Testing the new individual competition equation discussed with Leticia after mee
 The adults capture the food and all food is split between juvs and ads in the colony
 @author: Ruth
 '''
-## TODO: check the options. I think I got them wrong.
+#TODO: check the extremes. Perhpas have different equations for very few spiders
 
 import numpy as np
 from core.SpiderClass import Spider
