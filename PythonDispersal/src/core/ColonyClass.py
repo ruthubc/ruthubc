@@ -4,13 +4,14 @@ Created on 2013-02-12
 @author: ruth
 '''
 
-import numpy as np
-import scipy.stats as ss
-import random as rndm
-from SpiderClass import Spider
-from JuvClass import Juv
-from AdultClass import Adult
 from collections import OrderedDict
+
+from AdultClass import Adult
+from JuvClass import Juv
+from SpiderClass import Spider
+import numpy as np
+import random as rndm
+import scipy.stats as ss
 
 
 class Colony(object):
@@ -41,18 +42,12 @@ class Colony(object):
     def tot_col_fd(self): # amt of food per capita
         return self.colony_food * len(self.colony_list)
 
-#TODO: change to max and min food???
-    def MaxAndMinSize(self):  # returns the max and min spider size
-        col_indSize= [i.size for i in self.colony_list]
-        size_max = max(col_indSize)
-        size_min = min(col_indSize)
-        return size_max, size_min #returns a tuple
 
-    def print_adults(self):  #  prints all instances of spider in the colony
+    def print_adults(self):  #  prints all instances of adults in the colony
         for i in range(len(self.ad_list)):
             print "i = %s: %s" % (i, self.ad_list[i])
 
-    def print_dets(self):
+    def print_dets(self): # prints summary of colony
         print "# col age: %s, ads: %s, juvs: %s, colony food: %s, dispersal? : %s " % (self.colony_age, len(self.ad_list), len(self.juv_list),self.colony_food, self.dispersers)
 
     def colony_dict(self):  # the info about each colony to export
@@ -67,18 +62,18 @@ class Colony(object):
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
-    def rep_or_disp(self, ad_min_fd, ad_max_fd):  # deciding whether to reproduce or disperse
-        [i.disperseChoice(ad_min_fd, ad_max_fd) for i in self.ad_list]
-
     #TODO: test function
     def reproduction(self, OMin, OMax, SMin, SMax):  # now all adults reproduce, number of offspring depend on adult size
         off_list = []
         [i.noOffspring(OMin, OMax, SMin, SMax) for i in self.ad_list]
-        off_list = [i.no_off for i in self.ad_list]
+        off_list = [i.no_off for i in self.ad_list if i.disperse == 0]
         no_new_off = sum(off_list) # calc the total number of new offspring for the colony
-        self.juv_list = list([Juv() for i in range(no_new_off)]) # puts the new offspring into the colony
+        self.new_juv_list = list([Juv() for i in range(no_new_off)]) # puts the new offspring into the colony
 
-    def spis_to_dis_lst(self):  # adds the dispersing spiders to the dispersers list
+    def colDispersal_choice(self, ad_min_fd, ad_max_fd): # deciding whether to reproduce or disperse
+        [i.disperseChoice() for i in self.ad_list]
+    
+    def spis_to_dis_lst(self):  # makes a list of dispersers
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
         return self.dispersers
 
@@ -105,11 +100,12 @@ class Colony(object):
             self.juv_list[i].rank = i
 
     def moult(self, min_juvFd): # writing the new juvs to a new adults list
-        self.new_juv_list = [] # clearing the new juv list
         moultList = [i for i in self.juv_list if i.juv_fd >= min_juvFd]
         self.new_ad_list = [Adult(i.SpiderList(), tot_fd = i.juv_fd) for i in list] # making adults from juvs
         self.juv_list = [] #emptying the old juv list
 
+    
+    #Original competition equations
     def scramble(self):  # pure scramble competition, everyone gets the same
         [i.update_indFood(self.colony_food) for i in self.colony_list]
 
@@ -173,3 +169,43 @@ class Colony(object):
             self.replacing_min_fd()
 
 
+    def colony_time_step(self, dispersal_list, output_list, min_juv_fd):
+        
+        
+            # (1) age increase
+
+        self.col_age_increase()  # updates colony age by one
+
+
+            #(2) Food
+
+        self.update_rank()
+        
+                # competition 
+                #TODO: add competition functions
+
+            # (3) adults reproduce or disperse and reproduce, then die
+        self.colDispersal_choice(self.ad_min_fd, self.ad_max_fd) #dispersal decision TODO: add variables to pop class
+        self.dispersal_list = self.spis_to_dis_lst() + self.dispersal_list #adds spiders to dispersal list
+        self.reproduction() #all adults within the colonies reproduce only if dispersal does not = 1, juvs put into new_juv_list
+        self.ad_list = [] #emptying the adult list - all adults die
+
+            # (4) old juvs moult or die
+        self.moult(min_juv_fd) # new juvs added to new adult list, all juv lists emptied
+        
+
+            # (5) new juvs added to colony
+        #new function
+        
+        # (6) making new juvs and new adults into old adults and old juvs
+
+            # (7) marking dead colonies (colonies with no spiders) 
+        self.poplt_list[i].col_alive()
+
+
+            # (7) exporting the data (appending colony info to form to list to export)
+        output_list = self.poplt_list[i].colony_list_to_append()
+        self.export_list.append(output_list)
+        print self.poplt_list[i].colony_dict()
+
+        self.poplt_list[i].print_spiders()

@@ -61,7 +61,7 @@ class Poplt(object):
         [k.dis_to_two() for k in dispersing_spis]
         self.dispersal_list.extend(dispersing_spis) # appends the colony dispersers to the population dispersers list
 
-    def ind_col_timestep(self, i):
+    def ind_col_timestep(self, i): # I have moved this to colony class 14th Jan
 
         ''' the reason I put this in the population is the population variables. I could still move anyway
         '''
@@ -77,10 +77,11 @@ class Poplt(object):
         self.poplt_list[i].ind_food(self.comp_type) # 0 = scramble and 2 = mid contest, 3 = full contest
 
             # (3) adults reproduce or disperse and reproduce, then die
-        #dispersal decision
-        #dispersal list
-        #make new colonies from disperses
-        #all adults within the population reproduce, juvs put into array, or just marked new/old
+        self.poplt_list[i].colDispersal_choice(self.ad_min_fd, self.ad_max_fd) #dispersal decision TODO: add variables to pop class
+        self.dispersal_list = self.poplt_list[i].spis_to_dis_lst() + self.dispersal_list #adds spiders to dispersal list
+        self.poplt_list[i].
+        #all adults within the colonies reproduce only if dispersal does not = 1, juvs put into array, or just marked new/old 
+        #all adults die
 
             # (4) old juvs moult or die
         #new function: juvs reach specific size and moult or die
@@ -102,7 +103,7 @@ class Poplt(object):
         self.poplt_list[i].print_spiders()
 
 
-
+  #make new colonies from disperses but make sure that the new dispersed colonies also reproduce in the 
 
             # (4) death or catastrophe
         #self.poplt_list[i].die_or_ctphe(self.age_die, self.prob_death, self.cat_prob, self.cat_perc_die)
