@@ -86,6 +86,11 @@ class Colony(object):
 
     #TODO: Maybe just make these variable of colony???
 
+    def newJuvsToColony(self): # adding juvs from new juvs list to old juvs list
+        self.juv_list = self.new_juv_list
+        self.new_juv_list = []
+        
+
     def ad_rnk_assign(self):  # updates the rank of spiders # 1 lowest rank,if ties,rank in order in list
         #Ranks = ss.rankdata(self.size_list(k), method = 'ordinal')  # assigns ties in order -> arbritary order.
         PreRanks = np.argsort(self.tot_fd_list()) # I might need to use juv food instead of tot_food
@@ -170,19 +175,13 @@ class Colony(object):
 
 
     def colony_time_step(self, dispersal_list, output_list, min_juv_fd):
-        
-        
-            # (1) age increase
-
+                
+            # (1) colony age increase
         self.col_age_increase()  # updates colony age by one
 
-
-            #(2) Food
-
+            #(2) Food, colony food then food to 
         self.update_rank()
-        
-                # competition 
-                #TODO: add competition functions
+            #TODO: add competition functions
 
             # (3) adults reproduce or disperse and reproduce, then die
         self.colDispersal_choice(self.ad_min_fd, self.ad_max_fd) #dispersal decision TODO: add variables to pop class
@@ -191,20 +190,17 @@ class Colony(object):
         self.ad_list = [] #emptying the adult list - all adults die
 
             # (4) old juvs moult or die
+            
         self.moult(min_juv_fd) # new juvs added to new adult list, all juv lists emptied
         
-
             # (5) new juvs added to colony
-        #new function
-        
-        # (6) making new juvs and new adults into old adults and old juvs
-
-            # (7) marking dead colonies (colonies with no spiders) 
-        self.poplt_list[i].col_alive()
-
+        self.newJuvsToColony()      
+    
+            # (6) marking dead colonies (colonies with no spiders) 
+        self.col_alive()
 
             # (7) exporting the data (appending colony info to form to list to export)
-        output_list = self.poplt_list[i].colony_list_to_append()
+        output_list = self.colony_list_to_append()
         self.export_list.append(output_list)
         print self.poplt_list[i].colony_dict()
 
