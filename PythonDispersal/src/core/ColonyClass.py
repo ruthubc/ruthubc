@@ -179,23 +179,45 @@ class Colony(object):
             # (1) colony age increase
         self.col_age_increase()  # updates colony age by one
 
+            # (2) adults decide whether to disperse
+        #TODO: make dispersal functions according to Leticia's specificiations, change functoin below
+        self.colDispersal_choice(self.ad_min_fd, self.ad_max_fd) #dispersal decision TODO: add variables to pop class
+        
+            # (3) Adults reproduce
+        self.reproduction() #all adults within the colonies reproduce only if dispersal does not = 1, juvs put into new_juv_list
+        #TODO: make sure juvs are added directly to the colony. none of this old/new juvs stuff
+        
+            # (4) food calculated and assigned to juvs with random
+            
+            
+            # (5) Adults die
+            
+        self.ad_list = [] #emptying the adult list - all adults die
+            
+            #(6) Juvs moult or die
+        
+        self.moult(min_juv_fd) # new juvs added to new adult list, all juv lists emptied
+        
+        
+        
+            
+
             #(2) Food, colony food then food to 
         self.update_rank()
             #TODO: add competition functions
 
             # (3) adults reproduce or disperse and reproduce, then die
-        self.colDispersal_choice(self.ad_min_fd, self.ad_max_fd) #dispersal decision TODO: add variables to pop class
+
         self.dispersal_list = self.spis_to_dis_lst() + self.dispersal_list #adds spiders to dispersal list
-        self.reproduction() #all adults within the colonies reproduce only if dispersal does not = 1, juvs put into new_juv_list
-        self.ad_list = [] #emptying the adult list - all adults die
+
 
             # (4) old juvs moult or die
-            
+
         self.moult(min_juv_fd) # new juvs added to new adult list, all juv lists emptied
-        
+
             # (5) new juvs added to colony
-        self.newJuvsToColony()      
-    
+        self.newJuvsToColony()
+
             # (6) marking dead colonies (colonies with no spiders) 
         self.col_alive()
 
