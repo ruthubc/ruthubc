@@ -68,7 +68,7 @@ class Colony(object):
         [i.noOffspring(OMin, OMax, SMin, SMax) for i in self.ad_list]
         off_list = [i.no_off for i in self.ad_list if i.disperse == 0]
         no_new_off = sum(off_list) # calc the total number of new offspring for the colony
-        self.new_juv_list = list([Juv() for i in range(no_new_off)]) # puts the new offspring into the colony
+        self.juv_list = list([Juv() for i in range(no_new_off)]) # puts the new offspring into the colony
 
     def colDispersal_choice(self, ad_min_fd, ad_max_fd): # deciding whether to reproduce or disperse
         [i.disperseChoice() for i in self.ad_list]
@@ -78,35 +78,21 @@ class Colony(object):
         return self.dispersers
 
     def cal_colony_food(self, F_Ln, K):  # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
-        N = len(self.juv_list) -1 # to male F_Ln actually lone ind food rather than colony of size
+        N = len(self.ad_list) -1 # to maKe F_Ln actually lone ind food rather than colony of size
         K = K-1 # same reason
         int = 1/(1-F_Ln)
         cal_colFood = (int + (1-N/K)*(-1-N/K))/int
         self.colony_food = cal_colFood
 
-    #TODO: Maybe just make these variable of colony???
-
-    def newJuvsToColony(self): # adding juvs from new juvs list to old juvs list
-        self.juv_list = self.new_juv_list
-        self.new_juv_list = []
-        
-
-    def ad_rnk_assign(self):  # updates the rank of spiders # 1 lowest rank,if ties,rank in order in list
-        #Ranks = ss.rankdata(self.size_list(k), method = 'ordinal')  # assigns ties in order -> arbritary order.
-        PreRanks = np.argsort(self.tot_fd_list()) # I might need to use juv food instead of tot_food
-        Ranks = np.argsort(PreRanks)
-        spds_instr = [i for i in self.ad_list]
-        for i, j in zip(spds_instr, Ranks):
-            i.update_rank(j)
 
     def juv_rnk_assign(self): # all juvs are the same size so ranked by location in list i.e randomly
         for index in enumerate(self.juv_list):
             i = index[0]
             self.juv_list[i].rank = i
 
-    def moult(self, min_juvFd): # writing the new juvs to a new adults list
+    def moult(self, min_juvFd): #
         moultList = [i for i in self.juv_list if i.juv_fd >= min_juvFd]
-        self.new_ad_list = [Adult(i.SpiderList(), tot_fd = i.juv_fd) for i in list] # making adults from juvs
+        self.ad_list = [Adult(i.SpiderList(), tot_fd = i.juv_fd) for i in list] # making adults from juvs
         self.juv_list = [] #emptying the old juv list
 
     
@@ -175,55 +161,52 @@ class Colony(object):
 
 
     def colony_time_step(self, dispersal_list, output_list, min_juv_fd):
-                
+
             # (1) colony age increase
         self.col_age_increase()  # updates colony age by one
 
             # (2) adults decide whether to disperse
         #TODO: make dispersal functions according to Leticia's specificiations, change functoin below
         self.colDispersal_choice(self.ad_min_fd, self.ad_max_fd) #dispersal decision TODO: add variables to pop class
-        
-            # (3) Adults reproduce
-        self.reproduction() #all adults within the colonies reproduce only if dispersal does not = 1, juvs put into new_juv_list
-        #TODO: make sure juvs are added directly to the colony. none of this old/new juvs stuff
-        
-            # (4) food calculated and assigned to juvs with random
-            
-            
-            # (5) Adults die
-            
-        self.ad_list = [] #emptying the adult list - all adults die
-            
-            #(6) Juvs moult or die
-        
-        self.moult(min_juv_fd) # new juvs added to new adult list, all juv lists emptied
-        
-        
-        
-            
-
-            #(2) Food, colony food then food to 
-        self.update_rank()
-            #TODO: add competition functions
-
-            # (3) adults reproduce or disperse and reproduce, then die
-
         self.dispersal_list = self.spis_to_dis_lst() + self.dispersal_list #adds spiders to dispersal list
 
+        #rest of the steps
+        self.Core_colony_timestep(dispersal_list, output_list, min_juv_fd)\
 
-            # (4) old juvs moult or die
+
+
+    def Core_colony_timestep (self, dispersal_list, output_list, min_juv_fd):
+            #Use just this one for colonies where females dispersed
+            
+            # (3) Adults reproduce
+        self.reproduction() #all adults within the colonies reproduce only if dispersal does not = 1, juvs put into new_juv_list
+        #Juvs added directly to the colony
+
+            #(4) Calculate colony food + random fluctuation
+
+            # (5) food calculated and assigned to juvs with random
+        self.update_rank()
+        #TODO make food distribution function
+
+            # (5) Adults die
+
+        self.ad_list = [] #emptying the adult list - all adults die
+
+            #(6) Juvs moult or die
 
         self.moult(min_juv_fd) # new juvs added to new adult list, all juv lists emptied
 
-            # (5) new juvs added to colony
-        self.newJuvsToColony()
-
-            # (6) marking dead colonies (colonies with no spiders) 
+            # (7) marking dead colonies (colonies with no spiders) 
         self.col_alive()
 
-            # (7) exporting the data (appending colony info to form to list to export)
+
+           # (8) exporting the data (appending colony info to form to list to export)
         output_list = self.colony_list_to_append()
         self.export_list.append(output_list)
+        
+        
+        #TODO: I think these need to go into the population class
+        
         print self.poplt_list[i].colony_dict()
 
         self.poplt_list[i].print_spiders()
