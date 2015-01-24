@@ -12,7 +12,7 @@ import random as rndm
 
 class Spider(object):
 
-    def __init__(self, rank=1, die = 0):
+    def __init__(self, rank=1, die = 0, food = 0):
         '''defining the spider object'''
         self.rank = rank
         self.die = die # 0 means not to die, 1 means die!
@@ -28,7 +28,7 @@ class Spider(object):
         self.rank = x
 
 
-
+#TODO: delete?
     def contest_many_ind(self, m): #find the rank for each spider
         food = 1- m * self.rank
         if food < 0:
