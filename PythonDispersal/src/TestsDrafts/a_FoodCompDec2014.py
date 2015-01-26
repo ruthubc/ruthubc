@@ -11,27 +11,28 @@ from core.SpiderClass import Spider
 from core.JuvClass import Juv
 from core.AdultClass import Adult
 from heapq import nsmallest
+import matplotlib.pyplot as plt
 
 Ranks = np.array([6, 1, 0, 4, 3, 5, 2]) # has to be an array
 
-food_cap = 0.603 # food per capita i.e the number of adults -> float
-num_ads = 500 # have to get this to actually count the number of adults -> if .0 = float
-num_spi = 1000 #float(len(Ranks)) # when having comp only between instars this is the total number of instars
+food_cap = 0.6203 # food per capita i.e the number of adults -> float
+num_ads = 50 # have to get this to actually count the number of adults -> if .0 = float
+num_spi = 50 #float(len(Ranks)) # when having comp only between instars this is the total number of instars
 col_fd = food_cap * num_ads # getting the total amt of food as only ads engage in prey capture
 xbr = float(col_fd/num_spi)
 
 ## Inputing the slope
-slp = 1.7 # the slope of the equation
+slp = 0.03 # the slope of the equation
 
 
 #CompEqn = xbr * (1.0 + (slp * med_rnk) * (xbr - (xbr * rnk/med_rnk))/xbr^2) #not working
 
 
 
-def CompFunction(slp,  num_spi, col_fd):
+def CompFunction(slp,  num_spi, col_fd): # calculates the med rank needed to make the total food equal total colony food
     tot = 0
     med_rnk = num_spi/2
-    med_diff = num_spi/1000
+    med_diff = 1 #num_spi/1000 -> depends how accurate I want it to be
 
 
     xbr = float(col_fd/num_spi) # the average amount of food per individual
@@ -98,21 +99,16 @@ def CompFunction(slp,  num_spi, col_fd):
         return low_rnk
     else:
         return high_rnk
-    
-#TODO: need to return the median rank instead of the 
 
-nmbr = CompFunction(slp, num_spi, col_fd)
+Cal_md_rnk = CompFunction(slp, num_spi, col_fd)
 
-print nmbr
+print Cal_md_rnk
 
 
-#print nsmallest(1, [2.31, 7.01], key = lambda x: abs(x-3.037))[0]
 
+ad1Rank = 20
 
-ad1 = Spider(rank = 581)
-
-def AssignIndFd(xbr, slp, med_rnk, spider):
-    rnk = spider.rank
+def AssignIndFd(xbr, slp, med_rnk, rnk):
     #tm1 = slp * med_rnk
     #tm2 = xbr - ((xbr *rnk)/med_rnk)
 
@@ -126,16 +122,25 @@ def AssignIndFd(xbr, slp, med_rnk, spider):
     return IndFd
 
 print "comp eqn"
-print AssignIndFd(xbr, slp, nmbr, ad1)
+print AssignIndFd(xbr, slp, Cal_md_rnk, ad1Rank)
+
+rankList = list(range(0, (num_spi - 1)))
+foodList = []
+
+for i in rankList:
+    food = AssignIndFd(xbr, slp, Cal_md_rnk, i)
+    foodList = foodList + [food]
+    
+print foodList
+
+
+plt.plot(rankList, foodList)
+
+plt.show()
 
 
 '''
-num = 2.26
-print type(num)
-
-while 0.0 <= num <= 6.0 or 6.0 <= num <= 0.0:
-    num += 1
-    print num
-print"loop done"
-print num
+        oneRnk = np.floor ( (-1 + med_rnk * slp + xbr)/ slp ) # The max rank where everyone gets 1 (max) food
+        mxRnk = np.floor(med_rnk * slp + xbr) / slp # the max rank that receives food
+        
 '''
