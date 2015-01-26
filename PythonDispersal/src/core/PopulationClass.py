@@ -15,7 +15,7 @@ import csv
 class Poplt(object):
     '''
     List of all colonies in the population    '''
-
+#TODO: remove unnecessary variables
     def __init__(self, poplt_list, # list of colonies
                  filename = "",
                  dispersal_list = [],
@@ -32,7 +32,8 @@ class Poplt(object):
                  num_instars = 2,
                  poplt_age = 0,
                  colony_number = 1,
-                 min_food = 1.2):
+                 min_food = 1.2,
+                 new_cols = []):
         self.poplt_list = poplt_list
         self.filename = filename
         self.export_list = export_list
@@ -52,93 +53,49 @@ class Poplt(object):
         self.colony_number = colony_number
         #self.colony_count = len(self.poplt_list) This needs to be in the code to be reliable
         self.min_food = min_food
+        self.new_cols = new_cols
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
+    
+    
+    def update_poplt_age(self): # adds one to the age
+        self.poplt_age += 1
 
     def update_dispersal_list(self, j):
-        dispersing_spis =  self.poplt_list[j].spis_to_dis_lst() # writes the spiders to the dispersal list colony variable
-        [k.dis_to_two() for k in dispersing_spis]
+        dispersing_spis =  self.poplt_list[j].dispersers # writes the spiders to the dispersal list colony variable
         self.dispersal_list.extend(dispersing_spis) # appends the colony dispersers to the population dispersers list
-
-    def ind_col_timestep(self, i): # I have moved this to colony class 14th Jan
-
-        ''' the reason I put this in the population is the population variables. I could still move anyway
-        '''
-            # (1) age increase
-
-        self.poplt_list[i].col_age_increase()  # updates colony age by one
-
-
-            #(2) Food
-
-        self.poplt_list[i].update_rank()
-        self.poplt_list[i].cal_colony_food(self.inverse_carr_cap, self.cc_skew) #calculating how much food the colony gets
-        self.poplt_list[i].ind_food(self.comp_type) # 0 = scramble and 2 = mid contest, 3 = full contest
-
-            # (3) adults reproduce or disperse and reproduce, then die
-        self.poplt_list[i].colDispersal_choice(self.ad_min_fd, self.ad_max_fd) #dispersal decision TODO: add variables to pop class
-        self.dispersal_list = self.poplt_list[i].spis_to_dis_lst() + self.dispersal_list #adds spiders to dispersal list
-        self.poplt_list[i].
-        #all adults within the colonies reproduce only if dispersal does not = 1, juvs put into array, or just marked new/old 
-        #all adults die
-
-            # (4) old juvs moult or die
-        #new function: juvs reach specific size and moult or die
-
-            # (5) new juvs added to colony
-        #new function
-        
-        # (6) making new juvs and new adults into old adults and old juvs
-
-            # (7) marking dead colonies (colonies with no spiders) 
-        self.poplt_list[i].col_alive()
-
-
-            # (7) exporting the data (appending colony info to form to list to export)
-        output_list = self.poplt_list[i].colony_list_to_append()
-        self.export_list.append(output_list)
-        print self.poplt_list[i].colony_dict()
-
-        self.poplt_list[i].print_spiders()
-
-
-  #make new colonies from disperses but make sure that the new dispersed colonies also reproduce in the 
-
-            # (4) death or catastrophe
-        #self.poplt_list[i].die_or_ctphe(self.age_die, self.prob_death, self.cat_prob, self.cat_perc_die)
-
-            # (5) dispersal or reproduction
-        self.poplt_list[i].rep_or_disp(self.adult_size, self.min_food) # marks each spider to reproduce or disperse
-        self.poplt_list[i].reproduction(self.number_offspring) # new offspring added to colony
-        self.update_dispersal_list(i) # adds dispersing spiders to list and updates their disperse to 2
-
-            # (6) marking dead colonies (colonies with no spiders) 
-        self.poplt_list[i].col_alive()
-
-
-
-
-    def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
-        for j in range(len(self.poplt_list)):
-            self.ind_col_timestep(j)
-        print self.poplt_dict()
 
     def del_colony(self): # deletes a colony from the population if it goes extinct
         #works, checked Aug 14th        j
-        self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive']
-
-    def add_new_cols(self): # sets up the dispersing spiders as new colonies
+        self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive']  
+        
+    def create_new_col(self): # sets up the dispersing spiders as new colonies
         #checked: works Aug 14th
         for spider in self.dispersal_list:
-            self.colony_number += 1  # TODO: add iterative colony number to each new colony created.
-            #print self.colony_number
+            self.colony_number += 1
             col = Colony([spider], self.colony_number)
-            #print col.colony_dict()
-            self.poplt_list.extend([col]) # TOOD: new colonies not adding to list
+            self.new_cols.extend([col]) # TOOD: new colonies not adding to list   
 
-    def update_poplt_age(self): # adds one to the age
-        self.poplt_age += 1
+    def new_cols_to_lst(self): # add the dispersed colonies to the population list and empties new_col list
+        self.poplt_list.extend(self.new_cols)
+        self.new_cols = []
+        
+    
+    
+    
+
+    def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
+        for colony in self.poplt_list:
+            colony.colony_timestep(STUFF) #TODO: put the stuff inside
+            self.update_dispersal_list(colony)
+
+
+    def disp_col_timestep(self):
+        for colony in self.new_cols:
+            colony.core_colony_timestep(STUFF) #TODO: add the stuff
+
+
 
     def poplt_dict(self):  # population dictionary
         d = OrderedDict()
@@ -157,20 +114,35 @@ class Poplt(object):
 
         self.export_list = [] # clears the list once it has been appended to the csv file
 
+    
+    
     def one_poplt_timestep(self):
         #(1) Add one to population age
         self.update_poplt_age()
 
         #(2) Colony time step for all colonies
-        self.allCols_OneTimestep()
+        self.one_poplt_timestep()
+        
+        #(3) Make dispersers into new colonies
+        self.create_new_col()
+        
+        #(4) Iterate through new col list
+        self.disp_col_timestep()
+        
+        #(5) adds new colonies to the pop list and clears new colony list
+        self.new_cols_to_lst()
+        
+        #(6) export results
+        #TODOL: make export
+        
+        #(7) Delete dead colonies
+        self.del_colony()
+        
+        
+        
+        
 
         #(3) write data to file
         self.poplt_export()
-
-        #(4) Remove dead colonies from the population
-        self.del_colony()
-
-        #(5) Make dispersed spiders into new colonies
-        self.add_new_cols()
 
 
