@@ -109,10 +109,11 @@ print Cal_md_rnk
 ad1Rank = 20
 
 def AssignIndFd(xbr, slp, med_rnk, rnk):
-    #tm1 = slp * med_rnk
-    #tm2 = xbr - ((xbr *rnk)/med_rnk)
+    tm1 = slp * med_rnk
+    tm2 = xbr - ((xbr *rnk)/med_rnk)
+    tm12 = (tm1 * tm2) / np.power(xbr, 2)
 
-    CompEqn = xbr * (1.0 + (slp * med_rnk) * (xbr - (xbr * rnk/med_rnk))/np.power(xbr,2)) # need to put in the if statements for those that get one and get 0 and check is correct
+    CompEqn = xbr * (1+ tm12) # need to put in the if statements for those that get one and get 0 and check is correct
     if CompEqn > 1:
         IndFd = 1
     elif CompEqn < 0:
@@ -133,6 +134,9 @@ for i in rankList:
     
 print foodList
 
+print "sum of food list"
+
+print sum(foodList)
 
 plt.plot(rankList, foodList)
 

@@ -19,3 +19,7 @@ total_food = (5 * np.power(7, 1.2) * np.exp(-0.2 * 7))
 print('total food %s') % total_food
 
 print np.floor(1.75)
+
+print "square"
+
+print np.power(4, 2)
