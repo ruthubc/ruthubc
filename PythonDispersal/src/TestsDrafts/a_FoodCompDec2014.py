@@ -13,29 +13,35 @@ from core.AdultClass import Adult
 from heapq import nsmallest
 import matplotlib.pyplot as plt
 
-Ranks = np.array([6, 1, 0, 4, 3, 5, 2]) # has to be an array
 
-food_cap = 0.6203 # food per capita i.e the number of adults -> float
-num_ads = 50 # have to get this to actually count the number of adults -> if .0 = float
-num_spi = 50 #float(len(Ranks)) # when having comp only between instars this is the total number of instars
+num_juv = 70 # when having comp only between instars this is the total number of instars
+rankList = list(range(0, num_juv))
+
+food_cap = 0.16203 # food per capita 
+num_ads = 70 # have to get this to actually count the number of adults -> if .0 = float
+
 col_fd = food_cap * num_ads # getting the total amt of food as only ads engage in prey capture
-xbr = float(col_fd/num_spi)
 
+xbr = float(col_fd/num_juv)
+
+share = 100
 ## Inputing the slope
-slp = 0.03 # the slope of the equation
+slp = share/float(num_juv) # the slope of the equation
+
+print "new slope:", 
+print slp
 
 
-#CompEqn = xbr * (1.0 + (slp * med_rnk) * (xbr - (xbr * rnk/med_rnk))/xbr^2) #not working
 
 
-
-def CompFunction(slp,  num_spi, col_fd): # calculates the med rank needed to make the total food equal total colony food
+def CompFunction(slp,  num_juv, col_fd): # calculates the med rank needed to make the total food equal total colony food
+    print "starting loop"
     tot = 0
-    med_rnk = num_spi/2
-    med_diff = 1 #num_spi/1000 -> depends how accurate I want it to be
+    med_rnk = num_juv/2
+    med_diff = float(num_juv)/100 # -> depends how accurate I want it to be
+  
 
-
-    xbr = float(col_fd/num_spi) # the average amount of food per individual
+    xbr = float(col_fd/num_juv) # the average amount of food per individual
     high_tot = -1
     low_tot = -1
 
@@ -44,29 +50,36 @@ def CompFunction(slp,  num_spi, col_fd): # calculates the med rank needed to mak
     # TODO: Come up with better conditions for the loop
     while high_tot  == -1 or  low_tot == -1 :
         oneRnk = np.floor ( (-1 + med_rnk * slp + xbr)/ slp ) # The max rank where everyone gets 1 (max) food
-        mxRnk = np.floor(med_rnk * slp + xbr) / slp # the max rank that receives food
-        sq_tot = oneRnk + 1 # as the highest ranked ind is rank zero 
+        #mxRnk = np.floor((med_rnk * slp + xbr) / slp) # the max rank that receives food
+        mxRnk = np.floor(((med_rnk * slp) + xbr) / slp)
 
-        if oneRnk > 0 and mxRnk <= num_spi: # (1) sum of square bit and then sum of slp 
+        sq_tot = oneRnk + 1 # as the highest ranked ind is rank zero 
+        print "one rank:", 
+        print oneRnk,
+        print "max Rank:",
+        print mxRnk
+        
+
+        if oneRnk > 0 and mxRnk <= num_juv: # (1) sum of square bit and then sum of slp 
             print "option one"
-            slp_tot = (1+slp)/2*slp
+            slp_tot = (1+slp)/(2*slp)
             tot = sq_tot + slp_tot
 
-        elif oneRnk > 0 and mxRnk > (num_spi -1): # (2) sum of square bit then the slope bit to num_spis -1
+        elif oneRnk > 0 and mxRnk > (num_juv -1): # (2) sum of square bit then the slope bit to num_spis -1
             # eqn for slp total already taking into account num_spi -1 
             print "option two"
-            fstBkt = -1 + med_rnk*slp + xbr - slp* num_spi
-            sndBkt = 1 + slp  + med_rnk*slp + xbr - slp * num_spi
+            fstBkt = -1 + (med_rnk*slp) + xbr - (slp* num_juv)
+            sndBkt = 1 + slp  + (med_rnk*slp) + xbr - (slp * num_juv)
             slp_tot = -((fstBkt * sndBkt)/ 2 * slp)
             tot = sq_tot + slp_tot
 
-        elif oneRnk <=0 and mxRnk <= (num_spi -1): #(3) 
+        elif oneRnk <=0 and mxRnk <= (num_juv -1): #(3) 
             print "option three"
-            tot = ((med_rnk * slp + xbr) * (slp + med_rnk * slp + xbr)) / (2 * slp) # there is no square bit
+            tot = (((med_rnk * slp) + xbr) * (slp + (med_rnk * slp) + xbr)) / (2 * slp) # there is no square bit
 
-        elif oneRnk <= 0 and mxRnk > (num_spi -1):
+        elif oneRnk <= 0 and mxRnk > (num_juv -1):
             print "option four"
-            tot = -0.5 * num_spi * (-slp - (2* med_rnk * slp) - 2 * xbr + slp * num_spi)
+            tot = -0.5 * num_juv * (-slp - (2* med_rnk * slp) - (2 * xbr) + (slp * num_juv))
 
         else:
             print "It didn't work"
@@ -91,7 +104,7 @@ def CompFunction(slp,  num_spi, col_fd): # calculates the med rank needed to mak
             print "done"
 
     print "Now the loop has ended, cal tot = %s "  % tot
-    print "actual col tot = %s " % col_fd
+    print "actual col tot we were aiming for = %s " % col_fd
     print "high total = %s, low tot = %s " % (high_tot, low_tot)
     fin_md_rnk=  nsmallest(1, [low_tot, high_tot], key = lambda x: abs(x-col_fd))[0] # returns the number nearest to actual col_fd
 
@@ -100,15 +113,14 @@ def CompFunction(slp,  num_spi, col_fd): # calculates the med rank needed to mak
     else:
         return high_rnk
 
-Cal_md_rnk = CompFunction(slp, num_spi, col_fd)
+Cal_md_rnk = CompFunction(slp, num_juv, col_fd)
 
+print "calculated median rank: ", 
 print Cal_md_rnk
 
 
-
-ad1Rank = 20
-
-def AssignIndFd(xbr, slp, med_rnk, rnk):
+def AssignIndFd(slp, med_rnk,  num_juv, rnk):
+    xbr = float(col_fd/num_juv)
     tm1 = slp * med_rnk
     tm2 = xbr - ((xbr *rnk)/med_rnk)
     tm12 = (tm1 * tm2) / np.power(xbr, 2)
@@ -122,23 +134,24 @@ def AssignIndFd(xbr, slp, med_rnk, rnk):
         IndFd = CompEqn
     return IndFd
 
-print "comp eqn"
-print AssignIndFd(xbr, slp, Cal_md_rnk, ad1Rank)
 
-rankList = list(range(0, (num_spi - 1)))
+
+
 foodList = []
 
 for i in rankList:
-    food = AssignIndFd(xbr, slp, Cal_md_rnk, i)
+    food = AssignIndFd(slp, Cal_md_rnk, num_juv, i)
     foodList = foodList + [food]
-    
-print foodList
 
 print "sum of food list"
 
 print sum(foodList)
 
+print "difference cal - fd list sum",
+print col_fd - sum(foodList)
+
 plt.plot(rankList, foodList)
+plt.axis([0, num_juv, 0, 1])
 
 plt.show()
 
