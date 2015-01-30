@@ -5,7 +5,7 @@ The adults capture the food and all food is split between juvs and ads in the co
 @author: Ruth
 '''
 #TODO: check the extremes. Perhpas have different equations for very few spiders
-
+# pylint: disable=line-too-long
 import numpy as np
 from core.SpiderClass import Spider
 from core.JuvClass import Juv
@@ -21,14 +21,13 @@ food_cap = 0.16203 # food per capita
 num_ads = 70 # have to get this to actually count the number of adults -> if .0 = float
 
 col_fd = food_cap * num_ads # getting the total amt of food as only ads engage in prey capture
-
 xbr = float(col_fd/num_juv)
 
 share = 100
 ## Inputing the slope
-slp = share/float(num_juv) # the slope of the equation
+slp = share / float(num_juv)  # the slope of the equation
 
-print "new slope:", 
+print "new slope:",
 print slp
 
 
@@ -39,7 +38,7 @@ def CompFunction(slp,  num_juv, col_fd): # calculates the med rank needed to mak
     tot = 0
     med_rnk = num_juv/2
     med_diff = float(num_juv)/100 # -> depends how accurate I want it to be
-  
+
 
     xbr = float(col_fd/num_juv) # the average amount of food per individual
     high_tot = -1

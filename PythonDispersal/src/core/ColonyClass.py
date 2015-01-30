@@ -14,6 +14,7 @@ import random as rndm
 import scipy.stats as ss
 
 
+
 class Colony(object):
     '''making colony class'''
 
@@ -26,54 +27,55 @@ class Colony(object):
                  colony_age=0,
                  alive = 'alive',
                  dispersers = [],
-                 pot_juv_food = 0):
+                 pot_juv_food = 0,
+                 cal_med_rnk = 0):
         self.ad_list = ad_list
         self.juv_list = juv_list
-        self.new_ad_list=  new_ad_list,
+        self.new_ad_list = new_ad_list,
         self.new_juv_list = new_juv_list,
         self.colony_ID = colony_ID
         self.colony_food = colony_food
         self.colony_age = colony_age
         self.alive = alive
-        self.dispersers = dispersers # TODO not sure I need this anymore.
+        self.dispersers = dispersers
         self.pot_juv_food = pot_juv_food
+        self.cal_med_rnk = cal_med_rnk
 
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
 
-
-
-    def print_adults(self):  #  prints all instances of adults in the colony
+    def print_adults(self):  # prints all instances of adults in the colony
         for i in range(len(self.ad_list)):
             print "i = %s: %s" % (i, self.ad_list[i])
 
-    def print_dets(self): # prints summary of colony
-        print "# col age: %s, ads: %s, juvs: %s, colony food: %s, dispersal? : %s " % (self.colony_age, len(self.ad_list), len(self.juv_list),self.colony_food, self.dispersers)
+    def print_dets(self):  # prints summary of colony
+        print "# col age: %s, ads: %s, juvs: %s, colony food: %s, dispersal?: %s" % (self.colony_age,
+                                                                                     len(self.ad_list), len(self.juv_list), self.colony_food, self.dispersers)
 
     def colony_dict(self):  # the info about each colony to export
         d = OrderedDict()
         d['colony_ID'] = self.colony_ID
         d['colony_age'] = self.colony_age
-        d['number_ads']= len(self.ad_list)
-        d['number_juvs']= len(self.juv_list)
-        d['colony_food']= self.colony_food
+        d['number_ads'] = len(self.ad_list)
+        d['number_juvs'] = len(self.juv_list)
+        d['colony_food'] = self.colony_food
         return d
 
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
-    def colony_food(self, F_Ln, K):  # returns tot colony food
+    #TODO: check this works, that the function works correctly
+    def colony_food(self, F_Ln, K):  # returns tot colony food per capita
         # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
-        N = len(self.ad_list) -1 # to maKe F_Ln actually lone ind food rather than colony of size
-        K = K-1 # same reason
-        int = 1/(1-F_Ln)
-        cal_colFood = (int + (1-N/K)*(-1-N/K))/int
+        N = len(self.ad_list) - 1  # to maKe F_Ln actually lone ind food rather than colony of size
+        K = K - 1  # same reason
+        intcp = 1 / (1 - F_Ln)  # intercept
+        cal_colFood = (intcp + (1 - (N / K)) * (-1 - (N / K))) / intcp
         tot_col_food = cal_colFood * len(self.colony_list)
         return tot_col_food
 
     #TODO: change the offspring variables to a list
-    def col_num_off(self, OMin, OMax, SMin, SMax): # Calculating the number of offspring and assigning number to adult
-        off_list = []
+    def col_num_off(self, OMin, OMax, SMin, SMax):  # Calculating the number of offspring and assigning number to adult
         [i.noOffspring(OMin, OMax, SMin, SMax) for i in self.ad_list]
         off_list = [i.no_off for i in self.ad_list]
         no_new_off = sum(off_list) # calc the total number of new offspring for the colony

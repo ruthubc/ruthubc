@@ -69,13 +69,13 @@ class Poplt(object):
     def del_colony(self): # deletes a colony from the population if it goes extinct
         #works, checked Aug 14th        j
         self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive']  
-        
+
     def create_new_col(self): # sets up the dispersing spiders as new colonies
         #checked: works Aug 14th
         for spider in self.dispersal_list:
             self.colony_number += 1
             col = Colony([spider], self.colony_number)
-            self.new_cols.extend([col]) # TOOD: new colonies not adding to list   
+            self.new_cols.extend([col]) # TOOD: new colonies not adding to list
 
     def new_cols_to_lst(self): # add the dispersed colonies to the population list and empties new_col list
         self.poplt_list.extend(self.new_cols)
