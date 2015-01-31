@@ -3,16 +3,12 @@ Created on 2013-02-12
 
 @author: ruth
 '''
+#pylint: disable= too-many-statements, line-too-long
 
 from collections import OrderedDict
-
 from AdultClass import Adult
 from JuvClass import Juv
 from SpiderClass import Spider
-import numpy as np
-import random as rndm
-import scipy.stats as ss
-
 
 
 class Colony(object):
@@ -22,7 +18,7 @@ class Colony(object):
                  juv_list =[],
                  new_ad_list = [],
                  new_juv_list = [],
-                 colony_ID,
+                 colony_ID = 0,
                  colony_food=0.0,
                  colony_age=0,
                  alive = 'alive',
@@ -78,17 +74,16 @@ class Colony(object):
     def col_num_off(self, OMin, OMax, SMin, SMax):  # Calculating the number of offspring and assigning number to adult
         [i.noOffspring(OMin, OMax, SMin, SMax) for i in self.ad_list]
         off_list = [i.no_off for i in self.ad_list]
-        no_new_off = sum(off_list) # calc the total number of new offspring for the colony
+        no_new_off = sum(off_list)  # calc the total number of new offspring for the colony
         return no_new_off
 
-
-    def cal_pot_juv_food(self, F_Ln, K, OMin, OMax, SMin, SMax): #updates potential juv food
+    def cal_pot_juv_food(self, F_Ln, K, OMin, OMax, SMin, SMax):  # updates potential juv food
         tot_food = self.colony_food(F_Ln, K)
         pot_juvs = self.col_num_off(OMin, OMax, SMin, SMax)
-        pot_juv_fd = tot_food/pot_juvs
+        pot_juv_fd = tot_food / pot_juvs
         self.pot_juv_food = pot_juv_fd
 
-    def colDispersal_choice(self, juv_fd_lmt, disp_fd_lmt): # deciding whether to reproduce or disperse
+    def colDispersal_choice(self, juv_fd_lmt, disp_fd_lmt):  # deciding whether to reproduce or disperse
         if self.pot_juv_food < juv_fd_lmt:
             [i.disperseChoice(disp_fd_lmt) for i in self.ad_list]
         else:
@@ -97,48 +92,48 @@ class Colony(object):
     def spis_to_dis_lst(self):  # makes a list of dispersers
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
         return self.dispersers
-    
-    def remove_dispersed(self): # removes the spiders that will disperse
+
+    def remove_dispersed(self):  # removes the spiders that will disperse
         self.ad_list = [i for i in self.ad_list if i.disperse == 0]
+
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
-        self.juv_list = list([Juv() for i in range(no_new_off)]) # puts the new offspring into the colony
+        self.juv_list = list([Juv() for i in range(no_new_off)])  # puts the new offspring into the colony
 
-    def juv_rnk_assign(self): # all juvs are the same size so ranked by location in list i.e randomly
+    def juv_rnk_assign(self):  # all juvs are the same size so ranked by location in list i.e randomly
         for index in enumerate(self.juv_list):
             i = index[0]
             self.juv_list[i].rank = i
 
-    def moult(self, min_juvFd): #
-        moultList = [i for i in self.juv_list if i.juv_fd >= min_juvFd]
-        self.ad_list = [Adult(i.SpiderList(), tot_fd = i.juv_fd) for i in list] # making adults from juvs
-        self.juv_list = [] #emptying the old juv list
+    def moult(self, min_juvFd):
+        moult_list = [i for i in self.juv_list if i.juv_fd >= min_juvFd]
+        self.ad_list = [Adult(i.SpiderList(), tot_fd = i.juv_fd) for i in moult_list]  # making adults from juvs
+        self.juv_list = []  # emptying the old juv list
 
 ######### One Colony Time Step ##################
 
-    def colony_timestep(self,dispersal_list, output_list, min_juv_fd):
+    def colony_timestep(self, dispersal_list, output_list, min_juv_fd):
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
             # (2) adults decide whether to disperse
-        self.cal_pot_juv_food(F_Ln, K, OMin, OMax, SMin, SMax) # calculating potental juv food , written to colony
-        self.colDispersal_choice(self.ad_min_fd, self.ad_max_fd) #dispersal decision TODO: add variables to pop class
-        self.dispersal_list = self.spis_to_dis_lst() + self.dispersal_list #adds spiders to dispersal list
-        self.spis_to_dis_lst() #puts the dipersed into a seperate list
-        self.remove_dispersed() # removing the dispersed spiders from the colony list
+        self.cal_pot_juv_food(F_Ln, K, OMin, OMax, SMin, SMax)  # calculating potental juv food , written to colony
+        self.colDispersal_choice(self.ad_min_fd, self.ad_max_fd)  # dispersal decision TODO: add variables to pop class
+        self.dispersal_list = self.spis_to_dis_lst() + self.dispersal_list  # adds spiders to dispersal list
+        self.spis_to_dis_lst()  # puts the dipersed into a seperate list
+        self.remove_dispersed()  # removing the dispersed spiders from the colony list
 
         #rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
         self.Core_colony_timestep(dispersal_list, output_list, min_juv_fd)
-
 
     def core_colony_timestep(self, dispersal_list, output_list, min_juv_fd):
             #Use just this one for colonies where females dispersed
 
             # (3) Adults reproduce
-        self.reproduction() #all adults within the colonies reproduce, juvs added straight to the colony
+        self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
 
             #(4) Calculate colony food + random fluctuation
-        self.colony_food(F_Ln, K)
+        self.colony_food(F_Ln, K)  #TODO: add variables
 
             #(5) food calculated and assigned to juvs with random
         self.juv_rnk_assign()
@@ -146,13 +141,13 @@ class Colony(object):
 
             # (5) Adults die
 
-        self.ad_list = [] #emptying the adult list - all adults die
+        self.ad_list = []  # emptying the adult list - all adults die
 
             #(6) Juvs moult or die
 
-        self.moult(min_juv_fd) # new juvs added directly to adult list and emptying juv list
+        self.moult(min_juv_fd)  # new juvs added directly to adult list and emptying juv list
 
-            # (7) marking dead colonies (colonies with no spiders) 
+            # (7) marking dead colonies (colonies with no spiders)
         self.col_alive()
 
             # (8) exporting the data (appending colony info to form to list to export)

@@ -3,6 +3,7 @@ Created on Dec 18, 2014
 
 @author: Ruth
 '''
+#pylint: disable= too-many-statements, line-too-long
 
 import numpy as np
 import scipy.stats as ss

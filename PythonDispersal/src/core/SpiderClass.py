@@ -5,9 +5,6 @@ Created on 2012-12-23
 
 creating a spider class for each individual with the same method as in test2.
 '''
-#pylint: disable=C0111
-import numpy as np
-import random as rndm
 
 
 class Spider(object):
@@ -15,7 +12,8 @@ class Spider(object):
     def __init__(self, rank=1, die = 0, food = 0):
         '''defining the spider object'''
         self.rank = rank
-        self.die = die # 0 means not to die, 1 means die!
+        self.die = die  # 0 means not to die, 1 means die!
+        self.food = food
 
     def __str__(self):
         return "age: %s, rank: %s, instar: %s, , die: %s, reproduce: %s, disperse: %s" % ( self.age, self.rank, self.instar, self.die, self.reproduce, self.disperse)
@@ -23,21 +21,5 @@ class Spider(object):
     def SpiderList(self):
         return [self.rank, self.die]
 
-
-    def update_rank(self, x): # to update relative rank to x
-        self.rank = x
-
-
-#TODO: delete?
-    def contest_many_ind(self, m): #find the rank for each spider
-        food = 1- m * self.rank
-        if food < 0:
-            Fd_ind = 0
-        else:
-            Fd_ind =  round(food, 4)
-        self.ind_food = Fd_ind
-
-
-
-
-
+    def update_rank(self, rank):  # to update relative rank to x
+        self.rank = rank

@@ -3,9 +3,7 @@ Created on Jul 9, 2014
 
 @author: Ruth
 '''
-import numpy as np
-import scipy.stats as ss
-import random as rndm
+
 from SpiderClass import Spider
 from ColonyClass import Colony
 from collections import OrderedDict
@@ -16,15 +14,13 @@ class Poplt(object):
     '''
     List of all colonies in the population    '''
 #TODO: remove unnecessary variables
-    def __init__(self, poplt_list, # list of colonies
+    def __init__(self, poplt_list,  # list of colonies
                  filename = "",
                  dispersal_list = [],
                  export_list = [],
                  number_offspring = 2,
                  carrying_capacity = 10.1,
                  cc_skew = 2,
-                 comp_type = 1, # 0 = scramble and 1 = contest
-                 growth_per_food = 0.5, # max size =1
                  age_die = 10,
                  prob_death = 0.01,
                  cat_prob = 0.001,
@@ -40,14 +36,12 @@ class Poplt(object):
         self.dispersal_list = dispersal_list
         self.number_offspring = number_offspring
         self.carrying_capacity = carrying_capacity
-        self.cc_skew = cc_skew 
-        self.comp_type = comp_type # 0 = scramble and 1 = contest
-        self.growth_per_food = growth_per_food # max size =1
+        self.cc_skew = cc_skew
         self.age_die = age_die
         self.prob_death = prob_death
         self.cat_prob = cat_prob
         self.cat_perc_die = cat_perc_die
-        self.inverse_carr_cap = 1/self.carrying_capacity
+        self.inverse_carr_cap = 1 / self.carrying_capacity
         self.num_instars = num_instars
         self.poplt_age = poplt_age
         self.colony_number = colony_number

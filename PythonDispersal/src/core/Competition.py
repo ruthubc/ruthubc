@@ -4,7 +4,6 @@ Created on Dec 27, 2014
 @author: Ruth
 '''
 #pylint: disable= too-many-statements, line-too-long
-#pep8: -- ignore=E251
 
 import numpy as np
 from heapq import nsmallest
