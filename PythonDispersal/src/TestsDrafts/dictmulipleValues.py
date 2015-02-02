@@ -22,4 +22,6 @@ d['b'].append(6)
 
 print d
 
-json.dump(d, open('defltdict.csv','w'))
+print d.values()
+
+#json.dump(d, open('defltdict.csv','w'))

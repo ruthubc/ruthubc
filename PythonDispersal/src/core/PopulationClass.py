@@ -3,6 +3,7 @@ Created on Jul 9, 2014
 
 @author: Ruth
 '''
+#pylint: disable= too-many-statements, line-too-long
 
 from SpiderClass import Spider
 from ColonyClass import Colony
@@ -16,20 +17,16 @@ class Poplt(object):
 #TODO: remove unnecessary variables
     def __init__(self, poplt_list,  # list of colonies
                  filename = "",
-                 dispersal_list = [],
-                 export_list = [],
-                 number_offspring = 2,
-                 carrying_capacity = 10.1,
-                 cc_skew = 2,
-                 age_die = 10,
-                 prob_death = 0.01,
-                 cat_prob = 0.001,
-                 cat_perc_die = 0.7,
-                 num_instars = 2,
+                 pop_dispersal_list = [],
+                 pop_export_list = [],
                  poplt_age = 0,
-                 colony_number = 1,
-                 min_food = 1.2,
-                 new_cols = []):
+                 colony_ID = 1,
+                 new_cols = [],
+                 off_nmbr_list = [],  # [min no off, max no off, min ad size, max ad size]
+                 F_Ln = 1,
+                 K = 10,
+                 ################### continue adding variables so colony time step will work!
+                 ):
         self.poplt_list = poplt_list
         self.filename = filename
         self.export_list = export_list
@@ -48,36 +45,28 @@ class Poplt(object):
         #self.colony_count = len(self.poplt_list) This needs to be in the code to be reliable
         self.min_food = min_food
         self.new_cols = new_cols
+        self.off_nmbr_list = off_nmbr_list
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
-    
-    
-    def update_poplt_age(self): # adds one to the age
+
+    def update_poplt_age(self):  # adds one to the age
         self.poplt_age += 1
 
-    def update_dispersal_list(self, j):
-        dispersing_spis =  self.poplt_list[j].dispersers # writes the spiders to the dispersal list colony variable
-        self.dispersal_list.extend(dispersing_spis) # appends the colony dispersers to the population dispersers list
+    def del_colony(self):  # deletes a colony from the population if it goes extinct
+        #works, checked Aug 14th
+        self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive']
 
-    def del_colony(self): # deletes a colony from the population if it goes extinct
-        #works, checked Aug 14th        j
-        self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive']  
-
-    def create_new_col(self): # sets up the dispersing spiders as new colonies
-        #checked: works Aug 14th
-        for spider in self.dispersal_list:
+    def create_new_col(self):  # sets up the dispersing spiders as new colonies
+        #TODO: check works
+        for spider in self.pop_dispersal_list:
             self.colony_number += 1
             col = Colony([spider], self.colony_number)
-            self.new_cols.extend([col]) # TOOD: new colonies not adding to list
+            self.new_cols.extend([col])
 
-    def new_cols_to_lst(self): # add the dispersed colonies to the population list and empties new_col list
+    def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list
         self.poplt_list.extend(self.new_cols)
         self.new_cols = []
-        
-    
-    
-    
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for colony in self.poplt_list:
