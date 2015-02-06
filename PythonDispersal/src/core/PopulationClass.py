@@ -19,39 +19,38 @@ class Poplt(object):
                  filename = "",
                  pop_dispersal_list = [],
                  pop_export_list = [],
-                 poplt_age = 0,
+                 pop_age = 0,
                  colony_ID = 1,
                  new_cols = [],
-                 off_nmbr_list = [],  # [min no off, max no off, min ad size, max ad size]
-                 F_Ln = 1,
+                 off_nmbr_list = [2, 4, 0.1, 1],  # [min no off, max no off, min ad size, max ad size]
+                 F_Ln = 2,
                  K = 10,
+                 juv_disFd_lmt = 0,
+                 ad_disFd_lmt = 0,
+                 min_juv_fd = 0,
+                 comp_slp = 0.1
                  ################### continue adding variables so colony time step will work!
                  ):
         self.poplt_list = poplt_list
         self.filename = filename
-        self.export_list = export_list
-        self.dispersal_list = dispersal_list
-        self.number_offspring = number_offspring
-        self.carrying_capacity = carrying_capacity
-        self.cc_skew = cc_skew
-        self.age_die = age_die
-        self.prob_death = prob_death
-        self.cat_prob = cat_prob
-        self.cat_perc_die = cat_perc_die
-        self.inverse_carr_cap = 1 / self.carrying_capacity
-        self.num_instars = num_instars
-        self.poplt_age = poplt_age
-        self.colony_number = colony_number
-        #self.colony_count = len(self.poplt_list) This needs to be in the code to be reliable
-        self.min_food = min_food
+        self.pop_dispersal_list = pop_dispersal_list
+        self.pop_export_list = pop_export_list
+        self.pop_age = pop_age
+        self.colony_ID = colony_ID
         self.new_cols = new_cols
         self.off_nmbr_list = off_nmbr_list
+        self.F_Ln = F_Ln
+        self.K = K
+        self.juv_disFd_lmt = juv_disFd_lmt
+        self.ad_disFd_lmt = ad_disFd_lmt
+        self.min_juv_fd = min_juv_fd
+        self.comp_slp = comp_slp
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
 
-    def update_poplt_age(self):  # adds one to the age
-        self.poplt_age += 1
+    def update_pop_age(self):  # adds one to the age
+        self.pop_age += 1
 
     def del_colony(self):  # deletes a colony from the population if it goes extinct
         #works, checked Aug 14th
@@ -69,63 +68,49 @@ class Poplt(object):
         self.new_cols = []
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
-        for colony in self.poplt_list:
-            colony.colony_timestep(STUFF) #TODO: put the stuff inside
-            self.update_dispersal_list(colony)
-
+        for col in self.poplt_list:
+            col.colony_timestep(self.F_Ln, self.K, self.comp_slp, self.off_nmbr_list, self.juv_disFd_lmt, self.ad_disFd_lmt,
+                                self.pop_dispersal_list, self.min_juv_fd, self.pop_export_list)
+            self.update_dispersal_list(col)
 
     def disp_col_timestep(self):
         for colony in self.new_cols:
-            colony.core_colony_timestep(STUFF) #TODO: add the stuff
-
-
+            colony.core_colony_timestep(self.F_Ln, self.K, self.comp_slp, self.min_juv_fd, self.pop_export_list)
 
     def poplt_dict(self):  # population dictionary
         d = OrderedDict()
-        d['poplt_age']= self.poplt_age
-        d['comp_type']= self.comp_type
+        d['pop_age'] = self.pop_age
+        d['Comp_slope'] = self.comp_slp
         d['num cols'] = len(self.poplt_list)
         return d
 
     def poplt_export(self):  # appends one time step of information to file
         f = open(self.filename, 'ab')
         appender = csv.writer(f)
-
-        for i in range(len(self.export_list)): # writes list to file
+        for i in range(len(self.export_list)):  # writes list to file
             print self.export_list[i]
             appender.writerow(self.poplt_dict().values() + self.export_list[i])
+        self.export_list = []  # clears the list once it has been appended to the csv file
 
-        self.export_list = [] # clears the list once it has been appended to the csv file
-
-    
-    
     def one_poplt_timestep(self):
         #(1) Add one to population age
-        self.update_poplt_age()
+        self.update_pop_age()
 
         #(2) Colony time step for all colonies
-        self.one_poplt_timestep()
-        
+        self.allCols_OneTimestep()()
+
         #(3) Make dispersers into new colonies
         self.create_new_col()
-        
+
         #(4) Iterate through new col list
         self.disp_col_timestep()
-        
+
         #(5) adds new colonies to the pop list and clears new colony list
         self.new_cols_to_lst()
-        
-        #(6) export results
-        #TODOL: make export
-        
-        #(7) Delete dead colonies
-        self.del_colony()
-        
-        
-        
-        
 
-        #(3) write data to file
+        #(6) export results
         self.poplt_export()
 
+        #(7) Delete dead colonies
+        self.del_colony()
 

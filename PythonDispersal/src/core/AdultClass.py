@@ -26,7 +26,7 @@ class Adult(Spider):
         OMx = off_nmbr_list[1]  # max number of offspring
         SMn = off_nmbr_list[2]  # min adult size that can reproduce
         SMx = off_nmbr_list[3]  # max adult size (or food)
-        C = -(-OMn * SMx + OMx * SMn) / (SMx - SMn)
+        C = -((-OMn * SMx) + (OMx * SMn)) / (SMx - SMn)
         M = (-OMx + OMn) / (SMx - SMn)
-        NumOff = M * self.tot_fd + C
-        self.no_off = NumOff
+        NumOff = round((M * self.food) + C)
+        self.no_off = int(NumOff)

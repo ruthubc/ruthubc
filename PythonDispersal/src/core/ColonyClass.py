@@ -9,23 +9,24 @@ from collections import OrderedDict
 from AdultClass import Adult
 from JuvClass import Juv
 from SpiderClass import Spider
+from Competition import CompFunction
 
 
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, ad_list = [],  # TODO: removed unneeded variables
-                 juv_list =[],
-                 colony_ID = 0,
+    def __init__(self, colony_ID = 0,
+                 ad_list = [],
+                 juv_list = [],
                  colony_food=0.0,
                  colony_age=0,
                  alive = 'alive',
                  dispersers = [],
                  pot_juv_food = 0,  # potential food to juvs
                  cal_med_rnk = 0):
+        self.colony_ID = colony_ID
         self.ad_list = ad_list
         self.juv_list = juv_list
-        self.colony_ID = colony_ID
         self.colony_food = colony_food
         self.colony_age = colony_age
         self.alive = alive
@@ -48,22 +49,23 @@ class Colony(object):
         d = OrderedDict()
         d['colony_ID'] = self.colony_ID
         d['colony_age'] = self.colony_age
-        d['number_ads'] = len(self.ad_list)
-        d['number_juvs'] = len(self.juv_list)
+        d['num ads'] = len(self.ad_list)
+        d['numjuvs'] = len(self.juv_list)
         d['colony_food'] = self.colony_food
+        d['dispersers'] = len(self.dispersers)
         return d
 
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
     #TODO: check this works, that the function works correctly
-    def colony_food(self, F_Ln, K):  # returns tot colony food per capita
+    def cal_col_food(self, F_Ln, K):  # returns tot colony food per capita
         # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
         N = len(self.ad_list) - 1  # to maKe F_Ln actually lone ind food rather than colony of size
         K = K - 1  # same reason
         intcp = 1 / (1 - F_Ln)  # intercept
         cal_colFood = (intcp + (1 - (N / K)) * (-1 - (N / K))) / intcp
-        tot_col_food = cal_colFood * len(self.colony_list)
+        tot_col_food = cal_colFood * len(self.ad_list)
         return tot_col_food
 
     #TODO: change the offspring variables to a list
@@ -74,14 +76,14 @@ class Colony(object):
         return no_new_off
 
     def cal_pot_juv_food(self, F_Ln, K, off_nmbr_list):  # updates potential juv food
-        tot_food = self.colony_food(F_Ln, K)
+        tot_food = self.cal_col_food(F_Ln, K)
         pot_juvs = self.col_num_off(off_nmbr_list)
         pot_juv_fd = tot_food / pot_juvs
         self.pot_juv_food = pot_juv_fd
 
-    def colDispersal_choice(self, juv_fd_lmt, disp_fd_lmt):  # deciding whether to reproduce or disperse
-        if self.pot_juv_food < juv_fd_lmt:
-            [i.disperseChoice(disp_fd_lmt) for i in self.ad_list]
+    def colDispersal_choice(self, juv_disFd_lmt, ad_disFd_lmt):  # deciding whether to reproduce or disperse
+        if self.pot_juv_food < juv_disFd_lmt:
+            [i.disperseChoice(ad_disFd_lmt) for i in self.ad_list]
         else:
             print "no dispersers"  # TODO: make this so it is recorded in the output - no dispersers
 
@@ -92,13 +94,19 @@ class Colony(object):
 
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
-        self.juv_list = list([Juv() for i in range(no_new_off)])  # TODO: check this does the correct number and not one too many or too few
+        print "number of offspring",
+        print no_new_off
+        self.juv_list = [Juv()] * no_new_off # TODO: check this does the correct number and not one too many or too few
 
     #TODO: Check that this works as not sure the last line of code will work, tho it should do
     def juv_rnk_assign(self):  # all juvs are the same size so ranked by location in list i.e randomly
         for index in enumerate(self.juv_list):
             i = index[0]
             self.juv_list[i].rank = i
+
+    def juv_fd_assign(self, comp_slp):
+        for spider in self.juv_list:
+            spider.assign_ind_fd(self.colony_food, len(self.juv_list), self.cal_med_rnk, comp_slp)
 
     def moult(self, min_juvFd):
         moult_list = [i for i in self.juv_list if i.juv_fd >= min_juvFd]
@@ -110,17 +118,19 @@ class Colony(object):
 
 ######### One Colony Time Step ##################
 
-    def core_colony_timestep(self, F_Ln, K, min_juv_fd, pop_export_list):
+    def core_colony_timestep(self, F_Ln, K, comp_slp, min_juv_fd, pop_export_list):
             #Use just this one for colonies of females dispersed
 
             # (3) Adults reproduce
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
 
             #(4) Calculate colony food + random fluctuation
-        self.colony_food(F_Ln, K)  # TODO:make random flucuation function
+        self.cal_col_food(F_Ln, K)  # TODO:make random flucuation function
 
             #(5) food calculated and assigned to juvs with random
         self.juv_rnk_assign()
+        self.cal_med_rnk = CompFunction(comp_slp, len(self.juv_list), self.colony_food)
+        self.juv_fd_assign(comp_slp)
 
             #(6) Adults die
         self.ad_list = []  # emptying the adult list - all adults die
@@ -138,15 +148,15 @@ class Colony(object):
         print self.colony_dict()
         self.print_spiders()
 
-    def colony_timestep(self, F_Ln, K, num_off_list, juv_fd_lmt, disp_fd_lmt, pop_dis_list, min_juv_fd, pop_export_list):
+    def colony_timestep(self, F_Ln, K, comp_slp, num_off_list, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, pop_export_list):
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
             # (2) adults decide whether to disperse
         self.cal_pot_juv_food(F_Ln, K, num_off_list)  # calculating potental juv food , written to colony
-        self.colDispersal_choice(juv_fd_lmt, disp_fd_lmt)
+        self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt)
         pop_dis_list = self.spis_to_dis_lst() + pop_dis_list  # adds spiders to population dispersal list
         self.spis_to_dis_lst()  # puts the dipersed into a seperate list and removes from current colony
 
         #rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
-        self.core_colony_timestep(F_Ln, K, min_juv_fd, pop_export_list)
+        self.core_colony_timestep(F_Ln, K, comp_slp, min_juv_fd, pop_export_list)

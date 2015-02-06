@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 def fake_dict(): # returns row names
     """make fake dictionary to write row names to file"""
-    fake_col = Colony([Spider()], 0)
+    fake_col = Colony()
     fake_poplt = Poplt([fake_col])
     fake_pop_dict = fake_poplt.poplt_dict()
     fake_col_dict = fake_col.colony_dict()

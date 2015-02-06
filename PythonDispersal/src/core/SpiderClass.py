@@ -16,7 +16,7 @@ class Spider(object):
         self.food = food
 
     def __str__(self):
-        return "age: %s, rank: %s, instar: %s, , die: %s, reproduce: %s, disperse: %s" % ( self.age, self.rank, self.instar, self.die, self.reproduce, self.disperse)
+        return "rank: %s,  die: %s, food: %s" % (self.rank, self.die, self.food)
 
     def SpiderList(self):
         return [self.rank, self.die]
