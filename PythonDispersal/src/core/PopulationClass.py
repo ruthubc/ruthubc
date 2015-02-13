@@ -23,7 +23,7 @@ class Poplt(object):
                  colony_ID = 1,
                  new_cols = [],
                  off_nmbr_list = [2, 4, 0.1, 1],  # [min no off, max no off, min ad size, max ad size]
-                 F_Ln = 2,
+                 F_Ln = 0.2,
                  K = 10,
                  juv_disFd_lmt = 0,
                  ad_disFd_lmt = 0,

@@ -31,12 +31,12 @@ def run(filename, sim_len):
 
     print start_col.colony_dict()
 
-    #this_pop = Poplt([start_col], filename)
+    this_pop = Poplt([start_col], filename)
 
-    #print start_col.colony_list_to_append()
+    print start_col.colony_list_to_append()
 
-    #(3) Repeated population timesteps
-'''
+   #(3) Repeated population timesteps
+
     for run in range(0, sim_len):
         if not this_pop.poplt_list:
             print "population has gone extinct"
@@ -48,5 +48,5 @@ def run(filename, sim_len):
     #(4) END
     print "end, check file"
 
-'''
+
 run("pink_cookie", 2)

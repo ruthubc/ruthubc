@@ -58,14 +58,16 @@ class Colony(object):
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
-    #TODO: check this works, that the function works correctly
+    #checked fe  12, but need to make sure that the variables are the correct type
     def cal_col_food(self, F_Ln, K):  # returns tot colony food per capita
         # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
-        N = len(self.ad_list) - 1  # to maKe F_Ln actually lone ind food rather than colony of size
+        N_tot = len(self.ad_list) # to maKe F_Ln actually lone ind food rather than colony of size
+        N = N_tot - 1  # to maKe F_Ln actually lone ind food rather than colony of size
         K = K - 1  # same reason
-        intcp = 1 / (1 - F_Ln)  # intercept
-        cal_colFood = (intcp + (1 - (N / K)) * (-1 - (N / K))) / intcp
-        tot_col_food = cal_colFood * len(self.ad_list)
+        brac = 1-(N/K)    
+        F = 1 / (1 - F_Ln)  # intercept
+        cal_colFood = (F + brac*(-brac))/F
+        tot_col_food = cal_colFood * N_tot
         return tot_col_food
 
     #TODO: change the offspring variables to a list
