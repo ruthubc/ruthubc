@@ -9,29 +9,14 @@ import numpy as np
 from heapq import nsmallest
 
 
-def CompFunction(slp, num_juv, col_fd):  # calculates the med rank, returns med rank
-    print "starting loop"
-    tot = 0
-    med_rnk = num_juv / 2
-    med_diff = float(num_juv) / 100  # depends how accurate I want it to be
+class Colony(object):
+    '''making colony class'''
 
-    xbr = float(col_fd / num_juv)  # the average amount of food per individual
-    high_tot = -1
-    low_tot = -1
 
-    print "starting loop, colony food =  %s" % col_fd
 
-    # TODO: Come up with better conditions for the loop
-    while high_tot == -1 or low_tot == -1:
-        oneRnk = np.floor((-1 + med_rnk * slp + xbr) / slp)  # The max rank where everyone gets 1 (max) food
-        mxRnk = np.floor(((med_rnk * slp) + xbr) / slp)  # the max rank that receives food
+def fnd_tot(oneRnk, mxRnk, num_juv, slp, med_rnk, xbr):  # returns the calculated total food for a given med_rank etc.
 
         sq_tot = oneRnk + 1  # as the highest ranked ind is rank zero
-        print "one rank:",
-        print oneRnk,
-        print "max Rank:",
-        print mxRnk
-
         if oneRnk > 0 and mxRnk <= num_juv:  # (1) some get 1 food, others get zero food -> sum of square bit and then sum of slp
             print "option one"
             slp_tot = (1 + slp) / (2 * slp)
@@ -55,15 +40,16 @@ def CompFunction(slp, num_juv, col_fd):  # calculates the med rank, returns med 
 
         else:
             print "It didn't work"
+            break
 
-        print "calculated total = ",
-        print tot
+        return tot
 
+#TODO: think of a better way to do the loop
+def adjustMed_rnk(tot, col_fd, med_rnk, med_diff):  # adjusts the med rank to make it closer to the actual colony food
         if tot > col_fd:  # changing the med rank! cal is too high
-            high_rnk = med_rnk
             med_rnk -= med_diff
             high_tot = tot
-            print "cal food higher than colony food,  med rnk = %s, new med_rank = %s, high_tot = %s" % (high_rnk, med_rnk, high_tot)
+            print "cal food higher than colony food,  med rnk = %s, new med_rank = %s, high_tot = %s" % (med_rnk, high_tot)
 
         elif tot < col_fd:  # cal food is too low
             low_rnk = med_rnk
@@ -73,13 +59,53 @@ def CompFunction(slp, num_juv, col_fd):  # calculates the med rank, returns med 
 
         else:
             print "done"
+            
+        return (med_rnk)
 
-    print "Now the loop has ended, cal tot = %s " % tot
-    print "actual col tot we were aiming for = %s " % col_fd
-    print "high total = %s, low tot = %s " % (high_tot, low_tot)
-    fin_md_rnk = nsmallest(1, [low_tot, high_tot], key = lambda x: abs(x - col_fd))[0]  # returns the number nearest to actual col_fd
+def comp_loop_function(slp, num_juv, col_fd, xbr, med_rnk, med_diff):
+        oneRnk = np.floor((-1 + med_rnk * slp + xbr) / slp)  # The max rank where everyone gets 1 (max) food
+        mxRnk = np.floor(((med_rnk * slp) + xbr) / slp)  # the max rank that receives food
+        print "one rank:",
+        print oneRnk,
+        print "max Rank:",
+        print mxRnk
 
-    if fin_md_rnk == low_tot:
-        return low_rnk
-    else:
-        return high_rnk
+        tot = fnd_tot(oneRnk, mxRnk, num_juv, slp, med_rnk, xbr)
+
+        print "calculated total = ",
+        print tot
+
+
+        
+        print "Now the loop has ended, cal tot = %s " % tot
+        print "actual col tot we were aiming for = %s " % col_fd
+        print "high total = %s, low tot = %s " % (high_tot, low_tot)
+        fin_md_rnk = nsmallest(1, [low_tot, high_tot], key = lambda x: abs(x - col_fd))[0]  # returns the number nearest to actual col_fd
+
+        if fin_md_rnk == low_tot:
+            return low_rnk
+        else:
+            return high_rnk
+
+
+
+def CompFunction(slp, num_juv, col_fd):  # calculates the med rank, returns med rank
+    print "starting loop"
+    tot = 0
+    med_rnk = num_juv / 2
+    med_diff = float(num_juv) / 100  # depends how accurate I want it to be
+
+    xbr = float(col_fd / num_juv)  # the average amount of food per individual
+    high_tot = -1
+    low_tot = -1
+
+    print "starting loop, colony food =  %s" % col_fd
+
+    # TODO: Come up with better conditions for the loop
+    while high_tot == -1 or low_tot == -1:
+        for run in run_range(1000): # preventing an infinite loop, allowing it to run only 1000 times
+            if not 
+
+
+        
+

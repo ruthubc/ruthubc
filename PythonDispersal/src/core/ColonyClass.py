@@ -58,7 +58,7 @@ class Colony(object):
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
-    #checked fe  12, but need to make sure that the variables are the correct type
+    #checked feb  12, but need to make sure that the variables are the correct type
     def cal_col_food(self, F_Ln, K):  # returns tot colony food per capita
         # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
         N_tot = len(self.ad_list) # to maKe F_Ln actually lone ind food rather than colony of size
