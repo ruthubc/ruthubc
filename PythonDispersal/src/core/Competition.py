@@ -9,103 +9,103 @@ import numpy as np
 from heapq import nsmallest
 
 
-class Colony(object):
+class Competition(object):
     '''making colony class'''
 
+    def __init__(self, col_fd, num_juv, slp, oneRnk = 0, mxRnk = 0):
+        self.oneRnk = oneRnk
+        self.mxRnk = mxRnk
+        self.cal_tot = 0
+        self.col_fd = col_fd
+        self.num_juv = num_juv
+        self.slp = slp
+        self.xbr = float(self.col_fd / self.num_juv)
+        self.med_rnk = self.num_juv / 2
+        self.med_diff = float(num_juv) / 100
+        self.high_tot = -1
+        self.low_tot = -1
+        self.low_rnk = 0
+        self.high_rnk = 0
 
+    def fnd_tot(self):  # returns the calculated total food for a new med_rank etc.
 
-def fnd_tot(oneRnk, mxRnk, num_juv, slp, med_rnk, xbr):  # returns the calculated total food for a given med_rank etc.
-
-        sq_tot = oneRnk + 1  # as the highest ranked ind is rank zero
-        if oneRnk > 0 and mxRnk <= num_juv:  # (1) some get 1 food, others get zero food -> sum of square bit and then sum of slp
+        sq_tot = self.oneRnk + 1  # as the highest ranked ind is rank zero
+        if self.oneRnk > 0 and self.mxRnk <= self.num_juv:  # (1) some get 1 food, others get zero food -> sum of square bit and then sum of slp
             print "option one"
-            slp_tot = (1 + slp) / (2 * slp)
+            slp_tot = (1 + self.slp) / (2 * self.slp)
             tot = sq_tot + slp_tot
 
-        elif oneRnk > 0 and mxRnk > (num_juv - 1):  # (2) some get 1 food, none get zero food -> sum of square bit then the slope bit to num_spis -1
+        elif self.oneRnk > 0 and self.mxRnk > (self.num_juv - 1):  # (2) some get 1 food, none get zero food -> sum of square bit then the slope bit to num_spis -1
             # eqn for slp total already taking into account num_spi -1
             print "option two"
-            fstBkt = -1 + (med_rnk * slp) + xbr - (slp * num_juv)
-            sndBkt = 1 + slp + (med_rnk * slp) + xbr - (slp * num_juv)
-            slp_tot = -((fstBkt * sndBkt) / (2 * slp))
+            fstBkt = -1 + (self.med_rnk * self.slp) + self.xbr - (self.slp * self.num_juv)
+            sndBkt = 1 + self.slp + (self.med_rnk * self.slp) + self.xbr - (self.slp * self.num_juv)
+            slp_tot = -((fstBkt * sndBkt) / (2 * self.slp))
             tot = sq_tot + slp_tot
 
-        elif oneRnk <= 0 and mxRnk <= (num_juv - 1):  # (3) no max or minimum, none get 1 food, some get zero food
+        elif self.oneRnk <= 0 and self.mxRnk <= (self.num_juv - 1):  # (3) no max or minimum, none get 1 food, some get zero food
             print "option three"
-            tot = (((med_rnk * slp) + xbr) * (slp + (med_rnk * slp) + xbr)) / (2 * slp)  # there is no square bit
+            tot = (((self.med_rnk * self.slp) + self.xbr) * (self.slp + (self.med_rnk * self.slp) + self.xbr)) / (2 * self.slp)  # there is no square bit
 
-        elif oneRnk <= 0 and mxRnk > (num_juv - 1):
+        elif self.oneRnk <= 0 and self.mxRnk > (self.num_juv - 1):
             print "option four"
-            tot = -0.5 * num_juv * (-slp - (2 * med_rnk * slp) - (2 * xbr) + (slp * num_juv))
+            tot = -0.5 * self.num_juv * (-self.slp - (2 * self.med_rnk * self.slp) - (2 * self.xbr) + (self.slp * self.num_juv))
 
         else:
             print "It didn't work"
-            break
 
-        return tot
+        self.cal_tot = tot
 
 #TODO: think of a better way to do the loop
-def adjustMed_rnk(tot, col_fd, med_rnk, med_diff):  # adjusts the med rank to make it closer to the actual colony food
-        if tot > col_fd:  # changing the med rank! cal is too high
-            med_rnk -= med_diff
-            high_tot = tot
-            print "cal food higher than colony food,  med rnk = %s, new med_rank = %s, high_tot = %s" % (med_rnk, high_tot)
+    def adjustMed_rnk(self):  # adjusts the med rank to make it closer to the actual colony food
+            if self.cal_tot > self.col_fd:  # changing the med rank! cal is too high
+                self.high_tot = self.med_rnk
+                self.med_rnk -= self.med_diff
+                self.high_tot = self.cal_tot
+                print "cal food higher than colony food,  med rnk = %s, high_tot = %s" % (self.med_rnk, self.high_tot)
 
-        elif tot < col_fd:  # cal food is too low
-            low_rnk = med_rnk
-            med_rnk += med_diff
-            low_tot = tot
-            print "cal food higher than colony food, med rnk = %s,  new med_rank = %s, low_tot = %s" % (low_rnk, med_rnk, low_tot)
+            elif self.cal_tot < self.col_fd:  # cal food is too low
+                self.low_rnk = self.med_rnk
+                self.med_rnk += self.med_diff
+                self.low_tot = self.cal_tot
+                print "cal food higher than colony food, med rnk = %s, low_tot = %s" % (self.med_rnk, self.low_tot)
 
-        else:
-            print "done"
-            
-        return (med_rnk)
 
-def comp_loop_function(slp, num_juv, col_fd, xbr, med_rnk, med_diff):
-        oneRnk = np.floor((-1 + med_rnk * slp + xbr) / slp)  # The max rank where everyone gets 1 (max) food
-        mxRnk = np.floor(((med_rnk * slp) + xbr) / slp)  # the max rank that receives food
-        print "one rank:",
-        print oneRnk,
-        print "max Rank:",
-        print mxRnk
+    def comp_loop_function(self):
 
-        tot = fnd_tot(oneRnk, mxRnk, num_juv, slp, med_rnk, xbr)
+        self.oneRnk = np.floor((-1 + self.med_rnk * self.slp + self.xbr) / self.slp)  # The max rank where everyone gets 1 (max) food
+        self.mxRnk = np.floor(((self.med_rnk * self.slp) + self.xbr) / self.slp)  # the max rank that receives food
+
+        print "one rank",
+        print self.oneRnk
+        print "max rank",
+        print self.mxRnk
+
+        self.fnd_tot()  # finding the tot with the new med_rnk
+        self.adjustMed_rnk()  # adjusting med_rnk
 
         print "calculated total = ",
-        print tot
+        print self.cal_tot
 
+    def CompFunction(self):  # calculates the med rank, returns med rank
+        run = 0
+        print "starting loop, colony food =  %s" % self.col_fd
 
-        
-        print "Now the loop has ended, cal tot = %s " % tot
-        print "actual col tot we were aiming for = %s " % col_fd
-        print "high total = %s, low tot = %s " % (high_tot, low_tot)
-        fin_md_rnk = nsmallest(1, [low_tot, high_tot], key = lambda x: abs(x - col_fd))[0]  # returns the number nearest to actual col_fd
+        # TODO: Come up with better conditions for the loop
+        while self.high_tot == -1 or self.low_tot == -1:
+            run += 1
+            if run < 2000:
+                self.comp_loop_function()
+            else:
+                print "infinite loop, oh dear"
+                break
 
-        if fin_md_rnk == low_tot:
-            return low_rnk
+        print "Now the loop has ended, cal tot = %s " % self.cal_tot
+        print "actual col food total we were aiming for = %s " % self.col_fd
+        print "high total = %s, low tot = %s " % (self.high_tot, self.low_tot)
+        fin_md_rnk = nsmallest(1, [self.low_tot, self.high_tot], key = lambda x: abs(x - self.col_fd))[0]  # returns the number nearest to actual col_fd
+
+        if fin_md_rnk == self.low_tot:
+            return self.low_rnk
         else:
-            return high_rnk
-
-
-
-def CompFunction(slp, num_juv, col_fd):  # calculates the med rank, returns med rank
-    print "starting loop"
-    tot = 0
-    med_rnk = num_juv / 2
-    med_diff = float(num_juv) / 100  # depends how accurate I want it to be
-
-    xbr = float(col_fd / num_juv)  # the average amount of food per individual
-    high_tot = -1
-    low_tot = -1
-
-    print "starting loop, colony food =  %s" % col_fd
-
-    # TODO: Come up with better conditions for the loop
-    while high_tot == -1 or low_tot == -1:
-        for run in run_range(1000): # preventing an infinite loop, allowing it to run only 1000 times
-            if not 
-
-
-        
-
+            return self.high_rnk
