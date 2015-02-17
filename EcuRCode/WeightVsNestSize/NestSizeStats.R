@@ -3,7 +3,7 @@
 # Author: Ruth
 ###############################################################################
 
-library (lme4)
+#library (lme4)
 library(lmerTest) # this puts pvalue in lmer
 library(glmmADMB)
 library(ICC)
@@ -48,7 +48,7 @@ summary(SglMtWeiMod1)
 SglMtWeiRedMod <- lmer(logWeight ~ (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
 modelPlot(SglMtWeiRedMod) # same for full model
 
-anova(SglMtWeiRedMod, SglMtWeiMod1 )
+anova(SglMtWeiRedMod, SglMtWeiMod1 ) # likihood ratio model
 
 
 ################## Only 44.4 singe nests and the prob source nest 44.4EX03####################
@@ -368,7 +368,7 @@ anova(cvLegMod1)
 ### removing square interation term and testing
 
 cvLegMod2a<- lmer(logcvByNLeg ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				 (1|NestID), data = SpiNestAve, REML = FALSE)
+				 (1|NestID), data = SpiNestAve,  REML = FALSE)
  
  anova(cvLegMod1, cvLegMod2a)
  
