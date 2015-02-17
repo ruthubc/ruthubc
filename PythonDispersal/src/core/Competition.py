@@ -9,19 +9,19 @@ import numpy as np
 from heapq import nsmallest
 
 
-class Competition(object):
+class Comp(object):
     '''making colony class'''
 
-    def __init__(self, col_fd, num_juv, slp, oneRnk = 0, mxRnk = 0):
-        self.oneRnk = oneRnk
-        self.mxRnk = mxRnk
+    def __init__(self, col_fd, num_juv, slp):
+        self.oneRnk = 0
+        self.mxRnk = 0
         self.cal_tot = 0
-        self.col_fd = col_fd
+        self.col_fd = float(col_fd)
         self.num_juv = num_juv
         self.slp = slp
         self.xbr = float(self.col_fd / self.num_juv)
         self.med_rnk = self.num_juv / 2
-        self.med_diff = float(num_juv) / 100
+        self.med_diff = float(num_juv) / 1000
         self.high_tot = -1
         self.low_tot = -1
         self.low_rnk = 0
@@ -30,7 +30,7 @@ class Competition(object):
     def fnd_tot(self):  # returns the calculated total food for a new med_rank etc.
 
         sq_tot = self.oneRnk + 1  # as the highest ranked ind is rank zero
-        if self.oneRnk > 0 and self.mxRnk <= self.num_juv:  # (1) some get 1 food, others get zero food -> sum of square bit and then sum of slp
+        if self.oneRnk > 0 and self.mxRnk <= (self.num_juv-1):  # (1) some get 1 food, others get zero food -> sum of square bit and then sum of slp
             print "option one"
             slp_tot = (1 + self.slp) / (2 * self.slp)
             tot = sq_tot + slp_tot
@@ -55,20 +55,26 @@ class Competition(object):
             print "It didn't work"
 
         self.cal_tot = tot
+        print "the total",
+        print self.cal_tot
 
 #TODO: think of a better way to do the loop
     def adjustMed_rnk(self):  # adjusts the med rank to make it closer to the actual colony food
             if self.cal_tot > self.col_fd:  # changing the med rank! cal is too high
-                self.high_tot = self.med_rnk
+                self.high_rnk = self.med_rnk
                 self.med_rnk -= self.med_diff
                 self.high_tot = self.cal_tot
-                print "cal food higher than colony food,  med rnk = %s, high_tot = %s" % (self.med_rnk, self.high_tot)
+                print "cal food higher than colony food, col fd = %s, cal food = %s,  med rnk = %s, high_tot = %s" % (self.col_fd, self.cal_tot, self.med_rnk, self.high_tot)
 
             elif self.cal_tot < self.col_fd:  # cal food is too low
                 self.low_rnk = self.med_rnk
                 self.med_rnk += self.med_diff
                 self.low_tot = self.cal_tot
-                print "cal food higher than colony food, med rnk = %s, low_tot = %s" % (self.med_rnk, self.low_tot)
+                print "cal food lower than colony food, col fd = %s, cal food = %s,  med rnk = %s, low_tot = %s" % (self.col_fd, self.cal_tot, self.med_rnk, self.low_tot)
+
+            elif self.cal_tot == self.col_fd:
+                self.low_tot = -2
+                self.high_tot = -2
 
 
     def comp_loop_function(self):
@@ -103,9 +109,12 @@ class Competition(object):
         print "Now the loop has ended, cal tot = %s " % self.cal_tot
         print "actual col food total we were aiming for = %s " % self.col_fd
         print "high total = %s, low tot = %s " % (self.high_tot, self.low_tot)
-        fin_md_rnk = nsmallest(1, [self.low_tot, self.high_tot], key = lambda x: abs(x - self.col_fd))[0]  # returns the number nearest to actual col_fd
 
-        if fin_md_rnk == self.low_tot:
-            return self.low_rnk
+        if self.cal_tot == self.col_fd:
+            return self.med_rnk  #[self.cal_tot, self.med_rnk]
         else:
-            return self.high_rnk
+            fin_md_rnk = nsmallest(1, [self.low_tot, self.high_tot], key = lambda x: abs(x - self.col_fd))[0]  # returns the number nearest to actual col_fd
+            if fin_md_rnk == self.low_tot:
+                return self.med_rnk # [self.cal_tot, self.low_rnk]
+            else:
+                return self.med_rnk # [self.cal_tot, self.high_rnk]

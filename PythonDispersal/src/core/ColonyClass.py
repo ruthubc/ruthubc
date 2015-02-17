@@ -6,10 +6,12 @@ Created on 2013-02-12
 #pylint: disable= too-many-statements, line-too-long, C
 
 from collections import OrderedDict
+import numpy as np
 from AdultClass import Adult
 from JuvClass import Juv
 from SpiderClass import Spider
-from Competition import CompFunction
+from Competition import Comp
+import random
 
 
 class Colony(object):
@@ -64,11 +66,16 @@ class Colony(object):
         N_tot = len(self.ad_list) # to maKe F_Ln actually lone ind food rather than colony of size
         N = N_tot - 1  # to maKe F_Ln actually lone ind food rather than colony of size
         K = K - 1  # same reason
-        brac = 1-(N/K)    
+        brac = 1-(N/K)
         F = 1 / (1 - F_Ln)  # intercept
         cal_colFood = (F + brac*(-brac))/F
         tot_col_food = cal_colFood * N_tot
         return tot_col_food
+
+    def col_food_random(self, F_Ln, K): # randomly fluctuates colony food
+        col_food = self.cal_col_food(F_Ln, K)
+        rnd = random.uniform(-0.5, 0.5)
+        self.colony_food = col_food * rnd
 
     #TODO: change the offspring variables to a list
     def col_num_off(self, off_nmbr_list):  # Calculating the number of offspring and assigning number to adult
@@ -106,11 +113,42 @@ class Colony(object):
             i = index[0]
             self.juv_list[i].rank = i
 
+    def cal_ind_food(self, comp_slp, ind_rnk):  # TODO: check this works
+        xbr = self.colony_food / float(len(self.juv_list))
+        tm1 = comp_slp * self.cal_med_rnk
+        tm2 = xbr - ((xbr * float(ind_rnk)) / self.cal_med_rnk)
+        tm12 = (tm1 * tm2) / np.power(xbr, 2)
+        CompEqn = xbr * (1 + tm12)
+        if CompEqn > 1:
+            return 1
+        elif CompEqn < 0:
+            return 0
+        else:
+            return CompEqn
+
     def juv_fd_assign(self, comp_slp):
         for spider in self.juv_list:
-            spider.assign_ind_fd(self.colony_food, len(self.juv_list), self.cal_med_rnk, comp_slp)
+            jv_rnk = spider.rank
+            ind_fd = self.cal_ind_food(comp_slp, jv_rnk)
+            spider.juv_fd = ind_fd
+
+    def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
+        ind_fd = self.colony_food/ float(len(self.juv_list))
+        for spider in self.juv_list:
+            spider.juv_fd = ind_fd
+
+    def distr_food(self, cmp_slp):
+        if cmp_slp == 0:
+            self.zeroSlp_jv_fd()
+        else:
+            self.juv_rnk_assign()  # assign ranks to juvs
+            cmp_obj = Comp(self.colony_food, len(self.juv_list), cmp_slp)  # making competition object
+            self.cal_med_rnk = cmp_obj.CompFunction()
+            self.juv_fd_assign(cmp_slp)
 
     def moult(self, min_juvFd):
+        #TODO:     self.ad_list = [Adult(i.SpiderList(), tot_fd = i.juv_fd) for i in moult_list]  # making adults from juvs
+        #TypeError: __init__() got an unexpected keyword argument 'tot_fd'
         moult_list = [i for i in self.juv_list if i.juv_fd >= min_juvFd]
         self.ad_list = [Adult(i.SpiderList(), tot_fd = i.juv_fd) for i in moult_list]  # making adults from juvs
         self.juv_list = []  # emptying the old juv list
@@ -127,12 +165,10 @@ class Colony(object):
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
 
             #(4) Calculate colony food + random fluctuation
-        self.cal_col_food(F_Ln, K)  # TODO:make random flucuation function
+        self.col_food_random(F_Ln, K)  # TODO:make random flucuation function
 
             #(5) food calculated and assigned to juvs with random
-        self.juv_rnk_assign()
-        self.cal_med_rnk = CompFunction(comp_slp, len(self.juv_list), self.colony_food)
-        self.juv_fd_assign(comp_slp)
+        self.distr_food(comp_slp)
 
             #(6) Adults die
         self.ad_list = []  # emptying the adult list - all adults die

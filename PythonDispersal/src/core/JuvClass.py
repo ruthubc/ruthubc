@@ -28,3 +28,7 @@ class Juv(Spider):
         else:
             IndFd = CompEqn
         self.juv_fd = IndFd
+        
+    def slp_zero_fd(self, colony_fd, num_juvs):
+        ind_fd = colony_fd/float(num_juvs)
+        self.juv_fd

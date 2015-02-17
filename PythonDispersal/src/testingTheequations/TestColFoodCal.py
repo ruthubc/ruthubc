@@ -17,9 +17,9 @@ def cal_col_food(N, F_Ln, K):  # returns tot colony food per capita
 
 
 Fd_lone = 0.2
-Carr_cap = 20.0
+Carr_cap = 2000.0
 
-List_of_N = range(1, 45)
+List_of_N = range(1, int(Carr_cap*2.5))
 print List_of_N
 
 colFd = []
@@ -33,5 +33,5 @@ for N in List_of_N:
 import matplotlib.pyplot as plt
 plt.plot(List_of_N, colFd)
 plt.ylim([0, 1.1])
-plt.xlim([1, 45])
+plt.xlim([1, int(Carr_cap*2.5)])
 plt.show()
