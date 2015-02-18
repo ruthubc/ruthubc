@@ -17,7 +17,7 @@ def cal_col_food(N, F_Ln, K):  # returns tot colony food per capita
 
 
 Fd_lone = 0.2
-Carr_cap = 2000.0
+Carr_cap = float(100.0)
 
 List_of_N = range(1, int(Carr_cap*2.5))
 print List_of_N

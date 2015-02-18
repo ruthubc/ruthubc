@@ -22,14 +22,13 @@ class Poplt(object):
                  pop_age = 0,
                  colony_ID = 1,
                  new_cols = [],
-                 off_nmbr_list = [2, 4, 0.1, 1],  # [min no off, max no off, min ad size, max ad size]
+                 off_nmbr_list = [4, 8, 0.1, 1],  # [min no off, max no off, min ad size, max ad size]
                  F_Ln = 0.2,
-                 K = 10,
+                 K = 100.0,
                  juv_disFd_lmt = 0,
                  ad_disFd_lmt = 0,
                  min_juv_fd = 0,
                  comp_slp = 0.1
-                 ################### continue adding variables so colony time step will work!
                  ):
         self.poplt_list = poplt_list
         self.filename = filename
@@ -40,11 +39,11 @@ class Poplt(object):
         self.new_cols = new_cols
         self.off_nmbr_list = off_nmbr_list
         self.F_Ln = F_Ln
-        self.K = K
-        self.juv_disFd_lmt = juv_disFd_lmt
-        self.ad_disFd_lmt = ad_disFd_lmt
-        self.min_juv_fd = min_juv_fd
-        self.comp_slp = comp_slp
+        self.K = float(K)
+        self.juv_disFd_lmt = float(juv_disFd_lmt)
+        self.ad_disFd_lmt = float(ad_disFd_lmt)
+        self.min_juv_fd = float(min_juv_fd)
+        self.comp_slp = float(comp_slp)
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
@@ -71,7 +70,6 @@ class Poplt(object):
         for col in self.poplt_list:
             col.colony_timestep(self.F_Ln, self.K, self.comp_slp, self.off_nmbr_list, self.juv_disFd_lmt, self.ad_disFd_lmt,
                                 self.pop_dispersal_list, self.min_juv_fd, self.pop_export_list)
-            self.update_dispersal_list(col)
 
     def disp_col_timestep(self):
         for colony in self.new_cols:
@@ -97,7 +95,7 @@ class Poplt(object):
         self.update_pop_age()
 
         #(2) Colony time step for all colonies
-        self.allCols_OneTimestep()()
+        self.allCols_OneTimestep()
 
         #(3) Make dispersers into new colonies
         self.create_new_col()

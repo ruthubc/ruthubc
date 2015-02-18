@@ -9,7 +9,7 @@ from core.Competition import Comp
 import itertools
 import pandas as pd
 
-a = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4, 5000],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] # col fod, [um juvs] [slp]
+a = [[2.0, 20.0,30.0, 40.0, 50.0, 500.0, 458.4, 5000],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] # col fod, [um juvs] [slp]
 
 combinations = list(itertools.product(*a))
 

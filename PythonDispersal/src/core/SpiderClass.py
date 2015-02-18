@@ -13,13 +13,13 @@ class Spider(object):
         '''defining the spider object'''
         self.rank = rank
         self.die = die  # 0 means not to die, 1 means die!
-        self.food = food
+        self.food = float(food)
 
     def __str__(self):
         return "rank: %s,  die: %s, food: %s" % (self.rank, self.die, self.food)
 
     def SpiderList(self):
-        return [self.rank, self.die]
+        return [self.rank, self.die, self.food]
 
     def update_rank(self, rank):  # to update relative rank to x
         self.rank = rank

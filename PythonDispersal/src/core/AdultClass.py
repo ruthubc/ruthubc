@@ -22,10 +22,10 @@ class Adult(Spider):
                 self.disperse = 1
 
     def noOffspring(self, off_nmbr_list):  # updates the number of offspring an adult have depends on food while juv and adult
-        OMn = off_nmbr_list[0]  # min number of offspring
-        OMx = off_nmbr_list[1]  # max number of offspring
-        SMn = off_nmbr_list[2]  # min adult size that can reproduce
-        SMx = off_nmbr_list[3]  # max adult size (or food)
+        OMn = float(off_nmbr_list[0])  # min number of offspring
+        OMx = float(off_nmbr_list[1])  # max number of offspring
+        SMn = float(off_nmbr_list[2])  # min adult size that can reproduce
+        SMx = float(off_nmbr_list[3])  # max adult size (or food)
         C = -((-OMn * SMx) + (OMx * SMn)) / (SMx - SMn)
         M = (-OMx + OMn) / (SMx - SMn)
         NumOff = round((M * self.food) + C)
