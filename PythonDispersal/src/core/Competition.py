@@ -19,7 +19,7 @@ class Comp(object):
         self.col_fd = float(col_fd)
         self.num_juv = num_juv
         self.slp = slp
-        self.xbr = float(self.col_fd / self.num_juv)
+        self.xbr = 0
         self.med_rnk = self.num_juv / 2
         self.med_diff = float(num_juv) / 1000
         self.high_tot = -1
@@ -89,6 +89,8 @@ class Comp(object):
         #print "calculated total = ", self.cal_tot
 
     def CompFunction(self):  # calculates the med rank, returns med rank
+        print 'comp num juvs', self.num_juv
+        self.xbr = float(self.col_fd / self.num_juv)
         run = 0
         #print "starting loop, colony food =  %s" % self.col_fd
 

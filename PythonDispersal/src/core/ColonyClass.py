@@ -38,6 +38,7 @@ class Colony(object):
         self.cal_med_rnk = cal_med_rnk
         self.slope = slope
         self.num_juvs = 0 # as the juv list gets wiped before the end of the loop
+        self.num_ads = 0 # to make sure that I get 
 
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
@@ -54,7 +55,7 @@ class Colony(object):
         d = OrderedDict()
         d['colony_ID'] = self.colony_ID
         d['colony_age'] = self.colony_age
-        d['num ads'] = len(self.ad_list)
+        d['num ads'] = self.num_ads
         d['numjuvs'] = self.num_juvs
         d['colony_food'] = self.colony_food
         d['dispersers'] = len(self.dispersers)
@@ -107,21 +108,20 @@ class Colony(object):
 
     def spis_to_dis_lst(self):  # makes a list of dispersers and removes them from the old colony
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
+        print "number of dispersers:", len(self.dispersers)
         self.ad_list = [i for i in self.ad_list if i.disperse == 0]
-        return self.dispersers
+
 
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
         self.num_juvs = no_new_off
         print "number of offspring",
-        print no_new_off        
+        print no_new_off
         for num in range (0, no_new_off):
             self.juv_list.extend([Juv()])
-        print 'length of juv list', len(self.juv_list)   
-        
-        #self.juv_list = [Juv()] * no_new_off # TODO: check this does the correct number and not one too many or too few
+        print 'length of juv list', len(self.juv_list)
+        # Could not do this, as everytime updated one juv, all were updatedself.juv_list = [Juv()] * no_new_off 
 
-    #TODO: Check that this works as not sure the last line of code will work, tho it should do
     def juv_rnk_assign(self):  # all juvs are the same size so ranked by location in list i.e randomly
         for index in enumerate(self.juv_list):
             i = index[0]
@@ -131,7 +131,7 @@ class Colony(object):
             #print 'juv-1 rnk',self.juv_list[i-1].rank
         #print 'juv rank list'
         #print [j.rank for j in self.juv_list]
-        
+
     def comp_slope(self):
         return self.slope * len(self.juv_list)
 
@@ -173,6 +173,7 @@ class Colony(object):
     def moult(self, min_juvFd):
         moult_list = [i for i in self.juv_list if i.juv_fd >= min_juvFd]
         self.ad_list = [Adult(i.SpiderList()) for i in moult_list]  # making adults from juvs
+        print 'number of juvs moulting', len(self.ad_list)
         self.juv_list = []  # emptying the old juv list
 
     def colony_list_to_append(self):  # returns dictionary **values** in list form
@@ -193,6 +194,7 @@ class Colony(object):
         self.distr_food()
 
             #(6) Adults die
+        self.num_ads = len(self.ad_list)
         self.ad_list = []  # emptying the adult list - all adults die
 
             #(7) Juvs moult or die
@@ -214,8 +216,9 @@ class Colony(object):
             # (2) adults decide whether to disperse
         self.cal_pot_juv_food(F_Ln, K, num_off_list)  # calculating potental juv food , written to colony
         self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt)
-        pop_dis_list = self.spis_to_dis_lst() + pop_dis_list  # adds spiders to population dispersal list
-        self.spis_to_dis_lst()  # puts the dipersed into a seperate list and removes from current colony
+        self.spis_to_dis_lst()
+        pop_dis_list = self.dispersers + pop_dis_list  # adds spiders to population dispersal list
+        self.dispersers = []  # clears dispersal list
 
         #rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
         self.core_colony_timestep(F_Ln, K, min_juv_fd, pop_export_list)

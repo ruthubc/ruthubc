@@ -14,7 +14,7 @@ from core.Functions import export_rownames
 
 
 def run(filename, sim_len):
-    #(1) write rownames to csv file
+    #(1) write rownames to csv fileh
 
     export_rownames(filename) # creating file with rownames
 
