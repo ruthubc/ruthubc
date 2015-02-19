@@ -37,6 +37,7 @@ class Colony(object):
         self.pot_juv_food = pot_juv_food
         self.cal_med_rnk = cal_med_rnk
         self.slope = slope
+        self.num_juvs = 0 # as the juv list gets wiped before the end of the loop
 
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
@@ -54,7 +55,7 @@ class Colony(object):
         d['colony_ID'] = self.colony_ID
         d['colony_age'] = self.colony_age
         d['num ads'] = len(self.ad_list)
-        d['numjuvs'] = len(self.juv_list)
+        d['numjuvs'] = self.num_juvs
         d['colony_food'] = self.colony_food
         d['dispersers'] = len(self.dispersers)
         return d
@@ -90,7 +91,7 @@ class Colony(object):
         [i.noOffspring(off_nmbr_list) for i in self.ad_list]
         off_list = [i.no_off for i in self.ad_list]
         no_new_off = sum(off_list)  # calc the total number of new offspring for the colony
-        return no_new_off
+        return no_new_off  #TODO: do I really have to return no new off??
 
     def cal_pot_juv_food(self, F_Ln, K, off_nmbr_list):  # updates potential juv food
         tot_food = self.cal_col_food(F_Ln, K)
@@ -111,16 +112,26 @@ class Colony(object):
 
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
+        self.num_juvs = no_new_off
         print "number of offspring",
-        print no_new_off
-        self.juv_list = [Juv()] * no_new_off # TODO: check this does the correct number and not one too many or too few
+        print no_new_off        
+        for num in range (0, no_new_off):
+            self.juv_list.extend([Juv()])
+        print 'length of juv list', len(self.juv_list)   
+        
+        #self.juv_list = [Juv()] * no_new_off # TODO: check this does the correct number and not one too many or too few
 
     #TODO: Check that this works as not sure the last line of code will work, tho it should do
     def juv_rnk_assign(self):  # all juvs are the same size so ranked by location in list i.e randomly
         for index in enumerate(self.juv_list):
             i = index[0]
             self.juv_list[i].rank = i
-
+            #print 'place in juv list', i
+            #print 'juv rank', self.juv_list[i].rank
+            #print 'juv-1 rnk',self.juv_list[i-1].rank
+        #print 'juv rank list'
+        #print [j.rank for j in self.juv_list]
+        
     def comp_slope(self):
         return self.slope * len(self.juv_list)
 
@@ -154,6 +165,7 @@ class Colony(object):
         else:
             c_slpe = self.comp_slope()
             self.juv_rnk_assign()  # assign ranks to juvs
+            print [j.rank for j in self.juv_list]
             cmp_obj = Comp(self.colony_food, len(self.juv_list), c_slpe)  # making competition object
             self.cal_med_rnk = cmp_obj.CompFunction()
             self.juv_fd_assign()

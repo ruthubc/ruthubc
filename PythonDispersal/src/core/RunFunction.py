@@ -35,7 +35,7 @@ def run(filename, sim_len):
 
     print start_col.colony_list_to_append()
 
-   #(3) Repeated population timesteps
+    #(3) Repeated population timesteps
 
     for run in range(0, sim_len):
         if not this_pop.poplt_list:
@@ -43,10 +43,10 @@ def run(filename, sim_len):
             break
         this_pop.one_poplt_timestep()
         print "population age:", 
-        print this_pop.poplt_age
+        print this_pop.pop_age
 
     #(4) END
     print "end, check file"
 
 
-run("pink_cookie", 2)
+run("pink_cookie.csv", 7)

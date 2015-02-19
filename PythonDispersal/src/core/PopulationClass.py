@@ -20,7 +20,7 @@ class Poplt(object):
                  pop_dispersal_list = [],
                  pop_export_list = [],
                  pop_age = 0,
-                 colony_ID = 1,
+                 colony_count = 1,
                  new_cols = [],
                  off_nmbr_list = [4, 8, 0.1, 1],  # [min no off, max no off, min ad size, max ad size]
                  F_Ln = 0.2,
@@ -35,7 +35,7 @@ class Poplt(object):
         self.pop_dispersal_list = pop_dispersal_list
         self.pop_export_list = pop_export_list
         self.pop_age = pop_age
-        self.colony_ID = colony_ID
+        self.colony_count = colony_count
         self.new_cols = new_cols
         self.off_nmbr_list = off_nmbr_list
         self.F_Ln = F_Ln
@@ -58,8 +58,9 @@ class Poplt(object):
     def create_new_col(self):  # sets up the dispersing spiders as new colonies
         #TODO: check works
         for spider in self.pop_dispersal_list:
-            self.colony_number += 1
-            col = Colony([spider], self.colony_number)
+            self.colony_count += 1
+            print 'new colony made, id:', self.colony_count
+            col = Colony([spider], colony_id = self.colony_count)
             self.new_cols.extend([col])
 
     def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list
@@ -85,10 +86,10 @@ class Poplt(object):
     def poplt_export(self):  # appends one time step of information to file
         f = open(self.filename, 'ab')
         appender = csv.writer(f)
-        for i in range(len(self.export_list)):  # writes list to file
-            print self.export_list[i]
-            appender.writerow(self.poplt_dict().values() + self.export_list[i])
-        self.export_list = []  # clears the list once it has been appended to the csv file
+        for i in range(len(self.pop_export_list)):  # writes list to file
+            print 'pop export list', self.pop_export_list[i]
+            appender.writerow(self.poplt_dict().values() + self.pop_export_list[i])
+        self.pop_export_list= []  # clears the list once it has been appended to the csv file
 
     def one_poplt_timestep(self):
         #(1) Add one to population age

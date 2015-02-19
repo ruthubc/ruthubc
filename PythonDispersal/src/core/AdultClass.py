@@ -13,7 +13,7 @@ from SpiderClass import Spider
 
 class Adult(Spider):
     def __init__(self, SpiderList = [0, 0, 0], disperse = 0, no_off = 0):  # make sure juv_fd updates to tot_fd
-        Spider.__init__(self, SpiderList[0], SpiderList[1], SpiderList[2])
+        Spider.__init__(self, SpiderList[0], SpiderList[1], SpiderList[2]) # [rank, die, food]
         self.disperse = disperse
         self.no_off = no_off
 
@@ -26,7 +26,13 @@ class Adult(Spider):
         OMx = float(off_nmbr_list[1])  # max number of offspring
         SMn = float(off_nmbr_list[2])  # min adult size that can reproduce
         SMx = float(off_nmbr_list[3])  # max adult size (or food)
-        C = -((-OMn * SMx) + (OMx * SMn)) / (SMx - SMn)
-        M = (-OMx + OMn) / (SMx - SMn)
-        NumOff = round((M * self.food) + C)
-        self.no_off = int(NumOff)
+        #TODO: stop C and M being calculated for each 
+        C = ((-OMn * SMx) + (OMx * SMn)) / (SMx - SMn)
+        #print 'c:', C
+        M = (OMn - OMx) / (SMx - SMn)
+        #print 'M:', M
+        NumOff = (-M * self.food) - C
+        self.no_off = int(round(NumOff))
+        #print 'food', self.food
+        #print 'numoff:', NumOff
+        #print round(NumOff)
