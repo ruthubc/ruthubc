@@ -111,7 +111,6 @@ class Colony(object):
         print "number of dispersers:", len(self.dispersers)
         self.ad_list = [i for i in self.ad_list if i.disperse == 0]
 
-
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
         self.num_juvs = no_new_off
@@ -185,6 +184,8 @@ class Colony(object):
             #Use just this one for colonies of females dispersed
 
             # (3) Adults reproduce
+
+
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
 
             #(4) Calculate colony food + random fluctuation
@@ -217,8 +218,14 @@ class Colony(object):
         self.cal_pot_juv_food(F_Ln, K, num_off_list)  # calculating potental juv food , written to colony
         self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt)
         self.spis_to_dis_lst()
-        pop_dis_list = self.dispersers + pop_dis_list  # adds spiders to population dispersal list
+        pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
+        print 'len dis lsit col', pop_dis_list
         self.dispersers = []  # clears dispersal list
 
-        #rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
-        self.core_colony_timestep(F_Ln, K, min_juv_fd, pop_export_list)
+        self.col_alive()
+        if self.alive == 'dead':
+            pop_export_list.append(self.colony_list_to_append())  # appends the dictionary values to population export list
+            print self.colony_dict()
+            print "all spiders dispersed"
+        else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
+            self.core_colony_timestep(F_Ln, K, min_juv_fd, pop_export_list)

@@ -51,7 +51,7 @@ class Poplt(object):
     def update_pop_age(self):  # adds one to the age
         self.pop_age += 1
 
-    def del_colony(self):  # deletes a colony from the population if it goes extinct
+    def del_colony(self):  # deletes a colony from the population if it goes 
         #works, checked Aug 14th
         self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive']
 
@@ -60,7 +60,7 @@ class Poplt(object):
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             print 'new colony made, id:', self.colony_count
-            col = Colony([spider], colony_id = self.colony_count)
+            col = Colony([spider], colony_ID = self.colony_count)
             self.new_cols.extend([col])
 
     def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list
@@ -99,7 +99,9 @@ class Poplt(object):
         #(2) Colony time step for all colonies
         self.allCols_OneTimestep()
 
+#TODO: Make if statment so this doesn't happen if no disperses
         #(3) Make dispersers into new colonies
+        print 'pop dis list lentgh', len(self.pop_dispersal_list)
         self.create_new_col()
 
         #(4) Iterate through new col list
