@@ -13,8 +13,8 @@ class Juv(Spider):
 
     def __init__(self, SpiderList = [0, 0, 0]):  # spider list = rank , die, food
         Spider.__init__(self, SpiderList[0], SpiderList[1], SpiderList[2])
-        
+
     def rank_assgn(self, rank):
         self.rank = rank
-        
+
 

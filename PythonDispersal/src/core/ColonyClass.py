@@ -26,7 +26,7 @@ class Colony(object):
                  dispersers = [],
                  pot_juv_food = 0,  # potential food to juvs
                  cal_med_rnk = 0,
-                 slope = 0.1):
+                 slope = 0.10):
         self.colony_ID = colony_ID
         self.ad_list = ad_list
         self.juv_list = juv_list
@@ -39,6 +39,7 @@ class Colony(object):
         self.slope = slope
         self.num_juvs = 0 # as the juv list gets wiped before the end of the loop
         self.num_ads = 0 # to make sure that I get 
+        self.num_dis = 0
 
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
@@ -109,6 +110,7 @@ class Colony(object):
     def spis_to_dis_lst(self):  # makes a list of dispersers and removes them from the old colony
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
         print "number of dispersers:", len(self.dispersers)
+        self.num_dis = len(self.dispersers)
         self.ad_list = [i for i in self.ad_list if i.disperse == 0]
 
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
@@ -125,11 +127,7 @@ class Colony(object):
         for index in enumerate(self.juv_list):
             i = index[0]
             self.juv_list[i].rank = i
-            #print 'place in juv list', i
-            #print 'juv rank', self.juv_list[i].rank
-            #print 'juv-1 rnk',self.juv_list[i-1].rank
-        #print 'juv rank list'
-        #print [j.rank for j in self.juv_list]
+
 
     def comp_slope(self):
         return self.slope * len(self.juv_list)
@@ -164,7 +162,6 @@ class Colony(object):
         else:
             c_slpe = self.comp_slope()
             self.juv_rnk_assign()  # assign ranks to juvs
-            print [j.rank for j in self.juv_list]
             cmp_obj = Comp(self.colony_food, len(self.juv_list), c_slpe)  # making competition object
             self.cal_med_rnk = cmp_obj.CompFunction()
             self.juv_fd_assign()
@@ -210,7 +207,7 @@ class Colony(object):
             # (10) Printing some things to the console
         print self.colony_dict()
 
-    def colony_timestep(self, F_Ln, K, comp_slp, num_off_list, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, pop_export_list):
+    def colony_timestep(self, F_Ln, K, num_off_list, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, pop_export_list):
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
@@ -219,9 +216,9 @@ class Colony(object):
         self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt)
         self.spis_to_dis_lst()
         pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
-        print 'len dis lsit col', pop_dis_list
         self.dispersers = []  # clears dispersal list
 
+        #TODO: make sure dead is being written to the csv file
         self.col_alive()
         if self.alive == 'dead':
             pop_export_list.append(self.colony_list_to_append())  # appends the dictionary values to population export list

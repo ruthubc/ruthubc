@@ -60,7 +60,7 @@ class Poplt(object):
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             print 'new colony made, id:', self.colony_count
-            col = Colony([spider], colony_ID = self.colony_count)
+            col = Colony(colony_ID = self.colony_count, ad_list = [spider], juv_list = [], colony_food = 0.0, alive = 'alive', dispersers = [])
             self.new_cols.extend([col])
 
     def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list
@@ -69,12 +69,12 @@ class Poplt(object):
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for col in self.poplt_list:
-            col.colony_timestep(self.F_Ln, self.K, self.comp_slp, self.off_nmbr_list, self.juv_disFd_lmt, self.ad_disFd_lmt,
+            col.colony_timestep(self.F_Ln, self.K, self.off_nmbr_list, self.juv_disFd_lmt, self.ad_disFd_lmt,
                                 self.pop_dispersal_list, self.min_juv_fd, self.pop_export_list)
 
     def disp_col_timestep(self):
         for colony in self.new_cols:
-            colony.core_colony_timestep(self.F_Ln, self.K, self.comp_slp, self.min_juv_fd, self.pop_export_list)
+            colony.core_colony_timestep(self.F_Ln, self.K, self.min_juv_fd, self.pop_export_list)
 
     def poplt_dict(self):  # population dictionary
         d = OrderedDict()
@@ -100,15 +100,18 @@ class Poplt(object):
         self.allCols_OneTimestep()
 
 #TODO: Make if statment so this doesn't happen if no disperses
-        #(3) Make dispersers into new colonies
-        print 'pop dis list lentgh', len(self.pop_dispersal_list)
-        self.create_new_col()
+        if self.pop_dispersal_list:
+            #(3) Make dispersers into new colonies
+            print 'pop dis list length', len(self.pop_dispersal_list)
+            self.create_new_col()
 
-        #(4) Iterate through new col list
-        self.disp_col_timestep()
+            #(4) Iterate through new col list
+            self.disp_col_timestep()
 
-        #(5) adds new colonies to the pop list and clears new colony list
-        self.new_cols_to_lst()
+            #(5) adds new colonies to the pop list and clears new colony list
+            self.new_cols_to_lst()
+        else:
+            print "no colonies dispersing"
 
         #(6) export results
         self.poplt_export()

@@ -49,4 +49,4 @@ def run(filename, sim_len):
     print "end, check file"
 
 
-run("pink_cookie.csv", 7)
+run("pink_cookie.csv", 2)
