@@ -21,6 +21,7 @@ class Adult(Spider):
         if self.food >= dis_fd:
                 self.disperse = 1
 
+    #TODO: check this works
     def noOffspring(self, off_nmbr_list):  # updates the number of offspring an adult have depends on food while juv and adult
         OMn = float(off_nmbr_list[0])  # min number of offspring
         OMx = float(off_nmbr_list[1])  # max number of offspring

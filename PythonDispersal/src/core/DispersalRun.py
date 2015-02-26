@@ -13,7 +13,7 @@ from core.PopulationClass import Poplt
 from core.Functions import export_rownames
 
 
-def run(filename, sim_len):
+def disperal_run(sim_len, filename, off_variables, F_Ln, K, jv_dis_lmt, ad_dis_lmt, juv_mlt_lmt, comp_slp):
     #(1) write rownames to csv fileh
 
     export_rownames(filename) # creating file with rownames
@@ -31,7 +31,7 @@ def run(filename, sim_len):
 
     print start_col.colony_dict()
 
-    this_pop = Poplt([start_col], filename)
+    this_pop = Poplt([start_col], filename,off_variables, F_Ln, K, jv_dis_lmt, ad_dis_lmt, juv_mlt_lmt, comp_slp)
 
     print start_col.colony_list_to_append()
 
@@ -48,5 +48,3 @@ def run(filename, sim_len):
     #(4) END
     print "end, check file"
 
-
-run("pink_cookie.csv", 2)

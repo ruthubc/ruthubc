@@ -22,24 +22,22 @@ class Colony(object):
                  juv_list = [],
                  colony_food=0.0,
                  colony_age=0,
-                 alive = 'alive',
                  dispersers = [],
                  pot_juv_food = 0,  # potential food to juvs
-                 cal_med_rnk = 0,
                  slope = 0.10):
         self.colony_ID = colony_ID
         self.ad_list = ad_list
         self.juv_list = juv_list
         self.colony_food = float(colony_food)
         self.colony_age = colony_age
-        self.alive = alive
         self.dispersers = dispersers
         self.pot_juv_food = pot_juv_food
-        self.cal_med_rnk = cal_med_rnk
         self.slope = slope
         self.num_juvs = 0 # as the juv list gets wiped before the end of the loop
         self.num_ads = 0 # to make sure that I get 
         self.num_dis = 0
+        self.alive = 'alive'
+        self.cal_med_rnk = 0.0
 
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
@@ -59,7 +57,8 @@ class Colony(object):
         d['num ads'] = self.num_ads
         d['numjuvs'] = self.num_juvs
         d['colony_food'] = self.colony_food
-        d['dispersers'] = len(self.dispersers)
+        d['dispersers'] = self.num_dis
+        d['colAlive'] = self.alive
         return d
 
     def col_age_increase(self):  # increases colony age by one
@@ -88,7 +87,6 @@ class Colony(object):
         print "food before random", col_food
         print "randomColFood", self.colony_food
 
-    #TODO: change the offspring variables to a list
     def col_num_off(self, off_nmbr_list):  # Calculating the number of offspring and assigning number to adult
         [i.noOffspring(off_nmbr_list) for i in self.ad_list]
         off_list = [i.no_off for i in self.ad_list]
@@ -105,7 +103,7 @@ class Colony(object):
         if self.pot_juv_food < juv_disFd_lmt:
             [i.disperseChoice(ad_disFd_lmt) for i in self.ad_list]
         else:
-            print "no dispersers"  # TODO: make this so it is recorded in the output - no dispersers
+            print "no dispersers"
 
     def spis_to_dis_lst(self):  # makes a list of dispersers and removes them from the old colony
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
@@ -148,8 +146,10 @@ class Colony(object):
     def juv_fd_assign(self):
         for spider in self.juv_list:
             jv_rnk = spider.rank
+            print "jv rank", jv_rnk
             ind_fd = self.cal_ind_food(jv_rnk)
             spider.juv_fd = ind_fd
+        print "juv_fd", [jv.juv_fd for jv in self.juv_list]
 
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))
@@ -218,7 +218,7 @@ class Colony(object):
         pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
         self.dispersers = []  # clears dispersal list
 
-        #TODO: make sure dead is being written to the csv file
+        #TODO: check why colony being written to file twice if all disperse
         self.col_alive()
         if self.alive == 'dead':
             pop_export_list.append(self.colony_list_to_append())  # appends the dictionary values to population export list

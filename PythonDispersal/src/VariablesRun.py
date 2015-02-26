@@ -4,7 +4,7 @@ Created on Aug 22, 2014
 @author: user
 '''
 
-from core.RunFunction import run
+from core.DispersalRun import run
 
 filename = "output.csv"
 sim_len = 10

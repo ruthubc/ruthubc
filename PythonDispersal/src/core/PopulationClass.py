@@ -14,16 +14,10 @@ import csv
 class Poplt(object):
     '''
     List of all colonies in the population    '''
-#TODO: remove unnecessary variables
     def __init__(self, poplt_list,  # list of colonies
                  filename = "",
-                 pop_dispersal_list = [],
-                 pop_export_list = [],
-                 pop_age = 0,
-                 colony_count = 1,
-                 new_cols = [],
                  off_nmbr_list = [4, 8, 0.1, 1],  # [min no off, max no off, min ad size, max ad size]
-                 F_Ln = 0.2,
+                 F_Ln = 0.2, # food to lone individual
                  K = 100.0,
                  juv_disFd_lmt = 0,
                  ad_disFd_lmt = 0,
@@ -32,11 +26,6 @@ class Poplt(object):
                  ):
         self.poplt_list = poplt_list
         self.filename = filename
-        self.pop_dispersal_list = pop_dispersal_list
-        self.pop_export_list = pop_export_list
-        self.pop_age = pop_age
-        self.colony_count = colony_count
-        self.new_cols = new_cols
         self.off_nmbr_list = off_nmbr_list
         self.F_Ln = F_Ln
         self.K = float(K)
@@ -44,6 +33,11 @@ class Poplt(object):
         self.ad_disFd_lmt = float(ad_disFd_lmt)
         self.min_juv_fd = float(min_juv_fd)
         self.comp_slp = float(comp_slp)
+        self.pop_dispersal_list = []
+        self.pop_export_list = []
+        self.pop_age = 0
+        self.colony_count = 1
+        self.new_col = []
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
@@ -56,11 +50,10 @@ class Poplt(object):
         self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive']
 
     def create_new_col(self):  # sets up the dispersing spiders as new colonies
-        #TODO: check works
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             print 'new colony made, id:', self.colony_count
-            col = Colony(colony_ID = self.colony_count, ad_list = [spider], juv_list = [], colony_food = 0.0, alive = 'alive', dispersers = [])
+            col = Colony(colony_ID = self.colony_count, ad_list = [spider], juv_list = [], colony_food = 0.0,  dispersers = [])
             self.new_cols.extend([col])
 
     def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list
@@ -99,7 +92,7 @@ class Poplt(object):
         #(2) Colony time step for all colonies
         self.allCols_OneTimestep()
 
-#TODO: Make if statment so this doesn't happen if no disperses
+
         if self.pop_dispersal_list:
             #(3) Make dispersers into new colonies
             print 'pop dis list length', len(self.pop_dispersal_list)

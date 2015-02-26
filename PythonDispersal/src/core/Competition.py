@@ -56,7 +56,6 @@ class Comp(object):
 
         self.cal_tot = tot
 
-#TODO: think of a better way to do the loop
     def adjustMed_rnk(self):  # adjusts the med rank to make it closer to the actual colony food
             if self.cal_tot > self.col_fd:  # changing the med rank! cal is too high
                 self.high_rnk = self.med_rnk
