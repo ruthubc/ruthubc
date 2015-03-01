@@ -21,18 +21,19 @@ class Colony(object):
                  ad_list = [],
                  juv_list = [],
                  colony_food=0.0,
+                 slope = 0.10,
                  colony_age=0,
                  dispersers = [],
-                 pot_juv_food = 0,  # potential food to juvs
-                 slope = 0.10):
+                 pot_juv_food = 0  # potential food to juvs
+                 ):
         self.colony_ID = colony_ID
         self.ad_list = ad_list
         self.juv_list = juv_list
         self.colony_food = float(colony_food)
+        self.slope = slope        
         self.colony_age = colony_age
         self.dispersers = dispersers
-        self.pot_juv_food = pot_juv_food
-        self.slope = slope
+        self.pot_juv_food = pot_juv_food        
         self.num_juvs = 0 # as the juv list gets wiped before the end of the loop
         self.num_ads = 0 # to make sure that I get 
         self.num_dis = 0
@@ -146,10 +147,9 @@ class Colony(object):
     def juv_fd_assign(self):
         for spider in self.juv_list:
             jv_rnk = spider.rank
-            print "jv rank", jv_rnk
             ind_fd = self.cal_ind_food(jv_rnk)
             spider.juv_fd = ind_fd
-        print "juv_fd", [jv.juv_fd for jv in self.juv_list]
+        return [jv.juv_fd for jv in self.juv_list]
 
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))

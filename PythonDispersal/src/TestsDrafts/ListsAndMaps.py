@@ -14,3 +14,7 @@ mylist.append([200, 259])
 mylist.append([2000, 2519])
 
 print 'updatedList', mylist;
+
+alist = range(0,10)
+
+print alist
