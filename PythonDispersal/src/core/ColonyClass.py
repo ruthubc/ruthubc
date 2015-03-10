@@ -12,6 +12,7 @@ from JuvClass import Juv
 from SpiderClass import Spider
 from Competition import Comp
 import random
+from core.Functions import random_gus
 
 
 class Colony(object):
@@ -80,12 +81,13 @@ class Colony(object):
         tot_col_food = cal_colFood * N_tot
         return tot_col_food
 
-    def col_food_random(self, F_Ln, K): # randomly fluctuates colony food
-        col_food = self.cal_col_food(F_Ln, K)
-        rnd = random.uniform(-0.5, 0.5)
-        change = col_food * rnd
-        self.colony_food = col_food + change
-        print "food before random", col_food
+    def col_food_random(self, F_Ln, K, K_var, FLn_var): # randomly fluctuates colony food
+        #TODO: Test this function and what numbers are produced
+        New_K = random_gus(K, K_var)
+        print "newK", New_K
+        New_FLn = random_gus(F_Ln, FLn_var)
+        print "NewFln", New_FLn
+        self.cal_col_food(New_FLn, New_K)
         print "randomColFood", self.colony_food
 
     def col_num_off(self, off_nmbr_list):  # Calculating the number of offspring and assigning number to adult
@@ -129,7 +131,7 @@ class Colony(object):
 
 
     def comp_slope(self):
-        return self.slope * len(self.juv_list)
+        return self.slope / float(len(self.juv_list))
 
     def cal_ind_food(self, ind_rnk):  # TODO: check this works
         xbr = self.colony_food / float(len(self.juv_list))
@@ -157,10 +159,12 @@ class Colony(object):
             spider.juv_fd = ind_fd
 
     def distr_food(self):
-        if self.slope == 0:
+        if self.slope < 0.0000001:
+            self.zeroSlp_jv_fd()
+        elif self.comp_slope() < 0.000001:
             self.zeroSlp_jv_fd()
         else:
-            c_slpe = self.comp_slope()
+            c_slpe = self.comp_slope() 
             self.juv_rnk_assign()  # assign ranks to juvs
             cmp_obj = Comp(self.colony_food, len(self.juv_list), c_slpe)  # making competition object
             self.cal_med_rnk = cmp_obj.CompFunction()

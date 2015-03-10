@@ -19,25 +19,28 @@ class Poplt(object):
                  off_nmbr_list = [4, 8, 0.1, 1],  # [min no off, max no off, min ad size, max ad size]
                  F_Ln = 0.2, # food to lone individual
                  K = 100.0,
-                 juv_disFd_lmt = 0,
                  ad_disFd_lmt = 0,
                  min_juv_fd = 0,
-                 comp_slp = 0.1
+                 comp_slp = 0.1,
+                 disp_rsk = 0.1,
+                 K_var = 50
                  ):
         self.poplt_list = poplt_list
         self.filename = filename
         self.off_nmbr_list = off_nmbr_list
         self.F_Ln = F_Ln
         self.K = float(K)
-        self.juv_disFd_lmt = float(juv_disFd_lmt)
         self.ad_disFd_lmt = float(ad_disFd_lmt)
         self.min_juv_fd = float(min_juv_fd)
         self.comp_slp = float(comp_slp)
+        self.disp_rsk = disp_rsk
+        self.K_var = K_var
         self.pop_dispersal_list = []
         self.pop_export_list = []
         self.pop_age = 0
         self.colony_count = 1
         self.new_col = []
+        self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
@@ -91,7 +94,6 @@ class Poplt(object):
 
         #(2) Colony time step for all colonies
         self.allCols_OneTimestep()
-
 
         if self.pop_dispersal_list:
             #(3) Make dispersers into new colonies

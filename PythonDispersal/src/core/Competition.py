@@ -107,7 +107,7 @@ class Comp(object):
         print "high total = %s, low tot = %s " % (self.high_tot, self.low_tot)
 
         if self.cal_tot == self.col_fd:
-            return self.cal_tot#, self.med_rnk]
+            return [self.cal_tot, self.med_rnk]
         else:
             fin_md_rnk = nsmallest(1, [self.low_tot, self.high_tot], key = lambda x: abs(x - self.col_fd))[0]  # returns the number nearest to actual col_fd
             if fin_md_rnk == self.low_tot:

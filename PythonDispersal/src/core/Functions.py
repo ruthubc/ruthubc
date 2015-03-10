@@ -8,6 +8,7 @@ from core.ColonyClass import Colony
 from core.SpiderClass import Spider
 from core.PopulationClass import Poplt
 from collections import OrderedDict
+import numpy as np
 
 def fake_dict(): # returns row names
     """make fake dictionary to write row names to file"""
@@ -25,3 +26,12 @@ def export_rownames(filename, rowheaders = fake_dict()):
     writer = csv.writer(f, dialect='excel')
     writer.writerow(rowheaders)
     f.close()
+    
+def random_gus(mean, variance): # so the random function doesn't produce negative number
+    ran_num = -1
+    while (ran_num < 0):
+        ran_num = np.random.normal(mean, variance)
+        print ran_num
+    return ran_num
+
+    
