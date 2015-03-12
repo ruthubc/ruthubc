@@ -1,0 +1,6 @@
+pop_age,Comp_slope,num cols,colony_ID,colony_age,num ads,numjuvs,colony_food,dispersers,colAlive
+1,0.2,1,1,1,1,4,0.21074641096427046,0,alive
+2,0.2,1,1,2,1,4,0.22242480098958298,0,alive
+3,0.2,1,1,3,1,4,0.23852038322790478,0,alive
+4,0.2,1,1,4,1,4,0.19395983618299845,0,alive
+5,0.2,1,1,5,1,4,0.14633332291810053,0,alive

@@ -88,17 +88,21 @@ class Colony(object):
         New_FLn = random_gus(F_Ln, FLn_var)
         print "NewFln", New_FLn
         self.cal_col_food(New_FLn, New_K)
-        print "randomColFood", self.colony_food
+        if self.colony_food < 0:
+            raise ValueError("Colony food was negative")
+        else:
+            print "randomColFood", self.colony_food
 
-    def col_num_off(self, off_nmbr_list):  # Calculating the number of offspring and assigning number to adult
-        [i.noOffspring(off_nmbr_list) for i in self.ad_list]
+    def col_num_off(self, Off_M, Off_C):  # Calculating the number of offspring and assigning number to adult
+        #TODO: test num offspring equation
+        [i.noOffspring(Off_M, Off_C) for i in self.ad_list]
         off_list = [i.no_off for i in self.ad_list]
         no_new_off = sum(off_list)  # calc the total number of new offspring for the colony
         return no_new_off  #TODO: do I really have to return no new off??
 
-    def cal_pot_juv_food(self, F_Ln, K, off_nmbr_list):  # updates potential juv food
+    def cal_pot_juv_food(self, F_Ln, K, Off_M, Off_C):  # updates potential juv food
         tot_food = self.cal_col_food(F_Ln, K)
-        pot_juvs = self.col_num_off(off_nmbr_list)
+        pot_juvs = self.col_num_off(Off_M, Off_C)
         pot_juv_fd = tot_food / pot_juvs
         self.pot_juv_food = pot_juv_fd
 
@@ -211,12 +215,12 @@ class Colony(object):
             # (10) Printing some things to the console
         print self.colony_dict()
 
-    def colony_timestep(self, F_Ln, K, num_off_list, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, pop_export_list):
+    def colony_timestep(self, F_Ln, K, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, pop_export_list):
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
             # (2) adults decide whether to disperse
-        self.cal_pot_juv_food(F_Ln, K, num_off_list)  # calculating potental juv food , written to colony
+        self.cal_pot_juv_food(F_Ln, K, Off_M, Off_C)  # calculating potental juv food , written to colony
         self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt)
         self.spis_to_dis_lst()
         pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list

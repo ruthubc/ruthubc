@@ -73,7 +73,6 @@ class Comp(object):
                 self.low_tot = -2
                 self.high_tot = -2
 
-
     def comp_loop_function(self):
 
         self.oneRnk = np.floor((-1 + self.med_rnk * self.slp + self.xbr) / self.slp)  # The max rank where everyone gets 1 (max) food
@@ -99,8 +98,9 @@ class Comp(object):
             if run < 2000:
                 self.comp_loop_function()
             else:
-                print "infinite loop, oh dear"
-                break
+                raise Exception("med rank loop infinite")
+                #print "infinite loop, oh dear"
+                #break
 
         print "Now the loop has ended, cal tot = %s " % self.cal_tot
         print "actual col food total we were aiming for = %s " % self.col_fd

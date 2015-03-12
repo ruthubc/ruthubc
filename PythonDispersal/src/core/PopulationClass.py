@@ -8,6 +8,7 @@ Created on Jul 9, 2014
 from SpiderClass import Spider
 from ColonyClass import Colony
 from collections import OrderedDict
+import numpy as np
 import csv
 
 
@@ -41,9 +42,19 @@ class Poplt(object):
         self.colony_count = 1
         self.new_col = []
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
+        self.Off_C = 0
+        self.Off_M = 0
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
+
+    def update_offVar(self, off_nmbr_list):  # updates the number of offspring an adult have depends on food while juv and adult
+        OMn = np.log(float(off_nmbr_list[0]))  # min number of offspring
+        OMx = np.log(float(off_nmbr_list[1]))  # max number of offspring
+        SMn = np.log(float(off_nmbr_list[2]))  # min adult size that can reproduce
+        SMx = np.log(float(off_nmbr_list[3]))
+        self.Off_C = ((-OMn * SMx) + (OMx * SMn)) / (SMx - SMn)
+        self.Off_M = (OMn - OMx) / (SMx - SMn)
 
     def update_pop_age(self):  # adds one to the age
         self.pop_age += 1
@@ -65,7 +76,7 @@ class Poplt(object):
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for col in self.poplt_list:
-            col.colony_timestep(self.F_Ln, self.K, self.off_nmbr_list, self.juv_disFd_lmt, self.ad_disFd_lmt,
+            col.colony_timestep(self.F_Ln, self.K, self.Off_M, self.Off_C, self.juv_disFd_lmt, self.ad_disFd_lmt,
                                 self.pop_dispersal_list, self.min_juv_fd, self.pop_export_list)
 
     def disp_col_timestep(self):
