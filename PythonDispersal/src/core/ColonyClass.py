@@ -12,7 +12,7 @@ from JuvClass import Juv
 from SpiderClass import Spider
 from Competition import Comp
 import random
-from core.Functions import random_gus
+# import core.Functions
 
 
 class Colony(object):
@@ -83,6 +83,7 @@ class Colony(object):
 
     def col_food_random(self, F_Ln, K, K_var, FLn_var): # randomly fluctuates colony food
         #TODO: Test this function and what numbers are produced
+        from core.Functions import random_gus
         New_K = random_gus(K, K_var)
         print "newK", New_K
         New_FLn = random_gus(F_Ln, FLn_var)
@@ -97,6 +98,7 @@ class Colony(object):
         #TODO: test num offspring equation
         [i.noOffspring(Off_M, Off_C) for i in self.ad_list]
         off_list = [i.no_off for i in self.ad_list]
+        print off_list
         no_new_off = sum(off_list)  # calc the total number of new offspring for the colony
         return no_new_off  #TODO: do I really have to return no new off??
 
@@ -132,7 +134,6 @@ class Colony(object):
         for index in enumerate(self.juv_list):
             i = index[0]
             self.juv_list[i].rank = i
-
 
     def comp_slope(self):
         return self.slope / float(len(self.juv_list))

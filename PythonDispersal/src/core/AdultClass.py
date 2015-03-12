@@ -23,8 +23,9 @@ class Adult(Spider):
 
     #TODO: check this works
     def noOffspring(self, M, C):  # updates the number of offspring an adult have depends on food while juv and adult
-        NumOff = np.exp((-M * np.log(self.food)) - C)
-        self.no_off = int(round(NumOff))
-        #print 'food', self.food
-        #print 'numoff:', NumOff
-        #print round(NumOff)
+        if self.food > 0:
+            NumOff = np.exp((-M * np.log(self.food)) - C)
+            self.no_off = int(round(NumOff))
+        else:
+            raise Exception("Adult with zero food")
+            

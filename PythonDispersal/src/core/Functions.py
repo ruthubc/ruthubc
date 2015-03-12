@@ -4,16 +4,17 @@ Created on Jul 18, 2014
 @author: Ruth
 '''
 import csv
-from core.ColonyClass import Colony
-from core.SpiderClass import Spider
-from core.PopulationClass import Poplt
+#import core.ColonyClass as CC
+#from core.PopulationClass import Poplt
 from collections import OrderedDict
 import numpy as np
 
 def fake_dict(): # returns row names
     """make fake dictionary to write row names to file"""
-    fake_col = Colony()
-    fake_poplt = Poplt([fake_col])
+    import core.ColonyClass as CC
+    import core.PopulationClass as PP
+    fake_col = CC.Colony()
+    fake_poplt = PP.Poplt([fake_col])
     fake_pop_dict = fake_poplt.poplt_dict()
     fake_col_dict = fake_col.colony_dict()
     newdict = OrderedDict(fake_pop_dict.items() + fake_col_dict.items())
@@ -26,7 +27,7 @@ def export_rownames(filename, rowheaders = fake_dict()):
     writer = csv.writer(f, dialect='excel')
     writer.writerow(rowheaders)
     f.close()
-    
+ 
 def random_gus(mean, variance): # so the random function doesn't produce negative number
     ran_num = -1
     while (ran_num < 0):
@@ -34,4 +35,4 @@ def random_gus(mean, variance): # so the random function doesn't produce negativ
         print ran_num
     return ran_num
 
-    
+random_gus(10, 3)

@@ -48,11 +48,11 @@ class Poplt(object):
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
 
-    def update_offVar(self, off_nmbr_list):  # updates the number of offspring an adult have depends on food while juv and adult
-        OMn = np.log(float(off_nmbr_list[0]))  # min number of offspring
-        OMx = np.log(float(off_nmbr_list[1]))  # max number of offspring
-        SMn = np.log(float(off_nmbr_list[2]))  # min adult size that can reproduce
-        SMx = np.log(float(off_nmbr_list[3]))
+    def update_offVar(self):  # updates the number of offspring an adult have depends on food while juv and adult
+        OMn = np.log(float(self.off_nmbr_list[0]))  # min number of offspring
+        OMx = np.log(float(self.off_nmbr_list[1]))  # max number of offspring
+        SMn = np.log(float(self.off_nmbr_list[2]))  # min adult size that can reproduce
+        SMx = np.log(float(self.off_nmbr_list[3]))
         self.Off_C = ((-OMn * SMx) + (OMx * SMn)) / (SMx - SMn)
         self.Off_M = (OMn - OMx) / (SMx - SMn)
 

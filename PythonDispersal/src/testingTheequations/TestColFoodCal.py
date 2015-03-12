@@ -3,7 +3,7 @@ Created on Feb 12, 2015
 
 @author: Ruth
 '''
-
+from core.ColonyClass import Colony
 
 def cal_col_food(N, F_Ln, K):  # returns tot colony food per capita
         # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+

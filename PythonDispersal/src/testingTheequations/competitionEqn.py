@@ -14,8 +14,9 @@ import matplotlib.pyplot as plt
 
 # nb changesa = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] # col fod, [num juvs] [slp]
 
-a = [[0.1, 0.5, 0.8, 1] ,[10, 57, 105], [0.9, 0.01]] # xbr, [num juvs] [slp]
+#a = [[0.1, 0.5, 0.8, 1] ,[10, 57, 105], [0.9, 0.01]] # xbr, [num juvs] [slp]
 
+a = [[0.5], [20], [0.1, 1]]
 combinations = list(itertools.product(*a))
 
 print combinations
