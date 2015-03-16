@@ -17,6 +17,6 @@ def writePBS(runName):
     file.write(runName + """\necho "Program "$0" finished with exit code $? at: `date`""")
     file.close()
 
-    
+
 file = 'pythonTest1.py'
 writePBS(file)

@@ -19,12 +19,12 @@ class Poplt(object):
                  filename = "",
                  off_nmbr_list = [4, 8, 0.1, 1],  # [min no off, max no off, min ad size, max ad size]
                  F_Ln = 0.2, # food to lone individual
-                 K = 100.0,
+                 K = 100.0, # carrying capacity
                  ad_disFd_lmt = 0,
                  min_juv_fd = 0,
                  comp_slp = 0.1,
                  disp_rsk = 0.1,
-                 K_var = 50
+                 amt_var = 0.5 # varies between 0 and 1
                  ):
         self.poplt_list = poplt_list
         self.filename = filename
@@ -35,7 +35,9 @@ class Poplt(object):
         self.min_juv_fd = float(min_juv_fd)
         self.comp_slp = float(comp_slp)
         self.disp_rsk = disp_rsk
-        self.K_var = K_var
+        self.amt_var = self.amt_var
+        self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
+        self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.pop_dispersal_list = []
         self.pop_export_list = []
         self.pop_age = 0
@@ -44,6 +46,7 @@ class Poplt(object):
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
         self.Off_C = 0
         self.Off_M = 0
+    
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))

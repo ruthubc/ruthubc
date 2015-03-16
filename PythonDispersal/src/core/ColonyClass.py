@@ -31,12 +31,12 @@ class Colony(object):
         self.ad_list = ad_list
         self.juv_list = juv_list
         self.colony_food = float(colony_food)
-        self.slope = slope        
+        self.slope = slope
         self.colony_age = colony_age
         self.dispersers = dispersers
-        self.pot_juv_food = pot_juv_food        
-        self.num_juvs = 0 # as the juv list gets wiped before the end of the loop
-        self.num_ads = 0 # to make sure that I get 
+        self.pot_juv_food = pot_juv_food
+        self.num_juvs = 0  # as the juv list gets wiped before the end of the loop
+        self.num_ads = 0  # to make sure that I get 
         self.num_dis = 0
         self.alive = 'alive'
         self.cal_med_rnk = 0.0
