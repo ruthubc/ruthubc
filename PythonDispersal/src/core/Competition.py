@@ -21,7 +21,7 @@ class Comp(object):
         self.slp = slp
         self.xbr = 0
         self.med_rnk = self.num_juv / 2
-        self.med_diff = float(num_juv) / 1000
+        self.med_diff = float(num_juv) / 100
         self.high_tot = -1
         self.low_tot = -1
         self.low_rnk = 0
@@ -30,25 +30,26 @@ class Comp(object):
     def fnd_tot(self):  # returns the calculated total food for a new med_rank etc.
 
         sq_tot = self.oneRnk + 1  # as the highest ranked ind is rank zero
-        if self.oneRnk > 0 and self.mxRnk <= (self.num_juv-1):  # (1) some get 1 food, others get zero food -> sum of square bit and then sum of slp
-            #print "option one"
-            slp_tot = (1 + self.slp) / (2 * self.slp)
-            tot = sq_tot + slp_tot
-
-        elif self.oneRnk > 0 and self.mxRnk > (self.num_juv - 1):  # (2) some get 1 food, none get zero food -> sum of square bit then the slope bit to num_spis -1
+        if self.oneRnk > 0 and self.mxRnk > (self.num_juv - 1):  # (2) some get 1 food, none get zero food -> sum of square bit then the slope bit to num_spis -1
             # eqn for slp total already taking into account num_spi -1
-            #print "option two"
+            print "option two"
             fstBkt = -1 + (self.med_rnk * self.slp) + self.xbr - (self.slp * self.num_juv)
             sndBkt = 1 + self.slp + (self.med_rnk * self.slp) + self.xbr - (self.slp * self.num_juv)
             slp_tot = -((fstBkt * sndBkt) / (2 * self.slp))
             tot = sq_tot + slp_tot
 
+        elif self.oneRnk > 0 and self.mxRnk <= (self.num_juv-1):  # (1) some get 1 food, others get zero food -> sum of square bit and then sum of slp
+            print "option one"
+            slp_tot = (1 + self.slp) / (2 * self.slp)
+            tot = sq_tot + slp_tot
+
+
         elif self.oneRnk <= 0 and self.mxRnk <= (self.num_juv - 1):  # (3) no max or minimum, none get 1 food, some get zero food
-            #print "option three"
+            print "option three"
             tot = (((self.med_rnk * self.slp) + self.xbr) * (self.slp + (self.med_rnk * self.slp) + self.xbr)) / (2 * self.slp)  # there is no square bit
 
         elif self.oneRnk <= 0 and self.mxRnk > (self.num_juv - 1):
-            #print "option four"
+            print "option four"
             tot = -0.5 * self.num_juv * (-self.slp - (2 * self.med_rnk * self.slp) - (2 * self.xbr) + (self.slp * self.num_juv))
 
         else:
@@ -61,13 +62,13 @@ class Comp(object):
                 self.high_rnk = self.med_rnk
                 self.med_rnk -= self.med_diff
                 self.high_tot = self.cal_tot
-                #print "cal food higher than colony food, col fd = %s, cal food = %s,  med rnk = %s, high_tot = %s" % (self.col_fd, self.cal_tot, self.med_rnk, self.high_tot)
+                print "cal food higher than colony food, col fd = %s, cal food = %s,  med rnk = %s, high_tot = %s" % (self.col_fd, self.cal_tot, self.med_rnk, self.high_tot)
 
             elif self.cal_tot < self.col_fd:  # cal food is too low
                 self.low_rnk = self.med_rnk
                 self.med_rnk += self.med_diff
                 self.low_tot = self.cal_tot
-                #print "cal food lower than colony food, col fd = %s, cal food = %s,  med rnk = %s, low_tot = %s" % (self.col_fd, self.cal_tot, self.med_rnk, self.low_tot)
+                print "cal food lower than colony food, col fd = %s, cal food = %s,  med rnk = %s, low_tot = %s" % (self.col_fd, self.cal_tot, self.med_rnk, self.low_tot)
 
             elif self.cal_tot == self.col_fd:
                 self.low_tot = -2
@@ -75,11 +76,11 @@ class Comp(object):
 
     def comp_loop_function(self):
 
-        self.oneRnk = np.floor((-1 + self.med_rnk * self.slp + self.xbr) / self.slp)  # The max rank where everyone gets 1 (max) food
-        self.mxRnk = np.floor(((self.med_rnk * self.slp) + self.xbr) / self.slp)  # the max rank that receives food
+        self.oneRnk = ((-1 + (self.med_rnk * self.slp) + self.xbr) / self.slp)  # The max rank where everyone gets 1 (max) food
+        self.mxRnk = (((self.med_rnk * self.slp) + self.xbr) / self.slp)  # the max rank that receives food
 
-        #print "one rank", self.oneRnk
-        #print "max rank", self.mxRnk
+        print "one rank", self.oneRnk
+        print "max rank", self.mxRnk
 
         self.fnd_tot()  # finding the tot with the new med_rnk
         self.adjustMed_rnk()  # adjusting med_rnk

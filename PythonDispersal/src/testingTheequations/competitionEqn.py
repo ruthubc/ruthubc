@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 
 # nb changesa = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] # col fod, [num juvs] [slp]
 
-a = [[0.1, 0.5, 0.8, 1] ,[10, 57, 105], [0.9, 0.01]] # xbr, [num juvs] [slp]
+#a = [[0.5], [10], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]] # xbr, [num juvs] [slp]
 
-#a = [[0.5], [20], [0.1, 1]]
+a = [[0.5], [10], [0.8, 1.7]]
 combinations = list(itertools.product(*a))
 
 print combinations
@@ -53,6 +53,7 @@ for i in range(0, len(combinations)):
 
     plt.plot(juv_ranks, ass_tot)
     plt.ylim([0, 1])
+    plt.xlim([0, 10])
     plt.title(str(tup[2]))
     plt.draw()
 
