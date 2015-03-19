@@ -167,11 +167,27 @@ class Colony(object):
         for spider in self.juv_list:
             spider.juv_fd = ind_fd
 
+    def oneSlp_jv_fd(self):
+        if self.colony_food >= 1:
+            #assign all to top ranks
+            num_get_fd = np.floor(self.colony_food)
+            remain = self.colony_food - num_get_fd
+            for spider in self.juv_list:
+                if spider.rank <= num_get_fd -1:  # as rank starts at zero
+                    spider.juv_fd = 1
+                elif spider.rank == num_get_fd:
+                    spider.juv_fd = remain
+                else:
+                    spider.juv_fd = 0
+        else:
+            # top ranked individual gets all the food
+
     def distr_food(self):
         if self.slope < 0.0000001:
             self.zeroSlp_jv_fd()
-        elif self.comp_slope() < 0.000001:
-            self.zeroSlp_jv_fd()
+        elif self.slope = 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
+            # TODO: make range
+            self.oneSlp_jv_fd()
         else:
             c_slpe = self.comp_slope() 
             self.juv_rnk_assign()  # assign ranks to juvs
