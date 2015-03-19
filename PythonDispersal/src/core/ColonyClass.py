@@ -136,14 +136,18 @@ class Colony(object):
             self.juv_list[i].rank = i
 
     def comp_slope(self):
-        return self.slope / float(len(self.juv_list))
+        return float(self.slope) / float(len(self.juv_list))
 
     def cal_ind_food(self, ind_rnk):  # TODO: check this works
-        xbr = self.colony_food / float(len(self.juv_list))
-        tm1 = self.comp_slope() * self.cal_med_rnk
-        tm2 = xbr - ((xbr * float(ind_rnk)) / self.cal_med_rnk)
-        tm12 = (tm1 * tm2) / np.power(xbr, 2)
-        CompEqn = xbr * (1 + tm12)
+        slope = self.comp_slope()
+        xbr = float(self.colony_food) / float(len(self.juv_list))
+        #tm1 = slope * self.cal_med_rnk
+        #tm2 = xbr - ((xbr * float(ind_rnk)) / self.cal_med_rnk)
+        #tm12 = (tm1 * tm2) / np.power(xbr, 2)
+        topTerm = (slope * self.cal_med_rnk) * (xbr - ((xbr * ind_rnk) / self.cal_med_rnk))
+        fracTerm = topTerm / (np.power(xbr, 2))
+        CompEqn = (1+ fracTerm) * xbr
+        #CompEqn = xbr * (1 + tm12)
         if CompEqn > 1:
             return 1
         elif CompEqn < 0:

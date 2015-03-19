@@ -8,6 +8,7 @@ Created on Dec 27, 2014
 import numpy as np
 from heapq import nsmallest
 
+# slope already made into slp/num juvs in the colony class, so the input slope is already slope/juv
 
 class Comp(object):
     '''making colony class'''
@@ -17,20 +18,28 @@ class Comp(object):
         self.mxRnk = 0
         self.cal_tot = 0
         self.col_fd = float(col_fd)
-        self.num_juv = num_juv
+        self.num_juv = float(num_juv)
         self.slp = slp
         self.xbr = 0
-        self.med_rnk = self.num_juv / 2
-        self.med_diff = float(num_juv) / 100
+        self.med_rnk = self.num_juv / 2.0
+        self.med_diff = float(num_juv) / 1000.0
         self.high_tot = -1
         self.low_tot = -1
         self.low_rnk = 0
         self.high_rnk = 0
 
+        #TODO: put back in celling/floor
+
     def fnd_tot(self):  # returns the calculated total food for a new med_rank etc.
 
-        sq_tot = self.oneRnk + 1  # as the highest ranked ind is rank zero
-        if self.oneRnk > 0 and self.mxRnk > (self.num_juv - 1):  # (2) some get 1 food, none get zero food -> sum of square bit then the slope bit to num_spis -1
+        sq_tot = self.oneRnk# + 1  # as the highest ranked ind is rank zero
+
+        if self.oneRnk > 0 and self.mxRnk <= (self.num_juv-1):  # (1) some get 1 food, others get zero food -> sum of square bit and then sum of slp
+            print "option one"
+            slp_tot = (1 + self.slp) / (2 * self.slp)
+            tot = sq_tot + slp_tot
+
+        elif self.oneRnk > 0 and self.mxRnk > (self.num_juv - 1):  # (2) some get 1 food, none get zero food -> sum of square bit then the slope bit to num_spis -1
             # eqn for slp total already taking into account num_spi -1
             print "option two"
             fstBkt = -1 + (self.med_rnk * self.slp) + self.xbr - (self.slp * self.num_juv)
@@ -38,17 +47,12 @@ class Comp(object):
             slp_tot = -((fstBkt * sndBkt) / (2 * self.slp))
             tot = sq_tot + slp_tot
 
-        elif self.oneRnk > 0 and self.mxRnk <= (self.num_juv-1):  # (1) some get 1 food, others get zero food -> sum of square bit and then sum of slp
-            print "option one"
-            slp_tot = (1 + self.slp) / (2 * self.slp)
-            tot = sq_tot + slp_tot
-
-
         elif self.oneRnk <= 0 and self.mxRnk <= (self.num_juv - 1):  # (3) no max or minimum, none get 1 food, some get zero food
             print "option three"
-            tot = (((self.med_rnk * self.slp) + self.xbr) * (self.slp + (self.med_rnk * self.slp) + self.xbr)) / (2 * self.slp)  # there is no square bit
+            topeqn = ((self.med_rnk * self.slp) + self.xbr) * (self.slp + (self.med_rnk * self.slp) + self.xbr)  # there is no square bit
+            tot = topeqn / (2*self.slp)
 
-        elif self.oneRnk <= 0 and self.mxRnk > (self.num_juv - 1):
+        elif self.oneRnk <= 0 and self.mxRnk > (self.num_juv - 1): # no squre bit
             print "option four"
             tot = -0.5 * self.num_juv * (-self.slp - (2 * self.med_rnk * self.slp) - (2 * self.xbr) + (self.slp * self.num_juv))
 
@@ -76,11 +80,14 @@ class Comp(object):
 
     def comp_loop_function(self):
 
-        self.oneRnk = ((-1 + (self.med_rnk * self.slp) + self.xbr) / self.slp)  # The max rank where everyone gets 1 (max) food
-        self.mxRnk = (((self.med_rnk * self.slp) + self.xbr) / self.slp)  # the max rank that receives food
+        topRnk = ((-1 + (self.med_rnk * self.slp) + self.xbr) / self.slp)  # The max rank where everyone gets 1 (max) food
+        zeroRnk = ((self.med_rnk * self.slp) + self.xbr) / self.slp  # the max rank that receives food
 
-        print "one rank", self.oneRnk
-        print "max rank", self.mxRnk
+        print "one rank", topRnk
+        print "max rank", zeroRnk
+
+        self.oneRnk = topRnk
+        self.mxRnk = zeroRnk
 
         self.fnd_tot()  # finding the tot with the new med_rnk
         self.adjustMed_rnk()  # adjusting med_rnk
@@ -89,7 +96,7 @@ class Comp(object):
 
     def CompFunction(self):  # calculates the med rank, returns med rank
         print 'comp num juvs', self.num_juv
-        self.xbr = float(self.col_fd / self.num_juv)
+        self.xbr = float(self.col_fd) / self.num_juv
         run = 0
         #print "starting loop, colony food =  %s" % self.col_fd
 
