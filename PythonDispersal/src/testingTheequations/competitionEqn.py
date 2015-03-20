@@ -17,8 +17,9 @@ import matplotlib.pyplot as plt
 #a = [[0.1], [100.0], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]] # xbr, [num juvs] [slp]
 
 a = [[0.5], [10000.0], [0.2]]
-combinations = list(itertools.product(*a))
 
+
+combinations = list(itertools.product(*a))
 
 
 df = []

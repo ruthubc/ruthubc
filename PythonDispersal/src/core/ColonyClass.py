@@ -180,12 +180,16 @@ class Colony(object):
                 else:
                     spider.juv_fd = 0
         else:
-            # top ranked individual gets all the food
+            for spider in self.juv_list:
+                if spider.rank == 0:  # as rank starts at zero
+                    spider.juv_fd = remain
+                else:
+                    spider.juv_fd = 0
 
     def distr_food(self):
         if self.slope < 0.0000001:
             self.zeroSlp_jv_fd()
-        elif self.slope = 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
+        elif self.slope == 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
             # TODO: make range
             self.oneSlp_jv_fd()
         else:

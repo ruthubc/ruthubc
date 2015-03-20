@@ -1,4 +1,4 @@
-'''
+ '''
 Created on Jul 9, 2014
 
 @author: Ruth
@@ -11,31 +11,32 @@ from collections import OrderedDict
 import numpy as np
 import csv
 
+# The four things to change, 
+#1) slope [0, 0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0, 10.0]
+#2) Risk of dispersal [0, 0.1, 0.2, 0.3, 0.4]
+#3) mean K
+#4) variance in k and FLN
+
+
 
 class Poplt(object):
     '''
     List of all colonies in the population    '''
     def __init__(self, poplt_list,  # list of colonies
-                 filename = "",
-                 off_nmbr_list = [4, 8, 0.1, 1],  # [min no off, max no off, min ad size, max ad size]
-                 F_Ln = 0.2, # food to lone individual
-                 K = 100.0, # carrying capacity
-                 ad_disFd_lmt = 0,
-                 min_juv_fd = 0,
+                 filename = "", # output file name
                  comp_slp = 0.1,
                  disp_rsk = 0.1,
-                 amt_var = 0.5 # varies between 0 and 1
+                 K = 100.0, # carrying capacity
+                 amt_var = 0.5 # varies between 0 and 1  
                  ):
         self.poplt_list = poplt_list
         self.filename = filename
-        self.off_nmbr_list = off_nmbr_list
-        self.F_Ln = F_Ln
-        self.K = float(K)
-        self.ad_disFd_lmt = float(ad_disFd_lmt)
-        self.min_juv_fd = float(min_juv_fd)
         self.comp_slp = float(comp_slp)
-        self.disp_rsk = disp_rsk
-        self.amt_var = self.amt_var
+        self.disp_rsk = disp_rsk        
+        self.K = float(K)
+        self.amt_var = self.amt_var        
+        self.ad_disFd_lmt = float(0)
+        self.min_juv_fd = float(0)      
         self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
         self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.pop_dispersal_list = []
@@ -46,6 +47,8 @@ class Poplt(object):
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
         self.Off_C = 0
         self.Off_M = 0
+        self.off_nmbr_list = [4, 8, 0.1, 1]  # [min no off, max no off, min ad size, max ad size]
+        self.F_Ln = 0.2, # food to lone individual
     
 
     def __str__(self):

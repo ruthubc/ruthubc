@@ -13,7 +13,7 @@ from core.PopulationClass import Poplt
 from core.Functions import export_rownames
 
 
-def disperal_run(sim_len, filename, off_variables, F_Ln, K, jv_dis_lmt, ad_dis_lmt, juv_mlt_lmt, comp_slp):
+def disperal_run(sim_len, filename, comp_slp, disp_risk, K, amt_var):
     #(1) write rownames to csv fileh
 
     export_rownames(filename) # creating file with rownames
@@ -31,7 +31,7 @@ def disperal_run(sim_len, filename, off_variables, F_Ln, K, jv_dis_lmt, ad_dis_l
 
     print start_col.colony_dict()
 
-    this_pop = Poplt([start_col], filename,off_variables, F_Ln, K, jv_dis_lmt, ad_dis_lmt, juv_mlt_lmt, comp_slp)
+    this_pop = Poplt([start_col], filename, comp_slp, disp_risk, K, amt_var)
 
     print start_col.colony_list_to_append()
 
