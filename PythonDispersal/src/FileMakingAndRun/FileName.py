@@ -1,0 +1,1 @@
+from core.DispersalRun import disperal_runsim_len = 10filename = slp0.0_Rsk0.1_K10_var0.1.py
