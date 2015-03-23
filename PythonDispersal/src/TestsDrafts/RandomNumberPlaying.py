@@ -15,11 +15,12 @@ for i in range(0, 20):
 list2 = (1,2,3,4,5,6)
 
 print 5.87 * float(len(list2))
-'''
 
 listnorm = []
 for i in range(0, 20):
     print np.random.normal(100, 25)
     
 print listnorm
+'''
 
+print random.random()

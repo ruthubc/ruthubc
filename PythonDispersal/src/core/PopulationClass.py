@@ -1,4 +1,4 @@
- '''
+'''
 Created on Jul 9, 2014
 
 @author: Ruth
@@ -27,29 +27,28 @@ class Poplt(object):
                  comp_slp = 0.1,
                  disp_rsk = 0.1,
                  K = 100.0, # carrying capacity
-                 amt_var = 0.5 # varies between 0 and 1  
+                 amt_var = 0.5 # varies between 0 and 1
                  ):
         self.poplt_list = poplt_list
         self.filename = filename
         self.comp_slp = float(comp_slp)
-        self.disp_rsk = disp_rsk        
+        self.disp_rsk = disp_rsk
         self.K = float(K)
-        self.amt_var = self.amt_var        
-        self.ad_disFd_lmt = float(0)
-        self.min_juv_fd = float(0)      
+        self.amt_var = amt_var
+        self.ad_disFd_lmt = float(0.7)
+        self.min_juv_fd = float(0.3)
         self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
-        self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.pop_dispersal_list = []
         self.pop_export_list = []
         self.pop_age = 0
         self.colony_count = 1
         self.new_col = []
-        self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
         self.Off_C = 0
         self.Off_M = 0
-        self.off_nmbr_list = [4, 8, 0.1, 1]  # [min no off, max no off, min ad size, max ad size]
-        self.F_Ln = 0.2, # food to lone individual
-    
+        self.off_nmbr_list = [4, 8, 0.3, 1]  # [min no off, max no off, min ad size, max ad size]
+        self.F_Ln = 0.2  # food to lone individual
+        self.FLn_var = (self.F_Ln / 2) * self.amt_var
+        self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
@@ -82,8 +81,8 @@ class Poplt(object):
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for col in self.poplt_list:
-            col.colony_timestep(self.F_Ln, self.K, self.Off_M, self.Off_C, self.juv_disFd_lmt, self.ad_disFd_lmt,
-                                self.pop_dispersal_list, self.min_juv_fd, self.pop_export_list)
+            col.colony_timestep(self.F_Ln, self.FLn_var, self.K, self.K_var, self.Off_M, self.Off_C, self.juv_disFd_lmt, self.ad_disFd_lmt,
+                                self.pop_dispersal_list, self.min_juv_fd, self.disp_rsk, self.pop_export_list)
 
     def disp_col_timestep(self):
         for colony in self.new_cols:

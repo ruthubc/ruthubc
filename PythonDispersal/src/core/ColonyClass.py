@@ -88,12 +88,11 @@ class Colony(object):
         print "newK", New_K
         New_FLn = random_gus(F_Ln, FLn_var)
         print "NewFln", New_FLn
-        self.cal_col_food(New_FLn, New_K)
-        if self.colony_food < 0:
-            raise ValueError("Colony food was negative")
+        food = self.cal_col_food(New_FLn, New_K)
+        if food <= 0:
+            raise ValueError("Colony food was negative or zero")
         else:
-            print "randomColFood", self.colony_food
-
+            print "randomColFood", food
     def col_num_off(self, Off_M, Off_C):  # Calculating the number of offspring and assigning number to adult
         #TODO: test num offspring equation
         [i.noOffspring(Off_M, Off_C) for i in self.ad_list]
@@ -108,9 +107,9 @@ class Colony(object):
         pot_juv_fd = tot_food / pot_juvs
         self.pot_juv_food = pot_juv_fd
 
-    def colDispersal_choice(self, juv_disFd_lmt, ad_disFd_lmt):  # deciding whether to reproduce or disperse
-        if self.pot_juv_food < juv_disFd_lmt:
-            [i.disperseChoice(ad_disFd_lmt) for i in self.ad_list]
+    def colDispersal_choice(self, juv_disFd_lmt, ad_disFd_lmt, disp_rsk):  # deciding whether to reproduce or disperse
+        if self.pot_juv_food < (float(juv_disFd_lmt) * disp_rsk):
+            [i.disperseChoice(ad_disFd_lmt) for i in self.ad_list] # dispersal choice ensures adult over specific size to disperse
         else:
             print "no dispersers"
 
@@ -118,7 +117,7 @@ class Colony(object):
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
         print "number of dispersers:", len(self.dispersers)
         self.num_dis = len(self.dispersers)
-        self.ad_list = [i for i in self.ad_list if i.disperse == 0]
+        self.ad_list = [i for i in self.ad_list if i.disperse == 0 and i.die == 0]
 
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
@@ -210,7 +209,7 @@ class Colony(object):
 
 ######### One Colony Time Step ##################
 
-    def core_colony_timestep(self, F_Ln, K, min_juv_fd, pop_export_list):
+    def core_colony_timestep(self, F_Ln, FLn_var, K, K_var, min_juv_fd, pop_export_list):
             #Use just this one for colonies of females dispersed
 
             # (3) Adults reproduce
@@ -219,7 +218,7 @@ class Colony(object):
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
 
             #(4) Calculate colony food + random fluctuation
-        self.col_food_random(F_Ln, K)
+        self.colony_food = self.col_food_random(F_Ln, K, K_var, FLn_var)
 
             #(5) food calculated and assigned to juvs with random
         self.distr_food()
@@ -240,13 +239,13 @@ class Colony(object):
             # (10) Printing some things to the console
         print self.colony_dict()
 
-    def colony_timestep(self, F_Ln, K, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, pop_export_list):
+    def colony_timestep(self, F_Ln, FLn_var, K, K_var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, disp_risk, pop_export_list):
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
             # (2) adults decide whether to disperse
         self.cal_pot_juv_food(F_Ln, K, Off_M, Off_C)  # calculating potental juv food , written to colony
-        self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt)
+        self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt, disp_risk)
         self.spis_to_dis_lst()
         pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
         self.dispersers = []  # clears dispersal list
@@ -258,4 +257,4 @@ class Colony(object):
             print self.colony_dict()
             print "all spiders dispersed"
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
-            self.core_colony_timestep(F_Ln, K, min_juv_fd, pop_export_list)
+            self.core_colony_timestep(F_Ln, FLn_var, K, K_var,  min_juv_fd, pop_export_list)

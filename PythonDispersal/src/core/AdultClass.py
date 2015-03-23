@@ -17,8 +17,12 @@ class Adult(Spider):
         self.disperse = disperse
         self.no_off = no_off
 
-    def disperseChoice(self, dis_fd):  # disperses if adult above a specific size
+    def disperseChoice(self, dis_fd, disp_rsk):  # disperses if adult above a specific size
+        rndNum = rndm.random()
         if self.food >= dis_fd:
+            if rndNum <= disp_rsk:
+                self.die = 1
+            else:
                 self.disperse = 1
 
     #TODO: check this works
@@ -28,4 +32,4 @@ class Adult(Spider):
             self.no_off = int(round(NumOff))
         else:
             raise Exception("Adult with zero food")
-            
+
