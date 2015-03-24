@@ -119,6 +119,6 @@ class Comp(object):
         else:
             fin_md_rnk = nsmallest(1, [self.low_tot, self.high_tot], key = lambda x: abs(x - self.col_fd))[0]  # returns the number nearest to actual col_fd
             if fin_md_rnk == self.low_tot:
-                return  [self.cal_tot, self.low_rnk]
+                return  self.cal_tot#, self.low_rnk]
             else:
-                return  [self.cal_tot, self.high_rnk]
+                return  self.cal_tot, self.high_rnk]
