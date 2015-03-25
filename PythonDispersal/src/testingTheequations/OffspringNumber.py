@@ -9,7 +9,7 @@ from core.AdultClass import Adult
 import numpy as np
 import matplotlib.pyplot as plt
 
-lala = np.arange(0.1, 1.1, 0.1)
+lala = np.arange(0.2, 1.1, 0.1) # food
 
 print lala
 ad_list = []
@@ -21,8 +21,8 @@ for fd in lala:
     ad_list.extend([ad])
 
 
-col = Colony(1, ad_list) 
-pplt = Poplt([col])  
+col = Colony(1, ad_list)
+pplt = Poplt([col])
 
 pplt.update_offVar()
 print pplt.Off_C

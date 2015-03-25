@@ -36,16 +36,16 @@ class Poplt(object):
         self.K = float(K)
         self.amt_var = amt_var
         self.ad_disFd_lmt = float(0.7)
-        self.min_juv_fd = float(0.3)
+        self.min_juv_fd = float(0.1)
         self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
         self.pop_dispersal_list = []
         self.pop_export_list = []
         self.pop_age = 0
         self.colony_count = 1
         self.new_col = []
-        self.Off_C = 0
-        self.Off_M = 0
-        self.off_nmbr_list = [4, 8, 0.3, 1]  # [min no off, max no off, min ad size, max ad size]
+        self.Off_C = 0  # used in making the offspring equation    
+        self.Off_M = 0  # used in making the offspring equation 
+        self.off_nmbr_list = [4, 8, 0.1, 1]  # [min no off, max no off, min ad size, max ad size]
         self.F_Ln = 0.2  # food to lone individual
         self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
@@ -93,6 +93,18 @@ class Poplt(object):
         d['pop_age'] = self.pop_age
         d['Comp_slope'] = self.comp_slp
         d['num cols'] = len(self.poplt_list)
+        d['meanK'] = self.K
+        d['Fd_ln'] = self.F_Ln
+        d['input_var'] = self.amt_var
+        d['K_var'] = self.K_var
+        d['fdLn_var'] = self.FLn_var
+        d['disp_rsk'] = self.disp_rsk
+        d['ad_dsp_fd'] = self.ad_disFd_lmt
+        d['jv_mlt_size'] = self.juv_disFd_lmt
+        d['min_no_off'] = self.off_nmbr_list[0] #[min no off, max no off, min ad size, max ad size]
+        d['max_no_off'] = self.off_nmbr_list[1]
+        d['min_ad_sze_off'] = self.off_nmbr_list[2]
+        d['max_ad_sze_off'] = self.off_nmbr_list[3]
         return d
 
     def poplt_export(self):  # appends one time step of information to file

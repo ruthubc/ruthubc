@@ -60,6 +60,8 @@ class Colony(object):
         d['numjuvs'] = self.num_juvs
         d['colony_food'] = self.colony_food
         d['dispersers'] = self.num_dis
+        d['pot_juv_fd'] = self.pot_juv_food
+        d['cal_med_rnk'] = self.cal_med_rnk
         d['colAlive'] = self.alive
         return d
 
@@ -92,7 +94,9 @@ class Colony(object):
         if food <= 0:
             raise ValueError("Colony food was negative or zero")
         else:
+            self.colony_food = food
             print "randomColFood", food
+
     def col_num_off(self, Off_M, Off_C):  # Calculating the number of offspring and assigning number to adult
         #TODO: test num offspring equation
         [i.noOffspring(Off_M, Off_C) for i in self.ad_list]
@@ -186,6 +190,8 @@ class Colony(object):
                     spider.juv_fd = 0
 
     def distr_food(self):
+        if len(self.juv_list) <= 1:
+            self.juv_list[0].food = self.colony_food  #TODO: maybe put something in here to make sure that nver abv1
         if self.slope < 0.0000001:
             self.zeroSlp_jv_fd()
         elif self.slope == 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
@@ -218,7 +224,7 @@ class Colony(object):
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
 
             #(4) Calculate colony food + random fluctuation
-        self.colony_food = self.col_food_random(F_Ln, K, K_var, FLn_var)
+        self.col_food_random(F_Ln, K, K_var, FLn_var)
 
             #(5) food calculated and assigned to juvs with random
         self.distr_food()

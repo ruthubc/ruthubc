@@ -6,7 +6,7 @@ Created on Feb 25, 2015
 from core.DispersalRun import disperal_run
 
 sim_len = 2
-filename = "pink_cookie.csv"
+filename = "yellow_banana.csv"
 comp_slp = 0.2
 disp_risk = 0.1
 K = 100
