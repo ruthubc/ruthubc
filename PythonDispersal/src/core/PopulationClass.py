@@ -36,7 +36,7 @@ class Poplt(object):
         self.K = float(K)
         self.amt_var = amt_var
         self.ad_disFd_lmt = float(0.7)
-        self.min_juv_fd = float(0.1)
+        self.min_juv_fd = float(0.01)
         self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
         self.pop_dispersal_list = []
         self.pop_export_list = []
@@ -45,7 +45,7 @@ class Poplt(object):
         self.new_col = []
         self.Off_C = 0  # used in making the offspring equation    
         self.Off_M = 0  # used in making the offspring equation 
-        self.off_nmbr_list = [4, 8, 0.1, 1]  # [min no off, max no off, min ad size, max ad size]
+        self.off_nmbr_list = [4, 8, 0.01, 1]  # [min no off, max no off, min ad size, max ad size]
         self.F_Ln = 0.2  # food to lone individual
         self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
@@ -82,11 +82,11 @@ class Poplt(object):
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for col in self.poplt_list:
             col.colony_timestep(self.F_Ln, self.FLn_var, self.K, self.K_var, self.Off_M, self.Off_C, self.juv_disFd_lmt, self.ad_disFd_lmt,
-                                self.pop_dispersal_list, self.min_juv_fd, self.disp_rsk, self.pop_export_list)
+                                self.pop_dispersal_list, self.min_juv_fd, self.disp_rsk, self.pop_export_list, self.filename)
 
     def disp_col_timestep(self):
         for colony in self.new_cols:
-            colony.core_colony_timestep(self.F_Ln, self.K, self.min_juv_fd, self.pop_export_list)
+            colony.core_colony_timestep(self.F_Ln, self.K, self.min_juv_fd, self.pop_export_list, self.filename)
 
     def poplt_dict(self):  # population dictionary
         d = OrderedDict()

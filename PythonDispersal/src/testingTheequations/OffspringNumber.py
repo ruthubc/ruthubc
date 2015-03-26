@@ -9,7 +9,7 @@ from core.AdultClass import Adult
 import numpy as np
 import matplotlib.pyplot as plt
 
-lala = np.arange(0.2, 1.1, 0.1) # food
+lala = np.arange(0.2, 1.1, 0.01) # food
 
 print lala
 ad_list = []
@@ -29,10 +29,12 @@ print pplt.Off_C
 print pplt.Off_M
 #col.print_adults() 
 fdlst=  [ad.food for ad in ad_list]
+
 fdlst = [np.log(m) for m in fdlst]
+print fdlst
 
-
-num_off= col.col_num_off(pplt.Off_M, pplt.Off_C)
+num_off = col.col_num_off(pplt.Off_M, pplt.Off_C)
+print "numoff", num_off
 num_off = [np.log(n) for n in num_off]
 
 plt.plot(fdlst, num_off)

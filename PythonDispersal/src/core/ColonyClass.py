@@ -12,6 +12,8 @@ from JuvClass import Juv
 from SpiderClass import Spider
 from Competition import Comp
 import random
+import csv
+
 # import core.Functions
 
 
@@ -162,8 +164,9 @@ class Colony(object):
         for spider in self.juv_list:
             jv_rnk = spider.rank
             ind_fd = self.cal_ind_food(jv_rnk)
-            spider.juv_fd = ind_fd
-        return [jv.juv_fd for jv in self.juv_list]
+            spider.food = ind_fd
+            #print 'ind_fd', spider.food
+        #return [jv.food for jv in self.juv_list]
 
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))
@@ -205,33 +208,56 @@ class Colony(object):
             self.juv_fd_assign()
 
     def moult(self, min_juvFd):
-        moult_list = [i for i in self.juv_list if i.juv_fd >= min_juvFd]
+        moult_list = [i for i in self.juv_list if i.food >= min_juvFd]
         self.ad_list = [Adult(i.SpiderList()) for i in moult_list]  # making adults from juvs
         print 'number of juvs moulting', len(self.ad_list)
         self.juv_list = []  # emptying the old juv list
 
     def colony_list_to_append(self):  # returns dictionary **values** in list form
         return self.colony_dict().values()
+    
+    def spiderExport(self, filename, ind_list):
+        appender = csv.writer(open(filename + "_inds.csv", "ab"))
+        for i in range(len(ind_list)):  # writes list to file
+            print 'ad export list', ind_list[i]
+            appender.writerow(ind_list[i])
+    
+    def Ads_export(self, filename):
+        adexport = []
+        for ad in self.ad_list:
+            adexport.append(["Ad", self.colony_age, self.colony_ID, ad.rank, ad.die, ad.food, ad.disperse, ad.no_off])
+        self.spiderExport(filename, adexport)
+
+    def Juv_export(self, filename):
+        juvexport = []
+        for juv in self.ad_list:
+            juvexport.append(["juv", self.colony_age, self.colony_ID, juv.rank, juv.die, juv.food, 'NA', 'NA'])
+        self.spiderExport(filename, juvexport)
+        
 
 ######### One Colony Time Step ##################
 
-    def core_colony_timestep(self, F_Ln, FLn_var, K, K_var, min_juv_fd, pop_export_list):
+    def core_colony_timestep(self, F_Ln, FLn_var, K, K_var, min_juv_fd, pop_export_list, filename):
             #Use just this one for colonies of females dispersed
 
             # (3) Adults reproduce
 
 
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
+        self.Juv_export(filename)
 
             #(4) Calculate colony food + random fluctuation
         self.col_food_random(F_Ln, K, K_var, FLn_var)
 
             #(5) food calculated and assigned to juvs with random
         self.distr_food()
+        self.Ads_export(filename)
 
             #(6) Adults die
         self.num_ads = len(self.ad_list)
         self.ad_list = []  # emptying the adult list - all adults die
+        
+        
 
             #(7) Juvs moult or die
         self.moult(min_juv_fd)  # new juvs added directly to adult list and emptying juv list
@@ -245,7 +271,7 @@ class Colony(object):
             # (10) Printing some things to the console
         print self.colony_dict()
 
-    def colony_timestep(self, F_Ln, FLn_var, K, K_var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, disp_risk, pop_export_list):
+    def colony_timestep(self, F_Ln, FLn_var, K, K_var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, disp_risk, pop_export_list, filename):
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
@@ -263,4 +289,4 @@ class Colony(object):
             print self.colony_dict()
             print "all spiders dispersed"
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
-            self.core_colony_timestep(F_Ln, FLn_var, K, K_var,  min_juv_fd, pop_export_list)
+            self.core_colony_timestep(F_Ln, FLn_var, K, K_var,  min_juv_fd, pop_export_list, filename)

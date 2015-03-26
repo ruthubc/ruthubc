@@ -30,6 +30,7 @@ class Adult(Spider):
         if self.food > 0:
             NumOff = np.exp((-M * np.log(self.food)) - C)
             self.no_off = int(round(NumOff))
+            #self.no_off = NumOff # for testing
         else:
             raise Exception("Adult with zero food")
 
