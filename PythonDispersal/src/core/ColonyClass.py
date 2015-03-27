@@ -85,7 +85,7 @@ class Colony(object):
         tot_col_food = cal_colFood * N_tot
         return tot_col_food
 
-    def col_food_random(self, F_Ln, K, K_var, FLn_var): # randomly fluctuates colony food
+    def col_food_random(self, F_Ln, K, K_var, FLn_var):  # randomly fluctuates colony food
         #TODO: Test this function and what numbers are produced
         from core.Functions import random_gus
         New_K = random_gus(K, K_var)
@@ -93,7 +93,9 @@ class Colony(object):
         New_FLn = random_gus(F_Ln, FLn_var)
         #print "NewFln", New_FLn
         food = self.cal_col_food(New_FLn, New_K)
-        if food <= 0:
+        if len(self.ad_list) and len(self.juv_list) == 0:
+            raise ValueError("no spiders in colony")
+        elif food <= 0:
             raise ValueError("Colony food was negative or zero")
         else:
             self.colony_food = food
@@ -115,7 +117,7 @@ class Colony(object):
 
     def colDispersal_choice(self, juv_disFd_lmt, ad_disFd_lmt, disp_rsk):  # deciding whether to reproduce or disperse
         if self.pot_juv_food < (float(juv_disFd_lmt) * disp_rsk):
-            [i.disperseChoice(ad_disFd_lmt) for i in self.ad_list] # dispersal choice ensures adult over specific size to disperse
+            [i.disperseChoice(ad_disFd_lmt, disp_rsk) for i in self.ad_list] # dispersal choice ensures adult over specific size to disperse
         else:
             print "no dispersers"
 
@@ -218,9 +220,7 @@ class Colony(object):
     def spiderExport(self, filename, ind_list):
         f = open(filename + "_inds.csv", "ab")
         appender = csv.writer(f, dialect = 'excel')
-        print "appender ind list"
         for i in range(len(ind_list)):  # writes list to file
-            print ind_list[i]
             appender.writerow(ind_list[i])
         f.close()
 
@@ -228,14 +228,14 @@ class Colony(object):
         adexport = []
         for ad in self.ad_list:
             adexport.append(["Ad", self.colony_age, self.colony_ID, ad.rank, ad.die, ad.food, ad.disperse, ad.no_off])
-        print "ad export List", adexport
+        #print "ad export List", adexport
         self.spiderExport(filename, adexport)
 
     def Juv_export(self, filename):
         juvexport = []
         for juv in self.juv_list:
             juvexport.append(["juv", self.colony_age, self.colony_ID, juv.rank, juv.die, juv.food, 'NA', 'NA'])
-        print "juv export list", juvexport
+        #print "juv export list", juvexport
         self.spiderExport(filename, juvexport)
 
 ######### One Colony Time Step ##################
@@ -245,9 +245,7 @@ class Colony(object):
 
             # (3) Adults reproduce
 
-
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
-        
 
             #(4) Calculate colony food + random fluctuation
         self.col_food_random(F_Ln, K, K_var, FLn_var)
@@ -260,8 +258,6 @@ class Colony(object):
             #(6) Adults die
         self.num_ads = len(self.ad_list)
         self.ad_list = []  # emptying the adult list - all adults die
-        
-        
 
             #(7) Juvs moult or die
         self.moult(min_juv_fd)  # new juvs added directly to adult list and emptying juv list

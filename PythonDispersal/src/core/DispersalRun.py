@@ -29,19 +29,14 @@ def disperal_run(sim_len, filename, comp_slp, disp_risk, K, amt_var):
 
     ad_spider = Adult([1, 0, 0.2], 0, 0)
 
-    print ad_spider
-
     start_col = Colony(1, [ad_spider]) #TODO: link colony id between poplt and colony
 
-    print len(start_col.ad_list)
-    start_col.print_dets()
-
-    print start_col.colony_dict()
+    #print start_col.colony_dict()
 
     this_pop = Poplt([start_col], filename, comp_slp, disp_risk, K, amt_var)
     this_pop.update_offVar()
 
-    print start_col.colony_list_to_append()
+    #print start_col.colony_list_to_append()
 
     #(3) Repeated population timesteps
 

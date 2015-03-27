@@ -110,9 +110,9 @@ class Comp(object):
                 ## print "infinite loop, oh dear"
                 #break
 
-        print "Now the loop has ended, cal tot = %s " % self.cal_tot
-        print "actual col food total we were aiming for = %s " % self.col_fd
-        print "high total = %s, low tot = %s " % (self.high_tot, self.low_tot)
+        # print "Now the loop has ended, cal tot = %s " % self.cal_tot
+        # print "actual col food total we were aiming for = %s " % self.col_fd
+        # print "high total = %s, low tot = %s " % (self.high_tot, self.low_tot)
 
         if self.cal_tot == self.col_fd:
             return self.med_rnk

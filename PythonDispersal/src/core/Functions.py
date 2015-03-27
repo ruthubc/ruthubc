@@ -32,7 +32,6 @@ def random_gus(mean, variance): # so the random function doesn't produce negativ
     ran_num = -1
     while (ran_num < 0):
         ran_num = np.random.normal(mean, variance)
-        print ran_num
     return ran_num
 
 random_gus(10, 3)
