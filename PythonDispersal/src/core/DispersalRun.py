@@ -17,11 +17,13 @@ def disperal_run(sim_len, filename, comp_slp, disp_risk, K, amt_var):
     #(1) write rownames to csv fileh
 
     export_rownames(filename + ".csv") # creating file with rownames 
-    
+
     ### write inds to new file
+
     indFiles = open(filename + "_inds.csv", "wb")
     wr = csv.writer(indFiles, dialect = 'excel')
     wr.writerow(["type", "col_age", "col_id", "rank", "die", "food", "disperse", "no_off"])
+    indFiles.close()
 
     #(2) Initial Population
 

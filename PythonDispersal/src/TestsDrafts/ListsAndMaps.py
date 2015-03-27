@@ -17,4 +17,8 @@ print 'updatedList', mylist;
 
 alist = range(0,10)
 
+#alist = []
 print alist
+
+if alist:
+    print "list is full"

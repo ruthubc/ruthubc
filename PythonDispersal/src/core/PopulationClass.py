@@ -111,8 +111,9 @@ class Poplt(object):
         f = open(self.filename, 'ab')
         appender = csv.writer(f)
         for i in range(len(self.pop_export_list)):  # writes list to file
-            print 'pop export list', self.pop_export_list[i]
+            #print 'pop export list', self.pop_export_list[i]
             appender.writerow(self.poplt_dict().values() + self.pop_export_list[i])
+        f.close()
         self.pop_export_list= []  # clears the list once it has been appended to the csv file
 
     def one_poplt_timestep(self):

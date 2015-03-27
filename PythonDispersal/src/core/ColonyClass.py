@@ -89,21 +89,21 @@ class Colony(object):
         #TODO: Test this function and what numbers are produced
         from core.Functions import random_gus
         New_K = random_gus(K, K_var)
-        print "newK", New_K
+        #print "newK", New_K
         New_FLn = random_gus(F_Ln, FLn_var)
-        print "NewFln", New_FLn
+        #print "NewFln", New_FLn
         food = self.cal_col_food(New_FLn, New_K)
         if food <= 0:
             raise ValueError("Colony food was negative or zero")
         else:
             self.colony_food = food
-            print "randomColFood", food
+            #print "randomColFood", food
 
     def col_num_off(self, Off_M, Off_C):  # Calculating the number of offspring and assigning number to adult
         #TODO: test num offspring equation
         [i.noOffspring(Off_M, Off_C) for i in self.ad_list]
         off_list = [i.no_off for i in self.ad_list]
-        print off_list
+        #print off_list
         no_new_off = sum(off_list)  # calc the total number of new offspring for the colony
         return no_new_off  #TODO: do I really have to return no new off??
 
@@ -128,11 +128,10 @@ class Colony(object):
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
         self.num_juvs = no_new_off
-        print "number of offspring",
-        print no_new_off
+        print "number of offspring", no_new_off
         for num in range (0, no_new_off):
             self.juv_list.extend([Juv()])
-        print 'length of juv list', len(self.juv_list)
+        # print 'length of juv list', len(self.juv_list)
         # Could not do this, as everytime updated one juv, all were updatedself.juv_list = [Juv()] * no_new_off 
 
     def juv_rnk_assign(self):  # all juvs are the same size so ranked by location in list i.e randomly
@@ -215,25 +214,29 @@ class Colony(object):
 
     def colony_list_to_append(self):  # returns dictionary **values** in list form
         return self.colony_dict().values()
-    
+
     def spiderExport(self, filename, ind_list):
-        appender = csv.writer(open(filename + "_inds.csv", "ab"))
+        f = open(filename + "_inds.csv", "ab")
+        appender = csv.writer(f, dialect = 'excel')
+        print "appender ind list"
         for i in range(len(ind_list)):  # writes list to file
-            print 'ad export list', ind_list[i]
+            print ind_list[i]
             appender.writerow(ind_list[i])
-    
+        f.close()
+
     def Ads_export(self, filename):
         adexport = []
         for ad in self.ad_list:
             adexport.append(["Ad", self.colony_age, self.colony_ID, ad.rank, ad.die, ad.food, ad.disperse, ad.no_off])
+        print "ad export List", adexport
         self.spiderExport(filename, adexport)
 
     def Juv_export(self, filename):
         juvexport = []
-        for juv in self.ad_list:
+        for juv in self.juv_list:
             juvexport.append(["juv", self.colony_age, self.colony_ID, juv.rank, juv.die, juv.food, 'NA', 'NA'])
+        print "juv export list", juvexport
         self.spiderExport(filename, juvexport)
-        
 
 ######### One Colony Time Step ##################
 
@@ -244,13 +247,14 @@ class Colony(object):
 
 
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
-        self.Juv_export(filename)
+        
 
             #(4) Calculate colony food + random fluctuation
         self.col_food_random(F_Ln, K, K_var, FLn_var)
 
             #(5) food calculated and assigned to juvs with random
         self.distr_food()
+        self.Juv_export(filename)
         self.Ads_export(filename)
 
             #(6) Adults die
@@ -286,7 +290,7 @@ class Colony(object):
         self.col_alive()
         if self.alive == 'dead':
             pop_export_list.append(self.colony_list_to_append())  # appends the dictionary values to population export list
-            print self.colony_dict()
+            print "colony dictionary", self.colony_dict()
             print "all spiders dispersed"
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
             self.core_colony_timestep(F_Ln, FLn_var, K, K_var,  min_juv_fd, pop_export_list, filename)
