@@ -29,7 +29,7 @@ def disperal_run(sim_len, filename, comp_slp, disp_risk, K, amt_var):
 
     ad_spider = Adult([1, 0, 0.2], 0, 0)
 
-    start_col = Colony(1, [ad_spider]) #TODO: link colony id between poplt and colony
+    start_col = Colony(1, [ad_spider], slope = comp_slp) #TODO: link colony id between poplt and colony
 
     #print start_col.colony_dict()
 

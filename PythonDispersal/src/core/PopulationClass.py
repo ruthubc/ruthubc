@@ -35,7 +35,7 @@ class Poplt(object):
         self.disp_rsk = disp_rsk
         self.K = float(K)
         self.amt_var = amt_var
-        self.ad_disFd_lmt = float(0.2)
+        self.ad_disFd_lmt = float(0.4)
         self.min_juv_fd = float(0.05)
         self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
         self.pop_dispersal_list = []
@@ -46,7 +46,7 @@ class Poplt(object):
         self.Off_C = 0  # used in making the offspring equation
         self.Off_M = 0  # used in making the offspring equation
         self.off_nmbr_list = [4, 8, self.min_juv_fd, 1]  # [min no off, max no off, min ad size, max ad size]
-        self.F_Ln = 0.2  # food to lone individual
+        self.F_Ln = 0.6  # food to lone individual
         self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
 
@@ -72,7 +72,7 @@ class Poplt(object):
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             print 'new colony made, id:', self.colony_count
-            col = Colony(colony_ID = self.colony_count, ad_list = [spider], juv_list = [], colony_food = 0.0,  dispersers = [])
+            col = Colony(colony_ID = self.colony_count, ad_list = [spider], juv_list = [], colony_food = 0.0, slope = self.comp_slp,   dispersers = [])
             self.new_cols.extend([col])
 
     def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list

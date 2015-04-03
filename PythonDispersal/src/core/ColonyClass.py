@@ -79,9 +79,10 @@ class Colony(object):
         N_tot = len(self.ad_list) # to maKe F_Ln actually lone ind food rather than colony of size
         N = N_tot - 1  # to maKe F_Ln actually lone ind food rather than colony of size
         K = K - 1  # same reason
-        brac = 1-(N/K)
+        NOvK = (N/K)
+        int = np.log(1/F_Ln)
         F = 1 / (1 - F_Ln)  # intercept
-        cal_colFood = (F + brac*(-brac))/F
+        cal_colFood = np.exp((1-NOvK)*(NOvK-1) *int)
         tot_col_food = cal_colFood * N_tot
         return tot_col_food
 

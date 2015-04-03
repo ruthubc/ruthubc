@@ -7,7 +7,7 @@ from core.DispersalRun import disperal_run
 
 sim_len = 10
 filename = "yellow_banana"
-comp_slp = 0.2
+comp_slp = 1.25
 disp_risk = 0.1
 K = 100
 amt_var = 0.2
