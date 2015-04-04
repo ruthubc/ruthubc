@@ -35,7 +35,7 @@ class Poplt(object):
         self.disp_rsk = disp_rsk
         self.K = float(K)
         self.amt_var = amt_var
-        self.ad_disFd_lmt = float(0.4)
+        self.ad_disFd_lmt = float(0.6)
         self.min_juv_fd = float(0.1)
         self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
         self.pop_dispersal_list = []
@@ -46,10 +46,10 @@ class Poplt(object):
         self.Off_C = 0  # used in making the offspring equation
         self.Off_M = 0  # used in making the offspring equation
         self.off_nmbr_list = [2, 8, self.min_juv_fd, 1]  # [min no off, max no off, min ad size, max ad size, foodscale(the average num offspring) ]
-        self.F_Ln = 0.6  # food to lone individual
+        self.F_Ln = 0.4  # food to lone individual
         self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
-        self.food_scale = 2 #(self.off_nmbr_list[0] + self.off_nmbr_list[1])/2
+        self.food_scale = 2  # (self.off_nmbr_list[0] + self.off_nmbr_list[1])/2
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))

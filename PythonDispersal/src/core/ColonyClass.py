@@ -100,7 +100,7 @@ class Colony(object):
         elif food <= 0:
             raise ValueError("Colony food was negative or zero")
         else:
-            self.colony_food = food * food_scale
+            self.colony_food = food
             #print "randomColFood", food
 
     def col_num_off(self, Off_M, Off_C):  # Calculating the number of offspring and assigning number to adult
@@ -198,8 +198,8 @@ class Colony(object):
 
     def distr_food(self):
         if self.colony_food > self.num_juvs:
-            raise Exception("food greater than num jvs")
-        else:
+            raise Exception("food greater than num jvs, numJuvs", self.num_juvs, 'colFd', self.colony_food, 'numads', self.num_ads)
+        else: 
             self.assign_food()
     
     def assign_food(self):
