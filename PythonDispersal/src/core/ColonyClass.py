@@ -55,12 +55,14 @@ class Colony(object):
                                                                                      len(self.ad_list), len(self.juv_list), self.colony_food, self.dispersers)
 
     def colony_dict(self):  # the info about each colony to export
+        # TODO: check that the correct things are being exported i.e. the correct number of juvs
         d = OrderedDict()
         d['colony_ID'] = self.colony_ID
         d['colony_age'] = self.colony_age
         d['num ads'] = self.num_ads
         d['numjuvs'] = self.num_juvs
         d['colony_food'] = self.colony_food
+        d['ave_food']= 0 if self.num_juvs == 0 else self.colony_food/self.num_juvs
         d['dispersers'] = self.num_dis
         d['pot_juv_fd'] = self.pot_juv_food
         d['cal_med_rnk'] = self.cal_med_rnk
@@ -74,7 +76,7 @@ class Colony(object):
         if not self.juv_list and not self.ad_list:
             self.alive = 'dead'    #checked feb  12, but need to make sure that the variables are the correct type
 
-    def cal_col_food(self, F_Ln, K):  # returns tot colony food per capita
+    def cal_col_food(self, F_Ln, K, food_scale):  # returns tot colony food per capita
         # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
         N_tot = len(self.ad_list) # to maKe F_Ln actually lone ind food rather than colony of size
         N = N_tot - 1  # to maKe F_Ln actually lone ind food rather than colony of size
@@ -83,23 +85,22 @@ class Colony(object):
         int = np.log(1/F_Ln)
         F = 1 / (1 - F_Ln)  # intercept
         cal_colFood = np.exp((1-NOvK)*(NOvK-1) *int)
-        tot_col_food = cal_colFood * N_tot
+        tot_col_food = cal_colFood * N_tot * food_scale
         return tot_col_food
 
-    def col_food_random(self, F_Ln, K, K_var, FLn_var):  # randomly fluctuates colony food
-        #TODO: Test this function and what numbers are produced
+    def col_food_random(self, F_Ln, K, K_var, FLn_var, food_scale):  # randomly fluctuates colony food 
         from core.Functions import random_gus
         New_K = random_gus(K, K_var)
         #print "newK", New_K
         New_FLn = random_gus(F_Ln, FLn_var)
         #print "NewFln", New_FLn
-        food = self.cal_col_food(New_FLn, New_K)
+        food = self.cal_col_food(New_FLn, New_K, food_scale)
         if len(self.ad_list) and len(self.juv_list) == 0:
             raise ValueError("no spiders in colony")
         elif food <= 0:
             raise ValueError("Colony food was negative or zero")
         else:
-            self.colony_food = food
+            self.colony_food = food * food_scale
             #print "randomColFood", food
 
     def col_num_off(self, Off_M, Off_C):  # Calculating the number of offspring and assigning number to adult
@@ -110,8 +111,8 @@ class Colony(object):
         no_new_off = sum(off_list)  # calc the total number of new offspring for the colony
         return no_new_off  #TODO: do I really have to return no new off??
 
-    def cal_pot_juv_food(self, F_Ln, K, Off_M, Off_C):  # updates potential juv food
-        tot_food = self.cal_col_food(F_Ln, K)
+    def cal_pot_juv_food(self, F_Ln, K, Off_M, Off_C, food_scale):  # updates potential juv food
+        tot_food = self.cal_col_food(F_Ln, K, food_scale)
         pot_juvs = self.col_num_off(Off_M, Off_C)
         pot_juv_fd = tot_food / pot_juvs
         self.pot_juv_food = pot_juv_fd
@@ -127,6 +128,7 @@ class Colony(object):
         print "number of dispersers:", len(self.dispersers)
         self.num_dis = len(self.dispersers)
         self.ad_list = [i for i in self.ad_list if i.disperse == 0 and i.die == 0]
+        self.num_ads = len(self.ad_list)
 
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
@@ -145,22 +147,22 @@ class Colony(object):
     def comp_slope(self):
         return float(self.slope) / float(len(self.juv_list))
 
-    def cal_ind_food(self, ind_rnk):  # TODO: check this works
+    def cal_ind_food(self, ind_rnk):
         slope = self.comp_slope()
+        ind_rnk = float(ind_rnk)
         xbr = float(self.colony_food) / float(len(self.juv_list))
-        #tm1 = slope * self.cal_med_rnk
-        #tm2 = xbr - ((xbr * float(ind_rnk)) / self.cal_med_rnk)
-        #tm12 = (tm1 * tm2) / np.power(xbr, 2)
-        topTerm = (slope * self.cal_med_rnk) * (xbr - ((xbr * ind_rnk) / self.cal_med_rnk))
-        fracTerm = topTerm / (np.power(xbr, 2))
-        CompEqn = (1+ fracTerm) * xbr
-        #CompEqn = xbr * (1 + tm12)
-        if CompEqn > 1:
-            return 1
-        elif CompEqn < 0:
-            return 0
-        else:
-            return CompEqn
+        if xbr > 1:
+            raise Exception("xbar greater than one:", xbr)
+        else:        
+            topTerm = (slope * self.cal_med_rnk) * (xbr - ((xbr * ind_rnk) / self.cal_med_rnk))
+            fracTerm = topTerm / (np.power(xbr, 2))
+            CompEqn = (1+ fracTerm) * xbr
+            if CompEqn > 1:
+                return 1
+            elif CompEqn < 0.001:
+                return 0
+            else:
+                return CompEqn
 
     def juv_fd_assign(self):
         for spider in self.juv_list:
@@ -168,7 +170,7 @@ class Colony(object):
             ind_fd = self.cal_ind_food(jv_rnk)
             spider.food = ind_fd
             #print 'ind_fd', spider.food
-        #return [jv.food for jv in self.juv_list]
+        #return [jv.food for jv in self.juv_list] # for testing
 
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))
@@ -195,9 +197,15 @@ class Colony(object):
                     spider.juv_fd = 0
 
     def distr_food(self):
+        if self.colony_food > self.num_juvs:
+            raise Exception("food greater than num jvs")
+        else:
+            self.assign_food()
+    
+    def assign_food(self):
         if len(self.juv_list) <= 1:
             self.juv_list[0].food = self.colony_food  #TODO: maybe put something in here to make sure that nver abv1
-        if self.slope < 0.0000001:
+        if self.slope < 0.001:
             self.zeroSlp_jv_fd()
         elif self.slope == 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
             # TODO: make range
@@ -241,7 +249,7 @@ class Colony(object):
 
 ######### One Colony Time Step ##################
 
-    def core_colony_timestep(self, F_Ln, FLn_var, K, K_var, min_juv_fd, pop_export_list, filename):
+    def core_colony_timestep(self, F_Ln, FLn_var, K, K_var, min_juv_fd, pop_export_list, filename, food_scale):
             #Use just this one for colonies of females dispersed
 
             # (3) Adults reproduce
@@ -249,20 +257,25 @@ class Colony(object):
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
 
             #(4) Calculate colony food + random fluctuation
-        self.col_food_random(F_Ln, K, K_var, FLn_var)
-
+        self.col_food_random(F_Ln, K, K_var, FLn_var, food_scale)
+        
+        if self.colony_food >  min_juv_fd:
             #(5) food calculated and assigned to juvs with random
-        self.distr_food()
+            self.distr_food()
+            
+        else:  # not enough food for any juvs to moult
+            print "not enough food for any spiders to moult"  # TODO check everything that needs to be done here is being done.
+ 
         self.Juv_export(filename)
         self.Ads_export(filename)
 
             #(6) Adults die
         self.num_ads = len(self.ad_list)
         self.ad_list = []  # emptying the adult list - all adults die
-
-            #(7) Juvs moult or die
-        self.moult(min_juv_fd)  # new juvs added directly to adult list and emptying juv list
-
+            
+        #(7) Juvs moult or die
+        self.moult(min_juv_fd)  # new juvs added directly to adult list and emptying juv list   
+          
             # (8) marking dead colonies (colonies with no spiders)
         self.col_alive()
 
@@ -272,12 +285,12 @@ class Colony(object):
             # (10) Printing some things to the console
         print self.colony_dict()
 
-    def colony_timestep(self, F_Ln, FLn_var, K, K_var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, disp_risk, pop_export_list, filename):
+    def colony_timestep(self, F_Ln, FLn_var, K, K_var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, disp_risk, pop_export_list, filename, food_scale):
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
             # (2) adults decide whether to disperse
-        self.cal_pot_juv_food(F_Ln, K, Off_M, Off_C)  # calculating potental juv food , written to colony
+        self.cal_pot_juv_food(F_Ln, K, Off_M, Off_C, food_scale)  # calculating potental juv food , written to colony
         self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt, disp_risk)
         self.spis_to_dis_lst()
         pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
@@ -290,4 +303,4 @@ class Colony(object):
             print "colony dictionary", self.colony_dict()
             print "all spiders dispersed"
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
-            self.core_colony_timestep(F_Ln, FLn_var, K, K_var,  min_juv_fd, pop_export_list, filename)
+            self.core_colony_timestep(F_Ln, FLn_var, K, K_var,  min_juv_fd, pop_export_list, filename, food_scale)

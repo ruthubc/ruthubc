@@ -16,10 +16,12 @@ import matplotlib.pyplot as plt
 
 #a = [[0.1], [100.0], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]] # xbr, [num juvs] [slp]
 
-a = [[0.5], [10000.0], [0.2]]
-
+a = [[0.001, 0.1, 0.3, 0.5, 0.7, 1.0], [5.0], [5]]
+## TO get this to work change the output of the compeition function and the juv_fd_assign
 
 combinations = list(itertools.product(*a))
+
+print combinations
 
 
 df = []
@@ -53,7 +55,7 @@ for i in range(0, len(combinations)):
     print "df loop:", df
 
     plt.plot(juv_ranks, ass_tot)
-    plt.ylim([0, 1])
+    plt.ylim([0, 1.1])
     plt.xlim([0, numJuv])
     plt.title(str(tup[2]))
     plt.draw()

@@ -57,7 +57,7 @@ class Comp(object):
             tot = -0.5 * self.num_juv * (-self.slp - (2 * self.med_rnk * self.slp) - (2 * self.xbr) + (self.slp * self.num_juv))
 
         else:
-            print "It didn't work"
+            raise Exception("find food tot with options didn't work")
 
         self.cal_tot = tot
 
@@ -97,29 +97,26 @@ class Comp(object):
     def CompFunction(self):  # calculates the med rank, returns med rank
         # print 'comp num juvs', self.num_juv
         self.xbr = float(self.col_fd) / self.num_juv
+
         run = 0
         ## print "starting loop, colony food =  %s" % self.col_fd
-
         # TODO: Come up with better conditions for the loop
         while self.high_tot == -1 or self.low_tot == -1:
             run += 1
             if run < 2000:
                 self.comp_loop_function()
             else:
+                print "col food input", self.col_fd, 'num juvs', self.num_juv
                 raise Exception("med rank loop infinite")
-                ## print "infinite loop, oh dear"
-                #break
-
         # print "Now the loop has ended, cal tot = %s " % self.cal_tot
         # print "actual col food total we were aiming for = %s " % self.col_fd
         # print "high total = %s, low tot = %s " % (self.high_tot, self.low_tot)
-
         if self.cal_tot == self.col_fd:
-            return self.med_rnk
+            return self.med_rnk #[self.cal_tot, self.med_rnk]
         else:
             fin_md_rnk = nsmallest(1, [self.low_tot, self.high_tot], key = lambda x: abs(x - self.col_fd))[0]  # returns the number nearest to actual col_fd
             if fin_md_rnk == self.low_tot:
-                return  self.low_rnk
+                return  self.low_rnk #[self.cal_tot, self.low_rnk]
             else:
-                return self.high_rnk
+                return self.high_rnk #[self.cal_tot, self.high_rnk]
             #when testing chang output to [self.cal_tot, self...]
