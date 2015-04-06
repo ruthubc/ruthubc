@@ -16,13 +16,13 @@ def writePBS(FileName):
     file.write("#PBS -m bea\n")
     file.write("#PBS -l walltime=00:30:00\n")
     file.write("#PBS -l pmem=240mb\n")
-    file.write('#PBS -l procs = 4')
-    file.write("""echo "Current working directory is `pwd`\n""")
+    file.write('#PBS -l procs=4\n')
+    file.write("""echo "Current working directory is `pwd`"\n""")
     file.write("""echo "Starting run "$0" at: `date`"\n""")
-    file.write("module load python/2.6.7\n")
+    file.write("module load python/2.7.5.anaconda\n")
     file.write("cd $PBS_O_WORKDIR\n")
     file.write("python " + FileName + ".py\n")
-    file.write("""echo "Program "$0" finished with exit code $? at: `date`""")
+    file.write("""echo "Program "$0" finished with exit code $? at: `date`" """)
     file.close()
 
 '''
@@ -49,7 +49,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var):
 #3) mean K
 #4) variance in k and FLN
 
-runs = [[0.0, 1.0], [0.1], [10], [0.1]] # slope, risk of dispersal, MeanK , Var k
+runs = [[0.6], [0.4], [10], [0.1]] # slope, risk of dispersal, MeanK , Var k
 combinations = list(itertools.product(*runs))
 
 print combinations

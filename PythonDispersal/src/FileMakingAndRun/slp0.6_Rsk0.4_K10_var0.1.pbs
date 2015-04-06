@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -M rvsharpe.ubc@gmail.com
+#PBS -m bea
+#PBS -l walltime=00:30:00
+#PBS -l pmem=240mb
+#PBS -l procs=4
+echo "Current working directory is `pwd`"
+echo "Starting run "$0" at: `date`"
+module load python/2.7.5.anaconda
+cd $PBS_O_WORKDIR
+python slp0.6_Rsk0.4_K10_var0.1.py
+echo "Program "$0" finished with exit code $? at: `date`" 
