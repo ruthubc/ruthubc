@@ -5,6 +5,20 @@ Created on Feb 25, 2015
 '''
 import sys
 import itertools
+import csv
+
+def run_numbers(numbersFile):
+    i=[]
+    with open(numbersFile, 'rb') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            i = i + [int(row[0])]
+    maxNum =  max(i)
+    
+    with open(numbersFile, 'ab') as f:
+        writer = csv.writer(f, dialect='excel')
+        writer.writerow([maxNum +1])
+    return maxNum
 
 def writePBS(FileName):
     print('Creating new file')
@@ -25,13 +39,7 @@ def writePBS(FileName):
     file.write("""echo "Program "$0" finished with exit code $? at: `date`" """)
     file.close()
 
-'''
-file = 'pythonTest1.py'
-writePBS(file)
-'''
-
 def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var):
-
     name = FileName + '.py'
     file = open(name, 'w+')
     file.write("from core.DispersalRun import disperal_run\n")
@@ -56,21 +64,27 @@ print combinations
 fileNameLst = []
 
 for i in range(0, len(combinations)):
+    number = run_numbers("RunNumbers.csv")
     tup = combinations[i]
     slope = tup[0]
     risk = tup[1]
     K = tup[2]
     var = tup[3]
-    filename = 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var)
+    filename = 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) + '_rn' + str(number)
     print "tup", tup
     print filename
     writePythonRun(filename, slope, risk, K, var)
     writePBS(filename)
     fileNameLst.extend([filename])
     
-print fileNameLst
+print "filenameList:", fileNameLst
 
 file = open("qsubFile.txt", 'w+')
+
+
 for name in fileNameLst:
     print name
     file.write("qsub " + name + ".pbs; ")
+    with open("FilesCreated.csv", 'ab') as f:
+        writer = csv.writer(f, dialect='excel')
+        writer.writerow([name])

@@ -34,4 +34,5 @@ def random_gus(mean, variance): # so the random function doesn't produce negativ
         ran_num = np.random.normal(mean, variance)
     return ran_num
 
-random_gus(10, 3)
+
+    

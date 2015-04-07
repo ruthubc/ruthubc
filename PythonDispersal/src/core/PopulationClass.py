@@ -10,6 +10,7 @@ from ColonyClass import Colony
 from collections import OrderedDict
 import numpy as np
 import csv
+import random
 
 # The four things to change, 
 #1) slope [0, 0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0, 10.0]
@@ -50,6 +51,7 @@ class Poplt(object):
         self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
         self.food_scale = 2  # (self.off_nmbr_list[0] + self.off_nmbr_list[1])/2
+        self.maxNumCols = 300
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
@@ -69,12 +71,23 @@ class Poplt(object):
         #works, checked Aug 14th
         self.poplt_list = [i for i in self.poplt_list if i.alive == 'alive']
 
+    def too_many_cols(self): # removes spiders at random from disperers list
+        num_sps_lft = self.maxNumCols - len(self.poplt_list)
+        while len(self.pop_dispersal_list) > num_sps_lft:
+            self.pop_dispersal_list.remove(random.choice(list(self.pop_dispersal_list)))
+        print '#remining dispersers=', len(self.pop_dispersal_list)
+        
+    
     def create_new_col(self):  # sets up the dispersing spiders as new colonies
+        num_spaces = self.maxNumCols - len(self.poplt_list)
+        if num_spaces - len(self.pop_dispersal_list) < 0: # not spiders enough for all the dispersers
+            self.too_many_cols() # removing spider at random from dispersers list
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             print 'new colony made, id:', self.colony_count
             col = Colony(colony_ID = self.colony_count, ad_list = [spider], juv_list = [], colony_food = 0.0, slope = self.comp_slp,   dispersers = [])
             self.new_cols.extend([col])
+
 
     def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list
         self.poplt_list.extend(self.new_cols)

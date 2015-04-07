@@ -3,43 +3,13 @@ Created on Apr 4, 2015
 
 @author: user
 '''
-'''
-f = open('RunNumbers.txt', 'aw')
-
-
-#print f.read()
-
-#print f.readline()
-
-f.write('11\n')
-#for line in f:
-#        print line,
-        
-
-
-f.close()
-
-f= open('RunNumbers.txt','a+')
-f.write("12")
-
-f = open('RunNumbers.txt', 'r')
-for line in f:
-    print line,
-
-
-print f.readlines()
-print len(f.readlines())
-'''
 
 
 import csv
-
-
-
-    
+'''
 i=[]
-   
-    
+
+
 with open('RunNumbers.csv', 'rb') as f:
     reader = csv.reader(f)
     for row in reader:
@@ -54,4 +24,8 @@ maxNum =  max(i)
 with open('RunNumbers.csv', 'ab') as f:
     writer = csv.writer(f, dialect='excel')
     writer.writerow([maxNum +1])
-    
+'''
+
+from core.Functions import run_numbers
+
+print run_numbers("RunNumbers.csv")
