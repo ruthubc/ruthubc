@@ -42,6 +42,7 @@ class Colony(object):
         self.num_dis = 0
         self.alive = 'alive'
         self.cal_med_rnk = 0.0
+        self.num_moult = 0.0
 
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
@@ -67,6 +68,7 @@ class Colony(object):
         d['pot_juv_fd'] = self.pot_juv_food
         d['cal_med_rnk'] = self.cal_med_rnk
         d['colAlive'] = self.alive
+        d['num_juvs_moulting'] = self.num_moult
         return d
 
     def col_age_increase(self):  # increases colony age by one
@@ -219,6 +221,7 @@ class Colony(object):
 
     def moult(self, min_juvFd):
         moult_list = [i for i in self.juv_list if i.food >= min_juvFd]
+        self.num_moult = len(moult_list)
         self.ad_list = [Adult(i.SpiderList()) for i in moult_list]  # making adults from juvs
         print 'number of juvs moulting', len(self.ad_list)
         self.juv_list = []  # emptying the old juv list

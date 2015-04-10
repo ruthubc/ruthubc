@@ -37,7 +37,7 @@ class Poplt(object):
         self.K = float(K)
         self.amt_var = amt_var
         self.ad_disFd_lmt = float(0.6)
-        self.min_juv_fd = float(0.1)
+        self.min_juv_fd = float(0.2)
         self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
         self.pop_dispersal_list = []
         self.pop_export_list = []
@@ -76,11 +76,17 @@ class Poplt(object):
         while len(self.pop_dispersal_list) > num_sps_lft:
             self.pop_dispersal_list.remove(random.choice(list(self.pop_dispersal_list)))
         print '#remining dispersers=', len(self.pop_dispersal_list)
+    
+    def disp_rsk_remove_spiders(self):
+        num_list = len(self.pop_dispersal_list) * self.disp_rsk
+        while len(self.pop_dispersal_list) > num_list:
+            self.pop_dispersal_list.remove(random.choice(list(self.pop_dispersal_list)))
         
     
     def create_new_col(self):  # sets up the dispersing spiders as new colonies
+        self.disp_rsk_remove_spiders()
         num_spaces = self.maxNumCols - len(self.poplt_list)
-        if num_spaces - len(self.pop_dispersal_list) < 0: # not spiders enough for all the dispersers
+        if num_spaces - len(self.pop_dispersal_list) < 0: # not spaces enough for all the dispersers
             self.too_many_cols() # removing spider at random from dispersers list
         for spider in self.pop_dispersal_list:
             self.colony_count += 1

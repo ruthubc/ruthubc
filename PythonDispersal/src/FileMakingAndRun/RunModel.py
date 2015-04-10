@@ -5,7 +5,7 @@ Created on Feb 25, 2015
 '''
 from core.DispersalRun import disperal_run
 
-sim_len = 10
+sim_len = 100
 filename = "yellow_banana"
 comp_slp = 1.25
 disp_risk = 0.1
