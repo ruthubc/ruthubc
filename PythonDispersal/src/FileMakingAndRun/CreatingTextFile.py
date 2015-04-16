@@ -28,7 +28,7 @@ def writePBS(FileName):
     file.write("#PBS -S /bin/bash\n")
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m bea\n")
-    file.write("#PBS -l walltime=00:30:00\n")
+    file.write("#PBS -l walltime=05:30:00\n")
     file.write("#PBS -l pmem=240mb\n")
     file.write('#PBS -l procs=4\n')
     file.write("""echo "Current working directory is `pwd`"\n""")
@@ -43,7 +43,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var):
     name = FileName + '.py'
     file = open(name, 'w+')
     file.write("from core.DispersalRun import disperal_run\n")
-    file.write("sim_len = 10\n")
+    file.write("sim_len = 1000\n")
     file.write('filename = "'  + FileName + '.py"\n')
     file.write("comp_slp = " + str(comp_slp) + "\n")
     file.write("disp_risk =" + str(disp_risk)+ "\n")
@@ -57,7 +57,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var):
 #3) mean K
 #4) variance in k and FLN
 
-runs = [[0.6], [0.4], [10], [0.1]] # slope, risk of dispersal, MeanK , Var k
+runs = [[1, 0.6, 4, 1.66667], [0.1], [100], [0.1]] # slope, risk of dispersal, MeanK , Var k
 combinations = list(itertools.product(*runs))
 
 print combinations

@@ -37,7 +37,7 @@ class Poplt(object):
         self.K = float(K)
         self.amt_var = amt_var
         self.ad_disFd_lmt = float(0.6)
-        self.min_juv_fd = float(0.2)
+        self.min_juv_fd = float(0.1)
         self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
         self.pop_dispersal_list = []
         self.pop_export_list = []
@@ -46,8 +46,8 @@ class Poplt(object):
         self.new_cols = []
         self.Off_C = 0  # used in making the offspring equation
         self.Off_M = 0  # used in making the offspring equation
-        self.off_nmbr_list = [2, 8, self.min_juv_fd, 1]  # [min no off, max no off, min ad size, max ad size, foodscale(the average num offspring) ]
-        self.F_Ln = 0.4  # food to lone individual
+        self.off_nmbr_list = [2, 4, self.min_juv_fd, 1]  # [min no off, max no off, min ad size, max ad size, foodscale(the average num offspring) ]
+        self.F_Ln = 0.2  # food to lone individual
         self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
         self.food_scale = 2  # (self.off_nmbr_list[0] + self.off_nmbr_list[1])/2
@@ -75,14 +75,13 @@ class Poplt(object):
         num_sps_lft = self.maxNumCols - len(self.poplt_list)
         while len(self.pop_dispersal_list) > num_sps_lft:
             self.pop_dispersal_list.remove(random.choice(list(self.pop_dispersal_list)))
-        print '#remining dispersers=', len(self.pop_dispersal_list)
+        # print '#remining dispersers=', len(self.pop_dispersal_list)
     
     def disp_rsk_remove_spiders(self):
         num_list = len(self.pop_dispersal_list) * self.disp_rsk
         while len(self.pop_dispersal_list) > num_list:
             self.pop_dispersal_list.remove(random.choice(list(self.pop_dispersal_list)))
-        
-    
+
     def create_new_col(self):  # sets up the dispersing spiders as new colonies
         self.disp_rsk_remove_spiders()
         num_spaces = self.maxNumCols - len(self.poplt_list)
@@ -90,7 +89,7 @@ class Poplt(object):
             self.too_many_cols() # removing spider at random from dispersers list
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
-            print 'new colony made, id:', self.colony_count
+            #print 'new colony made, id:', self.colony_count
             col = Colony(colony_ID = self.colony_count, ad_list = [spider], juv_list = [], colony_food = 0.0, slope = self.comp_slp,   dispersers = [])
             self.new_cols.extend([col])
 
@@ -146,7 +145,7 @@ class Poplt(object):
 
         if self.pop_dispersal_list:
             #(3) Make dispersers into new colonies
-            print 'pop dis list length', len(self.pop_dispersal_list)
+            # print 'pop dis list length', len(self.pop_dispersal_list)
             self.create_new_col()
 
             #(4) Iterate through new col list
@@ -154,8 +153,8 @@ class Poplt(object):
 
             #(5) adds new colonies to the pop list and clears new colony list
             self.new_cols_to_lst()
-        else:
-            print "no colonies dispersing"
+        #else:
+            # print "no colonies dispersing"
 
         #(6) export results
         self.poplt_export()

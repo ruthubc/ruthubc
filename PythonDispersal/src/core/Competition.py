@@ -106,17 +106,17 @@ class Comp(object):
             if run < 2000:
                 self.comp_loop_function()
             else:
-                print "col food input", self.col_fd, 'num juvs', self.num_juv
+                # print "col food input", self.col_fd, 'num juvs', self.num_juv
                 raise Exception("med rank loop infinite")
         # print "Now the loop has ended, cal tot = %s " % self.cal_tot
         # print "actual col food total we were aiming for = %s " % self.col_fd
         # print "high total = %s, low tot = %s " % (self.high_tot, self.low_tot)
         if self.cal_tot == self.col_fd:
-            return self.med_rnk #[self.cal_tot, self.med_rnk]
+            return self.med_rnk #[self.cal_tot, self.med_rnk] #
         else:
             fin_md_rnk = nsmallest(1, [self.low_tot, self.high_tot], key = lambda x: abs(x - self.col_fd))[0]  # returns the number nearest to actual col_fd
             if fin_md_rnk == self.low_tot:
-                return  self.low_rnk #[self.cal_tot, self.low_rnk]
+                return   self.low_rnk #[self.cal_tot, self.low_rnk]#
             else:
-                return self.high_rnk #[self.cal_tot, self.high_rnk]
+                return self.high_rnk #[self.cal_tot, self.high_rnk] #
             #when testing chang output to [self.cal_tot, self...]

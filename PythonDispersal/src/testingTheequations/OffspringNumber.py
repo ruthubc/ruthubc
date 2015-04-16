@@ -28,15 +28,15 @@ pplt.update_offVar()
 print pplt.Off_C
 print pplt.Off_M
 #col.print_adults() 
-fdlst=  [ad.food for ad in ad_list]
+fdlst1=  [ad.food for ad in ad_list]
 
-fdlst = [np.log(m) for m in fdlst]
-print fdlst
+fdlst = [np.log(m) for m in fdlst1]
+print "fdlst",  fdlst
 
-num_off = col.col_num_off(pplt.Off_M, pplt.Off_C)
-print "numoff", num_off
-num_off = [np.log(n) for n in num_off]
+num_off1 = col.col_num_off(pplt.Off_M, pplt.Off_C)
+print "numoff1", num_off1
+num_off = [np.log(n) for n in num_off1]
 
-plt.plot(fdlst, num_off)
+plt.plot(fdlst1, num_off1)
 plt.show()
     

@@ -1,1 +1,1 @@
-qsub slp0.6_Rsk0.4_K10_var0.1.pbs; 
+qsub slp1_Rsk0.1_K100_var0.1_rn141.pbs; qsub slp0.6_Rsk0.1_K100_var0.1_rn142.pbs; qsub slp4_Rsk0.1_K100_var0.1_rn143.pbs; qsub slp1.66667_Rsk0.1_K100_var0.1_rn144.pbs; 
