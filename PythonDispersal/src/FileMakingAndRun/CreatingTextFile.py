@@ -39,7 +39,8 @@ def writePBS(FileName):
     file.write("""echo "Program "$0" finished with exit code $? at: `date`" """)
     file.close()
 
-def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var):
+def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off,
+                   max_no_off, ad_disFd_lmt, F_Ln): # writing the python file to run the model
     name = FileName + '.py'
     file = open(name, 'w+')
     file.write("from core.DispersalRun import disperal_run\n")
@@ -49,7 +50,12 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var):
     file.write("disp_risk =" + str(disp_risk)+ "\n")
     file.write("K=" + str(K)+ "\n")
     file.write("amt_var=" + str(amt_var)+ "\n")
-    file.write("disperal_run(sim_len, filename, comp_slp, disp_risk, K, amt_var)\n")
+    file.write("min_juv_size="  + str(min_juv_size) + "\n")
+    file.write("min_no_off="  + str(min_no_off) + "\n")
+    file.write("max_no_off="  + str(max_no_off) + "\n")
+    file.write("ad_disFd_lmt ="  + str(ad_disFd_lmt) + "\n")
+    file.write("F_Ln="  + str(F_Ln) + "\n")
+    file.write("disperal_run(sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln)\n")
     file.close()
 
 #1) slope [0, 0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0, 10.0]
@@ -57,7 +63,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var):
 #3) mean K
 #4) variance in k and FLN
 
-runs = [[1, 0.6, 4, 1.66667], [0.1], [100], [0.1]] # slope, risk of dispersal, MeanK , Var k
+runs = [[0.6], [0.1], [100], [0.1]] # slope, risk of dispersal, MeanK , Var k
 combinations = list(itertools.product(*runs))
 
 print combinations
@@ -70,10 +76,16 @@ for i in range(0, len(combinations)):
     risk = tup[1]
     K = tup[2]
     var = tup[3]
+    min_juv_size = 0.1
+    min_no_off = 2
+    max_no_off = 4
+    ad_disFd_lmt = 0.4
+    F_Ln = 0.4    
     filename = 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) + '_rn' + str(number)
     print "tup", tup
     print filename
-    writePythonRun(filename, slope, risk, K, var)
+    writePythonRun(filename, slope, risk, K, var, min_juv_size, min_no_off,
+                   max_no_off, ad_disFd_lmt, F_Ln)
     writePBS(filename)
     fileNameLst.extend([filename])
     

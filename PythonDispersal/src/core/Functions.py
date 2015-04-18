@@ -29,10 +29,10 @@ def export_rownames(filename, rowheaders = fake_dict()):
     f.close()
  
 def random_gus(mean, variance): # so the random function doesn't produce negative number
-    ran_num = -1
-    while (ran_num < 0):
+    if variance == 0: # beause random doesn't work if variance is zero
+        return mean
+    else:
         ran_num = np.random.normal(mean, variance)
-    return ran_num
-
-
-    
+        if ran_num < 0:
+            ran_num = 0
+        return ran_num

@@ -78,7 +78,7 @@ class Colony(object):
         if not self.juv_list and not self.ad_list:
             self.alive = 'dead'    #checked feb  12, but need to make sure that the variables are the correct type
 
-    def cal_col_food(self, F_Ln, K, food_scale):  # returns tot colony food per capita
+    def cal_col_food(self, F_Ln, K):  # returns tot colony food per capita
         # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
         N_tot = len(self.ad_list) # to maKe F_Ln actually lone ind food rather than colony of size
         N = N_tot - 1  # to maKe F_Ln actually lone ind food rather than colony of size
@@ -87,22 +87,25 @@ class Colony(object):
         int = np.log(1/F_Ln)
         F = 1 / (1 - F_Ln)  # intercept
         cal_colFood = np.exp((1-NOvK)*(NOvK-1) *int)
-        tot_col_food = cal_colFood * N_tot * food_scale
-        return tot_col_food
-
-    def col_food_random(self, F_Ln, K, K_var, FLn_var, food_scale):  # randomly fluctuates colony food 
-        from core.Functions import random_gus
-        New_K = random_gus(K, K_var)
-        #print "newK", New_K
-        New_FLn = random_gus(F_Ln, FLn_var)
-        #print "NewFln", New_FLn
-        food = self.cal_col_food(New_FLn, New_K, food_scale)
-        if len(self.ad_list) and len(self.juv_list) == 0:
-            raise ValueError("no spiders in colony")
-        elif food <= 0:
+        cap_col_food = cal_colFood
+        if cap_col_food <= 0:
             raise ValueError("Colony food was negative or zero")
         else:
-            self.colony_food = food
+            return cap_col_food
+
+    def col_food_random(self, F_Ln, K, var, food_scale):  # randomly fluctuates colony food 
+        from core.Functions import random_gus
+        cap_food = self.cal_col_food(F_Ln, K)
+        cap_food = random_gus(cap_food, var) * food_scale
+        tot_food = cap_food * len(self.ad_list)
+        if len(self.ad_list) and len(self.juv_list) == 0:
+            raise ValueError("no spiders in colony")
+        elif tot_food < 0:
+            raise ValueError("Colony food was negative or zero")
+        elif tot_food > len(self.juv_list):
+            self.colony_food = len(self.juv_list)
+        else:
+            self.colony_food = tot_food
             #print "randomColFood", food
 
     def col_num_off(self, Off_M, Off_C):  # Calculating the number of offspring and assigning number to adult
@@ -114,7 +117,7 @@ class Colony(object):
         return no_new_off  #TODO: do I really have to return no new off??
 
     def cal_pot_juv_food(self, F_Ln, K, Off_M, Off_C, food_scale):  # updates potential juv food
-        tot_food = self.cal_col_food(F_Ln, K, food_scale)
+        tot_food = self.cal_col_food(F_Ln, K) * len(self.ad_list) * food_scale
         pot_juvs = self.col_num_off(Off_M, Off_C)
         pot_juv_fd = tot_food / pot_juvs
         self.pot_juv_food = pot_juv_fd
@@ -252,7 +255,7 @@ class Colony(object):
 
 ######### One Colony Time Step ##################
 
-    def core_colony_timestep(self, F_Ln, FLn_var, K, K_var, min_juv_fd, pop_export_list, filename, food_scale):
+    def core_colony_timestep(self, F_Ln, K, var, min_juv_fd, pop_export_list, filename, food_scale):
             #Use just this one for colonies of females dispersed
 
             # (3) Adults reproduce
@@ -260,7 +263,7 @@ class Colony(object):
         self.reproduction()  # all adults within the colonies reproduce, juvs added straight to the colony
 
             #(4) Calculate colony food + random fluctuation
-        self.col_food_random(F_Ln, K, K_var, FLn_var, food_scale)
+        self.col_food_random(F_Ln, K, var, food_scale)
         
         if self.colony_food >  min_juv_fd:
             #(5) food calculated and assigned to juvs with random
@@ -288,7 +291,7 @@ class Colony(object):
             # (10) Printing some things to the console
         #print self.colony_dict()
 
-    def colony_timestep(self, F_Ln, FLn_var, K, K_var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, disp_risk, pop_export_list, filename, food_scale):
+    def colony_timestep(self, F_Ln, K, var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, disp_risk, pop_export_list, filename, food_scale):
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
@@ -306,4 +309,4 @@ class Colony(object):
             #print "colony dictionary", self.colony_dict()
             #print "all spiders dispersed"
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
-            self.core_colony_timestep(F_Ln, FLn_var, K, K_var,  min_juv_fd, pop_export_list, filename, food_scale)
+            self.core_colony_timestep(F_Ln,  K, var,  min_juv_fd, pop_export_list, filename, food_scale)

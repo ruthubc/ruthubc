@@ -28,7 +28,12 @@ class Poplt(object):
                  comp_slp = 0.1,
                  disp_rsk = 0.5,
                  K = 100.0, # carrying capacity
-                 amt_var = 0.5 # varies between 0 and 1
+                 amt_var = 0.5, # varies between 0 and 1
+                 min_juv_fd = 0.1,
+                 min_no_off = 2,
+                 max_no_off = 4,
+                 ad_disFd_lmt = 0.6,
+                 F_Ln = 0.4
                  ):
         self.poplt_list = poplt_list
         self.filename = filename
@@ -36,9 +41,10 @@ class Poplt(object):
         self.disp_rsk = disp_rsk
         self.K = float(K)
         self.amt_var = amt_var
-        self.ad_disFd_lmt = float(0.6)
-        self.min_juv_fd = float(0.1)
-        self.K_var = (self.K / 2) * self.amt_var  # TODO: check this works
+        self.min_juv_fd = float(min_juv_fd)
+        self.ad_disFd_lmt = ad_disFd_lmt
+        self.F_Ln = F_Ln
+        self.off_nmbr_list = [min_no_off, max_no_off, min_juv_fd, 1] # [min no off, max no off, min ad size, max_ad Size]
         self.pop_dispersal_list = []
         self.pop_export_list = []
         self.pop_age = 0
@@ -46,9 +52,7 @@ class Poplt(object):
         self.new_cols = []
         self.Off_C = 0  # used in making the offspring equation
         self.Off_M = 0  # used in making the offspring equation
-        self.off_nmbr_list = [2, 4, self.min_juv_fd, 1]  # [min no off, max no off, min ad size, max ad size, foodscale(the average num offspring) ]
         self.F_Ln = 0.2  # food to lone individual
-        self.FLn_var = (self.F_Ln / 2) * self.amt_var
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
         self.food_scale = 2  # (self.off_nmbr_list[0] + self.off_nmbr_list[1])/2
         self.maxNumCols = 300
@@ -84,15 +88,11 @@ class Poplt(object):
 
     def create_new_col(self):  # sets up the dispersing spiders as new colonies
         self.disp_rsk_remove_spiders()
-        num_spaces = self.maxNumCols - len(self.poplt_list)
-        if num_spaces - len(self.pop_dispersal_list) < 0: # not spaces enough for all the dispersers
-            self.too_many_cols() # removing spider at random from dispersers list
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             #print 'new colony made, id:', self.colony_count
             col = Colony(colony_ID = self.colony_count, ad_list = [spider], juv_list = [], colony_food = 0.0, slope = self.comp_slp,   dispersers = [])
             self.new_cols.extend([col])
-
 
     def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list
         self.poplt_list.extend(self.new_cols)
@@ -100,12 +100,12 @@ class Poplt(object):
 
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for col in self.poplt_list:
-            col.colony_timestep(self.F_Ln, self.FLn_var, self.K, self.K_var, self.Off_M, self.Off_C, self.juv_disFd_lmt, self.ad_disFd_lmt,
+            col.colony_timestep(self.F_Ln, self.K, self.amt_var, self.Off_M, self.Off_C, self.juv_disFd_lmt, self.ad_disFd_lmt,
                                 self.pop_dispersal_list, self.min_juv_fd, self.disp_rsk, self.pop_export_list, self.filename, self.food_scale)
 
     def disp_col_timestep(self):
         for colony in self.new_cols:
-            colony.core_colony_timestep(self.F_Ln, self.FLn_var, self.K, self.K_var, self.min_juv_fd, self.pop_export_list, self.filename, self.food_scale)
+            colony.core_colony_timestep(self.F_Ln, self.K, self.amt_var, self.min_juv_fd, self.pop_export_list, self.filename, self.food_scale)
 
     def poplt_dict(self):  # population dictionary
         d = OrderedDict()
@@ -115,8 +115,6 @@ class Poplt(object):
         d['meanK'] = self.K
         d['Fd_ln'] = self.F_Ln
         d['input_var'] = self.amt_var
-        d['K_var'] = self.K_var
-        d['fdLn_var'] = self.FLn_var
         d['disp_rsk'] = self.disp_rsk
         d['ad_dsp_fd'] = self.ad_disFd_lmt
         d['jv_mlt_size'] = self.juv_disFd_lmt
