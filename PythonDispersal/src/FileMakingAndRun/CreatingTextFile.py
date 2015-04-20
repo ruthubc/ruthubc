@@ -6,21 +6,22 @@ Created on Feb 25, 2015
 import sys
 import itertools
 import csv
+import time
 
-def run_numbers(numbersFile):
+def run_numbers(numbersFile):  # Assigns a unique number to each run
     i=[]
     with open(numbersFile, 'rb') as f:
         reader = csv.reader(f)
         for row in reader:
             i = i + [int(row[0])]
-    maxNum =  max(i)
-    
+    maxNum = max(i)
+
     with open(numbersFile, 'ab') as f:
         writer = csv.writer(f, dialect='excel')
         writer.writerow([maxNum +1])
     return maxNum
 
-def writePBS(FileName):
+def writePBS(FileName):  # writes the PBS file for each run
     print('Creating new file')
     name =FileName + '.pbs' # Name of text file coerced with +.txt
     file = open(name,'w+')   # Trying to create a new file or open one'
@@ -40,7 +41,7 @@ def writePBS(FileName):
     file.close()
 
 def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off,
-                   max_no_off, ad_disFd_lmt, F_Ln): # writing the python file to run the model
+                   max_no_off, ad_disFd_lmt, F_Ln): # writing the python file  that runs the model
     name = FileName + '.py'
     file = open(name, 'w+')
     file.write("from core.DispersalRun import disperal_run\n")
@@ -69,7 +70,7 @@ combinations = list(itertools.product(*runs))
 print combinations
 fileNameLst = []
 
-for i in range(0, len(combinations)):
+for i in range(0, len(combinations)):  # actually produces the files
     number = run_numbers("RunNumbers.csv")
     tup = combinations[i]
     slope = tup[0]
@@ -88,15 +89,15 @@ for i in range(0, len(combinations)):
                    max_no_off, ad_disFd_lmt, F_Ln)
     writePBS(filename)
     fileNameLst.extend([filename])
-    
+
 print "filenameList:", fileNameLst
 
 file = open("qsubFile.txt", 'w+')
 
 
-for name in fileNameLst:
+for name in fileNameLst: # writes the names of the files created to csv file
     print name
     file.write("qsub " + name + ".pbs; ")
     with open("FilesCreated.csv", 'ab') as f:
         writer = csv.writer(f, dialect='excel')
-        writer.writerow([name])
+        writer.writerow([name, time.strftime("%d/%m/%Y")])
