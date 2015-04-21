@@ -4,7 +4,7 @@
 # Carrying out the ANOVA on average Cooperation 26th March 2013
 ###############################################################################
 
-
+tsting git
 averages <- read.csv("kinshipEvolution/DataAnalysis/averages10000.csv")
 
 subAves<-averages
