@@ -5,4 +5,5 @@ Created on Apr 20, 2015
 '''
 
 import time
-print (time.strftime("%d/%m/%Y"))
+s=  (time.strftime("%d/%m/%Y"))
+print s

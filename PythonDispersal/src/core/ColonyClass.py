@@ -22,8 +22,6 @@ class Colony(object):
 
     def __init__(self, colony_ID = 0,
                  ad_list = [],
-                 juv_list = [],
-                 colony_food=0.0,
                  slope = 0.10,
                  colony_age=0,
                  dispersers = [],
@@ -31,8 +29,8 @@ class Colony(object):
                  ):
         self.colony_ID = colony_ID
         self.ad_list = ad_list
-        self.juv_list = juv_list
-        self.colony_food = float(colony_food)
+        self.juv_list = []
+        self.colony_food = 0.0
         self.slope = slope
         self.colony_age = colony_age
         self.dispersers = dispersers
@@ -89,7 +87,7 @@ class Colony(object):
         cal_colFood = np.exp((1-NOvK)*(NOvK-1) *int)
         cap_col_food = cal_colFood
         if cap_col_food <= 0:
-            raise ValueError("Colony food was negative or zero")
+            raise ValueError("cal Colony food was negative or zero")
         else:
             return cap_col_food
 
@@ -158,7 +156,7 @@ class Colony(object):
         xbr = float(self.colony_food) / float(len(self.juv_list))
         if xbr > 1:
             raise Exception("xbar greater than one:", xbr)
-        else:        
+        else:
             topTerm = (slope * self.cal_med_rnk) * (xbr - ((xbr * ind_rnk) / self.cal_med_rnk))
             fracTerm = topTerm / (np.power(xbr, 2))
             CompEqn = (1+ fracTerm) * xbr
@@ -180,33 +178,28 @@ class Colony(object):
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))
         for spider in self.juv_list:
-            spider.juv_fd = ind_fd
+            spider.food = ind_fd
 
-    def oneSlp_jv_fd(self):
-        if self.colony_food >= 1:
+    def oneSlp_jv_fd(self):  # full contest competition
+        if self.colony_food > 1:  # total colony food is more than one, i.e. more than one juv will get food
             #assign all to top ranks
             num_get_fd = np.floor(self.colony_food)
             remain = self.colony_food - num_get_fd
             for spider in self.juv_list:
-                if spider.rank <= num_get_fd -1:  # as rank starts at zero
-                    spider.juv_fd = 1
+                if spider.rank <= num_get_fd - 1:  # as rank starts at zero
+                    spider.food = 1
                 elif spider.rank == num_get_fd:
-                    spider.juv_fd = remain
+                    spider.food = remain
                 else:
-                    spider.juv_fd = 0
-        else:
+                    spider.food = 0
+        else: # just one spider gets food
             for spider in self.juv_list:
                 if spider.rank == 0:  # as rank starts at zero
-                    spider.juv_fd = remain
+                    spider.food = self.colony_food
                 else:
-                    spider.juv_fd = 0
+                    spider.food = 0
 
-    def distr_food(self):
-        if self.colony_food > self.num_juvs:
-            raise Exception("food greater than num jvs, numJuvs", self.num_juvs, 'colFd', self.colony_food, 'numads', self.num_ads)
-        else: 
-            self.assign_food()
-    
+
     def assign_food(self):
         if len(self.juv_list) <= 1:
             self.juv_list[0].food = self.colony_food  #TODO: maybe put something in here to make sure that nver abv1
@@ -214,6 +207,7 @@ class Colony(object):
             self.zeroSlp_jv_fd()
         elif self.slope == 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
             # TODO: make range
+            self.juv_rnk_assign()  # assign ranks to juvs
             self.oneSlp_jv_fd()
         else:
             c_slpe = self.comp_slope() 
@@ -221,6 +215,12 @@ class Colony(object):
             cmp_obj = Comp(self.colony_food, len(self.juv_list), c_slpe)  # making competition object
             self.cal_med_rnk = cmp_obj.CompFunction()
             self.juv_fd_assign()
+
+    def distr_food(self):
+        if self.colony_food > self.num_juvs:
+            raise Exception("food greater than num jvs, numJuvs", self.num_juvs, 'colFd', self.colony_food, 'numads', self.num_ads)
+        else:
+            self.assign_food()
 
     def moult(self, min_juvFd):
         moult_list = [i for i in self.juv_list if i.food >= min_juvFd]
@@ -264,11 +264,11 @@ class Colony(object):
 
             #(4) Calculate colony food + random fluctuation
         self.col_food_random(F_Ln, K, var, food_scale)
-        
+
         if self.colony_food >  min_juv_fd:
             #(5) food calculated and assigned to juvs with random
             self.distr_food()
-            
+
         #else:  # not enough food for any juvs to moult
             #print "not enough food for any spiders to moult"  # TODO check everything that needs to be done here is being done.
  
@@ -278,10 +278,10 @@ class Colony(object):
             #(6) Adults die
         self.num_ads = len(self.ad_list)
         self.ad_list = []  # emptying the adult list - all adults die
-            
+
         #(7) Juvs moult or die
-        self.moult(min_juv_fd)  # new juvs added directly to adult list and emptying juv list   
-          
+        self.moult(min_juv_fd)  # new juvs added directly to adult list and emptying juv list
+
             # (8) marking dead colonies (colonies with no spiders)
         self.col_alive()
 
