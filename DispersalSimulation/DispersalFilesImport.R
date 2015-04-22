@@ -11,7 +11,7 @@ fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# impo
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
-#graph making functiontet
+#graph making function
 graphFunction <- function(folder, fileName){
 	filetoImport <- paste(folder, fileName, ".py.csv", sep = "")
 	pdfTitle <- paste(folder, fileName, "_graph", ".png", sep = "")
