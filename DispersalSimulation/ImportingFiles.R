@@ -22,3 +22,17 @@ ByPopAge<- ddply(File, .(pop_age), summarise, # need to discount trials where no
 ggplot(data = ByPopAge, aes(x = pop_age, y = TotNumInd)) + geom_line() + geom_point()
 
 dev.off()
+
+fileNames<-read.csv("RuthSync/DisperalFiles/FilesCreated.csv", quote="")#, col.names="filenames")
+
+fileNames[] <- lapply(fileNames, as.character)
+
+nrow(fileNames)
+
+for (i in 1:nrow(fileNames)){
+	print(i)
+	theFileName <-fileNames[i,1]
+	print(theFileName)
+	#print(fileNames$date)
+}
+	
