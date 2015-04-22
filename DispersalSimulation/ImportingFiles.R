@@ -23,7 +23,7 @@ ggplot(data = ByPopAge, aes(x = pop_age, y = TotNumInd)) + geom_line() + geom_po
 
 dev.off()
 
-fileNames<-read.csv("RuthSync/DisperalFiles/FilesCreated.csv", quote="")#, col.names="filenames")
+fileNames<-read.csv("DisperalSimulationOutput/FilesCreated.csv", quote="")#, col.names="filenames")
 
 fileNames[] <- lapply(fileNames, as.character)
 
@@ -35,4 +35,10 @@ for (i in 1:nrow(fileNames)){
 	print(theFileName)
 	#print(fileNames$date)
 }
-	
+
+theFileName
+
+filetoImport <- paste("DisperalSimulationOutput/" , theFileName, ".py.csv", sep = "")
+filetoImport
+
+importedFile <- read.csv(filetoImport, quote = "")
