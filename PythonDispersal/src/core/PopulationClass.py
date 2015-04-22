@@ -48,14 +48,12 @@ class Poplt(object):
         self.pop_dispersal_list = []
         self.pop_export_list = []
         self.pop_age = 0
-        self.colony_count = 1
+        self.colony_count = 10
         self.new_cols = []
         self.Off_C = 0  # used in making the offspring equation
         self.Off_M = 0  # used in making the offspring equation
-        self.F_Ln = 0.2  # food to lone individual
-        self.juv_disFd_lmt = self.disp_rsk * self.F_Ln
-        self.food_scale = 2  # (self.off_nmbr_list[0] + self.off_nmbr_list[1])/2
-        self.maxNumCols = 300
+        self.juv_disFd_lmt = self.disp_rsk * self.F_Ln  # if below this adults should disperse
+        self.food_scale = min_no_off
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
@@ -80,7 +78,7 @@ class Poplt(object):
         while len(self.pop_dispersal_list) > num_sps_lft:
             self.pop_dispersal_list.remove(random.choice(list(self.pop_dispersal_list)))
         # print '#remining dispersers=', len(self.pop_dispersal_list)
-    
+
     def disp_rsk_remove_spiders(self):
         num_list = len(self.pop_dispersal_list) * self.disp_rsk
         while len(self.pop_dispersal_list) > num_list:
@@ -111,13 +109,13 @@ class Poplt(object):
         d = OrderedDict()
         d['pop_age'] = self.pop_age
         d['Comp_slope'] = self.comp_slp
-        d['num cols'] = len(self.poplt_list)
+        d['num_cols'] = len(self.poplt_list)
         d['meanK'] = self.K
         d['Fd_ln'] = self.F_Ln
         d['input_var'] = self.amt_var
         d['disp_rsk'] = self.disp_rsk
         d['ad_dsp_fd'] = self.ad_disFd_lmt
-        d['jv_mlt_size'] = self.juv_disFd_lmt
+        d['min_juv_fd'] = self.min_juv_fd
         d['min_no_off'] = self.off_nmbr_list[0] #[min no off, max no off, min ad size, max ad size]
         d['max_no_off'] = self.off_nmbr_list[1]
         d['min_ad_sze_off'] = self.off_nmbr_list[2]

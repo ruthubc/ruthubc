@@ -45,7 +45,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
     name = FileName + '.py'
     file = open(name, 'w+')
     file.write("from core.DispersalRun import disperal_run\n")
-    file.write("sim_len = 1000\n")
+    file.write("sim_len = 2000\n")
     file.write('filename = "'  + FileName + '.py"\n')
     file.write("comp_slp = " + str(comp_slp) + "\n")
     file.write("disp_risk =" + str(disp_risk)+ "\n")
@@ -64,7 +64,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
 #3) mean K
 #4) variance in k and FLN
 
-runs = [[0.6], [0.1], [100], [0.1]] # slope, risk of dispersal, MeanK , Var k
+runs = [[0, 0.8, 2.5, 10], [0.1], [100, 1000], [0, 0.2, 0.4, 0.6]] # slope, risk of dispersal, MeanK , Var k
 combinations = list(itertools.product(*runs))
 
 print combinations
@@ -95,9 +95,17 @@ print "filenameList:", fileNameLst
 file = open("qsubFile.txt", 'w+')
 
 
-for name in fileNameLst: # writes the names of the files created to csv file
+for name in fileNameLst: # writes the names of the files created to csv file for my records and 
     print name
     file.write("qsub " + name + ".pbs; ")
     with open("FilesCreated.csv", 'ab') as f:
         writer = csv.writer(f, dialect='excel')
         writer.writerow([name, time.strftime("%d/%m/%Y")])
+        
+file = open("run.sh", "w+")
+file.write("for i in")
+
+for name in fileNameLst:
+    file.write(" " + name + ".pbs")
+file.write ("; do qsub $i; done")
+    
