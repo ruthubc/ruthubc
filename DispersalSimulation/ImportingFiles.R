@@ -7,7 +7,8 @@ library(plyr)
 library(ggplot2)
 
 
-File <- read.csv("RuthSync/DisperalFiles/OutputFile/slp0.6_Rsk0.1_K100_var0.1_rn142.py.csv", na.strings = NA)
+File <- read.csv("DisperalSimulationOutput/slp0.8_Rsk0.1_K1000_var0.4_rn114.py.csv", na.strings = NA)
+indFile <- read.csv("DisperalSimulationOutput/slp0.8_Rsk0.1_K1000_var0.4_rn114.py_inds.csv", na.strings = NA)
 
 pdf("RuthSync/DisperalFiles/OutputFile/rGraph.pdf", width =10, height =10)
 
