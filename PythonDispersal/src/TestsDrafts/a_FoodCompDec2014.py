@@ -1,4 +1,5 @@
 '''
+testing committ
 Created on Dec 15, 2014
 Testing the new individual competition equation discussed with Leticia after meeting Dec9th
 The adults capture the food and all food is split between juvs and ads in the colony
