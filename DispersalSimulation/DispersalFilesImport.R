@@ -10,9 +10,9 @@ folder <- "DisperalSimulationOutput/"
 
 fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# import file names csv file
 
-
-
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
+
+DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), pop_age = integer(0))#, fileName = character(0))
 
 #graph making function
 graphFunction <- function(folder, fileName){
@@ -24,7 +24,11 @@ graphFunction <- function(folder, fileName){
 
 	File <- read.csv(filetoImport, quote = "")
 	indFile <- read.csv(indFileToImport, quote = "")
-
+	
+	
+	DF_list <- c(as.numeric(File$Comp_slope[1]), File$disp_rsk[1], File$input_var[1], File$meanK[1], max(File$pop_age))#, filetoImport)
+	print(DF_list)
+	return(DF_list)
 	ByPopAge<- ddply(File, .(pop_age), summarise, # need to discount trials where no feeding obs and eve
 			NCols = length(!is.na(colony_ID)),
 			TotNumInd = sum(num.ads)
@@ -37,7 +41,6 @@ graphFunction <- function(folder, fileName){
 	
 	ByPopAgeAndCol$factorAge <- as.factor(ByPopAgeAndCol$pop_age)
 	
-	print (ByPopAge)
 	mytitle = ggtitle(fileName)
 	
 	pdf(pdfTitle, width =10, height =10)
@@ -73,15 +76,17 @@ graphFunction <- function(folder, fileName){
 }
 
 
-#for (i in 1:nrow(fileNames)){
-for (i in 4:7){
+for (i in 1:nrow(fileNames)){
+#for (i in 1:7){
 	print(i)
 	theFileName <-fileNames[i,1]
 	print(theFileName)
-	graphFunction(folder, theFileName)
+	list <- graphFunction(folder, theFileName)
+	DF[i,] <- list
 	#dev.off()
 
 
 }
 
+write.table(DF, paste(folder, "PopAge.csv", sep = ""), sep=",", row.names = FALSE)
 
