@@ -28,3 +28,8 @@ CensusAve<- ddply(Census, .(Colony.TrapID, Census, Treatment), summarise,
 
 
 ggplot(data = CensusAve, aes(x = Census, y = Ratio.Mean, colour = Treatment )) + geom_point() + geom_line()
+
+censusone <- Census[(Census$Census == 1), ]
+
+censusOther <- Census[!(Census$Census == 1), ]
+
