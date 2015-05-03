@@ -154,6 +154,8 @@ BoxCombo <- merge(BoxCombo, FdAndCp, by = c("CaptureIndPos", "FeedIndPos"))
 
 
 
+
+
 # changing y and n to 0 and 1 for aves taking into account when feeding or capture not observed
 BoxCombo$IndCapNum<- ifelse(BoxCombo$CaptureIndPos=="y", 1,
 		ifelse(BoxCombo$CaptureIndPos =="n", 0, NA))
