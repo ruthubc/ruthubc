@@ -89,7 +89,8 @@ class Poplt(object):
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             #print 'new colony made, id:', self.colony_count
-            col = Colony(colony_ID = self.colony_count, ad_list = [spider], juv_list = [], colony_food = 0.0, slope = self.comp_slp,   dispersers = [])
+            col = Colony(colony_ID = self.colony_count, ad_list = [spider], slope = self.comp_slp, colony_age = 0, dispersers = [], pot_juv_food = 0)
+            #col.print_dets()
             self.new_cols.extend([col])
 
     def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list

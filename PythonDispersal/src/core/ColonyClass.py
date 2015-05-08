@@ -50,8 +50,7 @@ class Colony(object):
             print "i = %s: %s" % (i, self.ad_list[i])
 
     def print_dets(self):  # prints summary of colony
-        print "# col age: %s, ads: %s, juvs: %s, colony food: %s, dispersal?: %s" % (self.colony_age,
-                                                                                     len(self.ad_list), len(self.juv_list), self.colony_food, self.dispersers)
+        print "colID: %s, numAds: %s, slope %s, numJuvs %s, colFood = %s" % (self.colony_ID, len(self.ad_list), self.slope,  len(self.juv_list), self.colony_food)
 
     def colony_dict(self):  # the info about each colony to export
         # TODO: check that the correct things are being exported i.e. the correct number of juvs
@@ -119,16 +118,19 @@ class Colony(object):
         pot_juvs = self.col_num_off(Off_M, Off_C)
         pot_juv_fd = tot_food / pot_juvs
         self.pot_juv_food = pot_juv_fd
+        #print "adfood", [i.food for i in self.ad_list]
+        print "pot juv food", pot_juv_fd
 
     def colDispersal_choice(self, juv_disFd_lmt, ad_disFd_lmt, disp_rsk):  # deciding whether to reproduce or disperse
-        if self.pot_juv_food < (float(juv_disFd_lmt) * disp_rsk):
+        print "juv_disFdLmt", juv_disFd_lmt
+        if self.pot_juv_food < float(juv_disFd_lmt):
             [i.disperseChoice(ad_disFd_lmt, disp_rsk) for i in self.ad_list] # dispersal choice ensures adult over specific size to disperse
-        '''else:
-            print "no dispersers"'''
+        else:
+            print "no dispersers"
 
     def spis_to_dis_lst(self):  # makes a list of dispersers and removes them from the old colony
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
-        # print "number of dispersers:", len(self.dispersers)
+        print "number of dispersers:", len(self.dispersers)
         self.num_dis = len(self.dispersers)
         self.ad_list = [i for i in self.ad_list if i.disperse == 0 and i.die == 0]
         self.num_ads = len(self.ad_list)

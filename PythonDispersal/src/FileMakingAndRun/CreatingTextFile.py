@@ -2,6 +2,8 @@
 Created on Feb 25, 2015
 
 @author: Ruth
+
+******#TODO: put in code to delete run.sh before writing to it!
 '''
 import sys
 import itertools
@@ -30,7 +32,7 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m bea\n")
     file.write("#PBS -l walltime=05:30:00\n")
-    file.write("#PBS -l pmem=240mb\n")
+    file.write("#PBS -l pmem=2000mb\n")
     file.write('#PBS -l procs=4\n')
     file.write("""echo "Current working directory is `pwd`"\n""")
     file.write("""echo "Starting run "$0" at: `date`"\n""")
