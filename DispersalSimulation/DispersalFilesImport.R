@@ -18,6 +18,8 @@ DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK =
 graphFunction <- function(folder, fileName){
 	filetoImport <- paste(folder, fileName, ".py.csv", sep = "")
 	indFileToImport <- paste(folder, fileName, ".py_inds.csv", sep = "")
+	
+	
 	pdfTitle <- paste(folder, fileName, "_graph", ".pdf", sep = "")
 	print(file.exists(filetoImport))
 	print(file.exists(indFileToImport))
@@ -78,14 +80,18 @@ graphFunction <- function(folder, fileName){
 
 for (i in 1:nrow(fileNames)){
 #for (i in 1:7){
-	print(i)
+	print(i)	
 	theFileName <-fileNames[i,1]
-	print(theFileName)
-	list <- graphFunction(folder, theFileName)
-	DF[i,] <- list
-	#dev.off()
-
-
+	print(theFileName)	
+	filetoImport <- paste(folder, theFileName, ".py.csv", sep = "")
+	
+	if(file.exists(filetoImport) == "TRUE"){
+		print ("the file does exist which is good!")
+		list <- graphFunction(folder, theFileName)
+		DF[i,] <- list
+		}
+	print ("file does not exist")
+	}
 }
 
 write.table(DF, paste(folder, "PopAge.csv", sep = ""), sep=",", row.names = FALSE)
