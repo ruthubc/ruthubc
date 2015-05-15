@@ -89,7 +89,7 @@ for (i in 1:nrow(fileNames)){
 		print ("the file does exist which is good!")
 		list <- graphFunction(folder, theFileName)
 		DF[i,] <- list
-		}
+		} else {
 	print ("file does not exist")
 	}
 }
