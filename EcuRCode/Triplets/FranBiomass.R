@@ -1,29 +1,18 @@
-# TODO: Add comment
-# 
+
 # Author: Ruth
 ###############################################################################
-
 
 library(ggplot2)
 library(plyr)
 library(data.table)
 
-Biomass <- read.csv("RuthSync/EggManipulation/RuthDataFiles/BiomassData.csv", na.strings = NA)
+Biomass$logJvfd <- log10(Biomass$jvfd+1)  # this is NOT parametric 
 
-Biomass$JuvTot<- Biomass$Juv34 + Biomass$Juv12
 
-## check that the censuss are the correct ones
-BiomassNestCen <- ddply(Biomass, .(ColonyID, Treatment, OverallID, Census, JuvTot), summarise,
-		N = length(!is.na(OverallID)),
-		dryBioTot = sum(Dry_biomass_Y, na.rm = TRUE)
-		
-)
+hist(log10(Biomass$jvfd + 0.1), breaks = 50)
 
-BiomassNestCen$foodRatio <-  BiomassNestCen$dryBioTot/BiomassNestCen$JuvTot
+ggplot(Biomass, aes(x=Treatment, y=logJvfd)) + geom_boxplot()
 
-hist(BiomassNestCen$dryBioTot, breaks = 50)
-hist(BiomassNestCen$logDryBio, breaks = 50)
-hist(BiomassNestCen$recDryBio, breaks = 50)
 
 
 
