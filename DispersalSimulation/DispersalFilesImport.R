@@ -43,11 +43,11 @@ graphFunction <- function(folder, fileName){
 	
 	ByPopAge<- ddply(File, .(pop_age), summarise, # need to discount trials where no feeding obs and eve
 			NCols = length(!is.na(colony_ID)),
-			TotNumInd = sum(num.ads)
+			TotNumInd = sum(num_ads)
 		)
 	
 	ByPopAgeAndCol<- ddply(File, .(pop_age, colony_ID, colony_age), summarise, # need to discount trials where no feeding obs and eve
-			TotNumAds = sum(num.ads)
+			TotNumAds = sum(num_ads)
 		)
 	
 	ByPopAgeAndCol$factorAge <- as.factor(ByPopAgeAndCol$pop_age)
@@ -75,13 +75,13 @@ graphFunction <- function(folder, fileName){
 	print(grid.arrange(p1, p2, p3, p4, ncol = 1, main = mytitle))
 	
 	# next size vs dispersers
-	p5 <- ggplot(data = File, aes(x= num.ads, y = dispersers)) + geom_point()
+	p5 <- ggplot(data = File, aes(x= num_ads, y = dispersers)) + geom_point()
 	
 	# Nest size vs 
-	p6 <- ggplot(data = File, aes(x=num.ads, y = colony_food/num.ads )) + geom_point()
+	p6 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads )) + geom_point()
 	
 	# number juvs moulting 
-	p7 <- ggplot(data = File, aes(x=num.ads, y = num_juvs_moulting/numjuvs)) + geom_point()
+	p7 <- ggplot(data = File, aes(x=num_ads, y = num_juvs_moulting/numjuvs)) + geom_point()
 	
 	print(grid.arrange(p5, p6, p7, ncol = 1))#, main = mytitle)
 	

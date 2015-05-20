@@ -57,7 +57,8 @@ class Colony(object):
         d = OrderedDict()
         d['colony_ID'] = self.colony_ID
         d['colony_age'] = self.colony_age
-        d['num ads'] = self.num_ads
+        d['num_adsB4_dispersal'] = self.num_ads + self.num_dis
+        d['num_ads'] = self.num_ads
         d['numjuvs'] = self.num_juvs
         d['colony_food'] = self.colony_food
         d['ave_food']= 0 if self.num_juvs == 0 else self.colony_food/self.num_juvs
@@ -125,15 +126,16 @@ class Colony(object):
         print "juv_disFdLmt", juv_disFd_lmt
         if self.pot_juv_food < float(juv_disFd_lmt):
             [i.disperseChoice(ad_disFd_lmt, disp_rsk) for i in self.ad_list] # dispersal choice ensures adult over specific size to disperse
+            print "tot num of adults before dispersal colDis_choice", len(self.ad_list)
         else:
-            print "no dispersers"
+            print "no dispersers - pot juv food too high"
 
     def spis_to_dis_lst(self):  # makes a list of dispersers and removes them from the old colony
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
-        print "number of dispersers:", len(self.dispersers)
         self.num_dis = len(self.dispersers)
         self.ad_list = [i for i in self.ad_list if i.disperse == 0 and i.die == 0]
-        self.num_ads = len(self.ad_list)
+        print "spis to dis lst"
+        print "new no of ads:", len(self.ad_list), "num dispersers:", self.num_dis
 
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])

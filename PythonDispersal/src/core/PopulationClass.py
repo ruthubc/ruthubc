@@ -141,6 +141,7 @@ class Poplt(object):
         self.allCols_OneTimestep()
 
         if self.pop_dispersal_list:
+            print "size of population dispersal list", len(self.pop_dispersal_list)
             #(3) Make dispersers into new colonies
             # print 'pop dis list length', len(self.pop_dispersal_list)
             self.create_new_col()

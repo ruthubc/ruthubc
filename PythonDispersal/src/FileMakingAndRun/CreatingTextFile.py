@@ -31,7 +31,7 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.write("#PBS -S /bin/bash\n")
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m bea\n")
-    file.write("#PBS -l walltime=05:30:00\n")
+    file.write("#PBS -l walltime=15:30:00\n")
     file.write("#PBS -l pmem=2000mb\n")
     file.write('#PBS -l procs=4\n')
     file.write("""echo "Current working directory is `pwd`"\n""")
@@ -66,7 +66,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
 #3) mean K
 #4) variance in k and FLN
 
-runs = [[0, 0.8, 2.5, 10], [0.1], [100, 1000], [0, 0.2, 0.4, 0.6]] # slope, risk of dispersal, MeanK , Var k
+runs = [[0, 0.8, 2.5, 10], [0.05], [100], [0]] # slope, risk of dispersal, MeanK , Var k
 combinations = list(itertools.product(*runs))
 
 print combinations
@@ -79,10 +79,10 @@ for i in range(0, len(combinations)):  # actually produces the files
     risk = tup[1]
     K = tup[2]
     var = tup[3]
-    min_juv_size = 0.1
+    min_juv_size = 0.19
     min_no_off = 2
     max_no_off = 4
-    ad_disFd_lmt = 0.4
+    ad_disFd_lmt = 0.6
     F_Ln = 0.4    
     filename = 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) + '_rn' + str(number)
     print "tup", tup
