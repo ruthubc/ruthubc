@@ -8,17 +8,11 @@ library(lmerTest)
 library(summarySE)
 library(plyr)
 
-Weights <- read.csv("RuthSync/EggManipulation/RuthDataFiles/JuvWeights.csv", na.strings = NA)
+
 
 levels(Weights$Instar)
 
-Weights$MeasNo <- as.factor(Weights$MeasNo)
 
-Weights <- Weights[(Weights$Instar != "Sub1"),]
-
-Weights <- Weights[(Weights$Instar != "2"),]
-
-Weights$Instar <- as.numeric(Weights$Instar)
 
 hist(log10(Weights$Weight), breaks = 30)
 

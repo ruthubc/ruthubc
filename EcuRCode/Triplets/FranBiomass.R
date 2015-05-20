@@ -14,8 +14,6 @@ hist(log10(Biomass$jvfd + 0.1), breaks = 50)
 ggplot(Biomass, aes(x=Treatment, y=logJvfd)) + geom_boxplot()
 
 
-
-
 BiomassOverall <- ddply(Biomass, .(ColonyID, Treatment), summarise,
 		N = length(!is.na(dryBioTot)),
 		Ratio.Mean = mean(Dry_biomass_lnY, na.rm = TRUE),
