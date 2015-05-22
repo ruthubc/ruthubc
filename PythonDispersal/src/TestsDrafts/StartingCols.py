@@ -20,16 +20,35 @@ K = 100
 
 # make list of adults for colony
 
-ad_list = []
+#runs = [[0, 0.8, 2.5, 10], [0.05], [100], [0]] # slope, risk of dispersal, MeanK , Var k
+#combinations = list(itertools.product(*runs))
+
+sze_min = 1
+sze_max = K * 2
+intvl = sze_max / 10
+
+
+sze_rng_lst =  range(intvl, (sze_max+intvl) ,intvl)
+
+print [1] + sze_rng_lst
+
+print len(sze_rng_lst)
+
+
 colSize = 10
 
-def make_start_col(colSize, ad_food, col_number, comp_slp):
+def make_col(colSize, ad_food, col_number, comp_slp):
     
+    ad_list = []
+
     for i in range(0, colSize):
         ad_list.append(Adult([1, 0, ad_food], 0, 0))
     
     col = Colony(col_number, ad_list, slope = comp_slp)
     return col
 
-print make_start_col(10, 0.5, 1, 0.5)
+def make_col_list(colSize, ad_food, col_number, comp_slp):
+
+print make_col(10, 0.5, 1, 0.5)
+
 

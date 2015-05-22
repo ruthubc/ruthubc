@@ -54,6 +54,7 @@ class Poplt(object):
         self.Off_M = 0  # used in making the offspring equation
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln  # if below this adults should disperse
         self.food_scale = min_no_off
+        self.maxNumCols = 200  #TODO make this an option at the top
 
     def __str__(self):
         return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
@@ -85,7 +86,11 @@ class Poplt(object):
             self.pop_dispersal_list.remove(random.choice(list(self.pop_dispersal_list)))
 
     def create_new_col(self):  # sets up the dispersing spiders as new colonies
-        self.disp_rsk_remove_spiders()
+        print "number of disps before rsk death:", len(self.pop_dispersal_list)
+        self.disp_rsk_remove_spiders() 
+        print "number of disps AFTER rsk death:", len(self.pop_dispersal_list)
+        self.too_many_cols()
+        print "number of dispds After too many cols:", len(self.pop_dispersal_list)
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             #print 'new colony made, id:', self.colony_count

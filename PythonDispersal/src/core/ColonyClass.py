@@ -104,7 +104,7 @@ class Colony(object):
             self.colony_food = len(self.juv_list)
         else:
             self.colony_food = tot_food
-            #print "randomColFood", food
+        print "randomColFood with scaling", self.colony_food
 
     def col_num_off(self, Off_M, Off_C):  # Calculating the number of offspring and assigning number to adult
         #TODO: test num offspring equation
@@ -140,7 +140,7 @@ class Colony(object):
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
         self.num_juvs = no_new_off
-        # print "number of offspring", no_new_off
+        print "number of offspring", no_new_off
         for num in range (0, no_new_off):
             self.juv_list.extend([Juv()])
         # print 'length of juv list', len(self.juv_list)
@@ -230,7 +230,7 @@ class Colony(object):
         moult_list = [i for i in self.juv_list if i.food >= min_juvFd]
         self.num_moult = len(moult_list)
         self.ad_list = [Adult(i.SpiderList()) for i in moult_list]  # making adults from juvs
-        # print 'number of juvs moulting', len(self.ad_list)
+        print 'number of juvs moulting', len(self.ad_list)
         self.juv_list = []  # emptying the old juv list
 
     def colony_list_to_append(self):  # returns dictionary **values** in list form
@@ -273,8 +273,8 @@ class Colony(object):
             #(5) food calculated and assigned to juvs with random
             self.distr_food()
 
-        #else:  # not enough food for any juvs to moult
-            #print "not enough food for any spiders to moult"  # TODO check everything that needs to be done here is being done.
+        else:  # not enough food for any juvs to moult
+            print "not enough food for any spiders to moult"  # TODO check everything that needs to be done here is being done.
  
         self.Juv_export(filename)
         self.Ads_export(filename)
