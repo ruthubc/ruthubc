@@ -43,7 +43,7 @@ class Colony(object):
         self.num_moult = 0.0
 
     def __str__(self):
-        return "ColID: %s, age: %s, col_food: %s, %s, num spiders: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.colony_list))
+        return "ColID: %s, age: %s, col_food: %s, %s, num adults: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.ad_list))
 
     def print_adults(self):  # prints all instances of adults in the colony
         for i in range(len(self.ad_list)):
