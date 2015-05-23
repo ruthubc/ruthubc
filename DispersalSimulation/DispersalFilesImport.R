@@ -16,7 +16,7 @@ fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), pop_age = integer(0))#, fileName = character(0))
 
 ## TO test the function
-#fileName <- theFileName
+fileName <- theFileName
 
 #graph making function
 graphFunction <- function(folder, fileName){
@@ -27,7 +27,7 @@ graphFunction <- function(folder, fileName){
 	indFileToImport <- paste(folder, fileName, ".py_inds.csv", sep = "")
 	
 	
-	pdfTitle <- paste(folder, fileName, "_graph", ".pdf", sep = "")
+	pngTitle <- paste(folder, fileName, "_graph", ".png", sep = "")
 	print ("overall file exists?")
 	print(file.exists(filetoImport))
 	print ("ind file exists?")
@@ -54,36 +54,40 @@ graphFunction <- function(folder, fileName){
 	
 	mytitle = fileName
 	
-	pdf(pdfTitle, width =10, height =10)
+	png(pngTitle,  width = 1300, height = 2800, units = "px", pointsize = 16) # height = 400* num graphs
 	
-	print("pdf title")
-	print (pdfTitle)
+	print("png title")
+	print (pngTitle)
+	mytheme = theme(text = element_text(size=16))
+	
 	
 	#pop age by total number of individuals
-	p1 <- ggplot(data = ByPopAge, aes(x = pop_age, y = TotNumInd)) + geom_line() + geom_point()# + mytitle)
+	p1 <- ggplot(data = ByPopAge, aes(x = pop_age, y = TotNumInd)) + geom_line() + geom_point() +  mytheme # + mytitle)
 	
 	#pop age by number of colonies
-	p2 <- ggplot(data = ByPopAge, aes(x = pop_age, y = NCols)) + geom_line() + geom_point()# + mytitle)
+	p2 <- ggplot(data = ByPopAge, aes(x = pop_age, y = NCols)) + geom_line() + geom_point() +  mytheme # + mytitle)
 	
 	#number of adults per nest
-	p3 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = TotNumAds)) + geom_point() + geom_boxplot()
+	p3 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = TotNumAds)) + geom_point() + geom_boxplot() +  mytheme
 	
 	#average age
-	p4 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = colony_age)) + geom_point() + geom_boxplot()
+	p4 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = colony_age)) + geom_point() + geom_boxplot() +  mytheme
 	
 	
-	print(grid.arrange(p1, p2, p3, p4, ncol = 1, main = mytitle))
+	
 	
 	# next size vs dispersers
-	p5 <- ggplot(data = File, aes(x= num_ads, y = dispersers)) + geom_point()
+	p5 <- ggplot(data = File, aes(x= num_ads, y = dispersers)) + geom_point() +  mytheme
 	
 	# Nest size vs 
-	p6 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads )) + geom_point()
+	p6 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads )) + geom_point() +  mytheme
 	
 	# number juvs moulting 
-	p7 <- ggplot(data = File, aes(x=num_ads, y = num_juvs_moulting/numjuvs)) + geom_point()
+	p7 <- ggplot(data = File, aes(x=num_ads, y = num_juvs_moulting/numjuvs)) + geom_point() +  mytheme
 	
-	print(grid.arrange(p5, p6, p7, ncol = 1))#, main = mytitle)
+	#print(grid.arrange(p5, p6, p7, ncol = 1))#, main = mytitle)
+
+	print(grid.arrange(p1, p2, p3, p4, p5, p6, p7,  ncol = 1, main = mytitle))
 	
 	dev.off()
 	
@@ -93,7 +97,7 @@ graphFunction <- function(folder, fileName){
 
 
 #for (i in 1:nrow(fileNames)){
-for (i in 1:132){
+for (i in 1:2){
 	print(i)	
 	theFileName <-fileNames[i,1]
 		
@@ -110,5 +114,5 @@ for (i in 1:132){
 }}
 
 
-write.table(DF, paste(folder, "PopAge.csv", sep = ""), sep=",", row.names = FALSE)
+#write.table(DF, paste(folder, "PopAge.csv", sep = ""), sep=",", row.names = FALSE)
 
