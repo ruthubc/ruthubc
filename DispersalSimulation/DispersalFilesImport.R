@@ -15,9 +15,10 @@ fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# impo
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), pop_age = integer(0))#, fileName = character(0))
+num_gens <- 2000
 
 ## TO test the function
-#fileName <- theFileName
+fileName <- theFileName
 
 #graph making function
 graphFunction <- function(folder, fileName){
@@ -36,12 +37,14 @@ graphFunction <- function(folder, fileName){
 
 	File <- read.csv(filetoImport, quote = "")
 	
-	ColInfo <- data.frame(col_age = File$colony_age, col_id = File$colony_ID, numAdsB4dis = File$num_adsB4_dispersal)
+	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, numAdsB4dis = File$num_adsB4_dispersal)
 	
 	# graph variables
 	mytitle = textGrob(label = fileName)
 	
-	png(pngTitle,  width = 1300, height = 4400, units = "px", pointsize = 16) # height = 400* num graphs
+	pngHeight = 400 * 14 # 400 * number of graphs
+	
+	png(pngTitle,  width = 1300, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
 	print("png title")
 	print (pngTitle)
@@ -69,38 +72,84 @@ graphFunction <- function(folder, fileName){
 	
 	
 	#pop age by total number of individuals
-	p1 <- ggplot(data = ByPopAge, aes(x = pop_age, y = TotNumInd)) + geom_line() + geom_point() +  mytheme
+	p1 <- ggplot(data = ByPopAge, aes(x = pop_age, y = TotNumInd)) + geom_point() +  mytheme
 	
 	#pop age by number of colonies
-	p2 <- ggplot(data = ByPopAge, aes(x = pop_age, y = NCols)) + geom_line() + geom_point() +  mytheme
+	p2 <- ggplot(data = ByPopAge, aes(x = pop_age, y = NCols)) + geom_point() +  mytheme
 	
 	#number of adults per nest
-	p3 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = TotNumAds)) + geom_point() + geom_boxplot() +  mytheme
+	p3 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = TotNumAds)) + geom_point() +  mytheme # maybe change to max/min?
 	
 	#average age
-	p4 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = colony_age)) + geom_point() + geom_boxplot() +  mytheme
+	p4 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = colony_age)) + geom_point() +  mytheme
 	
 	# next size vs dispersers
 	p5 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = dispersers)) + geom_point() +  mytheme + 
-			scale_y_continuous(limits = c(0, NA))
+			scale_y_continuous(limits = c(0, NA)) + stat_smooth(se=FALSE)
 	
-	# Nest size vs food per adult
+	# Nest size before dispersal vs food per adult
 	p6 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = colony_food/num_ads )) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA))
 	
-	# number juvs moulting 
-	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = pcntMoult)) + stat_smooth(se = FALSE)  + geom_point() +  mytheme
+	#Nest size after disperal with food per adult
+	p7 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads )) + geom_point() + stat_smooth(se = FALSE) +  
+			mytheme + scale_y_continuous(limits = c(0, NA))
 	
-	# percentage of adults dispersing by nest size
-	p8 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = pcntDisperse)) + geom_point() + stat_smooth(se = FALSE) + mytheme +
+	# number juvs moulting with size after dispersal
+	p8 <- ggplot(data = File, aes(x=num_ads, y = pcntMoult)) + stat_smooth(se = FALSE)  + geom_point() +  mytheme  +
 			scale_y_continuous(limits = c(0, 1))
 	
-	p9 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = ave_food)) + geom_point() +
+	# percentage of adults dispersing by nest size
+	p9 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = pcntDisperse)) + geom_point() + stat_smooth(se = FALSE) + mytheme +
+			scale_y_continuous(limits = c(0, 1))
+	
+	p10 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = ave_food)) + geom_point() +
 			mytheme + scale_y_continuous(limits = c(0, 1)) + stat_smooth(se = FALSE)
 	
 	rm(ByPopAge)
 	rm(ByPopAgeAndCol)
+	
+	# histogram of size of dead colonies
+	p11 <- ggplot(data = subset(File, colAlive== 'dead'), aes(x= num_ads)) + geom_histogram() + mytheme
+	
 	rm(File)
+	
+	## Making n, n+1 graph
+	nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric()) # creating empty data frame
+	maxcol_id <- max(ColInfo$col_id)
+	
+	counter <- 0
+	
+	for (colony in 1:maxcol_id){
+		
+		col_subset <- subset(ColInfo, col_id == colony)
+		maxcol_age <- max(col_subset$col_age)
+	
+		for (age in 1:maxcol_age){
+			counter <- counter + 1		
+		
+			nnplus1[counter,1] <- colony # [row number, col num]
+			nnplus1[counter,2] <- col_subset$pop_age[which(col_subset$col_age == age)]
+			nnplus1[counter,3] <- col_subset$numAdsB4dis[which(col_subset$col_age == age)]
+			
+			if (age == maxcol_age){
+				nnplus1[counter,4] <- 0
+			}else{
+				nnplus1[counter,4] <- col_subset$numAdsB4dis[which(col_subset$col_age == (age +1))]	
+			}
+
+		
+		}
+	}
+	
+	
+	nnplus1 <- subset(nnplus1, pop_age != num_gens)
+
+	p12 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + stat_smooth(se = FALSE) + mytheme
+	
+	rm(nnplus1)
+	rm(col_subset)
+	
 	
 	
 	
@@ -121,7 +170,7 @@ graphFunction <- function(folder, fileName){
 	
 	AdsByPopAgeAndCol <-merge(ColInfo, AdsByPopAgeAndCol, by = c("col_id", "col_age"))
 	
-	p10 <- ggplot(data = AdsByPopAgeAndCol, aes(x= numAdsB4dis, y = AdSize, colour = MinMax)) + geom_point() +
+	p13 <- ggplot(data = AdsByPopAgeAndCol, aes(x= numAdsB4dis, y = AdSize, colour = MinMax)) + geom_point() +
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1))
 	
 	rm(AdsByPopAgeAndCol)
@@ -138,7 +187,7 @@ graphFunction <- function(folder, fileName){
 	JuvsByPopAgeAndCol <-merge(ColInfo, JuvsByPopAgeAndCol, by = c("col_id", "col_age"))
 	
 	
-	p11 <- ggplot(data = JuvsByPopAgeAndCol, aes(x= numAdsB4dis, y = JuvSize, colour = MinMax)) + geom_point() +
+	p14 <- ggplot(data = JuvsByPopAgeAndCol, aes(x= numAdsB4dis, y = JuvSize, colour = MinMax)) + geom_point() +
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1))
 	
 
@@ -146,7 +195,7 @@ graphFunction <- function(folder, fileName){
 
 	rm(indFile)
 
-	print(grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,  ncol = 1, main = mytitle))
+	print(grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14,  ncol = 1, main = mytitle))
 	
 	dev.off()
 	
@@ -156,7 +205,7 @@ graphFunction <- function(folder, fileName){
 
 
 #for (i in 1:nrow(fileNames)){
-for (i in 1:2){
+for (i in 13:13){
 	print(i)	
 	theFileName <-fileNames[i,1]
 		
