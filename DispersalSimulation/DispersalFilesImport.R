@@ -7,8 +7,7 @@ library(ggplot2)
 library(gridExtra)
 library(reshape2)
 
-folder <- "DisperalSimulationOutput/"
-#folder <- "R_Graphs/"
+folder <- "R_Graphs/"
 
 fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# import file names csv file
 
@@ -18,7 +17,7 @@ DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK =
 num_gens <- 2000
 
 ## TO test the function
-fileName <- theFileName
+#fileName <- theFileName
 
 #graph making function
 graphFunction <- function(folder, fileName){
@@ -38,6 +37,7 @@ graphFunction <- function(folder, fileName){
 	File <- read.csv(filetoImport, quote = "")
 	
 	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, numAdsB4dis = File$num_adsB4_dispersal)
+	ColInfo <- unique(ColInfo)
 	
 	# graph variables
 	mytitle = textGrob(label = fileName)
@@ -53,7 +53,7 @@ graphFunction <- function(folder, fileName){
 	
 	
 	DF_list <- c(as.numeric(File$Comp_slope[1]), File$disp_rsk[1], File$input_var[1], File$meanK[1], max(File$pop_age))#, filetoImport)
-	print(DF_list)
+
 	
 	
 	ByPopAge<- ddply(File, .(pop_age), summarise,
@@ -84,8 +84,7 @@ graphFunction <- function(folder, fileName){
 	p4 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = colony_age)) + geom_point() +  mytheme
 	
 	# next size vs dispersers
-	p5 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = dispersers)) + geom_point() +  mytheme + 
-			scale_y_continuous(limits = c(0, NA)) + stat_smooth(se=FALSE)
+	p5 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = dispersers)) + geom_point() +  mytheme + stat_smooth(se=FALSE) + scale_y_continuous(limits = c(0, NA))
 	
 	# Nest size before dispersal vs food per adult
 	p6 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = colony_food/num_ads )) + geom_point() + stat_smooth(se = FALSE) +  
@@ -96,7 +95,7 @@ graphFunction <- function(folder, fileName){
 			mytheme + scale_y_continuous(limits = c(0, NA))
 	
 	# number juvs moulting with size after dispersal
-	p8 <- ggplot(data = File, aes(x=num_ads, y = pcntMoult)) + stat_smooth(se = FALSE)  + geom_point() +  mytheme  +
+	p8 <- ggplot(data = File, aes(x=num_ads, y = pcntMoult)) + stat_smooth(se = FALSE)  + geom_point() +  mytheme +
 			scale_y_continuous(limits = c(0, 1))
 	
 	# percentage of adults dispersing by nest size
@@ -205,7 +204,7 @@ graphFunction <- function(folder, fileName){
 
 
 #for (i in 1:nrow(fileNames)){
-for (i in 13:13){
+for (i in 1:2){
 	print(i)	
 	theFileName <-fileNames[i,1]
 		
