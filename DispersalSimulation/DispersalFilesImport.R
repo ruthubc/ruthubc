@@ -7,7 +7,8 @@ library(ggplot2)
 library(gridExtra)
 library(reshape2)
 
-folder <- "R_Graphs/"
+#folder <- "R_Graphs/"
+folder <- "DisperalSimulationOutput/"
 
 fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# import file names csv file
 
@@ -17,7 +18,7 @@ DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK =
 num_gens <- 2000
 
 ## TO test the function
-#fileName <- theFileName
+fileName <- theFileName
 
 #graph making function
 graphFunction <- function(folder, fileName){
@@ -108,9 +109,18 @@ graphFunction <- function(folder, fileName){
 	rm(ByPopAge)
 	rm(ByPopAgeAndCol)
 	
-	# histogram of size of dead colonies
-	p11 <- ggplot(data = subset(File, colAlive== 'dead'), aes(x= num_ads)) + geom_histogram() + mytheme
 	
+	deadcols <- subset(File, colAlive== 'dead')
+	
+	if (nrow(deadcols) == 0){
+		df <- data.frame()
+		p11<-ggplot(df) + geom_point() + xlim(0, 10) + ylim(0, 100) + ggtitle("NO COLONIES DIED!!")
+		print("no colonies died")
+	}else{
+	# histogram of size of dead colonies
+		p11 <- ggplot(data = subset(File, colAlive== 'dead'), aes(x= num_ads)) + geom_histogram() + mytheme
+	}
+	rm(deadcols)
 	rm(File)
 	
 	## Making n, n+1 graph
@@ -121,8 +131,9 @@ graphFunction <- function(folder, fileName){
 	
 	for (colony in 1:maxcol_id){
 		
-		col_subset <- subset(ColInfo, col_id == colony)
+		col_subset <- subset(ColInfo, col_id == colony) # test 3 colony 11 incorrect numbering of colonies somehow
 		maxcol_age <- max(col_subset$col_age)
+		mincol_age <- min(col_subset$col_age)
 	
 		for (age in 1:maxcol_age){
 			counter <- counter + 1		
@@ -204,7 +215,7 @@ graphFunction <- function(folder, fileName){
 
 
 #for (i in 1:nrow(fileNames)){
-for (i in 1:2){
+for (i in 3:3){
 	print(i)	
 	theFileName <-fileNames[i,1]
 		
