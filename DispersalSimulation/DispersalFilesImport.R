@@ -18,7 +18,7 @@ DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK =
 num_gens <- 2000
 
 ## TO test the function
-fileName <- theFileName
+fileName <- fileNames[15,1]
 
 #graph making function
 graphFunction <- function(folder, fileName){
@@ -130,12 +130,13 @@ graphFunction <- function(folder, fileName){
 	counter <- 0
 	
 	for (colony in 1:maxcol_id){
+		print(colony)
 		
 		col_subset <- subset(ColInfo, col_id == colony) # test 3 colony 11 incorrect numbering of colonies somehow
 		maxcol_age <- max(col_subset$col_age)
 		mincol_age <- min(col_subset$col_age)
 	
-		for (age in 1:maxcol_age){
+		for (age in mincol_age:maxcol_age){
 			counter <- counter + 1		
 		
 			nnplus1[counter,1] <- colony # [row number, col num]
@@ -215,7 +216,7 @@ graphFunction <- function(folder, fileName){
 
 
 #for (i in 1:nrow(fileNames)){
-for (i in 3:3){
+for (i in 12:12){
 	print(i)	
 	theFileName <-fileNames[i,1]
 		

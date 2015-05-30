@@ -33,7 +33,8 @@ class Poplt(object):
                  min_no_off = 2,
                  max_no_off = 4,
                  ad_disFd_lmt = 0.6,
-                 F_Ln = 0.4
+                 F_Ln = 0.4,
+                 colony_count = 0
                  ):
         self.poplt_list = poplt_list
         self.filename = filename
@@ -44,11 +45,11 @@ class Poplt(object):
         self.min_juv_fd = float(min_juv_fd)
         self.ad_disFd_lmt = ad_disFd_lmt
         self.F_Ln = F_Ln
+        self.colony_count = colony_count
         self.off_nmbr_list = [min_no_off, max_no_off, min_juv_fd, 1] # [min no off, max no off, min ad size, max_ad Size]
         self.pop_dispersal_list = []
         self.pop_export_list = []
         self.pop_age = 0
-        self.colony_count = 10
         self.new_cols = []
         self.Off_C = 0  # used in making the offspring equation
         self.Off_M = 0  # used in making the offspring equation

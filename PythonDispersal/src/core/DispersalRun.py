@@ -30,10 +30,11 @@ def disperal_run(sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_siz
     cols = StartCols(K, comp_slp, 0.6)
     cols.make_col_list()
     col_list = cols.col_list
+    
 
     print "col_list", col_list
 
-    this_pop = Poplt(col_list, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln)
+    this_pop = Poplt(col_list, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln, cols.col_no)
     this_pop.update_offVar()
 
     #print start_col.colony_list_to_append()
