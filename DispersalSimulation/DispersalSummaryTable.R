@@ -43,11 +43,14 @@ for (i in 13:14){
 				min_colAge = min(colony_age),
 				max_colAge = max(colony_age),
 				ave_disp= mean(dispersers[dispersers!=0]),
+				se_disp = sd(dispersers[dispersers!=0])/sqrt(length(dispersers[dispersers!=0])),
 				ave_perDisp= mean((dispersers/num_adsB4_dispersal)[dispersers!=0]),
+				se_perDisp = sd((dispersers/num_adsB4_dispersal)[dispersers!=0])/sqrt(length(dispersers[dispersers!=0])),
 				ave_colSizeB4Disp = mean(num_adsB4_dispersal),
 				se_colSizeB4Disp  = sd(num_adsB4_dispersal)/sqrt(length(num_adsB4_dispersal)),
 				max_colSizeB4Disp = max(num_adsB4_dispersal),
-				ave_colSize_Death =  mean(num_adsB4_dispersal[colAlive=="dead"])
+				ave_colSize_Death =  mean(num_adsB4_dispersal[colAlive=="dead"]),
+				se_colSize_Death = sd(num_adsB4_dispersal[colAlive=="dead"])/sqrt(length(num_adsB4_dispersal[colAlive=="dead"]))
 		)
 		rm(File)
 		
@@ -73,3 +76,5 @@ for (i in 13:14){
 		}
 		
 	}}
+
+write.table(dis_aves, paste(folder, "DisperalAves.csv", sep = ""), sep=",", row.names = FALSE)

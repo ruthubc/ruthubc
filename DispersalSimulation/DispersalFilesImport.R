@@ -158,11 +158,25 @@ graphFunction <- function(folder, fileName){
 
 	p12 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + stat_smooth(se = FALSE) + mytheme
 	
+	# testing
+	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + stat_smooth(method = "gam", formula = y ~ s(x),  se = FALSE) + 
+			geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA))
+			
+	gam_nnplus1 <- gam(NPlus1~s(N), data = nnplus1)
+	plot <- plot.gam(gam_nnplus1)
+	
+	#####################################
+	## try nls http://robinlovelace.net/2013/10/23/nls-demonstation.html
 	rm(nnplus1)
 	rm(col_subset)
 	
+	model <-gam_nnplus1$model
+	gamDF <- data.frame(gam_nnplus1$y, gam_nnplus1$linear.predictors)
 	
+	plot(gamDF$gam_nnplus1.y, test)
 	
+	plot(model$N, model$NPlus1)
+	test <- fitted.values(gam_nnplus1)
 	
 	#### Ind Files Graphs
 	
