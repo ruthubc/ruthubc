@@ -18,7 +18,7 @@ DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK =
 num_gens <- 2000
 
 ## TO test the function
-fileName <- fileNames[15,1]
+fileName <- fileNames[14,1]
 
 #graph making function
 graphFunction <- function(folder, fileName){
@@ -164,6 +164,19 @@ graphFunction <- function(folder, fileName){
 			
 	gam_nnplus1 <- gam(NPlus1~s(N), data = nnplus1)
 	plot <- plot.gam(gam_nnplus1)
+	
+	m <- nls(NPlus1 ~ I(N^(1-a) * exp(b) * exp(-c * N)) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), trace = T)
+	
+	plot(m)
+	
+	plot(nnplus1$N, nnplus1$NPlus1)
+	
+	
+	lines(nnplus1$N,predict(m))
+	
+	summary(m)
+	
+	predictm <- predict(m)
 	
 	#####################################
 	## try nls http://robinlovelace.net/2013/10/23/nls-demonstation.html

@@ -16,7 +16,7 @@ fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# impo
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
-#fileName <- fileNames[14,1]
+theFileName <- fileNames[14,1]
 
 counter <-0
 
