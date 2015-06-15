@@ -6,6 +6,7 @@ library (plyr)
 library(ggplot2)
 library(gridExtra)
 library(reshape2)
+library(broom)
 
 #folder <- "R_Graphs/"
 folder <- "DisperalSimulationOutput/"
@@ -15,6 +16,11 @@ fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# impo
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), pop_age = integer(0))#, fileName = character(0))
+
+N_NPlus1_Vars <- data.frame(term = character(0), estimate = numeric(0), std.error = numeric(0),  p.value = numeric(0),
+		type = character(0), Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), 
+		fileName = character(0))
+
 num_gens <- 2000
 
 ## TO test the function
@@ -41,11 +47,12 @@ graphFunction <- function(folder, fileName){
 	ColInfo <- unique(ColInfo)
 	
 	# graph variables
+	
 	mytitle = textGrob(label = fileName)
 	
 	pngHeight = 400 * 15 # 400 * number of graphs
 	
-	png(pngTitle,  width = 1300, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
+	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
 	print("png title")
 	print (pngTitle)
@@ -57,9 +64,12 @@ graphFunction <- function(folder, fileName){
 
 	
 	
-	ByPopAge<- ddply(File, .(pop_age), summarise,
+	ByPopAge<- ddply(subset(File, num_ads!=0), .(pop_age), summarise,
 			NCols = length(!is.na(colony_ID)),
-			TotNumInd = sum(num_ads)
+			TotNumInd = sum(num_ads),
+			maxNumAds = max(num_ads),
+			minNumAds = min(num_ads),
+			meanNumAds = mean(num_ads)
 		)
 	
 	ByPopAgeAndCol<- ddply(File, .(pop_age, colony_ID, colony_age, colAlive), summarise, 
@@ -79,36 +89,39 @@ graphFunction <- function(folder, fileName){
 	p2 <- ggplot(data = ByPopAge, aes(x = pop_age, y = NCols)) + geom_line() +  mytheme + ggtitle("total number of colonies in the population")
 	
 	#number of adults per nest
-	p3 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = TotNumAds)) + geom_point() +  mytheme # maybe change to max/min?
-	
+	p3 <- ggplot(data = ByPopAge, aes(x= pop_age, y = meanNumAds)) + geom_line() +  geom_line(aes(x=pop_age, y = maxNumAds), colour = "blue") +
+			geom_line() +  geom_line(aes(x=pop_age, y = minNumAds), colour = "red")+ mytheme + ggtitle("Mean, max and min num ads in nest")
+
 	#average age
 	#p4 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = colony_age)) + geom_point() +  mytheme + ggtitle("colony age by population age")
 	
-	p4 <- ggplot(data = ByPopAgeAndCol, aes(x= TotNumAds, y = colony_age)) + geom_point() + mytheme + ggtitle("colony size by colony age")
+	p4 <- ggplot(data = ByPopAgeAndCol, aes(x= colony_age, y = TotNumAds)) + geom_point() + mytheme + ggtitle("colony size by colony age")
 	
 	# next size vs dispersers
 	p5 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = dispersers)) + geom_point() +  mytheme + stat_smooth(se=FALSE) + 
-			scale_y_continuous(limits = c(0, NA)) + ggtitle("nest size vs number of dispersers")
+			scale_y_continuous(limits = c(0, NA)) + ggtitle("nest size before dispersal vs number of dispersers")
+	
+	p6 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = pcntDisperse)) + geom_point() + stat_smooth(se = FALSE) + mytheme +
+			scale_y_continuous(limits = c(0, 1)) + ggtitle("percentage of ads dispersing")
+	
 	
 	# Nest size before dispersal vs food per adult 
 #### OK THIS DOESN'T MAKE ANY SENSE. SHOULD BE POTENTIAL FOOD IF NO INDIVIDUAL DISPERSED
-	p6 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = colony_food/num_ads )) + geom_point() + stat_smooth(se = FALSE) +  
+	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = colony_food/num_ads)) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("colony food per capita before dispersal")
 	
-	#Nest size after disperal with food per adult
-	p7 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads )) + geom_point() + stat_smooth(se = FALSE) +  
+	#Nest size after dispersal with food per adult
+	p8 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads )) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("num ads after dispersal vs per capita food")
 	
 	# number juvs moulting with size after dispersal
-	p8 <- ggplot(data = File, aes(x=num_ads, y = pcntMoult)) + stat_smooth(se = FALSE)  + geom_point() +  mytheme +
-			scale_y_continuous(limits = c(0, 1)) + ggtitle("num juvs moults vs. num ads after dispersal")
+	p9 <- ggplot(data = File, aes(x=num_ads, y = pcntMoult)) + stat_smooth(se = FALSE)  + geom_point() +  mytheme +
+			scale_y_continuous(limits = c(0, 1)) + ggtitle("percentage juvs moults vs. num ads after dispersal")
 	
 	# percentage of adults dispersing by nest size
-	p9 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = pcntDisperse)) + geom_point() + stat_smooth(se = FALSE) + mytheme +
-			scale_y_continuous(limits = c(0, 1)) + ggtitle("percentage of ads dispersing")
-	
+
 	## AGAIN I DON'T THINK THIS MAKES SENSE 
-	p10 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = ave_food)) + geom_point() +
+	p10 <- ggplot(data = File, aes(x=num_ads, y = ave_food)) + geom_point() +
 			mytheme + scale_y_continuous(limits = c(0, 1)) + stat_smooth(se = FALSE) + ggtitle("")
 	
 	rm(ByPopAge)
@@ -123,7 +136,7 @@ graphFunction <- function(folder, fileName){
 		print("no colonies died")
 	}else{
 	# histogram of size of dead colonies
-		p11 <- ggplot(data = subset(File, colAlive== 'dead'), aes(x= num_ads)) + geom_histogram() + mytheme
+		p11 <- ggplot(data = subset(File, colAlive== 'dead'), aes(x= num_ads)) + geom_histogram() + mytheme + ggtitle("histogram of size of colonies when died (num ads after dispersal)")
 	}
 	rm(deadcols)
 	rm(File)
@@ -163,23 +176,40 @@ graphFunction <- function(folder, fileName){
 	
 	logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
 			algorithm= "port", trace = T)
-	
+		
 	logisticTable <- tidy(logistic)
+	
+	logisticTable$type <- "logistic"
 	
 	ricker <-  nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
 			algorithm= "port", trace = T)
 	
 	rickerTable <- tidy(ricker)
+	
+	rickerTable$type <- "ricker"
 
-	p12 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+	nnplusoneCom <- rbind(rickerTable, logisticTable)
+	
+	nnplusoneCom$Comp <- DF_list[1]
+	nnplusoneCom$disp <- DF_list[2]
+	nnplusoneCom$var <- DF_list[3]
+	nnplusoneCom$meanK <- DF_list[4]
+	nnplusoneCom$FileName<-fileName
+	
+	nnplus1$rickerPredict <- predict(ricker)
+	nnplus1$logisticPredict <- predict(logistic)
+	
+	
+
+	p12 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 			geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-			geom_line(aes(x = nnplus1$N, y = predict(logistic)), colour = 'blue') + ggtitle("logistic eqn")
+			geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn")
 	
 	p13 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 			geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-			geom_line(aes(x = nnplus1$N, y = predict(ricker)), colour = 'blue') + ggtitle("ricker eqn")
+			geom_line(aes(x = N, y = rickerPredict), colour = 'blue') + ggtitle("ricker eqn")
 	
-	
+	rm(nnplus1)
 	
 	#### Ind Files Graphs
 	
@@ -227,7 +257,9 @@ graphFunction <- function(folder, fileName){
 	
 	dev.off()
 	
-	return(DF_list)
+	returnList <- list(DF_list, nnplusoneCom)
+	
+	return(returnList)
 
 }
 
@@ -243,13 +275,16 @@ for (i in 14:14){
 	
 	if(file.exists(fileToImport) == "TRUE"){
 		print ("the file does exist which is good!")
-		list <- graphFunction(folder, theFileName)
-		DF[i,] <- list
+		returnList <- graphFunction(folder, theFileName)
+		DF[i,] <- returnList[[1]]
+		N_NPlus1_Vars <- rbind(N_NPlus1_Vars, returnList[[2]])
 		} else {
 	print ("file does not exist")
 }}
 
 
 write.table(DF, paste(folder, "PopAge.csv", sep = ""), sep=",", row.names = FALSE)
+
+write.table(N_NPlus1_Vars,paste(folder, "PopMapVars.csv", sep = ""), sep=",", row.names = FALSE)
 
 
