@@ -265,7 +265,7 @@ graphFunction <- function(folder, fileName){
 
 
 #for (i in 1:nrow(fileNames)){
-for (i in 14:14){
+for (i in 14:15){
 	print(i)	
 	theFileName <-fileNames[i,1]
 		
