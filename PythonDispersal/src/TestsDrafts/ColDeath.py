@@ -10,31 +10,16 @@ from core.SpiderClass import Spider
 from core.PopulationClass import Poplt
 
 
-spi1 = Spider(0.75, 0.2, 4)
-
-spi2= Spider(0.89, 0.3)
-
-spi3= Spider(0.02, 0.3, 5)
-
-spi4= Spider(0.4, 0.3, 5)
+list1 = [1,2,3,4,5,6,7]
+list2 = []
 
 
-col1 = Colony([spi1, spi2], 3, alive = 'alive')
+if not list1 and not list2:
+    print "dead"
+else:
+    print "alive"
+    
 
-col2 = Colony([spi1, spi2, spi4], 1, alive = 'dead')
+test = [i for i in list1 if i > 13]
 
-col3 = Colony([], 5)
-
-col3.col_alive()
-
-print col3
-
-pop = Poplt([col1, col2])
-
-
-print pop
-
-pop.del_colony()
-
-print "death",
-print pop
+print len(test)

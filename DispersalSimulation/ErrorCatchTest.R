@@ -33,3 +33,27 @@ for(input in inputs) {
 }
 
 robustLog("fd")
+
+funWork = function(x){
+	print('no log but sum')
+	print(x+7)
+}
+
+funError = function(x){
+	print(log(x))
+	
+}
+
+funError2 = function(x){
+	print ("fool!!")
+}
+
+tryCatchTest= function(x) {
+	tryCatch(funError(x), warning = function(w) {funWork(x)},
+			error = function(e) {funError2(x)}) 
+}
+
+
+funError(5)
+
+tryCatchTest(-5)

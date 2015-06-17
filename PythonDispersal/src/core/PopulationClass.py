@@ -140,6 +140,7 @@ class Poplt(object):
 
     def one_poplt_timestep(self):
         print "***new population time step****"
+        self.pop_dispersal_list = []
         #(1) Add one to population age
         self.update_pop_age()
 

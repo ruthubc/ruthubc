@@ -174,40 +174,135 @@ graphFunction <- function(folder, fileName){
 	
 	nnplus1 <- subset(nnplus1, pop_age != num_gens)
 	
-	logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
+	######## calculating logistic equation
+	
+	logisticFn = function(nnplus1){
+	
+		logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
 			algorithm= "port", trace = T)
+		return (logistic)
+	}	
+	
+	tryCatchLogistic= function(x) {
+		tryCatch(logisticFn(x), warning = function(w) {print("warning")},
+				error = function(e) {print("error")}) 
+	}
+	
+	logistic <- tryCatchLogistic(nnplus1)
+	 
+	options(warn = -1) #suppress warnings globally
+	
+	if (logistic =="error"){
+		print ("error in logistic calculation") 
 		
-	logisticTable <- tidy(logistic)
-	
-	logisticTable$type <- "logistic"
-	
-	ricker <-  nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
-			algorithm= "port", trace = T)
-	
-	rickerTable <- tidy(ricker)
-	
-	rickerTable$type <- "ricker"
-
-	nnplusoneCom <- rbind(rickerTable, logisticTable)
-	
-	nnplusoneCom$Comp <- DF_list[1]
-	nnplusoneCom$disp <- DF_list[2]
-	nnplusoneCom$var <- DF_list[3]
-	nnplusoneCom$meanK <- DF_list[4]
-	nnplusoneCom$FileName<-fileName
-	
-	nnplus1$rickerPredict <- predict(ricker)
-	nnplus1$logisticPredict <- predict(logistic)
-	
+		p12 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA))+
+				ggtitle("logistic eqn did not work :-(")
+		
+		
+	} else {
+		print ("logistic equation did work!")
+		
+		nnplus1$logisticPredict <- predict(logistic)
+		
+		p12 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
+				geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn")
+		
+		logisticTable <- tidy(logistic)
+		logisticTable$type <- "logistic"		
+		
+	}
 	
 
-	p12 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
-			geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-			geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn")
 	
-	p13 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
-			geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-			geom_line(aes(x = N, y = rickerPredict), colour = 'blue') + ggtitle("ricker eqn")
+	######## Calculating ricker equation
+	
+	rickerFn = function(nnplus1){
+		ricker <- nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
+				algorithm= "port", trace = T)
+		return(ricker)
+	}
+	
+	
+	
+	tryCatchRicker= function(x) {
+		tryCatch(rickerFn(x), warning = function(w) {print("warning")},
+				error = function(e) {print("error")}) 
+	}
+
+	ricker <- tryCatchRicker(nnplus1)
+	
+	
+	if (ricker =="error"){
+		print ("error in ricker calculation") 
+		
+		p13 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
+				 ggtitle("ricker eqn did not work :-(")
+		
+
+		
+		
+	} else {
+		print ("ricker equation did work!")
+		nnplus1$rickerPredict <- predict(ricker)		
+		
+		p13 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
+				geom_line(aes(x = N, y = rickerPredict), colour = 'blue') + ggtitle("ricker eqn")
+		
+		rickerTable <- tidy(ricker)
+		rickerTable$type <- "ricker"
+		
+		
+	}
+	
+	
+	
+	
+	options(warn = 0) # turns warnings back on
+
+	
+	
+	if (exists("rickerTable") == TRUE & exists("logisticTable") == TRUE){
+		print ("both tables exist")
+		nnplusoneCom <- rbind(rickerTable, logisticTable)
+		
+
+		
+	} else{
+		if(exists("rickerTable") == TRUE & exists("logisticTable") == FALSE){
+		print("only ricker")	
+		nnplusoneCom <- rickerTable
+		
+		
+
+	} else{
+		if(exists("rickerTable") == FALSE & exists("logisticTable") == TRUE){
+			print("only the logistic table exists")
+			nnplusoneCom <- logisticTable
+
+	}else{	
+		
+		nnplusoneCom <- data.frame(term = NA, estimate = NA, std.error = NA,  p.value = NA,
+				type = "both")
+
+					
+				}
+			}
+		}
+
+		
+		nnplusoneCom$Comp <- DF_list[1]
+		nnplusoneCom$disp <- DF_list[2]
+		nnplusoneCom$var <- DF_list[3]
+		nnplusoneCom$meanK <- DF_list[4]
+		nnplusoneCom$FileName<-fileName
+
+
+	rm(ricker)
+	rm(logistic)
 	
 	rm(nnplus1)
 	

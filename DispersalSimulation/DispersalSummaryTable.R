@@ -26,6 +26,7 @@ for (i in 13:14){
 	theFileName <-fileNames[i,1]
 
 	fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+	#fileToImport <- paste(theFileName, ".py.csv", sep = "")
 	
 	print (fileToImport)
 	
@@ -55,6 +56,7 @@ for (i in 13:14){
 		rm(File)
 		
 		indFileToImport <- paste(folder, theFileName, ".py_inds.csv", sep = "")
+		#indFileToImport <- paste(theFileName, ".py_inds.csv", sep = "")
 		indFile <- read.csv(indFileToImport, quote = "")
 		
 		indAves <- ddply(indFile, .(), summarise,
@@ -78,3 +80,4 @@ for (i in 13:14){
 	}}
 
 write.table(dis_aves, paste(folder, "DisperalAves.csv", sep = ""), sep=",", row.names = FALSE)
+
