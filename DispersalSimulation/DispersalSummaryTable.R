@@ -64,6 +64,7 @@ for (i in 13:14){
 				ave_adSze = mean(food[type == "Ad"])
 		)
 
+		rm(indFile)
 		average <- cbind(FileAves, indAves)
 
 		average$.id <- NULL
