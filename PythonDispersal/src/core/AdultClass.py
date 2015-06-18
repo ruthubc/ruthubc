@@ -17,13 +17,10 @@ class Adult(Spider):
         self.disperse = disperse
         self.no_off = no_off
 
-    def disperseChoice(self, dis_fd, disp_rsk):  # disperses if adult above a specific size
+    def disperseChoice(self, dis_fd):  # disperses if adult above a specific size
         rndNum = rndm.random()
         if self.food >= dis_fd:
-            if rndNum <= disp_rsk:
-                self.die = 1
-            else:
-                self.disperse = 1
+            self.disperse = 1
 
     #TODO: check this works
     def noOffspring(self, M, C):  # updates the number of offspring an adult have depends on food while juv and adult
