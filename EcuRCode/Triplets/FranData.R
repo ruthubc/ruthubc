@@ -94,6 +94,18 @@ Weights$DateDiff <- difftime(Weights$WgtDateFmt, Weights$EggDateFmt, units = "da
 
 unique(c(Weights$ColID, Weights$DateDiff))
 
+WeightsTime <- data.frame(Weights$ColID, Weights$MeasNo, Weights$Date, Weights$WgtDateFmt, Weights$EggDateFmt, Weights$DateDiff)
+
+WeightsTime <- unique(WeightsTime)
+
+
+write.csv(WeightsTime, file = "RuthSync/EggManipulation/RuthDataFiles/WeightsDifference.csv")
+
+Weights$DiffDays <- as.numeric(Weights$DateDiff)
+
+ggplot(Weights, aes(x = DiffDays, y = log(LegLen), colour = Treatment)) + stat_summary(fun.y=mean, geom="line") + facet_grid(.~Instar)
+
+
 
 ##*********** Next step : make graph of biomass per juv!****
 

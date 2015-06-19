@@ -84,7 +84,7 @@ for i in range(0, len(combinations)):  # actually produces the files
     min_juv_size = 0.19
     min_no_off = 2
     max_no_off = 4
-    ad_disFd_lmt = 0.8
+    ad_disFd_lmt = 0.4
     F_Ln = 0.4    
     filename = 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) + '_rn' + str(number)
     print "tup", tup

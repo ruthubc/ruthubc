@@ -11,6 +11,7 @@ library(broom)
 #folder <- "R_Graphs/"
 folder <- "DisperalSimulationOutput/"
 
+
 fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# import file names csv file
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
@@ -33,7 +34,7 @@ graphFunction <- function(folder, fileName){
 	#indFileToImport <- paste(fileName, ".py_inds.csv", sep = "")
 	filetoImport <- paste(folder, fileName, ".py.csv", sep = "")
 	indFileToImport <- paste(folder, fileName, ".py_inds.csv", sep = "")
-	
+
 	
 	pngTitle <- paste(folder, fileName, "_graph", ".png", sep = "")
 	print ("overall file exists?")
@@ -43,6 +44,8 @@ graphFunction <- function(folder, fileName){
 
 	File <- read.csv(filetoImport, quote = "")
 	
+	File$AveOffAd <- File$numjuvs/File$num_ads
+	
 	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, numAdsB4dis = File$num_adsB4_dispersal)
 	ColInfo <- unique(ColInfo)
 	
@@ -50,7 +53,7 @@ graphFunction <- function(folder, fileName){
 	
 	mytitle = textGrob(label = fileName)
 	
-	pngHeight = 400 * 15 # 400 * number of graphs
+	pngHeight = 400 * 17 # 400 * number of graphs
 	
 	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
@@ -114,14 +117,22 @@ graphFunction <- function(folder, fileName){
 	p8 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads )) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("num ads after dispersal vs per capita food")
 	
+	
+	p9 <- ggplot(data = File, aes(x=num_ads, y = AveOffAd )) + geom_point() + stat_smooth(se = FALSE) +  
+			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("ave offspring per adults vs col size after dispersal")
+	
+	p10 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = AveOffAd )) + geom_point() + stat_smooth(se = FALSE) +  
+			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("ave offspring per adults vs col size after dispersal")
+	
+	
 	# number juvs moulting with size after dispersal
-	p9 <- ggplot(data = File, aes(x=num_ads, y = pcntMoult)) + stat_smooth(se = FALSE)  + geom_point() +  mytheme +
+	p11 <- ggplot(data = File, aes(x=num_ads, y = pcntMoult)) + stat_smooth(se = FALSE)  + geom_point() +  mytheme +
 			scale_y_continuous(limits = c(0, 1)) + ggtitle("percentage juvs moults vs. num ads after dispersal")
 	
 	# percentage of adults dispersing by nest size
 
 	## AGAIN I DON'T THINK THIS MAKES SENSE 
-	p10 <- ggplot(data = File, aes(x=num_ads, y = ave_food)) + geom_point() +
+	p12 <- ggplot(data = File, aes(x=num_ads, y = ave_food)) + geom_point() +
 			mytheme + scale_y_continuous(limits = c(0, 1)) + stat_smooth(se = FALSE) + ggtitle("")
 	
 	rm(ByPopAge)
@@ -132,11 +143,11 @@ graphFunction <- function(folder, fileName){
 	
 	if (nrow(deadcols) == 0){
 		df <- data.frame()
-		p11<-ggplot(df) + geom_point() + xlim(0, 10) + ylim(0, 100) + ggtitle("NO COLONIES DIED!!")
+		p13<-ggplot(df) + geom_point() + xlim(0, 10) + ylim(0, 100) + ggtitle("NO COLONIES DIED!!")
 		print("no colonies died")
 	}else{
 	# histogram of size of dead colonies
-		p11 <- ggplot(data = subset(File, colAlive== 'dead'), aes(x= num_ads)) + geom_histogram() + mytheme + ggtitle("histogram of size of colonies when died (num ads after dispersal)")
+		p13 <- ggplot(data = subset(File, colAlive== 'dead'), aes(x= num_ads)) + geom_histogram() + mytheme + ggtitle("histogram of size of colonies when died (num ads after dispersal)")
 	}
 	rm(deadcols)
 	rm(File)
@@ -195,7 +206,7 @@ graphFunction <- function(folder, fileName){
 	if (logistic =="error"){
 		print ("error in logistic calculation") 
 		
-		p12 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+		p14 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA))+
 				ggtitle("logistic eqn did not work :-(")
 		
@@ -205,7 +216,7 @@ graphFunction <- function(folder, fileName){
 		
 		nnplus1$logisticPredict <- predict(logistic)
 		
-		p12 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+		p14 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
 				geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn")
 		
@@ -237,7 +248,7 @@ graphFunction <- function(folder, fileName){
 	if (ricker =="error"){
 		print ("error in ricker calculation") 
 		
-		p13 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+		p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
 				 ggtitle("ricker eqn did not work :-(")
 		
@@ -248,7 +259,7 @@ graphFunction <- function(folder, fileName){
 		print ("ricker equation did work!")
 		nnplus1$rickerPredict <- predict(ricker)		
 		
-		p13 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+		p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
 				geom_line(aes(x = N, y = rickerPredict), colour = 'blue') + ggtitle("ricker eqn")
 		
@@ -323,7 +334,7 @@ graphFunction <- function(folder, fileName){
 	
 	AdsByPopAgeAndCol <-merge(ColInfo, AdsByPopAgeAndCol, by = c("col_id", "col_age"))
 	
-	p14 <- ggplot(data = AdsByPopAgeAndCol, aes(x= numAdsB4dis, y = AdSize, colour = MinMax)) + geom_point() +
+	p16 <- ggplot(data = AdsByPopAgeAndCol, aes(x= numAdsB4dis, y = AdSize, colour = MinMax)) + geom_point() +
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1)) + ggtitle("ad size vs col size b4 dispersal")
 	
 	rm(AdsByPopAgeAndCol)
@@ -340,7 +351,7 @@ graphFunction <- function(folder, fileName){
 	JuvsByPopAgeAndCol <-merge(ColInfo, JuvsByPopAgeAndCol, by = c("col_id", "col_age"))
 	
 	
-	p15 <- ggplot(data = JuvsByPopAgeAndCol, aes(x= numAdsB4dis, y = JuvSize, colour = MinMax)) + geom_point() +
+	p17 <- ggplot(data = JuvsByPopAgeAndCol, aes(x= numAdsB4dis, y = JuvSize, colour = MinMax)) + geom_point() +
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1)) + ggtitle("juv size vs ads before dispersal")
 	
 
@@ -348,7 +359,7 @@ graphFunction <- function(folder, fileName){
 
 	rm(indFile)
 
-	print(grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15,  ncol = 1, main = mytitle))
+	print(grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17,  ncol = 1, main = mytitle))
 	
 	dev.off()
 	
@@ -359,13 +370,14 @@ graphFunction <- function(folder, fileName){
 }
 
 
-#for (i in 1:nrow(fileNames)){
-for (i in 14:15){
+for (i in 1:nrow(fileNames)){
+
 	print(i)	
 	theFileName <-fileNames[i,1]
 		
 	#fileToImport <- paste(theFileName, ".py.csv", sep = "")
 	fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+
 	print(fileToImport)	
 	
 	if(file.exists(fileToImport) == "TRUE"){
