@@ -125,15 +125,19 @@ class Colony(object):
     def colDispersal_choice(self, juv_disFd_lmt, ad_disFd_lmt, disp_rsk):  # deciding whether to reproduce or disperse
         print "juv_disFdLmt", juv_disFd_lmt
         if self.pot_juv_food < float(juv_disFd_lmt):
-            [i.disperseChoice(ad_disFd_lmt, disp_rsk) for i in self.ad_list] # dispersal choice ensures adult over specific size to disperse
+            [i.disperseChoice(ad_disFd_lmt) for i in self.ad_list] # dispersal choice ensures adult over specific size to disperse
             print "tot num of adults before dispersal colDis_choice", len(self.ad_list)
         else:
             print "no dispersers - pot juv food too high"
 
     def spis_to_dis_lst(self):  # makes a list of dispersers and removes them from the old colony
+        print "ad food before dispersal"
+        print [i.food for i in self.ad_list]
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
         self.num_dis = len(self.dispersers)
         self.ad_list = [i for i in self.ad_list if i.disperse == 0]
+        print "ad food after dispersal, should be less"
+        print [i.food for i in self.ad_list]
         print "spis to dis lst"
         print "new no of ads:", len(self.ad_list), "num dispersers:", self.num_dis
 
@@ -313,7 +317,7 @@ class Colony(object):
         self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt, disp_risk)
         self.spis_to_dis_lst()
         pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
-        self.dispersers = []  # clears dispersal list
+        self.dispersers = []  # clears the colony dispersal list
 
         #TODO: check why colony being written to file twice if all disperse
         self.col_alive()

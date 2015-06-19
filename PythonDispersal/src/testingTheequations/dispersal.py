@@ -11,6 +11,7 @@ from core.AdultClass import Adult
 from core.JuvClass import Juv
 from core.ColonyClass import Colony
 import matplotlib.pyplot as plt
+from core.PopulationClass import Poplt
 
 adList = []
 
@@ -42,3 +43,25 @@ col.spis_to_dis_lst()
 
 print "colony",  [i.food for i in col.ad_list]
 print "dispersers",  [i.food for i in col.dispersers]
+
+pop = Poplt([col])
+
+print pop
+
+disList = []
+
+disList.extend(col.dispersers)
+
+print [i.food for i in disList]
+
+pop.pop_dispersal_list = disList
+
+print pop.pop_dispersal_list
+
+pop.create_new_col()
+
+print pop
+
+pop.update_offVar()
+
+pop.disp_col_timestep()

@@ -58,7 +58,7 @@ class Poplt(object):
         self.maxNumCols = 200  #TODO make this an option at the top
 
     def __str__(self):
-        return "Pop_age: %s, # cols: %s" % (self.poplt_age, len(self.poplt_list))
+        return "Pop_age: %s, # cols: %s" % (self.pop_age, len(self.poplt_list))
 
     def update_offVar(self):  # updates the number of offspring an adult have depends on food while juv and adult
         OMn = np.log(float(self.off_nmbr_list[0]))  # min number of offspring

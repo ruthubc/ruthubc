@@ -66,7 +66,9 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
 #3) mean K
 #4) variance in k and FLN
 
-runs = [[0, 0.8, 2.5, 10], [0.05], [1000], [0.0]] # slope, risk of dispersal, MeanK , Var k
+# runs = [[0, 0.8, 2.5, 10], [0.05], [1000], [0.0]] # slope, risk of dispersal, MeanK , Var k
+
+runs = [[0.8], [0.05], [100, 1000], [0.0]] # slope, risk of dispersal, MeanK , Var k
 combinations = list(itertools.product(*runs))
 
 print combinations
