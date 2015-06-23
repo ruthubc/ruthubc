@@ -47,7 +47,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
     name = FileName + '.py'
     file = open(name, 'w+')
     file.write("from core.DispersalRun import disperal_run\n")
-    file.write("sim_len = 2000\n")
+    file.write("sim_len = 1000\n")
     file.write('filename = "'  + FileName + '.py"\n')
     file.write("comp_slp = " + str(comp_slp) + "\n")
     file.write("disp_risk =" + str(disp_risk)+ "\n")
@@ -68,7 +68,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
 
 # runs = [[0, 0.8, 2.5, 10], [0.05], [1000], [0.0]] # slope, risk of dispersal, MeanK , Var k
 
-runs = [[0.8], [0.05], [100, 1000], [0.0]] # slope, risk of dispersal, MeanK , Var k
+runs = [[0.8, 1.66], [0.05], [100], [0.0, 0.1]] # slope, risk of dispersal, MeanK , Var k
 combinations = list(itertools.product(*runs))
 
 print combinations
