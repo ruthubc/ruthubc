@@ -68,7 +68,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
 
 # runs = [[0, 0.8, 2.5, 10], [0.05], [1000], [0.0]] # slope, risk of dispersal, MeanK , Var k
 
-runs = [[0.8, 1.66], [0.05], [100], [0.0, 0.1]] # slope, risk of dispersal, MeanK , Var k
+runs = [[0.8], [0.05], [100], [0.0]] # slope, risk of dispersal, MeanK , Var k
 combinations = list(itertools.product(*runs))
 
 print combinations
