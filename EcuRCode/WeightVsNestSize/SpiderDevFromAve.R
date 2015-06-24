@@ -8,8 +8,11 @@ SpiAveMerge<- ddply(spiders, .(NestID, Instar), summarise, # need to discount tr
 		N = length(!is.na(Weight.mg)),
 		WeightMean = mean(Weight.mg, na.rm = TRUE),
 		LogWeightMean = mean(logWeight, na.rm = TRUE),
-		LegMean = mean(LegLen.mm),
-		LogLegMean = mean(logLeg)
+		LegMean = mean(LegLen.mm, na.rm = TRUE),
+		LogLegMean = mean(logLeg, na.rm = TRUE),
+		HungerMean = mean(hunger, na.rm=TRUE),
+		LogHungerMean = mean(logHung, na.rm=TRUE)
+		
 		
 
 )

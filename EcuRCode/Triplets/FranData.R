@@ -73,6 +73,8 @@ CenSwitch <- merge(CensusNum, EggSwitch, by = "ColID")
 
 CenSwitch$DateDiff <- difftime(CenSwitch$DateFmt, CenSwitch$EggDateFmt, units = "days")
 
+write.csv(CenSwitch, file = "RuthSync/EggManipulation/RuthDataFiles/CensusSwitchDiff.csv")
+
 
 ######### Weights
 
