@@ -53,7 +53,7 @@ graphFunction <- function(folder, fileName){
 	
 	mytitle = textGrob(label = fileName)
 	
-	pngHeight = 400 * 17 # 400 * number of graphs
+	pngHeight = 450 * (17 +1 )# 400 * number of graphs)
 	
 	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
@@ -153,7 +153,7 @@ graphFunction <- function(folder, fileName){
 	rm(File)
 	
 	## Making n, n+1 graph
-	nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric()) # creating empty data frame
+	nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = character()) # creating empty data frame
 	maxcol_id <- max(ColInfo$col_id)
 	
 	counter <- 0
@@ -162,6 +162,7 @@ graphFunction <- function(folder, fileName){
 		print(colony)
 		
 		col_subset <- subset(ColInfo, col_id == colony) # test 3 colony 11 incorrect numbering of colonies somehow
+		
 		maxcol_age <- max(col_subset$col_age)
 		mincol_age <- min(col_subset$col_age)
 	
@@ -171,6 +172,15 @@ graphFunction <- function(folder, fileName){
 			nnplus1[counter,1] <- colony # [row number, col num]
 			nnplus1[counter,2] <- col_subset$pop_age[which(col_subset$col_age == age)]
 			nnplus1[counter,3] <- col_subset$numAdsB4dis[which(col_subset$col_age == age)]
+			
+			if (col_subset$dispersers[which(col_subset$col_age == age)] > 0){
+				dis <- y
+			}else{
+				dis <- n
+			}
+			
+			nnplus1[counter,5] <- dis
+		
 			
 			if (age == maxcol_age){
 				nnplus1[counter,4] <- 0
@@ -183,7 +193,7 @@ graphFunction <- function(folder, fileName){
 	}
 	
 	
-	nnplus1 <- subset(nnplus1, pop_age != num_gens)
+	nnplus1 <- subset(nnplus1, pop_age != num_gens & disp == "n")
 	
 	######## calculating logistic equation
 	
@@ -359,7 +369,14 @@ graphFunction <- function(folder, fileName){
 
 	rm(indFile)
 
-	print(grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17,  ncol = 1, main = mytitle))
+	
+	h1 <- 2/5
+	h2 <- 3/5
+	
+	p_grob <- arrangeGrob(p14,p15, ncol=2)
+	print(grid.arrange(p1, p2, p3,  p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p_grob,
+					p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), 
+					main = mytitle))
 	
 	dev.off()
 	
