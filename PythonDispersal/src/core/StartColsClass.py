@@ -17,8 +17,8 @@ class StartCols(object):
         self.ad_fd = ad_fd
         self.col_no = 0
         self.sze_min = 1
-        self.sze_max = self.K * 2
-        self.intvl = self.sze_max / 10
+        self.sze_max = self.K * 3
+        self.intvl = self.sze_max / 40
         self.sze_rng_lst = [1] + range(self.intvl, (self.sze_max + self.intvl),
                              self.intvl)
         self.col_list = []

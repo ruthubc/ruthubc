@@ -18,17 +18,20 @@ fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), pop_age = integer(0))#, fileName = character(0))
 
+
 N_NPlus1_Vars <- data.frame(term = character(0), estimate = numeric(0), std.error = numeric(0),  p.value = numeric(0),
 		type = character(0), Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), 
 		fileName = character(0))
 
-num_gens <- 2000
+
+min_popAge <-50 # the number of generations to discount from the start of the calculations
+
 
 ## TO test the function
 fileName <- fileNames[14,1]
 
 #graph making function
-graphFunction <- function(folder, fileName){
+graphFunction <- function(folder, fileName, num_gens){
 
 	#filetoImport <- paste(fileName, ".py.csv", sep = "")
 	#indFileToImport <- paste(fileName, ".py_inds.csv", sep = "")
@@ -44,10 +47,18 @@ graphFunction <- function(folder, fileName){
 
 	File <- read.csv(filetoImport, quote = "")
 	
+	File <- subset(File, pop_age > num_gens) # removing the first 50 gens before do cals
+	
 	File$AveOffAd <- File$numjuvs/File$num_ads
 	
-	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, numAdsB4dis = File$num_adsB4_dispersal)
+	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, 
+			numAdsB4dis = File$num_adsB4_dispersal, dispersers = File$dispersers)
 	ColInfo <- unique(ColInfo)
+	
+	ColInfo$disp <- 0
+	
+	ColInfo$disp[ColInfo$dispersers > 0 ] <- 1 # marking nests that had dispersers
+	
 	
 	# graph variables
 	
@@ -153,47 +164,46 @@ graphFunction <- function(folder, fileName){
 	rm(File)
 	
 	## Making n, n+1 graph
-	nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = character()) # creating empty data frame
+	nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = numeric()) # creating empty data frame
 	maxcol_id <- max(ColInfo$col_id)
 	
 	counter <- 0
 	
+	
 	for (colony in 1:maxcol_id){
 		print(colony)
 		
-		col_subset <- subset(ColInfo, col_id == colony) # test 3 colony 11 incorrect numbering of colonies somehow
+		col_subset <- subset(ColInfo, col_id == colony) # & pop_age > min_popAge) # test 3 colony 11 incorrect numbering of colonies somehow
 		
+				
 		maxcol_age <- max(col_subset$col_age)
 		mincol_age <- min(col_subset$col_age)
 	
 		for (age in mincol_age:maxcol_age){
-			counter <- counter + 1		
+			counter <- counter + 1
+			
+			if (col_subset$pop_age[which(col_subset$col_age == age)] < num_gens){
 		
-			nnplus1[counter,1] <- colony # [row number, col num]
-			nnplus1[counter,2] <- col_subset$pop_age[which(col_subset$col_age == age)]
-			nnplus1[counter,3] <- col_subset$numAdsB4dis[which(col_subset$col_age == age)]
+				nnplus1[counter,1] <- colony # [row number, col num]
+				nnplus1[counter,2] <- col_subset$pop_age[which(col_subset$col_age == age)]
+				nnplus1[counter,3] <- col_subset$numAdsB4dis[which(col_subset$col_age == age)]		
+				
+				
+				if (age == maxcol_age){
+					nnplus1[counter,4] <- 0
+				}else{
+					nnplus1[counter,4] <- col_subset$numAdsB4dis[which(col_subset$col_age == (age +1))]	
+				}
 			
-			if (col_subset$dispersers[which(col_subset$col_age == age)] > 0){
-				dis <- y
-			}else{
-				dis <- n
-			}
-			
-			nnplus1[counter,5] <- dis
-		
-			
-			if (age == maxcol_age){
-				nnplus1[counter,4] <- 0
-			}else{
-				nnplus1[counter,4] <- col_subset$numAdsB4dis[which(col_subset$col_age == (age +1))]	
-			}
+				nnplus1[counter,5] <- col_subset$disp[which(col_subset$col_age == age)]	
 
 		
+			}
 		}
 	}
 	
 	
-	nnplus1 <- subset(nnplus1, pop_age != num_gens & disp == "n")
+	nnplus1 <- subset(nnplus1, disp == 0)
 	
 	######## calculating logistic equation
 	
@@ -387,19 +397,21 @@ graphFunction <- function(folder, fileName){
 }
 
 
-for (i in 1:nrow(fileNames)){
+#for (i in 1:nrow(fileNames)){
+for (i in 14:14){
 
 	print(i)	
 	theFileName <-fileNames[i,1]
 		
 	#fileToImport <- paste(theFileName, ".py.csv", sep = "")
 	fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+	num_gens <- as.numeric(fileNames[i, 3])
 
 	print(fileToImport)	
 	
 	if(file.exists(fileToImport) == "TRUE"){
 		print ("the file does exist which is good!")
-		returnList <- graphFunction(folder, theFileName)
+		returnList <- graphFunction(folder, theFileName, num_gens)
 		DF[i,] <- returnList[[1]]
 		N_NPlus1_Vars <- rbind(N_NPlus1_Vars, returnList[[2]])
 		} else {

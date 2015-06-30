@@ -10,6 +10,14 @@ import itertools
 import csv
 import time
 
+# input variables here
+runs = [[0.8], [0.05], [100], [0.0], [0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
+combinations = list(itertools.product(*runs))
+
+print combinations
+
+sim_len = 500
+
 def run_numbers(numbersFile):  # Assigns a unique number to each run
     i=[]
     with open(numbersFile, 'rb') as f:
@@ -43,11 +51,11 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.close()
 
 def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off,
-                   max_no_off, ad_disFd_lmt, F_Ln): # writing the python file  that runs the model
+                   max_no_off, ad_disFd_lmt, F_Ln, sim_len): # writing the python file  that runs the model
     name = FileName + '.py'
     file = open(name, 'w+')
     file.write("from core.DispersalRun import disperal_run\n")
-    file.write("sim_len = 1000\n")
+    file.write("sim_len = " + str(sim_len) + "\n")
     file.write('filename = "'  + FileName + '.py"\n')
     file.write("comp_slp = " + str(comp_slp) + "\n")
     file.write("disp_risk =" + str(disp_risk)+ "\n")
@@ -68,10 +76,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
 
 # runs = [[0, 0.8, 2.5, 10], [0.05], [1000], [0.0]] # slope, risk of dispersal, MeanK , Var k
 
-runs = [[0.8], [0.05], [100], [0.0]] # slope, risk of dispersal, MeanK , Var k
-combinations = list(itertools.product(*runs))
 
-print combinations
 fileNameLst = []
 
 for i in range(0, len(combinations)):  # actually produces the files
@@ -81,16 +86,17 @@ for i in range(0, len(combinations)):  # actually produces the files
     risk = tup[1]
     K = tup[2]
     var = tup[3]
+    ad_disFd_lmt = tup[4]
     min_juv_size = 0.19
     min_no_off = 2
     max_no_off = 4
-    ad_disFd_lmt = 0.4
+    
     F_Ln = 0.4    
-    filename = 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) + '_rn' + str(number)
+    filename = 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) +  "_dslm" + str(ad_disFd_lmt) + '_rn' + str(number)
     print "tup", tup
     print filename
     writePythonRun(filename, slope, risk, K, var, min_juv_size, min_no_off,
-                   max_no_off, ad_disFd_lmt, F_Ln)
+                   max_no_off, ad_disFd_lmt, F_Ln, sim_len)
     writePBS(filename)
     fileNameLst.extend([filename])
 
@@ -104,10 +110,12 @@ for name in fileNameLst: # writes the names of the files created to csv file for
     file.write("qsub " + name + ".pbs; ")
     with open("FilesCreated.csv", 'ab') as f:
         writer = csv.writer(f, dialect='excel')
-        writer.writerow([name, time.strftime("%d/%m/%Y")])
+        writer.writerow([name, time.strftime("%d/%m/%Y"), sim_len])
         
 file = open("run.sh", "w+")
 file.write("for i in")
+
+# making .sh file
 
 for name in fileNameLst:
     file.write(" " + name + ".pbs")
