@@ -24,14 +24,14 @@ N_NPlus1_Vars <- data.frame(term = character(0), estimate = numeric(0), std.erro
 		fileName = character(0))
 
 
-min_popAge <-50 # the number of generations to discount from the start of the calculations
+min_popAge <-5 # the number of generations to discount from the start of the calculations
 
 
 ## TO test the function
 fileName <- fileNames[14,1]
 
 #graph making function
-graphFunction <- function(folder, fileName, num_gens){
+graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
 	#filetoImport <- paste(fileName, ".py.csv", sep = "")
 	#indFileToImport <- paste(fileName, ".py_inds.csv", sep = "")
@@ -47,7 +47,7 @@ graphFunction <- function(folder, fileName, num_gens){
 
 	File <- read.csv(filetoImport, quote = "")
 	
-	File <- subset(File, pop_age > num_gens) # removing the first 50 gens before do cals
+	File <- subset(File, pop_age > min_popAge) # removing the first 50 gens before do cals
 	
 	File$AveOffAd <- File$numjuvs/File$num_ads
 	
@@ -165,12 +165,17 @@ graphFunction <- function(folder, fileName, num_gens){
 	
 	## Making n, n+1 graph
 	nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = numeric()) # creating empty data frame
-	maxcol_id <- max(ColInfo$col_id)
-	
+
 	counter <- 0
 	
+	cols <- as.numeric(levels(as.factor(ColInfo$col_id)))
 	
-	for (colony in 1:maxcol_id){
+	print(length(cols))
+	
+	for (i in 1:length(cols)){
+		
+		colony <- cols[i]
+		print ("colony")
 		print(colony)
 		
 		col_subset <- subset(ColInfo, col_id == colony) # & pop_age > min_popAge) # test 3 colony 11 incorrect numbering of colonies somehow
@@ -180,9 +185,11 @@ graphFunction <- function(folder, fileName, num_gens){
 		mincol_age <- min(col_subset$col_age)
 	
 		for (age in mincol_age:maxcol_age){
+			print("age")
+			print(age)
 			counter <- counter + 1
 			
-			if (col_subset$pop_age[which(col_subset$col_age == age)] < num_gens){
+			if (col_subset$pop_age[which(col_subset$col_age == age)]){
 		
 				nnplus1[counter,1] <- colony # [row number, col num]
 				nnplus1[counter,2] <- col_subset$pop_age[which(col_subset$col_age == age)]
@@ -298,24 +305,23 @@ graphFunction <- function(folder, fileName, num_gens){
 	
 	if (exists("rickerTable") == TRUE & exists("logisticTable") == TRUE){
 		print ("both tables exist")
-		nnplusoneCom <- rbind(rickerTable, logisticTable)
-		
+		nnplusoneCom <- rbind(rickerTable, logisticTable)	
 
 		
-	} else{
+	} else {
 		if(exists("rickerTable") == TRUE & exists("logisticTable") == FALSE){
 		print("only ricker")	
 		nnplusoneCom <- rickerTable
 		
 		
 
-	} else{
+	} else {
 		if(exists("rickerTable") == FALSE & exists("logisticTable") == TRUE){
 			print("only the logistic table exists")
 			nnplusoneCom <- logisticTable
 
 	}else{	
-		
+		print("neither ricker or logistic worked")
 		nnplusoneCom <- data.frame(term = NA, estimate = NA, std.error = NA,  p.value = NA,
 				type = "both")
 
@@ -411,7 +417,7 @@ for (i in 14:14){
 	
 	if(file.exists(fileToImport) == "TRUE"){
 		print ("the file does exist which is good!")
-		returnList <- graphFunction(folder, theFileName, num_gens)
+		returnList <- graphFunction(folder, theFileName, num_gens, min_popAge)
 		DF[i,] <- returnList[[1]]
 		N_NPlus1_Vars <- rbind(N_NPlus1_Vars, returnList[[2]])
 		} else {
