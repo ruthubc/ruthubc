@@ -24,11 +24,11 @@ N_NPlus1_Vars <- data.frame(term = character(0), estimate = numeric(0), std.erro
 		fileName = character(0))
 
 
-min_popAge <-5 # the number of generations to discount from the start of the calculations
+min_popAge <-1 # the number of generations to discount from the start of the calculations
 
 
 ## TO test the function
-fileName <- fileNames[14,1]
+fileName <- fileNames[16,1]
 
 #graph making function
 graphFunction <- function(folder, fileName, num_gens, min_popAge){
@@ -64,7 +64,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	mytitle = textGrob(label = fileName)
 	
-	pngHeight = 450 * (17 +1 )# 400 * number of graphs)
+	pngHeight = 450 * (18 +1 )# 400 * number of graphs)
 	
 	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
@@ -95,9 +95,17 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	File$pcntDisperse <- File$dispersers / File$num_adsB4_dispersal
 	File$pcntMoult <- File$num_juvs_moulting/File$numjuvs
 	
+	interval <- ceiling(max(File$num_adsB4_dispersal)/200)
+	
+	#Histogram of colony sizes
+
+######TO DO!!#########################
+#http://docs.ggplot2.org/current/geom_histogram.html 
+#Colour the graph as to whether the nest ever dispersed or not - need to do some stuff to the data to update whether the nest ever dispersed
+	p0 <- ggplot(data = File, aes(x= num_adsB4_dispersal)) + geom_histogram(binwidth = interval) +  mytheme + ggtitle("histogram of colony sizes") 
 	
 	#pop age by total number of individuals
-	p1 <- ggplot(data = ByPopAge, aes(x = pop_age, y = TotNumInd)) + geom_line() +  mytheme + ggtitle("total number of individuals in the population")
+	p1 <- ggplot(data = ByPopAge, aes(x = pop_age, y = TotNumInd)) + geom_line() +  mytheme + ggtitle("total number of individuals in the population") 
 	
 	#pop age by number of colonies
 	p2 <- ggplot(data = ByPopAge, aes(x = pop_age, y = NCols)) + geom_line() +  mytheme + ggtitle("total number of colonies in the population")
@@ -347,6 +355,12 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	indFile <- read.csv(indFileToImport, quote = "")
 	
+	# change indFile$disperse to NA if nest did not produce dispersers, 0 if nests disperses but ind did not dispere
+	# ColInfo$disp = 0 for nests that dispersed
+	indFile <- merge(indFile, ColInfo, by = c("col_id", "col_age") )
+	indFile$disperse[indFile$disp  == 0 ] <- NA
+	
+	
 	
 	
 	AdsByPopAgeAndCol<- ddply(subset(indFile, type =="Ad"), .(col_age, col_id, type), summarise, 
@@ -390,7 +404,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	h2 <- 3/5
 	
 	p_grob <- arrangeGrob(p14,p15, ncol=2)
-	print(grid.arrange(p1, p2, p3,  p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p_grob,
+	print(grid.arrange(p0, p1, p2, p3,  p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p_grob,
 					p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), 
 					main = mytitle))
 	
