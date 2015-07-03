@@ -33,6 +33,7 @@ fileName <- fileNames[16,1]
 #graph making function
 graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
+	#### REMEMBER: Before sending to grex remove the printing stuff.
 	#filetoImport <- paste(fileName, ".py.csv", sep = "")
 	#indFileToImport <- paste(fileName, ".py_inds.csv", sep = "")
 	filetoImport <- paste(folder, fileName, ".py.csv", sep = "")
@@ -83,7 +84,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	mytitle = textGrob(label = fileName)
 	
-	pngHeight = 450 * (18 +1 )# 400 * number of graphs)
+	pngHeight = 450 * (20 +1 )# 400 * number of graphs)
 	
 	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
@@ -123,7 +124,10 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
 
 
-	p0 <- ggplot(data = File, aes(x= num_adsB4_dispersal, fill = prevDisp)) + geom_histogram(binwidth = interval) +  mytheme + ggtitle("histogram of colony sizes") 
+	p0 <- ggplot(data = File, aes(x= num_adsB4_dispersal, fill = prevDisp)) + geom_histogram(binwidth = interval) +  mytheme + ggtitle("histogram of colony sizes")
+	
+	p00 <- ggplot(data = subset(File, num_ads > 1) , aes(x= num_adsB4_dispersal, fill = prevDisp)) + geom_histogram(binwidth = interval) +  
+			mytheme + ggtitle("histogram of colony sizes with single nests removed")
 	
 	#pop age by total number of individuals
 	p1 <- ggplot(data = ByPopAge, aes(x = pop_age, y = TotNumInd)) + geom_line() +  mytheme + ggtitle("total number of individuals in the population") 
@@ -150,11 +154,11 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	# Nest size before dispersal vs food per adult 
 #### OK THIS DOESN'T MAKE ANY SENSE. SHOULD BE POTENTIAL FOOD IF NO INDIVIDUAL DISPERSED
-	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = colony_food/num_ads)) + geom_point(size = 1) + stat_smooth(se = FALSE) +  
+	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = colony_food/num_ads, colour = prevDisp)) + geom_point(size = 1) + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("colony food per capita before dispersal")
 	
 	#Nest size after dispersal with food per adult
-	p8 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads )) + geom_point(size = 1) + stat_smooth(se = FALSE) +  
+	p8 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads, colour = prevDisp)) + geom_point(size = 1) + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("num ads after dispersal vs per capita food")
 	
 	
@@ -192,7 +196,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	rm(File)
 	
 	## Making n, n+1 graph
-	nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = numeric()) # creating empty data frame
+	nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = numeric(), prevDisp = character(),
+			stringsAsFactors=FALSE) # creating empty data frame
 
 	counter <- 0
 	
@@ -221,7 +226,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		
 				nnplus1[counter,1] <- colony # [row number, col num]
 				nnplus1[counter,2] <- col_subset$pop_age[which(col_subset$col_age == age)]
-				nnplus1[counter,3] <- col_subset$numAdsB4dis[which(col_subset$col_age == age)]		
+				nnplus1[counter,3] <- col_subset$numAdsB4dis[which(col_subset$col_age == age)]
+				nnplus1[counter,6] <- as.character(col_subset$prevDisp[which(col_subset$col_age == age)])
 				
 				
 				if (age == maxcol_age){
@@ -380,7 +386,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	indFile <- merge(indFile, ColInfo, by = c("col_id", "col_age") )
 	indFile$disperse[indFile$colDisp  == 0 & indFile$disperse == 0 ] <- NA
 	
-	ggplot(data = subset(indFile, type == "Ad"), aes(x= factor(disperse), y = food)) + geom_boxplot()
+	p16a <- ggplot(data = subset(indFile, type == "Ad"), aes(x= factor(disperse), y = food)) + geom_boxplot()
 	
 	
 	
@@ -426,8 +432,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	h2 <- 3/5
 	
 	p_grob <- arrangeGrob(p14,p15, ncol=2)
-	print(grid.arrange(p0, p1, p2, p3,  p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p_grob,
-					p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), 
+	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p_grob,
+					p16a, p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1, h1), 
 					main = mytitle))
 	
 	dev.off()
