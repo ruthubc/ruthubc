@@ -246,6 +246,10 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	nnplus1 <- subset(nnplus1, disp == 0)
 	
+	nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N
+	
+	p13a <- ggplot(data = nnplus1, aes(x  = N, y = AveGrowth)) + geom_point() + stat_smooth() + mytheme + ggtitle("ave growth rate per ind")
+	
 	######## calculating logistic equation
 	
 	logisticFn = function(nnplus1){
@@ -432,8 +436,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	h2 <- 3/5
 	
 	p_grob <- arrangeGrob(p14,p15, ncol=2)
-	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p_grob,
-					p16a, p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1, h1), 
+	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p13a,  p_grob,
+					p16a, p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1, h1), 
 					main = mytitle))
 	
 	dev.off()
