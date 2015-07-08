@@ -29,21 +29,35 @@ spidersMul$LegDiffFromMean[spidersMul$N == 1] <- NA
 spidersMul$LogLegDiffFromMean[spidersMul$N == 1] <- NA
 
 
-spidersMul$LogWeightDiffFromMean <- spidersMul$logWeight - spidersMul$LogWeightMean
+spidersMul$LogWeightDiffFromMean <- abs(spidersMul$logWeight - spidersMul$LogWeightMean)
 
-spidersMul$WeightDiffFromMean <- spidersMul$Weight.mg - spidersMul$WeightMean
+spidersMul$WeightDiffFromMean <- abs(spidersMul$Weight.mg - spidersMul$WeightMean)
 
-spidersMul$LegDiffFromMean <- spidersMul$LegLen.mm - spidersMul$LegMean
+spidersMul$LegDiffFromMean <- abs(spidersMul$LegLen.mm - spidersMul$LegMean)
 
-spidersMul$LogLegDiffFromMean <- spidersMul$logLeg - spidersMul$LogLegMean
+spidersMul$LogLegDiffFromMean <- abs(spidersMul$logLeg - spidersMul$LogLegMean)
+
+spidersMul$HungerDiffFromMean <- abs(spidersMul$hunger - spidersMul$HungerMean)
+
+spidersMul$LogHungerDiffFromMean <- abs(spidersMul$LogHungerMean - spidersMul$logHung)
+
+spidersMul$SqRtOfHungDiff <- (spidersMul$HungerDiffFromMean)^0.5
 
 ## Histograms to check distribution. 
 #I am going with the log one for the moment as it appears that the distributions are the most similar among instars
 ggplot(data = spidersMul, aes(WeightDiffFromMean)) + geom_histogram() + facet_wrap(~Instar)
 
-ggplot(data = spidersMul, aes(LegDiffFromMean)) + geom_histogram() + facet_wrap(~Instar)
+ggplot(data = spidersMul, aes(LegDiffFromMean^0.5)) + geom_histogram() + facet_wrap(~Instar)
 
 ggplot(data = spidersMul, aes(LogLegDiffFromMean)) + geom_histogram() + facet_wrap(~Instar)
+
+ggplot(data = spidersMul, aes(LogOfHungDiff)) + geom_histogram() + facet_wrap(~Instar)
+
+ggplot(data = spidersMul, aes(LogHungerDiffFromMean)) + geom_histogram()# + facet_wrap(~Instar)
+
+ggplot(data = spidersMul, aes(x = logCtFm , y = SqRtOfHungDiff)) + facet_wrap(~Instar) + geom_point() + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
+
 
 
 SpiDiffAve<- ddply(spidersMul, .(NestID, Instar, N, logCtFm), summarise, # need to discount trials where no feeding obs and eve
