@@ -47,14 +47,18 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	print(file.exists(indFileToImport))
 
 	File <- read.csv(filetoImport, quote = "")
-	fileLen <- length(File)
+	maxPopAge <- max(File$pop_age)
 	if(fileLen < 400){
 		min_popAge <- 0
 		print("pop did not survive to 400 generations")
+	}else{
+		print("min pop age")
+		print (min_popAge)
+		File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
 	}
 	
 	
-	File <- subset(File, pop_age > min_popAge) # removing the first 50 gens before do cals
+	
 	
 	File$AveOffAd <- File$numjuvs/File$num_ads
 	
@@ -69,7 +73,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		if (length(age_FstDisp) > 0){
 			min_ageFstDisp <- min(age_FstDisp)
 			print (min_ageFstDisp)
-			File$prevDisp[which(File$colony_age > min_ageFstDisp & File$colony_ID == thisCol)] <- "y"
+			File$prevDisp[which(File$colony_age >= min_ageFstDisp & File$colony_ID == thisCol)] <- "y"
 			
 		}else{
 			print("no dispersers")
@@ -396,6 +400,9 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	indFile <- merge(indFile, ColInfo, by = c("col_id", "col_age") )
 	indFile$disperse[indFile$colDisp  == 0 & indFile$disperse == 0 ] <- NA
 	
+	ads <- subset(indFile, type =="Ad" & disperse != "NA")
+	
+	# boxplot of adult size disperal  vs no dispersal
 	p16a <- ggplot(data = subset(indFile, type == "Ad"), aes(x= factor(disperse), y = food)) + geom_boxplot()
 	
 	
@@ -412,6 +419,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	AdsByPopAgeAndCol <-merge(ColInfo, AdsByPopAgeAndCol, by = c("col_id", "col_age"))
 	
+	# colony size by adult size
 	p16 <- ggplot(data = AdsByPopAgeAndCol, aes(x= numAdsB4dis, y = AdSize, colour = MinMax)) + geom_point(size = 1) +
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1)) + ggtitle("ad size vs col size b4 dispersal")
 	
@@ -428,7 +436,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		
 	JuvsByPopAgeAndCol <-merge(ColInfo, JuvsByPopAgeAndCol, by = c("col_id", "col_age"))
 	
-	
+	# Colony size by number of juvs
 	p17 <- ggplot(data = JuvsByPopAgeAndCol, aes(x= numAdsB4dis, y = JuvSize, colour = MinMax)) + geom_point(size = 1) +
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1)) + ggtitle("juv size vs ads before dispersal")
 	
