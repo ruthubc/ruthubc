@@ -122,22 +122,20 @@ class Colony(object):
         #print "adfood", [i.food for i in self.ad_list]
         print "pot juv food", pot_juv_fd
 
-    def colDispersal_choice(self, juv_disFd_lmt, ad_disFd_lmt, disp_rsk):  # deciding whether to reproduce or disperse
-        print "juv_disFdLmt", juv_disFd_lmt
-        if self.pot_juv_food < float(juv_disFd_lmt):
+    def colDispersal_choice(self,  ad_disFd_lmt):  # deciding whether to reproduce or disperse
             [i.disperseChoice(ad_disFd_lmt) for i in self.ad_list] # dispersal choice ensures adult over specific size to disperse
             print "tot num of adults before dispersal colDis_choice", len(self.ad_list)
-        else:
-            print "no dispersers - pot juv food too high"
 
-    def spis_to_dis_lst(self):  # makes a list of dispersers and removes them from the old colony
-        print "ad food before dispersal"
-        print [i.food for i in self.ad_list]
+    def spis_to_dis_lst(self, adDisLmt):  # makes a list of dispersers and removes them from the old colony
+        #print "ad food before dispersal"
+        #print [i.food for i in self.ad_list]
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
         self.num_dis = len(self.dispersers)
         self.ad_list = [i for i in self.ad_list if i.disperse == 0]
-        print "ad food after dispersal, should be less"
-        print [i.food for i in self.ad_list]
+        for ad in self.ad_list:
+            if ad.food > adDisLmt:
+                raise Exception ("Non-dispered adults larger then", adDisLmt, "which was", ad.food)
+        #print [i.food for i in self.ad_list]
         print "spis to dis lst"
         print "new no of ads:", len(self.ad_list), "num dispersers:", self.num_dis
 
@@ -303,7 +301,7 @@ class Colony(object):
             # (10) Printing some things to the console
         #print self.colony_dict()
 
-    def colony_timestep(self, F_Ln, K, var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd, disp_risk, pop_export_list, filename, food_scale):
+    def colony_timestep(self, F_Ln, K, var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd,  pop_export_list, filename, food_scale):
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
@@ -312,15 +310,21 @@ class Colony(object):
         self.num_moult = 0
         self.num_juvs = 0
         self.num_dis = 0
-        self.num_ads = len(self.ad_list)
+        self.num_ads = len(self.ad_list) #
         self.cal_pot_juv_food(F_Ln, K, Off_M, Off_C, food_scale)  # calculating potental juv food , written to colony
-        self.colDispersal_choice(juv_disFd_lmt, ad_disFd_lmt, disp_risk)
-        self.spis_to_dis_lst()
-        pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
+        
+        print "juv_disFdLmt", juv_disFd_lmt
+        if self.pot_juv_food < float(juv_disFd_lmt): # risk calculation already cal'ed in population class
+            self.colDispersal_choice(ad_disFd_lmt)
+            self.spis_to_dis_lst(ad_disFd_lmt)
+            pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
+        else:
+            print "no dispersers - pot juv food too high"
+            
         self.dispersers = []  # clears the colony dispersal list
 
         #TODO: check why colony being written to file twice if all disperse
-        self.col_alive()
+        self.col_alive() # this happens if all spiders disperse
         if self.alive == 'dead':
             pop_export_list.append(self.colony_list_to_append())  # appends the dictionary values to population export list
             #print "colony dictionary", self.colony_dict()
@@ -328,4 +332,4 @@ class Colony(object):
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
             print("number spiders left after dispersal")
             print(len(self.ad_list))
-            self.core_colony_timestep(F_Ln,  K, var,  min_juv_fd, pop_export_list, filename, food_scale)
+            self.core_colony_timestep(F_Ln, K, var,  min_juv_fd, pop_export_list, filename, food_scale)

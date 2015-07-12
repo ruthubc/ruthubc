@@ -106,7 +106,7 @@ class Poplt(object):
     def allCols_OneTimestep(self):  # iterates through all colonies in population for one time step
         for col in self.poplt_list:
             col.colony_timestep(self.F_Ln, self.K, self.amt_var, self.Off_M, self.Off_C, self.juv_disFd_lmt, self.ad_disFd_lmt,
-                                self.pop_dispersal_list, self.min_juv_fd, self.disp_rsk, self.pop_export_list, self.filename, self.food_scale)
+                                self.pop_dispersal_list, self.min_juv_fd, self.pop_export_list, self.filename, self.food_scale)
 
     def disp_col_timestep(self):
         for colony in self.new_cols:

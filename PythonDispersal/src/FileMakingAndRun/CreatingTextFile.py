@@ -11,7 +11,7 @@ import csv
 import time
 
 # input variables here
-runs = [[0.8, 1, 2.5], [0.05], [100], [0.0, 0.1], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
+runs = [[0.8, 1, 2.5], [0.05], [100], [0.0], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
 combinations = list(itertools.product(*runs))
 
 print combinations
@@ -40,8 +40,8 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m bea\n")
     file.write("#PBS -l walltime=15:30:00\n")
-    file.write("#PBS -l pmem=2000mb\n")
-    file.write('#PBS -l procs=4\n')
+    file.write("#PBS -l pmem=3000mb\n")
+    file.write('#PBS -l procs=5\n')
     file.write("""echo "Current working directory is `pwd`"\n""")
     file.write("""echo "Starting run "$0" at: `date`"\n""")
     file.write("module load python/2.7.5.anaconda\n")

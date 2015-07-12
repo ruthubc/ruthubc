@@ -12,15 +12,15 @@ from SpiderClass import Spider
 
 
 class Adult(Spider):
-    def __init__(self, SpiderList = [0, 0, 0], disperse = 0, no_off = 0):  # make sure juv_fd updates to tot_fd
+    def __init__(self, SpiderList = [0, 0, 0], disperse = 0, no_off = 0):
         Spider.__init__(self, SpiderList[0], SpiderList[1], SpiderList[2]) # [rank, die, food]
         self.disperse = disperse
         self.no_off = no_off
 
     def disperseChoice(self, dis_fd):  # disperses if adult above a specific size
-        rndNum = rndm.random()
         if self.food >= dis_fd:
             self.disperse = 1
+        else: self.disperse = 0
 
     #TODO: check this works
     def noOffspring(self, M, C):  # updates the number of offspring an adult have depends on food while juv and adult
