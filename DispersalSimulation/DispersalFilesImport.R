@@ -24,7 +24,7 @@ N_NPlus1_Vars <- data.frame(term = character(0), estimate = numeric(0), std.erro
 		fileName = character(0))
 
 
-min_popAge <-500 # the number of generations to discount from the start of the calculations
+min_popAge <-100 # the number of generations to discount from the start of the calculations
 
 
 ## TO test the function
@@ -48,12 +48,14 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
 	File <- read.csv(filetoImport, quote = "")
 	maxPopAge <- max(File$pop_age)
-	if(fileLen < 400){
-		min_popAge <- 0
+	print ("maxPop age")
+	print (maxPopAge)
+	
+	if(maxPopAge < 300){
+		fn_min_popAge <- 0
 		print("pop did not survive to 400 generations")
 	}else{
-		print("min pop age")
-		print (min_popAge)
+		fn_min_popAge <- min_popAge
 		File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
 	}
 	

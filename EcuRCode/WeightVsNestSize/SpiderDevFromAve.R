@@ -3,6 +3,8 @@
 # Author: Ruth
 ###############################################################################
 library(ggplot2)
+library(lmerTest) # this puts pvalue in lmer
+
 
 SpiAveMerge<- ddply(spiders, .(NestID, Instar), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(Weight.mg)),
@@ -43,6 +45,8 @@ spidersMul$LogHungerDiffFromMean <- abs(spidersMul$LogHungerMean - spidersMul$lo
 
 spidersMul$SqRtOfHungDiff <- (spidersMul$HungerDiffFromMean)^0.5
 
+spidersMul$SqRtOfLegDiff <- (spidersMul$LegDiffFromMean)^0.5
+
 ## Histograms to check distribution. 
 #I am going with the log one for the moment as it appears that the distributions are the most similar among instars
 ggplot(data = spidersMul, aes(WeightDiffFromMean)) + geom_histogram() + facet_wrap(~Instar)
@@ -55,9 +59,10 @@ ggplot(data = spidersMul, aes(LogOfHungDiff)) + geom_histogram() + facet_wrap(~I
 
 ggplot(data = spidersMul, aes(LogHungerDiffFromMean)) + geom_histogram()# + facet_wrap(~Instar)
 
+ggplot(data = spidersMul, aes(SqRtOfHungDiff)) + geom_histogram() + facet_wrap(~Instar)
+
 ggplot(data = spidersMul, aes(x = logCtFm , y = SqRtOfHungDiff)) + facet_wrap(~Instar) + geom_point() + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
-
 
 
 SpiDiffAve<- ddply(spidersMul, .(NestID, Instar, N, logCtFm), summarise, # need to discount trials where no feeding obs and eve
@@ -77,3 +82,27 @@ ggplot(data = SpiDiffAve, aes(x = logCtFm , y = MeanLogLegDiff )) + facet_wrap(~
 
 ggplot(data = SpiDiffAve, aes(x = logCtFm , y = MeanLogWtDiff )) + facet_wrap(~Instar) + geom_point() + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
+
+
+### Stats #########
+#### Leg Length variance 
+
+legDiffLm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+summary(legDiffLm)
+
+modelPlot(legDiffLm)
+
+anova(legDiffLm)
+
+## Hunger variance 
+
+hungDiffLm<- lmer(SqRtOfHungDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+
+summary(hungDiffLm)
+
+modelPlot(hungDiffLm)
+
+anova(hungDiffLm)
