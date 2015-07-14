@@ -96,7 +96,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	mytitle = textGrob(label = fileName)
 	
-	pngHeight = 450 * (21 +1 )# 400 * number of graphs)
+	pngHeight = 450 * (22 +1 )# 400 * number of graphs)
 	
 	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
@@ -149,46 +149,46 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	#number of adults per nest
 	p3 <- ggplot(data = ByPopAge, aes(x= pop_age, y = meanNumAds)) + geom_line() +  geom_line(aes(x=pop_age, y = maxNumAds), colour = "blue") +
-			geom_line() +  geom_line(aes(x=pop_age, y = minNumAds), colour = "red")+ mytheme + ggtitle("Mean, max and min num ads in nest")
+			  geom_line(aes(x=pop_age, y = minNumAds), colour = "red")+ mytheme + ggtitle("Mean, max and min num ads in nest")
 
 	#average age
 	#p4 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = colony_age)) + geom_point(size = 1) +  mytheme + ggtitle("colony age by population age")
 	
-	p4 <- ggplot(data = File, aes(x= colony_age, y = num_ads, colour = prevDisp )) + geom_point(size = 1) + mytheme + ggtitle("colony size by colony age")
+	p4 <- ggplot(data = File, aes(x= colony_age, y = num_ads, colour = prevDisp )) + geom_point() + mytheme + ggtitle("colony size by colony age")
 	
 	# next size vs dispersers
-	p5 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = dispersers)) + geom_point(size = 1) +  mytheme + stat_smooth(se=FALSE) + 
+	p5 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = dispersers)) + geom_point() +  mytheme + stat_smooth(se=FALSE) + 
 			scale_y_continuous(limits = c(0, NA)) + ggtitle("nest size before dispersal vs number of dispersers")
 	
-	p6 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = pcntDisperse)) + geom_point(size = 1) + stat_smooth(se = FALSE) + mytheme +
+	p6 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = pcntDisperse)) + geom_point() + stat_smooth(se = FALSE) + mytheme +
 			scale_y_continuous(limits = c(0, 1)) + ggtitle("percentage of ads dispersing")
 	
 	
 	# Nest size before dispersal vs food per adult 
 #### OK THIS DOESN'T MAKE ANY SENSE. SHOULD BE POTENTIAL FOOD IF NO INDIVIDUAL DISPERSED
-	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = colony_food/num_ads, colour = prevDisp)) + geom_point(size = 1) + stat_smooth(se = FALSE) +  
+	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = colony_food/num_ads, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("colony food per capita before dispersal")
 	
 	#Nest size after dispersal with food per adult
-	p8 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads, colour = prevDisp)) + geom_point(size = 1) + stat_smooth(se = FALSE) +  
+	p8 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("num ads after dispersal vs per capita food")
 	
 	
-	p9 <- ggplot(data = File, aes(x=num_ads, y = AveOffAd, colour = prevDisp )) + geom_point(size = 1) + stat_smooth(se = FALSE) +  
+	p9 <- ggplot(data = File, aes(x=num_ads, y = AveOffAd, colour = prevDisp )) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("ave offspring per adults vs col size after dispersal")
 	
-	p10 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = AveOffAd, colour = prevDisp )) + geom_point(size = 1) + stat_smooth(se = FALSE) +  
+	p10 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = AveOffAd, colour = prevDisp )) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("ave offspring per adults vs col size BEFORE dispersal")
 	
 	
 	# number juvs moulting with size after dispersal
-	p11 <- ggplot(data = File, aes(x=num_ads, y = pcntMoult, colour = prevDisp)) + stat_smooth(se = FALSE)  + geom_point(size = 1) +  mytheme +
+	p11 <- ggplot(data = File, aes(x=num_ads, y = pcntMoult, colour = prevDisp)) + stat_smooth(se = FALSE)  + geom_point() +  mytheme +
 			scale_y_continuous(limits = c(0, 1)) + ggtitle("percentage juvs moults vs. num ads after dispersal")
 	
 	# percentage of adults dispersing by nest size
 
 	## AGAIN I DON'T THINK THIS MAKES SENSE 
-	p12 <- ggplot(data = File, aes(x=num_ads, y = ave_food, colour = prevDisp)) + geom_point(size = 1) +
+	p12 <- ggplot(data = File, aes(x=num_ads, y = ave_food, colour = prevDisp)) + geom_point() +
 			mytheme + scale_y_continuous(limits = c(0, 1)) + stat_smooth(se = FALSE) + ggtitle("ave food per adult")
 	
 	rm(ByPopAge)
@@ -198,7 +198,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	if (nrow(deadcols) == 0){
 		df <- data.frame()
-		p13<-ggplot(df) + geom_point(size = 1) + xlim(0, 10) + ylim(0, 100) + ggtitle("NO COLONIES DIED!!")
+		p13<-ggplot(df) + geom_point() + xlim(0, 10) + ylim(0, 100) + ggtitle("NO COLONIES DIED!!")
 		print("no colonies died")
 	}else{
 	# histogram of size of dead colonies
@@ -283,7 +283,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	if (logistic =="error"){
 		print ("error in logistic calculation") 
 		
-		p14 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point(size = 1) + 
+		p14 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA))+
 				ggtitle("logistic eqn did not work :-(")
 		
@@ -293,7 +293,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		
 		nnplus1$logisticPredict <- predict(logistic)
 		
-		p14 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point(size = 1) + 
+		p14 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
 				geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn")
 		
@@ -325,7 +325,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	if (ricker =="error"){
 		print ("error in ricker calculation") 
 		
-		p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point(size = 1) + 
+		p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
 				 ggtitle("ricker eqn did not work :-(")
 		
@@ -336,7 +336,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		print ("ricker equation did work!")
 		nnplus1$rickerPredict <- predict(ricker)		
 		
-		p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point(size = 1) + 
+		p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
 				geom_line(aes(x = N, y = rickerPredict), colour = 'blue') + ggtitle("ricker eqn")
 		
@@ -407,6 +407,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	# boxplot of adult size disperal  vs no dispersal
 	p16a <- ggplot(data = subset(indFile, type == "Ad"), aes(x= factor(disperse), y = food)) + geom_boxplot()
 	
+	p16b <- ggplot(data = subset(indFile, type == "Ad"), aes(x=factor(no_off), y = food)) + geom_boxplot()
+	
 	
 	
 	
@@ -422,7 +424,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	AdsByPopAgeAndCol <-merge(ColInfo, AdsByPopAgeAndCol, by = c("col_id", "col_age"))
 	
 	# colony size by adult size
-	p16 <- ggplot(data = AdsByPopAgeAndCol, aes(x= numAdsB4dis, y = AdSize, colour = MinMax)) + geom_point(size = 1) +
+	p16 <- ggplot(data = AdsByPopAgeAndCol, aes(x= numAdsB4dis, y = AdSize, colour = MinMax)) + geom_point() +
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1)) + ggtitle("ad size vs col size b4 dispersal")
 	
 	rm(AdsByPopAgeAndCol)
@@ -439,7 +441,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	JuvsByPopAgeAndCol <-merge(ColInfo, JuvsByPopAgeAndCol, by = c("col_id", "col_age"))
 	
 	# Colony size by number of juvs
-	p17 <- ggplot(data = JuvsByPopAgeAndCol, aes(x= numAdsB4dis, y = JuvSize, colour = MinMax)) + geom_point(size = 1) +
+	p17 <- ggplot(data = JuvsByPopAgeAndCol, aes(x= numAdsB4dis, y = JuvSize, colour = MinMax)) + geom_point() +
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1)) + ggtitle("juv size vs ads before dispersal")
 	
 
@@ -453,7 +455,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	p_grob <- arrangeGrob(p14,p15, ncol=2)
 	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p13a,  p_grob,
-					p16a, p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1, h1), 
+					p16a, p16b, p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1, h1, h1), 
 					main = mytitle))
 	
 	dev.off()

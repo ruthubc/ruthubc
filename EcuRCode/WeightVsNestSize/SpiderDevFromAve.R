@@ -2,6 +2,12 @@
 # 
 # Author: Ruth
 ###############################################################################
+
+########## DO THIS!!!!!!!!! #################################
+#TODO Remove very small nests i.e. ones that could be pretty new dispersers!
+#TODO divide vaiance by mean to standardize like CV
+#TODO amount of variance by instar, eg are ads less variable than younger instars?
+
 library(ggplot2)
 library(lmerTest) # this puts pvalue in lmer
 
@@ -106,3 +112,27 @@ summary(hungDiffLm)
 modelPlot(hungDiffLm)
 
 anova(hungDiffLm)
+
+## Hung Diff Sub1 ###
+
+sub1Dat <- lmer(SqRtOfHungDiff  ~ I(logCtFm^2) + logCtFm +
+				(1|NestID), data = subset(spidersMul, Instar == "Sub1"), REML = FALSE)
+
+
+anova(sub1Dat)
+
+## Hung Diff Ad ###
+
+AdDat <- lmer(SqRtOfHungDiff  ~ I(logCtFm^2) + logCtFm +
+						(1|NestID), data = subset(spidersMul, Instar == "Adult"), REML = FALSE)
+
+
+anova(AdDat)
+
+## Hung Diff Juv4 ###
+
+Juv4Dat <- lmer(SqRtOfHungDiff  ~ I(logCtFm^2) + logCtFm +
+				(1|NestID), data = subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+
+
+anova(Juv4Dat)
