@@ -31,6 +31,8 @@ SpiAveMerge<- ddply(spiders, .(NestID, Instar), summarise, # need to discount tr
 
 spidersMul <- merge(spidersMul, SpiAveMerge, by = c("NestID", "Instar") )
 
+spidersMul <- subset(spidersMul, CountFemales > 60) # removing all nests below 60 ads, about 3 multiple female nests
+
 spidersMul$WeightMean[spidersMul$N == 1] <- NA
 spidersMul$LogWeightMean[spidersMul$N == 1] <- NA
 spidersMul$LegDiffFromMean[spidersMul$N == 1] <- NA
@@ -41,11 +43,11 @@ spidersMul$LogWeightDiffFromMean <- abs(spidersMul$logWeight - spidersMul$LogWei
 
 spidersMul$WeightDiffFromMean <- abs(spidersMul$Weight.mg - spidersMul$WeightMean)
 
-spidersMul$LegDiffFromMean <- abs(spidersMul$LegLen.mm - spidersMul$LegMean)
+spidersMul$LegDiffFromMean <- (abs(spidersMul$LegLen.mm - spidersMul$LegMean))/spidersMul$LegMean # dividing by the mean
 
 spidersMul$LogLegDiffFromMean <- abs(spidersMul$logLeg - spidersMul$LogLegMean)
 
-spidersMul$HungerDiffFromMean <- abs(spidersMul$hunger - spidersMul$HungerMean)
+spidersMul$HungerDiffFromMean <- (abs(spidersMul$hunger - spidersMul$HungerMean))/spidersMul$HungerMean
 
 spidersMul$LogHungerDiffFromMean <- abs(spidersMul$LogHungerMean - spidersMul$logHung)
 
@@ -68,6 +70,9 @@ ggplot(data = spidersMul, aes(LogHungerDiffFromMean)) + geom_histogram()# + face
 ggplot(data = spidersMul, aes(SqRtOfHungDiff)) + geom_histogram() + facet_wrap(~Instar)
 
 ggplot(data = spidersMul, aes(x = logCtFm , y = SqRtOfHungDiff)) + facet_wrap(~Instar) + geom_point() + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
+
+ggplot(data = spidersMul, aes(x = logCtFm , y = SqRtOfLegDiff)) + facet_wrap(~Instar) + geom_point() + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
 
 

@@ -38,6 +38,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	#indFileToImport <- paste(fileName, ".py_inds.csv", sep = "")
 	filetoImport <- paste(folder, fileName, ".py.csv", sep = "")
 	indFileToImport <- paste(folder, fileName, ".py_inds.csv", sep = "")
+	mytheme = theme(text = element_text(size=16))
 
 	
 	pngTitle <- paste(folder, fileName, "_graph", ".png", sep = "")
@@ -102,7 +103,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	print("png title")
 	print (pngTitle)
-	mytheme = theme(text = element_text(size=16))
+	
 
 	
 	
@@ -239,16 +240,17 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 				nnplus1[counter,1] <- colony # [row number, col num]
 				nnplus1[counter,2] <- col_subset$pop_age[which(col_subset$col_age == age)]
 				nnplus1[counter,3] <- col_subset$numAdsB4dis[which(col_subset$col_age == age)]
+				nnplus1[counter,5] <- col_subset$dispersers[which(col_subset$col_age == age)]	
 				nnplus1[counter,6] <- as.character(col_subset$prevDisp[which(col_subset$col_age == age)])
 				
 				
-				if (age == maxcol_age){
-					nnplus1[counter,4] <- 0
+				if (age == maxcol_age){ # setting 
+					nnplus1[counter,4] <- 0 
 				}else{
 					nnplus1[counter,4] <- col_subset$numAdsB4dis[which(col_subset$col_age == (age +1))]	
 				}
 			
-				nnplus1[counter,5] <- col_subset$disp[which(col_subset$col_age == age)]	
+				
 
 		
 			}
@@ -256,11 +258,14 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	}
 	
 	
-	nnplus1 <- subset(nnplus1, disp == 0)
+	nnplus1 <- subset(nnplus1, disp == 0)  # removes colonies that had dispersed as the numbers will be wrong
+	
+	nnplus1 <- subset(nnplus1, pop_age < num_gens ) # removing nests at the end of generations that might not have died
 	
 	nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N
 	
-	p13a <- ggplot(data = nnplus1, aes(x  = N, y = AveGrowth)) + geom_point() + stat_smooth() + mytheme + ggtitle("ave growth rate per ind")
+	#ave growth rate per ind
+	p13a <- ggplot(data = nnplus1, aes(x  = N, y = AveGrowth)) + geom_point() + stat_smooth() + mytheme + ggtitle("ave growth rate per ind") + stat_smooth(se = FALSE)
 	
 	######## calculating logistic equation
 	
