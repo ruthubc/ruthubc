@@ -10,6 +10,12 @@
 
 library(ggplot2)
 library(lmerTest) # this puts pvalue in lmer
+library(visreg)
+library(multcomp)
+library(gridExtra)
+
+mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
+		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
 
 
 SpiAveMerge<- ddply(spiders, .(NestID, Instar), summarise, # need to discount trials where no feeding obs and eve
@@ -25,58 +31,65 @@ SpiAveMerge<- ddply(spiders, .(NestID, Instar), summarise, # need to discount tr
 
 )
 
-#ggplot(data = spidersMul, aes(logWeight)) + geom_histogram() + facet_wrap(~Instar)
+#ggplot(data = spidersVar, aes(logWeight)) + geom_histogram() + facet_wrap(~Instar)
 
 
 
-spidersMul <- merge(spidersMul, SpiAveMerge, by = c("NestID", "Instar") )
+spidersVar <- merge(spidersMul, SpiAveMerge, by = c("NestID", "Instar") )
 
-spidersMul <- subset(spidersMul, CountFemales > 60) # removing all nests below 60 ads, about 3 multiple female nests
+spidersVar <- subset(spidersVar, CountFemales > 60) # removing all nests below 60 ads, about 3 multiple female nests
 
-spidersMul$WeightMean[spidersMul$N == 1] <- NA
-spidersMul$LogWeightMean[spidersMul$N == 1] <- NA
-spidersMul$LegDiffFromMean[spidersMul$N == 1] <- NA
-spidersMul$LogLegDiffFromMean[spidersMul$N == 1] <- NA
+spidersVar$WeightMean[spidersVar$N == 1] <- NA
+spidersVar$LogWeightMean[spidersVar$N == 1] <- NA
+spidersVar$LegDiffFromMean[spidersVar$N == 1] <- NA
+spidersVar$LogLegDiffFromMean[spidersVar$N == 1] <- NA
 
 
-spidersMul$LogWeightDiffFromMean <- abs(spidersMul$logWeight - spidersMul$LogWeightMean)
+spidersVar$LogWeightDiffFromMean <- abs(spidersVar$logWeight - spidersVar$LogWeightMean)
 
-spidersMul$WeightDiffFromMean <- abs(spidersMul$Weight.mg - spidersMul$WeightMean)
+spidersVar$WeightDiffFromMean <- abs(spidersVar$Weight.mg - spidersVar$WeightMean)
 
-spidersMul$LegDiffFromMean <- (abs(spidersMul$LegLen.mm - spidersMul$LegMean))/spidersMul$LegMean # dividing by the mean
+spidersVar$LegDiffFromMean <- (abs(spidersVar$LegLen.mm - spidersVar$LegMean))/spidersVar$LegMean # dividing by the mean
 
-spidersMul$LogLegDiffFromMean <- abs(spidersMul$logLeg - spidersMul$LogLegMean)
+spidersVar$LogLegDiffFromMean <- abs(spidersVar$logLeg - spidersVar$LogLegMean)
 
-spidersMul$HungerDiffFromMean <- (abs(spidersMul$hunger - spidersMul$HungerMean))/spidersMul$HungerMean
+spidersVar$HungerDiffFromMean <- (abs(spidersVar$hunger - spidersVar$HungerMean))/spidersVar$HungerMean
 
-spidersMul$LogHungerDiffFromMean <- abs(spidersMul$LogHungerMean - spidersMul$logHung)
+spidersVar$LogHungerDiffFromMean <- abs(spidersVar$LogHungerMean - spidersVar$logHung)
 
-spidersMul$SqRtOfHungDiff <- (spidersMul$HungerDiffFromMean)^0.5
+spidersVar$SqRtOfHungDiff <- (spidersVar$HungerDiffFromMean)^0.5
 
-spidersMul$SqRtOfLegDiff <- (spidersMul$LegDiffFromMean)^0.5
+spidersVar$SqRtOfLegDiff <- (spidersVar$LegDiffFromMean)^0.5
 
 ## Histograms to check distribution. 
 #I am going with the log one for the moment as it appears that the distributions are the most similar among instars
-ggplot(data = spidersMul, aes(WeightDiffFromMean)) + geom_histogram() + facet_wrap(~Instar)
+ggplot(data = spidersVar, aes(WeightDiffFromMean)) + geom_histogram() + facet_wrap(~Instar)
 
-ggplot(data = spidersMul, aes(LegDiffFromMean^0.5)) + geom_histogram() + facet_wrap(~Instar)
+ggplot(data = spidersVar, aes(LegDiffFromMean^0.5)) + geom_histogram() + facet_wrap(~Instar)
 
-ggplot(data = spidersMul, aes(LogLegDiffFromMean)) + geom_histogram() + facet_wrap(~Instar)
+ggplot(data = spidersVar, aes(LogLegDiffFromMean)) + geom_histogram() + facet_wrap(~Instar)
 
-ggplot(data = spidersMul, aes(LogOfHungDiff)) + geom_histogram() + facet_wrap(~Instar)
+ggplot(data = spidersVar, aes(LogOfHungDiff)) + geom_histogram() + facet_wrap(~Instar)
 
-ggplot(data = spidersMul, aes(LogHungerDiffFromMean)) + geom_histogram()# + facet_wrap(~Instar)
+ggplot(data = spidersVar, aes(LogHungerDiffFromMean)) + geom_histogram()# + facet_wrap(~Instar)
 
-ggplot(data = spidersMul, aes(SqRtOfHungDiff)) + geom_histogram() + facet_wrap(~Instar)
+ggplot(data = spidersVar, aes(SqRtOfHungDiff)) + geom_histogram() + facet_wrap(~Instar)
 
-ggplot(data = spidersMul, aes(x = logCtFm , y = SqRtOfHungDiff)) + facet_wrap(~Instar) + geom_point() + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
+ggplot(data = spidersVar, aes(SqRtOfLegDiff)) + geom_histogram() + facet_wrap(~Instar)
 
-ggplot(data = spidersMul, aes(x = logCtFm , y = SqRtOfLegDiff)) + facet_wrap(~Instar) + geom_point() + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
+pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSizeHungVar.pdf", height=8, width=11)
 
 
-SpiDiffAve<- ddply(spidersMul, .(NestID, Instar, N, logCtFm), summarise, # need to discount trials where no feeding obs and eve
+ggplot(data = spidersVar, aes(x = logCtFm , y = SqRtOfHungDiff)) + facet_wrap(~Instar) + geom_point(aes(colour = NestID), shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + mytheme + scale_colour_discrete(guide = FALSE)
+
+dev.off()
+
+ggplot(data = spidersVar, aes(x = logCtFm , y = SqRtOfLegDiff)) + facet_wrap(~Instar) + geom_point(aes(colour = NestID), shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + mytheme + scale_colour_discrete(guide = FALSE)
+
+
+SpiDiffAve<- ddply(spidersVar, .(NestID, Instar, N, logCtFm), summarise, # need to discount trials where no feeding obs and eve
 		NewN = length(!is.na(LogWeightDiffFromMean)),
 		MeanLogWtDiff = mean(LogWeightDiffFromMean, na.rm = TRUE),
 		SELogWtDiff = sd(LogWeightDiffFromMean, na.rm = TRUE)/ sqrt(NewN),
@@ -86,7 +99,7 @@ SpiDiffAve<- ddply(spidersMul, .(NestID, Instar, N, logCtFm), summarise, # need 
 
 
 
-check <- subset(spidersMul, NestID == "16.2EX01" & Instar == "AdMale")
+check <- subset(spidersVar, NestID == "16.2EX01" & Instar == "AdMale")
 ## graphs diff from mean vs nest size
 ggplot(data = SpiDiffAve, aes(x = logCtFm , y = MeanLogLegDiff )) + facet_wrap(~Instar) + geom_point() + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
@@ -99,29 +112,84 @@ ggplot(data = SpiDiffAve, aes(x = logCtFm , y = MeanLogWtDiff )) + facet_wrap(~I
 #### Leg Length variance 
 
 legDiffLm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
-
-summary(legDiffLm)
+				I(logCtFm^2):Instar + (1|NestID), data = spidersVar, REML = FALSE)
 
 modelPlot(legDiffLm)
 
 anova(legDiffLm)
 
-## Hunger variance 
+legDiffLm2 <- lmer(SqRtOfLegDiff ~ logCtFm + Instar+ Instar:logCtFm + 
+				(1|NestID), data = spidersVar, REML = FALSE)
 
-hungDiffLm<- lmer(SqRtOfHungDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
+anova(legDiffLm2)
 
+### Checking out the different instars individually
+
+## Adult
+
+legDiffAdLm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + (1|NestID), data = subset(spidersVar, Instar == "Adult"), REML = FALSE)
+
+modelPlot(legDiffAdLm)
+
+anova(legDiffAdLm)
+
+## Sub2
+
+legDiffSub2Lm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + (1|NestID), data = subset(spidersVar, Instar == "Sub2"), REML = FALSE)
+
+modelPlot(legDiffSub2Lm)
+
+anova(legDiffSub2Lm)
+
+## Sub1
+
+legDiffSub1Lm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + (1|NestID), data = subset(spidersVar, Instar == "Sub1"), REML = FALSE)
+
+modelPlot(legDiffSub1Lm)
+
+anova(legDiffSub1Lm)
+
+## Juv4
+
+legDiffJuv4Lm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + (1|NestID), data = subset(spidersVar, Instar == "Juv4"), REML = FALSE)
+
+modelPlot(legDiffJuv4Lm)
+
+anova(legDiffJuv4Lm)
+
+## SubMale
+
+legDiffSubMaleLm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + (1|NestID), data = subset(spidersVar, Instar == "SubMale"), REML = FALSE)
+
+anova(legDiffSubMaleLm)
+
+## AdMale
+
+legDiffAdMaleLm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + (1|NestID), data = subset(spidersVar, Instar == "AdMale"), REML = FALSE)
+
+anova(legDiffAdMaleLm)
+
+
+
+
+############### Hunger variance ################################
+
+hungDiffLm <- lmer(SqRtOfHungDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				I(logCtFm^2):Instar + (1|NestID), data = spidersVar, REML = FALSE)
+
+visreg(hungDiffLm, xvar = "logCtFm", by = "Instar") # This is really useful! Do more research of what this is
 summary(hungDiffLm)
 
 modelPlot(hungDiffLm)
 
 anova(hungDiffLm)
 
+
+
 ## Hung Diff Sub1 ###
 
 sub1Dat <- lmer(SqRtOfHungDiff  ~ I(logCtFm^2) + logCtFm +
-				(1|NestID), data = subset(spidersMul, Instar == "Sub1"), REML = FALSE)
+				(1|NestID), data = subset(spidersVar, Instar == "Sub1"), REML = FALSE)
 
 
 anova(sub1Dat)
@@ -129,7 +197,7 @@ anova(sub1Dat)
 ## Hung Diff Ad ###
 
 AdDat <- lmer(SqRtOfHungDiff  ~ I(logCtFm^2) + logCtFm +
-						(1|NestID), data = subset(spidersMul, Instar == "Adult"), REML = FALSE)
+						(1|NestID), data = subset(spidersVar, Instar == "Adult"), REML = FALSE)
 
 
 anova(AdDat)
@@ -137,7 +205,65 @@ anova(AdDat)
 ## Hung Diff Juv4 ###
 
 Juv4Dat <- lmer(SqRtOfHungDiff  ~ I(logCtFm^2) + logCtFm +
-				(1|NestID), data = subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+				(1|NestID), data = subset(spidersVar, Instar == "Juv4"), REML = FALSE)
 
 
 anova(Juv4Dat)
+
+
+### CV of small vs. large nests
+
+#Histogram of nest sizes to see if there is a break
+
+ggplot(data = SpiNestAve, aes(x= CountFemales )) + geom_histogram()
+
+# gonna start with splitting nest >2000 and < 2000
+
+
+spidersVar$LgSm<- ifelse(spidersVar$CountFemales > 2000, "Large", ifelse(spidersVar$CountFemales < 300, "Small","Med"))  # updating large small nests
+spidersVar$LgSm <- as.factor(spidersVar$LgSm)
+spidersVar$LgSm <- factor(spidersVar$LgSm, levels = c("Small", "Med", "Large"))
+
+pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSizeHungVarSmLg.pdf", height=8, width=11)
+
+ggplot(data = subset(spidersVar, LgSm != "Med"), aes(x=LgSm, y = SqRtOfHungDiff )) + geom_boxplot() + facet_wrap(~Instar) + mytheme +
+		ylab("Square rood of hunger difference from mean") + xlab("Colony Size")
+
+dev.off()
+
+SmLgLmFull<- glmer(SqRtOfHungDiff  ~ LgSm + Instar + 
+				(1|NestID), data = subset(spidersVar, LgSm != "Med"), family=gaussian)
+
+SmLgLmRed<- glmer(SqRtOfHungDiff  ~  Instar + 
+				(1|NestID), data = subset(spidersVar, LgSm != "Med"), family=gaussian)
+
+
+anova(SmLgLmFull, SmLgLmRed)
+summary(SmLgLm)
+
+#### Testing difference in variance between instars
+
+spidersVar$InstarLine<- factor(spidersVar$Instar, levels = c("Adult", "Sub2", "AdMale", "Sub1", "SubMale", "Juv4"))
+
+## Hunger
+ggplot(data = spidersVar, aes(x = InstarLine, y = SqRtOfHungDiff)) + geom_boxplot() + mytheme
+
+LmInstar <- lmer(SqRtOfHungDiff ~ InstarLine + (1|NestID), data = spidersVar, REML = FALSE)
+anova(LmInstar)
+summary(LmInstar)
+
+visreg(LmInstar) 
+
+comp.LmInstar <- glht(LmInstar, linfct=mcp(InstarLine ="Tukey"))
+summary(comp.LmInstar)
+
+## Leg
+ggplot(data = spidersVar, aes(x = InstarLine, y = SqRtOfLegDiff)) + geom_boxplot() + mytheme
+
+LmInstarLeg <- lmer(SqRtOfHungDiff ~ InstarLine + (1|NestID), data = spidersVar, REML = FALSE)
+
+anova(LmInstarLeg)
+
+comp.LmInstarLeg <- glht(LmInstarLeg, linfct=mcp(InstarLine ="Tukey"))
+
+summary(comp.LmInstarLeg)

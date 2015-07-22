@@ -48,7 +48,7 @@ spiders$NestSize<-as.factor(ifelse(spiders$Approx..Single =="single", "single",
 spiders$km <- substring((as.character(spiders$NestID)), 0, 4)
 
 
-SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm), summarise, # need to discount trials where no feeding obs and eve
+SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm, CountFemales), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(Weight.mg)),
 		meanWei = mean(Weight.mg, na.rm = TRUE),
 		sdWei = sd(Weight.mg, na.rm = TRUE),

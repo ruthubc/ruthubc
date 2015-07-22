@@ -120,7 +120,7 @@ SumsLegN <- subset(SpiNestAve, N > NMin)
 pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSize.pdf", height=8, width=11)
 
 ggplot(SumsLegN , aes(x=logCtFm, y = log10(meanLeg))) + geom_point(aes(colour = NestID), shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, raw = TRUE), se = TRUE) + 
 		ggtitle(paste("Mean leg length with min ", NMin, " spiders", sep = ""))+
 		xlab("Log number of females") + ylab("Log leg length") + mytheme+ 
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + theme(legend.position = "none")

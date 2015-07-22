@@ -90,7 +90,7 @@ anova(SingMt44WeiRedMod, SingMt44WeiMod)
 ##########################################################################################################
 ########## Leg Length vs nest size ########################################################################
 
-spidersMul <- subset(spiders, type == "multiple") #removing single females
+
 
 LegNestSzeMdNull <- lmer(logLeg ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
@@ -104,7 +104,6 @@ modelPlot(LegNestSzeMd1) # seems to be skwesnot sure it is so normal;not sure ab
 # I could check the different variance with that test
 
 anova(LegNestSzeMd1)  # The interactions matter!!
-summary(LegNestSzeMd1)
 
 LegNest1<- multipleModel(LegNestSzeMd1, LegNestSzeMdNull)
 
@@ -117,6 +116,10 @@ modelPlot(LegNestSzeMd2) # seems to be skwesnot sure it is so normal;not sure ab
 
 anova(LegNestSzeMd2)  
 summary(LegNestSzeMd2)
+
+anova(LegNestSzeMd2, LegNestSzeMdNull)
+
+anova(LegNestSzeMd2, LegNestSzeMd1) # of course will be significant beause of the interaction
 
 LegNest2<- multipleModel(LegNestSzeMd2, LegNestSzeMdNull)
 
