@@ -11,7 +11,6 @@ library(ggplot2)
 require(reshape2)
 library(nlme)
 library(gridExtra)
-library(histogram)
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/WeightVsNestSize/NestSizeData.R")
 mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
@@ -104,6 +103,10 @@ ggplot(SumsWeightN , aes(x=logCtFm, y = cvByN)) + geom_point(shape = 16) +
 		ggtitle(paste("CV of weight with multiple spider nests"))+
 		xlab("Log Number of Females") + ylab("Log Mean Weight") + 
 		facet_wrap(~ Instar, scales = "free_y", ncol=4) + mytheme
+
+ggplot(spidersMul, aes(x=logCtFm, y = logWeight )) + geom_point() + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) +
+		facet_wrap(~ Instar, scales = "free_y")
 
 
 dev.off()

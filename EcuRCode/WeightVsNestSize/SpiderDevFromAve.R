@@ -267,3 +267,10 @@ anova(LmInstarLeg)
 comp.LmInstarLeg <- glht(LmInstarLeg, linfct=mcp(InstarLine ="Tukey"))
 
 summary(comp.LmInstarLeg)
+
+
+## Just looking at the weight vs nests size graph with the start nests removed
+
+ggplot(spidersVar, aes(x=logCtFm, y = logWeight )) + geom_point() + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) +
+		facet_wrap(~ Instar, scales = "free_y")
