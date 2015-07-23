@@ -160,6 +160,8 @@ LegNestSub2Md1 <- lmer(logLeg ~  logCtFm + (1|NestID), subset(spidersMul, Instar
 
 LegNestSub2MdRed <- lmer(logLeg ~  (1|NestID), subset(spidersMul, Instar == "Sub2"), REML = FALSE)
 
+anova(LegNestSub2Md1, LegNestSub2MdRed)
+
 
 #AdMale
 
@@ -179,7 +181,7 @@ anova(LegNestJuv4Md1, LegNestJuv4MdRed)
 
 #Sub1
 
-LegNestSub1Md1 <- lmer(logLeg ~ I(logCtFm^2)+  logCtFm + (1|NestID), subset(spidersMul, Instar == "Sub1"), REML = FALSE)
+LegNestSub1Md1 <- lmer(logLeg ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "Sub1"), REML = FALSE)
 
 anova(LegNestSub1Md1)
 
@@ -189,13 +191,23 @@ anova(LegNestSub1Md1, LegNestSub1MdRed)
 
 #Juv4
 
-LegNestJuv4Md1 <- lmer(logLeg ~ I(logCtFm^2)+  logCtFm + (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
+LegNestJuv4Md1 <- lmer(logLeg ~ logCtFm + (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
 
 anova(LegNestJuv4Md1)
 
 LegNestJuv4MdRed <- lmer(logLeg ~  (1|NestID), subset(spidersMul, Instar == "Juv4"), REML = FALSE)
 
 anova(LegNestJuv4Md1, LegNestJuv4MdRed)
+
+# SubMale
+
+LegNestSubMaleMd1 <- lmer(logLeg ~ logCtFm + (1|NestID), subset(spidersMul, Instar == "SubMale"), REML = FALSE)
+
+
+LegNestSubMaelMdRed <- lmer(logLeg ~  (1|NestID), subset(spidersMul, Instar == "SubMale"), REML = FALSE)
+
+anova(LegNestSubMaleMd1, LegNestSubMaelMdRed)
+
 
 
 ########### Weight vs nest size ################################

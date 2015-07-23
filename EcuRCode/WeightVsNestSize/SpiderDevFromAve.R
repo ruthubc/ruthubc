@@ -224,31 +224,66 @@ spidersVar$LgSm<- ifelse(spidersVar$CountFemales > 2000, "Large", ifelse(spiders
 spidersVar$LgSm <- as.factor(spidersVar$LgSm)
 spidersVar$LgSm <- factor(spidersVar$LgSm, levels = c("Small", "Med", "Large"))
 
-pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSizeHungVarSmLg.pdf", height=8, width=11)
+pdf("RuthEcuador2013/NestSize/Graphs/WeightVsNestSizeHungVarSmLg.pdf", height=8, width=11)
 
 ggplot(data = subset(spidersVar, LgSm != "Med"), aes(x=LgSm, y = SqRtOfHungDiff )) + geom_boxplot() + facet_wrap(~Instar) + mytheme +
 		ylab("Square rood of hunger difference from mean") + xlab("Colony Size")
 
+ggplot(data = subset(spidersVar, LgSm != "Med"), aes(x=LgSm, y = SqRtOfHungDiff )) + geom_boxplot() + mytheme +
+		ylab("Square rood of hunger difference from mean") + xlab("Colony Size")
+
+
 dev.off()
 
-SmLgLmFull<- glmer(SqRtOfHungDiff  ~ LgSm + Instar + 
-				(1|NestID), data = subset(spidersVar, LgSm != "Med"), family=gaussian)
+SmLgLmFull<- lmer(SqRtOfHungDiff  ~ LgSm + Instar + LgSm:Instar +
+				(1|NestID), data = subset(spidersVar, LgSm != "Med"))#, family=gaussian)
 
-SmLgLmRed<- glmer(SqRtOfHungDiff  ~  Instar + 
-				(1|NestID), data = subset(spidersVar, LgSm != "Med"), family=gaussian)
+modelPlot(SmLgLmFull)
+
+anova(SmLgLmFull)
+
+SmLgLmInt<- lmer(SqRtOfHungDiff  ~  Instar + LgSm +
+				(1|NestID), data = subset(spidersVar, LgSm != "Med"))#, family=gaussian)
+
+anova(SmLgLmFull, SmLgLmInt)
+
+SmLgLmRed<- lmer(SqRtOfHungDiff  ~  Instar +
+				(1|NestID), data = subset(spidersVar, LgSm != "Med"))
 
 
-anova(SmLgLmFull, SmLgLmRed)
+anova(SmLgLmInt, SmLgLmRed)
 summary(SmLgLm)
+
+
+
+
+## Testing differences for individual instars
+
+
+SmLgLmAdFull<- glmer(SqRtOfHungDiff  ~ LgSm + 
+				(1|NestID), data = subset(spidersVar, LgSm != "Med" & Instar == "Adult"), family=gaussian)
+
+SmLgLmAdRed<- glmer(SqRtOfHungDiff  ~ 
+				(1|NestID), data = subset(spidersVar, LgSm != "Med" & Instar == "Adult"), family=gaussian)
+
+anova(SmLgLmFull, SmLgLmAdRed)
+
+
 
 #### Testing difference in variance between instars
 
 spidersVar$InstarLine<- factor(spidersVar$Instar, levels = c("Adult", "Sub2", "AdMale", "Sub1", "SubMale", "Juv4"))
 
 ## Hunger
-ggplot(data = spidersVar, aes(x = InstarLine, y = SqRtOfHungDiff)) + geom_boxplot() + mytheme
+noMales <- subset(spidersVar, Instar != "SubMale" & Instar != "AdMale")
 
-LmInstar <- lmer(SqRtOfHungDiff ~ InstarLine + (1|NestID), data = spidersVar, REML = FALSE)
+png("RuthEcuador2013/NestSize/Graphs/HungerInstarVariance.png")
+
+ggplot(data = noMales, aes(x = InstarLine, y = SqRtOfHungDiff)) + geom_boxplot() + mytheme
+
+dev.off()
+
+LmInstar <- lmer(SqRtOfHungDiff ~ InstarLine + (1|NestID), data = noMales, REML = FALSE)
 anova(LmInstar)
 summary(LmInstar)
 
@@ -258,7 +293,7 @@ comp.LmInstar <- glht(LmInstar, linfct=mcp(InstarLine ="Tukey"))
 summary(comp.LmInstar)
 
 ## Leg
-ggplot(data = spidersVar, aes(x = InstarLine, y = SqRtOfLegDiff)) + geom_boxplot() + mytheme
+ggplot(data = noMales, aes(x = InstarLine, y = SqRtOfLegDiff)) + geom_boxplot() + mytheme
 
 LmInstarLeg <- lmer(SqRtOfHungDiff ~ InstarLine + (1|NestID), data = spidersVar, REML = FALSE)
 

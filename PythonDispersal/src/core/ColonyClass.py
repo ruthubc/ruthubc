@@ -193,17 +193,17 @@ class Colony(object):
             remain = self.colony_food - num_get_fd
             for spider in self.juv_list:
                 if spider.rank <= num_get_fd - 1:  # as rank starts at zero
-                    spider.food = 1
+                    spider.food = 1.0
                 elif spider.rank == num_get_fd:
                     spider.food = remain
                 else:
-                    spider.food = 0
+                    spider.food = 0.0
         else: # just one spider gets food
             for spider in self.juv_list:
                 if spider.rank == 0:  # as rank starts at zero
                     spider.food = self.colony_food
                 else:
-                    spider.food = 0
+                    spider.food = 0.0
 
 
     def assign_food(self):

@@ -32,6 +32,8 @@ fileName <- fileNames[16,1]
 
 #graph making function
 graphFunction <- function(folder, fileName, num_gens, min_popAge){
+	
+	print("START")
 
 	#### REMEMBER: Before sending to grex remove the printing stuff.
 	#filetoImport <- paste(fileName, ".py.csv", sep = "")
@@ -71,15 +73,15 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	for (i in 1:length(cols)){
 		
 		thisCol <- cols[i]
-		print(thisCol)
+		#print(thisCol)
 		age_FstDisp <- File$colony_age[which(File$dispersers > 0 & File$colony_ID == thisCol)]
 		if (length(age_FstDisp) > 0){
 			min_ageFstDisp <- min(age_FstDisp)
-			print (min_ageFstDisp)
+			#print (min_ageFstDisp)
 			File$prevDisp[which(File$colony_age >= min_ageFstDisp & File$colony_ID == thisCol)] <- "y"
 			
 		}else{
-			print("no dispersers")
+			#print("no dispersers")
 		}
 	}
 	
@@ -216,13 +218,13 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	cols <- as.numeric(levels(as.factor(ColInfo$col_id)))
 	
-	print(length(cols))
+	#print(length(cols))
 	
 	for (i in 1:length(cols)){
 		
 		colony <- cols[i]
-		print ("colony")
-		print(colony)
+		#print ("colony")
+		#print(colony)
 		
 		col_subset <- subset(ColInfo, col_id == colony) # & pop_age > min_popAge) # test 3 colony 11 incorrect numbering of colonies somehow
 		
@@ -231,8 +233,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		mincol_age <- min(col_subset$col_age)
 	
 		for (age in mincol_age:maxcol_age){
-			print("age")
-			print(age)
+			#print("age")
+			#print(age)
 			counter <- counter + 1
 			
 			if (col_subset$pop_age[which(col_subset$col_age == age)]){
@@ -392,9 +394,6 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		nnplusoneCom$meanK <- DF_list[4]
 		nnplusoneCom$FileName<-fileName
 
-
-	rm(ricker)
-	rm(logistic)
 	
 	rm(nnplus1)
 	
