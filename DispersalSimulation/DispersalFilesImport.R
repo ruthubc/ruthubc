@@ -16,7 +16,7 @@ fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# impo
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
-DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), pop_age = integer(0))#, fileName = character(0))
+DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), dis_size = numeric(0), pop_age = integer(0))#, fileName = character(0))
 
 
 N_NPlus1_Vars <- data.frame(term = character(0), estimate = numeric(0), std.error = numeric(0),  p.value = numeric(0),
@@ -112,7 +112,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
 	
 	
-	DF_list <- c(as.numeric(File$Comp_slope[1]), File$disp_rsk[1], File$input_var[1], File$meanK[1], max(File$pop_age))#, filetoImport)
+	DF_list <- c(as.numeric(File$Comp_slope[1]), File$disp_rsk[1], File$input_var[1], File$meanK[1], File$ad_dsp_fd[1],  max(File$pop_age))#, filetoImport)
 
 	
 	
