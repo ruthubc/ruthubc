@@ -28,7 +28,7 @@ min_popAge <-100 # the number of generations to discount from the start of the c
 
 
 ## TO test the function
-fileName <- fileNames[16,1]
+fileName <- fileNames[17,1]
 
 #graph making function
 graphFunction <- function(folder, fileName, num_gens, min_popAge){
@@ -66,6 +66,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	
 	File$AveOffAd <- File$numjuvs/File$num_ads
+	File$AveOffAd[which(File$AveOffAd == Inf)] <- NA
+	
 	
 	File$prevDisp <- "n"
 	
@@ -85,6 +87,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		}
 	}
 	
+	File$prevDisp[File$dispersers >0] <- "now"
 	
 	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, 
 			numAdsB4dis = File$num_adsB4_dispersal, dispersers = File$dispersers, prevDisp = File$prevDisp)
@@ -260,14 +263,16 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	}
 	
 	
-	nnplus1 <- subset(nnplus1, disp == 0)  # removes colonies that had dispersed as the numbers will be wrong
+	
 	
 	nnplus1 <- subset(nnplus1, pop_age < num_gens ) # removing nests at the end of generations that might not have died
 	
 	nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N
 	
 	#ave growth rate per ind
-	p13a <- ggplot(data = nnplus1, aes(x  = N, y = AveGrowth)) + geom_point() + stat_smooth() + mytheme + ggtitle("ave growth rate per ind") + stat_smooth(se = FALSE)
+	p13a <- ggplot(data = nnplus1, aes(x  = N, y = AveGrowth)) + geom_point(aes(colour = prevDisp)) + stat_smooth() + mytheme + ggtitle("ave growth rate per ind nnplus1-n/n") + stat_smooth(se = FALSE)
+	
+	nnplus1 <- subset(nnplus1, disp == 0)  # removes colonies that had dispersed as the numbers will be wrong
 	
 	######## calculating logistic equation
 	

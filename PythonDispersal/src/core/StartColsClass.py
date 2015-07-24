@@ -29,6 +29,7 @@ class StartCols(object):
         for _ in range(0, colSize):
             ad_list.append(Adult([1, 0, self.ad_fd], 0, 0))
         col = Colony(self.col_no, ad_list, slope = self.comp_slp)
+        print "start col number = ", col.colony_ID
         return col
 
     def make_col_list(self):

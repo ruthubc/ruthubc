@@ -12,6 +12,7 @@ import time
 
 # input variables here
 runs = [[0.8, 1, 2.5], [0.05], [100], [0.0, 0.1], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
+
 combinations = list(itertools.product(*runs))
 
 print combinations

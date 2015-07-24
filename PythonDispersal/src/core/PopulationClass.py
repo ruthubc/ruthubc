@@ -95,7 +95,8 @@ class Poplt(object):
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             #print 'new colony made, id:', self.colony_count
-            col = Colony(colony_ID = self.colony_count, ad_list = [spider], slope = self.comp_slp, colony_age = 0, dispersers = [], pot_juv_food = 0)
+            col = Colony(colony_ID = self.colony_count, ad_list = [spider], slope = self.comp_slp, colony_age = 1, dispersers = [], pot_juv_food = 0)
+            col.num_ads = 1
             #col.print_dets()
             self.new_cols.extend([col])
 
