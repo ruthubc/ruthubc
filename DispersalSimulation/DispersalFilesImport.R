@@ -28,7 +28,7 @@ min_popAge <-100 # the number of generations to discount from the start of the c
 
 
 ## TO test the function
-fileName <- fileNames[17,1]
+fileName <- fileNames[16,1]
 
 #graph making function
 graphFunction <- function(folder, fileName, num_gens, min_popAge){
@@ -76,6 +76,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		
 		thisCol <- cols[i]
 		#print(thisCol)
+
 		age_FstDisp <- File$colony_age[which(File$dispersers > 0 & File$colony_ID == thisCol)]
 		if (length(age_FstDisp) > 0){
 			min_ageFstDisp <- min(age_FstDisp)
@@ -199,7 +200,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	rm(ByPopAge)
 	
-	
+
 	deadcols <- subset(File, colAlive== 'dead')
 	
 	if (nrow(deadcols) == 0){
@@ -229,7 +230,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		#print ("colony")
 		#print(colony)
 		
-		col_subset <- subset(ColInfo, col_id == colony) # & pop_age > min_popAge) # test 3 colony 11 incorrect numbering of colonies somehow
+		col_subset <- subset(ColInfo, col_id == colony)
 		
 				
 		maxcol_age <- max(col_subset$col_age)
@@ -280,7 +281,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 		logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
 			algorithm= "port", trace = T)
-		return (logistic)
+		return (logistic) #list(a=0.4, b=1.5, c=0.02)
 	}	
 	
 	tryCatchLogistic= function(x) {
@@ -321,7 +322,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	rickerFn = function(nnplus1){
 		ricker <- nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
 				algorithm= "port", trace = T)
-		return(ricker)
+		return(ricker) # start = list(a=0.4, b=1.5, K=100)
 	}
 	
 	
@@ -357,8 +358,6 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		
 		
 	}
-	
-	
 	
 	
 	options(warn = 0) # turns warnings back on
@@ -477,7 +476,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
 
 #for (i in 1:nrow(fileNames)){
-for (i in 16:16){
+for (i in 16:17){
 
 	print(i)	
 	theFileName <-fileNames[i,1]
@@ -491,8 +490,15 @@ for (i in 16:16){
 	if(file.exists(fileToImport) == "TRUE"){
 		print ("the file does exist which is good!")
 		returnList <- graphFunction(folder, theFileName, num_gens, min_popAge)
+		print ("return list")
+		print (returnList)
+		print (returnList[2])
+		print ("NNplus1 Vars first")
+		print (N_NPlus1_Vars)
 		DF[i,] <- returnList[[1]]
 		N_NPlus1_Vars <- rbind(N_NPlus1_Vars, returnList[[2]])
+		print("NNPlus1 Vars after")
+		print (N_NPlus1_Vars)
 		} else {
 	print ("file does not exist")
 }}
