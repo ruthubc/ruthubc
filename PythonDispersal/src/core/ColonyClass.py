@@ -179,7 +179,14 @@ class Colony(object):
             ind_fd = self.cal_ind_food(jv_rnk)
             spider.food = ind_fd
             #print 'ind_fd', spider.food
-        #return [jv.food for jv in self.juv_list] # for testing
+        rnk1jv = next(i for i in self.juv_list if i.rank == 1)
+        print "test", rnk1jv.rank 
+        if rnk1jv.food < 0.001: # if too little food the 0 ranked ind doesn't get correct amt food sometimes
+            rnk0jv = next(i for i in self.juv_list if i.rank == 0)
+            index = self.juv_list.index(rnk0jv)
+            print "index", index
+            self.juv_list[index].food = self.colony_food            
+        return [jv.food for jv in self.juv_list] # for testing
 
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))
@@ -187,6 +194,7 @@ class Colony(object):
             spider.food = ind_fd
 
     def oneSlp_jv_fd(self):  # full contest competition
+        print "one food being used"
         if self.colony_food > 1:  # total colony food is more than one, i.e. more than one juv will get food
             #assign all to top ranks
             num_get_fd = np.floor(self.colony_food)

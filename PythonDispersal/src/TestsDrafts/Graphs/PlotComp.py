@@ -10,9 +10,14 @@ import random
 # from numpy import vectorize I can't remember what this did
 
 Fmx = 1 # food rank number 1 gets
-Fc = 0.4 # colony food
-c = 0.0195 # slope i.e. the degree of contest competition (c in document)
-N = 50
+Fc = 0.8 # colony food
+c = 2.5 # slope i.e. the degree of contest competition (c in document)
+N = 40
+
+c = float(c) / float(N)
+
+print "printing c"
+print c
 
 
 RMax = ((Fmx -c/2) - np.sqrt(np.square(c)/4 -2 *c*N*Fc + Fmx * (1-3*c)))/ c # the max rank to get food.
