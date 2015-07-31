@@ -179,14 +179,60 @@ class Colony(object):
             ind_fd = self.cal_ind_food(jv_rnk)
             spider.food = ind_fd
             #print 'ind_fd', spider.food
-        rnk1jv = next(i for i in self.juv_list if i.rank == 1)
-        print "test", rnk1jv.rank 
-        if rnk1jv.food < 0.001: # if too little food the 0 ranked ind doesn't get correct amt food sometimes
+        
+        if len(self.juv_list) < 20:
+            self.fd_assign_corretions() # correcting to make equal to colony food
+                
+        ass_tot = sum([jv.food for jv in self.juv_list]) # total amount of food allocated - redoing after changing some foods!
+        perdiff = (abs(ass_tot - self.colony_food)/self.colony_food) *100
+        print 'percentage difference', perdiff       
+        if perdiff >= 2.0:
+            print "percentage difference is", perdiff
+            raise ValueError("assigned food greater than 2% different from calculated food")
+        #else:
+            #return [jv.food for jv in self.juv_list] # for testing
+        
+    def fd_assign_corretions(self): # correcting to make equal to colony food
+        rnk1jv = next(i for i in self.juv_list if i.rank == 1) # juv rank number one, so 2nd ranked juv
+        any_fd_zrs = len([i for i in self.juv_list if i.food < 0.001]) # checking if any inds have zero food
+        print "length any food zeros", any_fd_zrs
+        ass_tot = sum([jv.food for jv in self.juv_list]) # total amount of food allocated
+        self.juv_list.sort(key = lambda i: i.rank, reverse = False) # sorting juv list by rank
+        
+        #print "ordered jv rank list", [jv.rank for jv in self.juv_list]
+                   
+        if rnk1jv.food < 0.001 and self.colony_food <=1: # if too little food and too few tot juvs the 0 (top) ranked ind doesn't get correct amt food sometimes
+            print "rank1juv option and col food equal to or less than one"
             rnk0jv = next(i for i in self.juv_list if i.rank == 0)
-            index = self.juv_list.index(rnk0jv)
-            print "index", index
-            self.juv_list[index].food = self.colony_food            
-        return [jv.food for jv in self.juv_list] # for testing
+            inx_0jv = self.juv_list.index(rnk0jv)
+            self.juv_list[inx_0jv].food = self.colony_food # correcting the highest ranked jv's food
+            
+        elif rnk1jv.food < 0.001 and self.colony_food > 1:
+            print "2nd rnked ind with zero food but col food > 1!!??"
+            rnk0jv = next(i for i in self.juv_list if i.rank == 0)
+            inx_0jv = self.juv_list.index(rnk0jv)
+            self.juv_list[inx_0jv +1].food = self.colony_food - self.juv_list[inx_0jv].food
+            
+        elif any_fd_zrs > 0: # checking if some inds didn't get any food
+            print "some inds had zero food"            
+            rnknoFd = next(i for i in self.juv_list if i.food < 0.0001) # highest rank of indivdual with no food
+            inx_zr_fd = self.juv_list.index(rnknoFd) #index of highest ranked ind with no food
+            min_ass_ind_fd = self.juv_list[inx_zr_fd -1].food# food for lowest ranked ind that gets food
+            fd_to_min_ind = self.colony_food - (ass_tot - min_ass_ind_fd)
+            
+            if fd_to_min_ind >= 0: # checking that the tot ass food - smallest assigned food is below col food!
+                print " fd to min ind above zero"
+                self.juv_list[inx_zr_fd -1].food = fd_to_min_ind
+            else:
+                "too much food assigned fd to min ind below zero"
+        else: # all inds get fed, adjusting the lowest ranked inds food
+            print"all inds get fed, adjusting lowest ranked inds food"
+            num_juvs = len(self.juv_list)
+            rem_food = self.colony_food - (ass_tot - self.juv_list[num_juvs -1].food)
+            print "rem_food", rem_food
+            self.juv_list[num_juvs -1].food = rem_food
+            
+
 
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))

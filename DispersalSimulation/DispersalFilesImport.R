@@ -16,7 +16,7 @@ fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# impo
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
-DF <- data.frame(Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), dis_size = numeric(0), pop_age = integer(0))#, fileName = character(0))
+DF <- data.frame(Comp = numeric(0), disp_rsk = numeric(0), var = numeric(0), meanK = integer(0), dis_size = numeric(0), pop_age = integer(0), disperse = integer(0))#, fileName = character(0))
 
 
 N_NPlus1_Vars <- data.frame(term = character(0), estimate = numeric(0), std.error = numeric(0),  p.value = numeric(0),
@@ -103,17 +103,15 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	mytitle = textGrob(label = fileName)
 	
-	pngHeight = 450 * (22 +1 )# 400 * number of graphs)
+	pngHeight = 450 * (23 +1 )# 400 * number of graphs)
 	
 	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
 	print("png title")
 	print (pngTitle)
 	
-
 	
-	
-	DF_list <- c(as.numeric(File$Comp_slope[1]), File$disp_rsk[1], File$input_var[1], File$meanK[1], File$ad_dsp_fd[1],  max(File$pop_age))#, filetoImport)
+	DF_list <- c(as.numeric(File$Comp_slope[1]), File$disp_rsk[1], File$input_var[1], File$meanK[1], File$ad_dsp_fd[1],  max(File$pop_age), max(ColInfo$colDisp))#, filetoImport)
 
 	
 	
@@ -128,7 +126,10 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
 	
 	File$pcntDisperse <- File$dispersers / File$num_adsB4_dispersal
+	File$pcntDisperse[which(File$pcntDisperse == Inf)] <- NA
+	
 	File$pcntMoult <- File$num_juvs_moulting/File$numjuvs
+	File$pcntMoult[which(File$pcntMoult == Inf)] <- NA
 	
 	interval <- ceiling(max(File$num_adsB4_dispersal)/200)
 	
@@ -170,14 +171,22 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	p6 <- ggplot(data = File, aes(x= num_adsB4_dispersal, y = pcntDisperse)) + geom_point() + stat_smooth(se = FALSE) + mytheme +
 			scale_y_continuous(limits = c(0, 1)) + ggtitle("percentage of ads dispersing")
 	
+	maxcolsize <- max(ColInfo$numAdsB4dis)
+	
+	p6a <-ggplot(data = subset(File, prevDisp == "now"), aes(x = num_adsB4_dispersal, y = num_ads, colour = prevDisp)) + geom_point() + mytheme +
+			ylim(0, maxcolsize) + xlim(0, maxcolsize) + ggtitle("num ads before disperal against num ads after dispersal")
+	
+	
+	File$foodPerAd <- File$colony_food / File$num_ads
+	File$foodPerAd[which(File$foodPerAd == Inf)] <- NA
 	
 	# Nest size before dispersal vs food per adult 
 #### OK THIS DOESN'T MAKE ANY SENSE. SHOULD BE POTENTIAL FOOD IF NO INDIVIDUAL DISPERSED
-	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = colony_food/num_ads, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
-			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("colony food per capita before dispersal")
+	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = foodPerAd, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
+			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("colony food per capita before dispersal x=num_adsB4_dispersal, y = colony_food/num_ads")
 	
 	#Nest size after dispersal with food per adult
-	p8 <- ggplot(data = File, aes(x=num_ads, y = colony_food/num_ads, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
+	p8 <- ggplot(data = File, aes(x=num_ads, y = foodPerAd, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("num ads after dispersal vs per capita food")
 	
 	
@@ -462,21 +471,22 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	h2 <- 3/5
 	
 	p_grob <- arrangeGrob(p14,p15, ncol=2)
-	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p13a,  p_grob,
-					p16a, p16b, p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1, h1, h1), 
+	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p6a, p7, p8, p9, p10, p11, p12, p13, p13a,  p_grob,
+					p16a, p16b, p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1, h1, h1), 
 					main = mytitle))
 	
 	dev.off()
 	
 	returnList <- list(DF_list, nnplusoneCom)
-	
+	print (returnList)
 	return(returnList)
+	
 
 }
 
 
 #for (i in 1:nrow(fileNames)){
-for (i in 16:17){
+for (i in 16:16){
 
 	print(i)	
 	theFileName <-fileNames[i,1]
@@ -504,7 +514,7 @@ for (i in 16:17){
 }}
 
 
-write.table(DF, paste(folder, "PopAge.csv", sep = ""), sep=",", row.names = FALSE)
+write.table(DF, paste(folder, "PopDets.csv", sep = ""), sep=",", row.names = FALSE)
 
 write.table(N_NPlus1_Vars,paste(folder, "PopMapVars.csv", sep = ""), sep=",", row.names = FALSE)
 
