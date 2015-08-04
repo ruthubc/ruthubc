@@ -15,7 +15,7 @@ import random
 
 # nb changesa = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] 
 #[0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0] # compeition options
-a = [[0.1, 0.5, 1], [3], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]] # xbar, [num juvs] [slp]
+a = [[0.001, 0.1], [3, 20, 200], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]] # xbar, [num juvs] [slp]
 #a = [[0.4], [3.0], [5]] # colfood , [num juvs] [slp]
 # not sure whether the col food is with or without scaling
 
@@ -57,7 +57,8 @@ for i in range(0, len(combinations)):
     myCol.juv_rnk_assign()
     print [i.rank for i in myCol.juv_list]
     ass_tot = myCol.juv_fd_assign()
-    print 'slope', tup[2], 'ass total', ass_tot, 
+    print 'slope', tup[2], 'xbar:', tup[0]
+    print 'ass total', ass_tot, 
     juv_ranks = [jv.rank for jv in myCol.juv_list]
     numSlope = sum(1 for fd in ass_tot if fd < 1 and fd > 0)
     print "numslpe", numSlope

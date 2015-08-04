@@ -10,7 +10,7 @@ def add(number):
         raise ValueError("number negative")
     else:
         print number + 5
-    print "continuming"
+    print "not exception"
     print number - 10
     
 add(-10)

@@ -11,7 +11,7 @@ import csv
 import time
 
 # input variables here
-runs = [[10.0, 0.0], [0.05], [100], [0.0, 0.1], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
+runs = [[0.4, 0.8, 1.25, 2.5], [0.05, 0.1], [100, 1000], [0.0, 0.1, 0.2], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
 
 combinations = list(itertools.product(*runs))
 
@@ -32,6 +32,8 @@ def run_numbers(numbersFile):  # Assigns a unique number to each run
         writer.writerow([maxNum +1])
     return maxNum
 
+# pbs instructions https://www.westgrid.ca/files/PBS%20Script_0.pdf
+
 def writePBS(FileName):  # writes the PBS file for each run
     print('Creating new file')
     name =FileName + '.pbs' # Name of text file coerced with +.txt
@@ -39,12 +41,10 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.write("#!/bin/bash\n")
     file.write("#PBS -S /bin/bash\n")
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
-    file.write("#PBS -m bea\n")
+    file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated.
     file.write("#PBS -l walltime=15:30:00\n")
     file.write("#PBS -l pmem=3000mb\n")
     file.write('#PBS -l procs=5\n')
-    file.write("""echo "Current working directory is `pwd`"\n""")
-    file.write("""echo "Starting run "$0" at: `date`"\n""")
     file.write("module load python/2.7.5.anaconda\n")
     file.write("cd $PBS_O_WORKDIR\n")
     file.write("python " + FileName + ".py\n")

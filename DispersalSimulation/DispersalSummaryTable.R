@@ -16,12 +16,15 @@ fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# impo
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
-theFileName <- fileNames[14,1]
+# for testing
+theFileName <- fileNames[16,1]
 
 counter <-0
 
+min_popAge <-100 # the number of generations to discount from the start of the calculations
+
 #for (i in 1:nrow(fileNames)){
-for (i in 13:14){
+for (i in 1:16){
 	print(i)	
 	theFileName <-fileNames[i,1]
 
@@ -31,10 +34,23 @@ for (i in 13:14){
 	print (fileToImport)
 	
 	if(file.exists(fileToImport) == "TRUE"){
+		print ("file exists")
 		counter <- counter + 1 # to make sure that rbind is not run on the first loop
 		
 		File <- read.csv(fileToImport, quote = "")
-
+		
+		maxPopAge <- max(File$pop_age)
+		print ("maxPop age")
+		print (maxPopAge)
+		
+		if(maxPopAge < 300){
+			fn_min_popAge <- 0
+			print("pop did not survive to 400 generations")
+		}else{
+			fn_min_popAge <- min_popAge
+			File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
+		}
+		
 		FileAves<- ddply(File, .(Comp_slope, meanK, Fd_ln, input_var, disp_rsk, ad_dsp_fd, min_juv_fd, min_no_off,
 						max_no_off, min_ad_sze_off, max_ad_sze_off), summarise,
 				pop_age = max(pop_age),
@@ -78,7 +94,8 @@ for (i in 13:14){
 			dis_aves <- average
 		}
 		
-	}}
+		}else{ print ("file does not exist")}
+	}
 
-write.table(dis_aves, paste(folder, "DisperalAves.csv", sep = ""), sep=",", row.names = FALSE)
+write.table(dis_aves, paste(folder, "DispersalAves.csv", sep = ""), sep=",", row.names = FALSE)
 
