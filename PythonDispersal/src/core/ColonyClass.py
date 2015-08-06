@@ -86,7 +86,8 @@ class Colony(object):
         F = 1 / (1 - F_Ln)  # intercept
         cal_colFood = np.exp((1-NOvK)*(NOvK-1) *int)
         cap_col_food = cal_colFood
-        if cap_col_food <= 0:
+        if cap_col_food < 0:
+            print "cal colony food", cal_colFood
             raise ValueError("cal Colony food was negative or zero")
         else:
             return cap_col_food
