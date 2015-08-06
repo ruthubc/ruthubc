@@ -88,8 +88,9 @@ class Colony(object):
         cap_col_food = cal_colFood
         if cap_col_food < 0:
             print "cal colony food", cal_colFood
-            raise ValueError("cal Colony food was negative or zero")
+            raise ValueError("cal Colony food was negative or zero, numads s%:, cap_col_food s%" % (N_tot, cap_col_food))
         else:
+            print ("no error in cap col food", cap_col_food)
             return cap_col_food
 
     def col_food_random(self, F_Ln, K, var, food_scale):  # randomly fluctuates colony food 
@@ -357,6 +358,8 @@ class Colony(object):
         #print self.colony_dict()
 
     def colony_timestep(self, F_Ln, K, var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd,  pop_export_list, filename, food_scale):
+        print "***NEW COLONY TIMESTEP****"
+            
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
@@ -365,9 +368,9 @@ class Colony(object):
         self.num_moult = 0
         self.num_juvs = 0
         self.num_dis = 0
-        self.num_ads = len(self.ad_list) #
+        self.num_ads = len(self.ad_list)
         self.cal_pot_juv_food(F_Ln, K, Off_M, Off_C, food_scale)  # calculating potental juv food , written to colony
-        
+
         print "juv_disFdLmt", juv_disFd_lmt
         if self.pot_juv_food < float(juv_disFd_lmt): # risk calculation already cal'ed in population class
             self.colDispersal_choice(ad_disFd_lmt)
@@ -375,7 +378,7 @@ class Colony(object):
             pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
         else:
             print "no dispersers - pot juv food too high"
-            
+
         self.dispersers = []  # clears the colony dispersal list
 
         #TODO: check why colony being written to file twice if all disperse
