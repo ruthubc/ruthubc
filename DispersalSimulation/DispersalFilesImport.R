@@ -484,10 +484,14 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
 }
 
+list <- (1:nrow(fileNames)) # randomize the order as there is far too many files to graph them all
+list <- sample(list)
 
-#for (i in 1:nrow(fileNames)){
-for (i in 16:16){
+#for (num in 1:length(list)){
+#for (num in 16:16){
+for (num in 1:20){
 
+	i <- list[num]
 	print(i)	
 	theFileName <-fileNames[i,1]
 		
@@ -517,5 +521,3 @@ for (i in 16:16){
 write.table(DF, paste(folder, "PopDets.csv", sep = ""), sep=",", row.names = FALSE)
 
 write.table(N_NPlus1_Vars,paste(folder, "PopMapVars.csv", sep = ""), sep=",", row.names = FALSE)
-
-

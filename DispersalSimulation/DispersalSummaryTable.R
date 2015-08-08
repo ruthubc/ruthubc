@@ -43,9 +43,9 @@ for (i in 1:16){
 		print ("maxPop age")
 		print (maxPopAge)
 		
-		if(maxPopAge < 300){
+		if(maxPopAge < 200){
 			fn_min_popAge <- 0
-			print("pop did not survive to 400 generations")
+			print("pop did not survive to 200 generations")
 		}else{
 			fn_min_popAge <- min_popAge
 			File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals

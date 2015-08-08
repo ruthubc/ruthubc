@@ -33,7 +33,7 @@ spiders$logLeg<- log10(spiders$LegLen.mm)
 spiders$logHead <-log10(spiders$HeadLength.mm)
 
 spiders$logAbdm<- log10(spiders$AbdmLen.mm)
-spiders$logHung <- log10(spiders$hunger)
+spiders$logcond <- log10(spiders$hunger)
 
 Nests<-levels(spiders$NestID)
 
