@@ -6,6 +6,7 @@
 
 
 library('plyr')
+library("ggplot2")
 
 spiderData <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 
@@ -41,26 +42,39 @@ ggplot(spiders, aes(logLeg)) + geom_histogram() + facet_wrap(~Instar) # normal, 
 ggplot(spiders, aes(logCond)) + geom_histogram() + facet_wrap(~Instar) # normal, awesome
 
 
-## check this out
-spiders$Cond.Scal <- scale(spiders$logCond,  center = TRUE, scale = TRUE) ## NOT WORKING
+## scaling to plot on one graph from stackoverflow.com/questions/15836452/data-table-aggregations-that-return-vectors-such-as-scale
+spidersSub <- subset(spiders, select = c(Instar, logCond))
 
-ggplot(spiders, aes(Cond.Scal)) + geom_histogram() + facet_wrap(~Instar) # normal, awesome
+spiders <- as.data.frame(ddply(spiders,"Instar",transform, Cond.Scal=zScore(logCond)))
+
+ggplot(spiders, aes(Cond.Scal)) + geom_histogram() + facet_wrap(~Instar) # checking that the condition worked
+
+spiders <- as.data.frame(ddply(spiders,"Instar",transform, Leg.Scal=zScore(logLeg)))
+
+ggplot(spiders, aes(Leg.Scal)) + geom_histogram() + facet_wrap(~Instar) # checking that the condition worked
 
 
-SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm, CountFemales), summarise, # need to discount trials where no feeding obs and eve
+SpiNestAveAll<- ddply(spiders, .(NestID, type, Instar, logCtFm, CountFemales), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(Weight.mg)),
 		meanLeg = mean(LegLen.mm, na.rm = TRUE),
 		sdLeg = sd(LegLen.mm, na.rm = TRUE),
 		CVLeg= sdLeg / meanLeg,
 		cvByNLeg = (1+(1/(4*N))) * CVLeg,
 		logcvByNLeg = log10(cvByNLeg),
-		meanHung = mean(hunger, na.rm = TRUE),
-		sdHung = sd(hunger, na.rm = TRUE),
-		CVHung= sdHung/ meanHung,
-		cvByNHung = (1+(1/(4*N))) * CVHung,
-		logcvByNHung= log10(cvByNHung),
-		meanHead =  mean(HeadLength.mm)
+		meanCond = mean(condition, na.rm = TRUE),
+		sdCond = sd(condition, na.rm = TRUE),
+		CVCond = sdCond / meanCond,
+		cvByNCond  = (1+(1/(4*N))) * CVCond,
+		logcvByNCond = log10(cvByNCond ),
+		meanLeg.Scal = mean(Leg.Scal),
+		meanCond.Scal = mean(Cond.Scal)
 
 
 
 )
+
+
+SpiNestAveMul <- subset(SpiNestAveAll, type == "multiple")
+# remove 
+spidersMul <- subset(spiders, type == "multiple") #removing single females
+spidersMul$NestID <- factor(spidersMul$NestID)
