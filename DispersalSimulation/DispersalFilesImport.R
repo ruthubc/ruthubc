@@ -7,28 +7,11 @@ library(ggplot2)
 library(gridExtra)
 library(reshape2)
 library(broom)
+library(doParallel)
 
-#folder <- "R_Graphs/"
-folder <- "DisperalSimulationOutput/"
-
-
-fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="")# import file names csv file
-
-fileNames[] <- lapply(fileNames, as.character) # making factors into strings
-
-DF <- data.frame(Comp = numeric(0), disp_rsk = numeric(0), var = numeric(0), meanK = integer(0), dis_size = numeric(0), pop_age = integer(0), disperse = integer(0))#, fileName = character(0))
-
-
-N_NPlus1_Vars <- data.frame(term = character(0), estimate = numeric(0), std.error = numeric(0),  p.value = numeric(0),
-		type = character(0), Comp = numeric(0), disp = numeric(0), var = numeric(0), meanK = integer(0), 
-		fileName = character(0))
-
-
-min_popAge <-100 # the number of generations to discount from the start of the calculations
-
-
-## TO test the function
-fileName <- fileNames[16,1]
+cl <- makeCluster(2)
+# Register cluster
+registerDoParallel(cl)
 
 #graph making function
 graphFunction <- function(folder, fileName, num_gens, min_popAge){
@@ -110,9 +93,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	print("png title")
 	print (pngTitle)
 	
-	
-	DF_list <- c(as.numeric(File$Comp_slope[1]), File$disp_rsk[1], File$input_var[1], File$meanK[1], File$ad_dsp_fd[1],  max(File$pop_age), max(ColInfo$colDisp))#, filetoImport)
-
+	DF <- data.frame(Comp = File$Comp_slope[1], disp_rsk = File$disp_rsk[1], var = File$input_var[1], 
+			meanK = File$meanK[1], dis_size = File$ad_dsp_fd[1], pop_age = max(File$pop_age), disperse = max(ColInfo$colDisp))#, fileName = character(0))
 	
 	
 	ByPopAge<- ddply(subset(File, num_ads!=0), .(pop_age), summarise,
@@ -401,10 +383,10 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		}
 
 		
-		nnplusoneCom$Comp <- DF_list[1]
-		nnplusoneCom$disp <- DF_list[2]
-		nnplusoneCom$var <- DF_list[3]
-		nnplusoneCom$meanK <- DF_list[4]
+		nnplusoneCom$Comp <- DF[1,1]
+		nnplusoneCom$disp <- DF[1,2]
+		nnplusoneCom$var <- DF[1,3]
+		nnplusoneCom$meanK <- DF[1,4]
 		nnplusoneCom$FileName<-fileName
 
 	
@@ -477,47 +459,90 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	dev.off()
 	
-	returnList <- list(DF_list, nnplusoneCom)
+	returnList <- list(DF, nnplusoneCom)
 	print (returnList)
 	return(returnList)
 	
 
 }
 
-list <- (1:nrow(fileNames)) # randomize the order as there is far too many files to graph them all
-list <- sample(list)
+fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and returing a list of existing files
 
-#for (num in 1:length(list)){
-#for (num in 16:16){
-for (num in 1:20){
-
-	i <- list[num]
-	print(i)	
-	theFileName <-fileNames[i,1]
-		
-	#fileToImport <- paste(theFileName, ".py.csv", sep = "")
-	fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
-	num_gens <- as.numeric(fileNames[i, 3])
-
-	print(fileToImport)	
+	filesThatExist <- c()
 	
-	if(file.exists(fileToImport) == "TRUE"){
-		print ("the file does exist which is good!")
-		returnList <- graphFunction(folder, theFileName, num_gens, min_popAge)
-		print ("return list")
-		print (returnList)
-		print (returnList[2])
-		print ("NNplus1 Vars first")
-		print (N_NPlus1_Vars)
-		DF[i,] <- returnList[[1]]
-		N_NPlus1_Vars <- rbind(N_NPlus1_Vars, returnList[[2]])
-		print("NNPlus1 Vars after")
-		print (N_NPlus1_Vars)
-		} else {
-	print ("file does not exist")
-}}
+
+	for (i in 1:nrow(fileNames)){
+		theFileName <-fileNames[i,1]
+		
+		#fileToImport <- paste(theFileName, ".py.csv", sep = "")
+		#indFileToImport <- paste(theFileName, ".py_inds.csv", sep = "")
+		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+		indFileToImport <- paste(folder, theFileName, ".py_inds.csv", sep = "")
+		
+		
+		if(file.exists(fileToImport) == "TRUE"  && file.exists(indFileToImport) == TRUE){
+			
+			print (paste("both files exist. File:", fileToImport))
+			filesThatExist <- c(filesThatExist,  i)
+			
+		}else{
+			print (paste("file(s) don't exist. File:", fileToImport))
+		}
+		
+	}	
+	return (filesThatExist)
+}
+
+
+ 
+#folder <- "R_Graphs/"
+folder <- "DisperalSimulationOutput/"
+
+fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="") # import file names csv file
+
+fileNames[] <- lapply(fileNames, as.character) # making factors into strings
+
+
+min_popAge <-100 # the number of generations to discount from the start of the calculations
+
+
+## TO test the function
+#fileName <- fileNames[16,1]
+
+files <- fileExistsFn(fileNames)
+
+files <- sample(files) # if I want to randomize the order that they are done, i.e. if there are too many!
+
+
+
+
+loop <- foreach(i=1:length(files), .packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "broom")) %dopar%{
+	
+#for (i in 1:length(file)){
+
+	num <- files[i]
+	
+	theFileName <-fileNames[num,1]
+	
+	print (theFileName)
+	num_gens <- as.numeric(fileNames[num, 3])
+	returnList <- graphFunction(folder, theFileName, num_gens, min_popAge)
+}
+
+
+DF <- loop[[1]][[1]]
+N_NPlus1Vars <- loop[[1]][[2]]
+
+if (length(files) > 1){
+	for(i in 2:length(files)){
+	print (i)
+	DF <- rbind(DF, loop[[i]][[1]])
+	N_NPlus1Vars <- rbind(N_NPlus1Vars, loop[[i]][[2]])
+	
+	}
+}
 
 
 write.table(DF, paste(folder, "PopDets.csv", sep = ""), sep=",", row.names = FALSE)
 
-write.table(N_NPlus1_Vars,paste(folder, "PopMapVars.csv", sep = ""), sep=",", row.names = FALSE)
+write.table(N_NPlus1Vars,paste(folder, "PopMapVars.csv", sep = ""), sep=",", row.names = FALSE)

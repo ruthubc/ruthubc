@@ -8,52 +8,64 @@ library (plyr)
 library(ggplot2)
 library(gridExtra)
 library(reshape2)
+library(doParallel)
 
-filesCSV <- "FilesCreated.csv"
+cl <- makeCluster(2)
+# Register cluster
+registerDoParallel(cl)
 
-outputFile <- "DispersalAves.csv"
 
-#folder <- "R_Graphs/"
-folder <- "DisperalSimulationOutput/"
 
-fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file names csv file
-
-fileNames[] <- lapply(fileNames, as.character) # making factors into strings
-
-# for testing
-theFileName <- fileNames[16,1]
-
-counter <-0
-
-min_popAge <-100 # the number of generations to discount from the start of the calculations
-
-#for (i in 1:nrow(fileNames)){
-for (i in 15:16){
-	print(i)	
-	theFileName <-fileNames[i,1]
-
-	fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
-	#fileToImport <- paste(theFileName, ".py.csv", sep = "")
+fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and returing a list of existing files
 	
-	print (fileToImport)
+	filesThatExist <- c()
 	
-	if(file.exists(fileToImport) == "TRUE"){
-		print ("file exists")
-		counter <- counter + 1 # to make sure that rbind is not run on the first loop
+	
+	for (i in 1:nrow(fileNames)){
+		theFileName <-fileNames[i,1]
+		
+		#fileToImport <- paste(theFileName, ".py.csv", sep = "")
+		#indFileToImport <- paste(theFileName, ".py_inds.csv", sep = "")
+		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+		indFileToImport <- paste(folder, theFileName, ".py_inds.csv", sep = "")
+		
+		
+		if(file.exists(fileToImport) == "TRUE"  && file.exists(indFileToImport) == TRUE){
+			
+			print (paste("both files exist. File:", fileToImport))
+			filesThatExist <- c(filesThatExist,  i)
+			
+		}else{
+			print (paste("file(s) don't exist. File:", fileToImport))
+		}
+		
+	}	
+	return (filesThatExist)
+}
+
+
+summaryFun <- function(fileName){
+
+		
+	
+		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+		indFileToImport <- paste(folder, theFileName, ".py_inds.csv", sep = "")
+		#fileToImport <- paste(theFileName, ".py.csv", sep = "")
+		#indFileToImport <- paste(theFileName, ".py_inds.csv", sep = "")
 		
 		File <- read.csv(fileToImport, quote = "")
+		print (fileToImport)
 		
 		maxPopAge <- max(File$pop_age)
-		print ("maxPop age")
-		print (maxPopAge)
 		
-		if(maxPopAge < 200){
+		if(maxPopAge < 200){ # removing first 100 generations
 			fn_min_popAge <- 0
 			print("pop did not survive to 200 generations")
 		}else{
 			fn_min_popAge <- min_popAge
 			File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
 		}
+		
 		
 		FileAves<- ddply(File, .(Comp_slope, meanK, Fd_ln, input_var, disp_rsk, ad_dsp_fd, min_juv_fd, min_no_off,
 						max_no_off, min_ad_sze_off, max_ad_sze_off), summarise,
@@ -79,10 +91,11 @@ for (i in 15:16){
 		)
 		
 		
+		# getting data on dispersers
 		Dispersers <- subset(File, dispersers >0)
 		
 		if (nrow(Dispersers) == 0){
-		
+			
 			print ("no dispersers")
 			DispAves <- data.frame(	
 					age_first_disp = NA,
@@ -96,75 +109,102 @@ for (i in 15:16){
 			
 		}else{
 			print ("some dispersers")
-		
-		Dispersers$ID <- seq.int(nrow(Dispersers))
-		
-		DispAvesByColID <- ddply(Dispersers, .(colony_ID), summarise,
-				min_disp_age = min(colony_age),
-				fstDis_col_size = (num_adsB4_dispersal[colony_age == min_disp_age]),
-				count_col_disp = length(ID)
-				
-				
-		)
-		
-		
-		DispAves <- ddply(DispAvesByColID, .(), summarise,
-			age_first_disp = mean(min_disp_age),
-			se_age_first_disp = sd(min_disp_age)/sqrt(length(min_disp_age)),
-			mean_num_col_disp = mean(count_col_disp),
-			se_num_col_disp = sd(count_col_disp), sqrt(length(count_col_disp)),
-			mean_fstDis_col_size = mean(fstDis_col_size),
-			se_fstDis_col_size = sd(fstDis_col_size), sqrt(length(fstDis_col_size))
 			
-				
-				
-				
-		)
-	
-	DispAves <- subset(DispAves, select = c(
-					age_first_disp,
-					se_age_first_disp,
-					mean_num_col_disp,
-					se_num_col_disp,
-					mean_fstDis_col_size,
-					se_fstDis_col_size
+			Dispersers$ID <- seq.int(nrow(Dispersers))
+			
+			DispAvesByColID <- ddply(Dispersers, .(colony_ID), summarise,
+					min_disp_age = min(colony_age),
+					fstDis_col_size = (num_adsB4_dispersal[colony_age == min_disp_age]),
+					count_col_disp = length(ID)
+			
+			
+			)
+			
+			
+			DispAves <- ddply(DispAvesByColID, .(), summarise,
+					age_first_disp = mean(min_disp_age),
+					se_age_first_disp = sd(min_disp_age)/sqrt(length(min_disp_age)),
+					mean_num_col_disp = mean(count_col_disp),
+					se_num_col_disp = sd(count_col_disp), sqrt(length(count_col_disp)),
+					mean_fstDis_col_size = mean(fstDis_col_size),
+					se_fstDis_col_size = sd(fstDis_col_size), sqrt(length(fstDis_col_size))
+			
+			
+			
+			
+			)
+			
+			DispAves <- subset(DispAves, select = c(
+							age_first_disp,
+							se_age_first_disp,
+							mean_num_col_disp,
+							se_num_col_disp,
+							mean_fstDis_col_size,
+							se_fstDis_col_size
 					
 					
 					))
-		
-	rm(DispAvesByColID)		
-	rm(Dispersers)
-
+			
+			rm(DispAvesByColID)		
+			rm(Dispersers)
+			
 		}
-
-rm(File)
 		
-		indFileToImport <- paste(folder, theFileName, ".py_inds.csv", sep = "")
-		#indFileToImport <- paste(theFileName, ".py_inds.csv", sep = "")
+		rm(File)
+		
+		## Individual Files Summary
+		
 		indFile <- read.csv(indFileToImport, quote = "")
 		
 		indAves <- ddply(indFile, .(), summarise,
 				ave_juvSze = mean(food[type == "juv"]),
 				ave_adSze = mean(food[type == "Ad"])
 		)
-
+		
 		rm(indFile)
 		average <- cbind(FileAves, DispAves, indAves)
-
+		
 		average$.id <- NULL
-		
-		print('Counter')
-		print(counter)
-		
-		if (counter > 1){ # to make sure that the first run doesn't go to cbind
+	
+		return(average)
+	
+	
+}
 
-			dis_aves <- rbind(average, dis_aves)
-		} else {
-			dis_aves <- average
-		}
-		
-		}else{ print ("file does not exist")}
-	}
 
-write.table(dis_aves, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
+filesCSV <- "FilesCreated.csv"
 
+outputFile <- "DispersalAves.csv"
+
+#folder <- "R_Graphs/"
+folder <- "DisperalSimulationOutput/"
+
+fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file names csv file
+
+fileNames[] <- lapply(fileNames, as.character) # making factors into strings
+
+# for testing
+#theFileName <- fileNames[16,1]
+
+
+min_popAge <-100 # the number of generations to discount from the start of the calculations
+
+files <- fileExistsFn(fileNames)
+
+
+loop <- foreach(i=1:length(files), .combine = "rbind",
+				.packages= c("ggplot2", "plyr", "gridExtra", "reshape2")) %dopar%{
+#for (i in (1:length(files))){	
+		print(i)	
+
+	num <- files[i]
+	
+	theFileName <-fileNames[num,1]
+	
+	print (theFileName)
+	output <- summaryFun(theFileName)
+
+	
+}
+
+write.table(loop, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
