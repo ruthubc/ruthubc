@@ -10,10 +10,14 @@ import itertools
 import csv
 import time
 
+indFile = "n"
+
 # input variables here
 runs = [[0.4, 0.8, 1.25, 2.5], [0.05, 0.1], [100, 1000], [0.0, 0.1, 0.2], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
-
+#runs = [[0.8], [0.1], [100], [0.0], [0.6]]
 combinations = list(itertools.product(*runs))
+
+print "number of combinations", len(combinations)
 
 print combinations
 
@@ -42,8 +46,8 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.write("#PBS -S /bin/bash\n")
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated.
-    file.write("#PBS -l walltime=15:30:00\n")
-    file.write("#PBS -l pmem=6000mb\n")
+    file.write("#PBS -l walltime=70:00:00\n")
+    file.write("#PBS -l pmem=10000mb\n")
     file.write('#PBS -l procs=5\n')
     file.write("module load python/2.7.5.anaconda\n")
     file.write("cd $PBS_O_WORKDIR\n")
@@ -61,13 +65,14 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
     file.write("comp_slp = " + str(comp_slp) + "\n")
     file.write("disp_risk =" + str(disp_risk)+ "\n")
     file.write("K=" + str(K)+ "\n")
-    file.write("amt_var=" + str(amt_var)+ "\n")
-    file.write("min_juv_size="  + str(min_juv_size) + "\n")
-    file.write("min_no_off="  + str(min_no_off) + "\n")
-    file.write("max_no_off="  + str(max_no_off) + "\n")
+    file.write("amt_var =" + str(amt_var)+ "\n")
+    file.write("min_juv_size ="  + str(min_juv_size) + "\n")
+    file.write("min_no_off ="  + str(min_no_off) + "\n")
+    file.write("max_no_off ="  + str(max_no_off) + "\n")
     file.write("ad_disFd_lmt ="  + str(ad_disFd_lmt) + "\n")
-    file.write("F_Ln="  + str(F_Ln) + "\n")
-    file.write("disperal_run(sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln)\n")
+    file.write("F_Ln ="  + str(F_Ln) + "\n")
+    file.write("indFile=" + '"' + str(indFile) +  '"' + "\n")
+    file.write("disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln)\n")
     file.close()
 
 #1) slope [0, 0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0, 10.0]
@@ -91,9 +96,9 @@ for i in range(0, len(combinations)):  # actually produces the files
     min_juv_size = 0.19
     min_no_off = 2
     max_no_off = 4
-    
-    F_Ln = 0.4    
-    filename = 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) +  "_dslm" + str(ad_disFd_lmt) + '_rn' + str(number)
+
+    F_Ln = 0.4
+    filename =  str(number) + "_" + 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) +  "_dslm" + str(ad_disFd_lmt)
     print "tup", tup
     print filename
     writePythonRun(filename, slope, risk, K, var, min_juv_size, min_no_off,
@@ -101,18 +106,18 @@ for i in range(0, len(combinations)):  # actually produces the files
     writePBS(filename)
     fileNameLst.extend([filename])
 
-print "filenameList:", fileNameLst
+#print "filenameList:", fileNameLst
 
-file = open("qsubFile.txt", 'w+')
+#file = open("qsubFile.txt", 'w+')
 
 
 for name in fileNameLst: # writes the names of the files created to csv file for my records and 
-    print name
-    file.write("qsub " + name + ".pbs; ")
+    #print name
+    #file.write("qsub " + name + ".pbs; ")
     with open("FilesCreated.csv", 'ab') as f:
         writer = csv.writer(f, dialect='excel')
         writer.writerow([name, time.strftime("%d/%m/%Y"), sim_len])
-        
+
 file = open("run.sh", "w+")
 file.write("for i in")
 

@@ -23,7 +23,7 @@ import random
 class Poplt(object):
     '''
     List of all colonies in the population    '''
-    def __init__(self, poplt_list,  # list of colonies
+    def __init__(self, poplt_list, indFile = "n",  # list of colonies
                  filename = "", # output file name
                  comp_slp = 0.1,
                  disp_rsk = 0.5,
@@ -37,6 +37,7 @@ class Poplt(object):
                  colony_count = 0
                  ):
         self.poplt_list = poplt_list
+        self.indFile = indFile
         self.filename = filename
         self.comp_slp = float(comp_slp)
         self.disp_rsk = disp_rsk
@@ -95,7 +96,7 @@ class Poplt(object):
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             #print 'new colony made, id:', self.colony_count
-            col = Colony(colony_ID = self.colony_count, ad_list = [spider], slope = self.comp_slp, colony_age = 1, dispersers = [], pot_juv_food = 0)
+            col = Colony(indFile = self.indFile, colony_ID = self.colony_count, ad_list = [spider], slope = self.comp_slp, colony_age = 1, dispersers = [], pot_juv_food = 0)
             col.num_ads = 1
             #col.print_dets()
             self.new_cols.extend([col])

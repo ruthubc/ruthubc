@@ -20,13 +20,14 @@ import csv
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, colony_ID = 0,
+    def __init__(self, indFile = "n", colony_ID = 0,
                  ad_list = [],
                  slope = 0.10,
                  colony_age=0,
                  dispersers = [],
                  pot_juv_food = 0  # potential food to juvs
                  ):
+        self.indFile = indFile
         self.colony_ID = colony_ID
         self.ad_list = ad_list
         self.juv_list = []
@@ -41,9 +42,28 @@ class Colony(object):
         self.alive = 'alive'
         self.cal_med_rnk = 0.0
         self.num_moult = 0.0
+        self.adSz_B4 = ['NA', 'NA', 'NA', 'NA', 'NA'] # list order is min, max, mead, standard dev
+        self.adSz_AF = ['NA', 'NA', 'NA', 'NA', 'NA']
+        self.jvSz_B4 = ['NA', 'NA', 'NA', 'NA', 'NA']
+        self.jvSz_AF = ['NA', 'NA', 'NA', 'NA', 'NA']
 
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num adults: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.ad_list))
+
+    def indStats(self, spiList): # so that I won't have to output all the individuals
+        if len(spiList) > 0:
+            minm = min(spiList)
+            mx = max(spiList)
+            mn = np.mean(spiList)
+            sd = round(np.std(spiList), 4)
+            ct = len(spiList)
+        else:
+            minm = "NA"
+            mx = "NA"
+            mn = "NA"
+            sd = "NA"
+            ct = "NA"
+        return [minm, mx, mn, sd, ct]
 
     def print_adults(self):  # prints all instances of adults in the colony
         for i in range(len(self.ad_list)):
@@ -58,7 +78,7 @@ class Colony(object):
         d['colony_ID'] = self.colony_ID
         d['colony_age'] = self.colony_age
         d['num_adsB4_dispersal'] = self.num_ads
-        d['num_ads'] = self.num_ads -  self.num_dis
+        d['num_ads'] = self.num_ads - self.num_dis
         d['numjuvs'] = self.num_juvs
         d['colony_food'] = self.colony_food
         d['ave_food']= 0 if self.num_juvs == 0 else self.colony_food/self.num_juvs
@@ -67,6 +87,27 @@ class Colony(object):
         d['cal_med_rnk'] = self.cal_med_rnk
         d['colAlive'] = self.alive
         d['num_juvs_moulting'] = self.num_moult
+        d['adSz_B4_min'] = self.adSz_B4[0] # list order is min, max, mean, standard dev
+        d['adSz_B4_max'] = self.adSz_B4[1]
+        d['adSz_B4_mean'] = self.adSz_B4[2]
+        d['adSz_B4_SD'] = self.adSz_B4[3]
+        d['adSz_B4_ct'] = self.adSz_B4[4]
+        d['adSz_AF_min'] = self.adSz_AF[0] # list order is min, max, mean, standard dev
+        d['adSz_AF_max'] = self.adSz_AF[1]
+        d['adSz_AF_mean'] = self.adSz_AF[2]
+        d['adSz_AF_SD'] = self.adSz_AF[3]
+        d['adSz_AF_ct'] = self.adSz_AF[4]
+        d['jvSz_B4_min'] = self.jvSz_B4[0] # list order is min, max, mean, standard dev
+        d['jvSz_B4_max'] = self.jvSz_B4[1]
+        d['jvSz_B4_mean'] = self.jvSz_B4[2]
+        d['jvSz_B4_SD'] = self.jvSz_B4[3]
+        d['jvSz_B4_ct'] = self.jvSz_B4[4]
+        d['jvSz_AF_min'] = self.jvSz_AF[0] # list order is min, max, mean, standard dev
+        d['jvSz_AF_max'] = self.jvSz_AF[1]
+        d['jvSz_AF_mean'] = self.jvSz_AF[2]
+        d['jvSz_AF_SD'] = self.jvSz_AF[3]
+        d['jvSz_AF_ct'] = self.jvSz_AF[4]
+
         return d
 
     def col_age_increase(self):  # increases colony age by one
@@ -140,6 +181,10 @@ class Colony(object):
         #print [i.food for i in self.ad_list]
         print "spis to dis lst"
         print "new no of ads:", len(self.ad_list), "num dispersers:", self.num_dis
+        if self.num_dis > 0:
+            self.adSz_AF = self.indStats([i.food for i in self.ad_list]) # ad sizes after dispersal
+        else:
+            self.adSz_AF = self.indStats([])
 
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
@@ -174,27 +219,6 @@ class Colony(object):
                 return 0
             else:
                 return CompEqn
-
-    def juv_fd_assign(self):
-        for spider in self.juv_list:
-            jv_rnk = spider.rank
-            ind_fd = self.cal_ind_food(jv_rnk)
-            spider.food = ind_fd
-            #print 'ind_fd', spider.food
-
-
-        if len(self.juv_list) < 20 or self.colony_food < 1:
-            print "running food correction code"
-            self.fd_assign_corretions() # correcting to make equal to colony food
-
-        ass_tot = sum([jv.food for jv in self.juv_list])  # total amount of food allocated - redoing after changing some foods!
-        perdiff = (abs(ass_tot - self.colony_food) / self.colony_food) * 100
-        print 'percentage difference', perdiff
-        if perdiff >= 2.0:
-            print "percentage difference is", perdiff
-            raise ValueError("assigned food greater than 2% different from calculated food")
-        #else:
-            #return [jv.food for jv in self.juv_list]  # for testing
 
     def fd_assign_corretions(self):  # correcting to make equal to colony food
         rnk1jv = next(i for i in self.juv_list if i.rank == 1)  # juv rank number one, so 2nd ranked juv
@@ -235,6 +259,30 @@ class Colony(object):
             rem_food = self.colony_food - (ass_tot - self.juv_list[num_juvs - 1].food)
             print "rem_food", rem_food
             self.juv_list[num_juvs - 1].food = rem_food
+
+    def juv_fd_assign(self):
+        for spider in self.juv_list:
+            jv_rnk = spider.rank
+            ind_fd = self.cal_ind_food(jv_rnk)
+            spider.food = ind_fd
+            #print 'ind_fd', spider.food
+
+        if len(self.juv_list) < 20 or self.colony_food < 1:
+            print "running food correction code"
+            self.fd_assign_corretions() # correcting to make equal to colony food
+
+        jvFdLst = [jv.food for jv in self.juv_list]
+        ass_tot = sum(jvFdLst)  # total amount of food allocated - redoing after changing some foods!
+        perdiff = (abs(ass_tot - self.colony_food) / self.colony_food) * 100
+        print 'percentage difference', perdiff
+        if perdiff >= 2.0:
+            print "percentage difference is", perdiff
+            raise ValueError("assigned food greater than 2% different from calculated food")
+        #else:
+            #return [jv.food for jv in self.juv_list]  # for testing
+
+
+
 
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))
@@ -283,6 +331,8 @@ class Colony(object):
             raise Exception("food greater than num jvs, numJuvs", self.num_juvs, 'colFd', self.colony_food, 'numads', self.num_ads)
         else:
             self.assign_food()
+            jvFdLst = [spi.food for spi in self.juv_list]
+            self.jvSz_B4 = self.indStats(jvFdLst) # returns the ind stat
 
     def moult(self, min_juvFd):
         moult_list = [i for i in self.juv_list if i.food >= min_juvFd]
@@ -295,6 +345,8 @@ class Colony(object):
             self.ad_list = []
             self.juv_list = []
             print " no juvs moulting"
+        jvMltLst = [i.food for i in self.ad_list]
+        self.jvSz_AF = self.indStats(jvMltLst) # stats for juvs that moulted
 
     def colony_list_to_append(self):  # returns dictionary **values** in list form
         return self.colony_dict().values()
@@ -338,9 +390,10 @@ class Colony(object):
 
         else:  # not enough food for any juvs to moult
             print "not enough food for any spiders to moult"  # TODO check everything that needs to be done here is being done.
- 
-        self.Juv_export(filename)
-        self.Ads_export(filename)
+
+        if self.indFile == 'y':
+            self.Juv_export(filename)
+            self.Ads_export(filename)
 
             #(6) Adults die
         self.ad_list = []  # emptying the adult list - all adults die
@@ -359,7 +412,7 @@ class Colony(object):
 
     def colony_timestep(self, F_Ln, K, var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd,  pop_export_list, filename, food_scale):
         print "***NEW COLONY TIMESTEP****"
-            
+
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
@@ -371,6 +424,8 @@ class Colony(object):
         self.num_ads = len(self.ad_list)
         self.cal_pot_juv_food(F_Ln, K, Off_M, Off_C, food_scale)  # calculating potental juv food , written to colony
 
+        self.adSz_B4 = self.indStats([i.food for i in self.ad_list]) # ad fd stats before dispersal
+
         print "juv_disFdLmt", juv_disFd_lmt
         if self.pot_juv_food < float(juv_disFd_lmt): # risk calculation already cal'ed in population class
             self.colDispersal_choice(ad_disFd_lmt)
@@ -380,6 +435,7 @@ class Colony(object):
             print "no dispersers - pot juv food too high"
 
         self.dispersers = []  # clears the colony dispersal list
+
 
         #TODO: check why colony being written to file twice if all disperse
         self.col_alive() # this happens if all spiders disperse

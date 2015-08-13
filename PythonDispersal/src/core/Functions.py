@@ -27,7 +27,7 @@ def export_rownames(filename, rowheaders = fake_dict()):
     writer = csv.writer(f, dialect='excel')
     writer.writerow(rowheaders)
     f.close()
- 
+
 def random_gus(mean, variance): # so the random function doesn't produce negative number
     if variance == 0: # beause random doesn't work if variance is zero
         return mean

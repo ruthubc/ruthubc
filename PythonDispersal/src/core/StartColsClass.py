@@ -11,7 +11,8 @@ from ColonyClass import Colony
 
 
 class StartCols(object):
-    def __init__(self, K, comp_slp, ad_fd):
+    def __init__(self, indFile, K, comp_slp, ad_fd):
+        self.indFile = indFile
         self.K = K
         self.comp_slp = comp_slp
         self.ad_fd = ad_fd
@@ -28,7 +29,7 @@ class StartCols(object):
         ad_list = []
         for _ in range(0, colSize):
             ad_list.append(Adult([1, 0, self.ad_fd], 0, 0))
-        col = Colony(self.col_no, ad_list, slope = self.comp_slp)
+        col = Colony(self.indFile, self.col_no, ad_list, slope = self.comp_slp)
         print "start col number = ", col.colony_ID
         return col
 

@@ -14,25 +14,25 @@ from core.PopulationClass import Poplt
 from core.Functions import export_rownames
 
 
-def disperal_run(sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln):
+def disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln):
     #(1) write rownames to csv fileh
 
     export_rownames(filename + ".csv") # creating file with rownames 
 
     ### write inds to new file
-
-    indFiles = open(filename + "_inds.csv", "wb")
-    wr = csv.writer(indFiles, dialect = 'excel')
-    wr.writerow(["type", "col_age", "col_id", "rank", "die", "food", "disperse", "no_off"])
-    indFiles.close()
+    if indFile == "y":
+        indFiles = open(filename + "_inds.csv", "wb")
+        wr = csv.writer(indFiles, dialect = 'excel')
+        wr.writerow(["type", "col_age", "col_id", "rank", "die", "food", "disperse", "no_off"])
+        indFiles.close()
 
     #(2) Initial Population
-    cols = StartCols(K, comp_slp, ad_fd = 0.6)
+    cols = StartCols(indFile, K, comp_slp, ad_fd = 0.6)
     cols.make_col_list()
     col_list = cols.col_list
 
 
-    this_pop = Poplt(col_list, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln, cols.col_no)
+    this_pop = Poplt(col_list, indFile, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln, cols.col_no)
     this_pop.update_offVar()
 
     #print start_col.colony_list_to_append()
