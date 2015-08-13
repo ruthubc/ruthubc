@@ -11,12 +11,13 @@ library(doParallel)
 
 cl <- makeCluster(2)
 # Register cluster
-registerDoParallel(cl)
+registerDoParallel(cl, outfile = "")
 
 #graph making function
 graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	print("START")
+	print(fileName)
 
 	#### REMEMBER: Before sending to grex remove the printing stuff.
 	#filetoImport <- paste(fileName, ".py.csv", sep = "")
@@ -27,15 +28,15 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
 	
 	pngTitle <- paste(folder, fileName, "_graph", ".png", sep = "")
-	print ("overall file exists?")
-	print(file.exists(filetoImport))
-	print ("ind file exists?")
-	print(file.exists(indFileToImport))
+	#print ("overall file exists?")
+	#print(file.exists(filetoImport))
+	#print ("ind file exists?")
+	#print(file.exists(indFileToImport))
 
 	File <- read.csv(filetoImport, quote = "")
 	maxPopAge <- max(File$pop_age)
-	print ("maxPop age")
-	print (maxPopAge)
+	#print ("maxPop age")
+	#print (maxPopAge)
 	
 	if(maxPopAge < 300){
 		fn_min_popAge <- 0
@@ -90,8 +91,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
-	print("png title")
-	print (pngTitle)
+	#print("png title")
+	#print (pngTitle)
 	
 	DF <- data.frame(Comp = File$Comp_slope[1], disp_rsk = File$disp_rsk[1], var = File$input_var[1], 
 			meanK = File$meanK[1], dis_size = File$ad_dsp_fd[1], pop_age = max(File$pop_age), disperse = max(ColInfo$colDisp))#, fileName = character(0))
@@ -460,8 +461,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	dev.off()
 	
 	returnList <- list(DF, nnplusoneCom)
-	print (returnList)
-	return(returnList)
+	#print (returnList)
+	#return(returnList)
 	
 
 }
@@ -507,23 +508,23 @@ min_popAge <-100 # the number of generations to discount from the start of the c
 
 
 ## TO test the function
-#fileName <- fileNames[16,1]
+fileName <- fileNames[16,1]
 
 files <- fileExistsFn(fileNames)
 
-files <- sample(files) # if I want to randomize the order that they are done, i.e. if there are too many!
+#files <- sample(files) # if I want to randomize the order that they are done, i.e. if there are too many!
 
 
+numFiles<- length(files)
 
-
-loop <- foreach(i=1:length(files), .packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "broom")) %dopar%{
+loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "broom")) %dopar%{
 	
-#for (i in 1:length(file)){
+#for (i in 1:numFiles){
 
 	num <- files[i]
 	
 	theFileName <-fileNames[num,1]
-	
+	print ("file name in loop")
 	print (theFileName)
 	num_gens <- as.numeric(fileNames[num, 3])
 	returnList <- graphFunction(folder, theFileName, num_gens, min_popAge)
@@ -542,6 +543,7 @@ if (length(files) > 1){
 	}
 }
 
+stopCluster(cl)
 
 write.table(DF, paste(folder, "PopDets.csv", sep = ""), sep=",", row.names = FALSE)
 

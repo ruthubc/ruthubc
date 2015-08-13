@@ -10,7 +10,7 @@ library(gridExtra)
 library(reshape2)
 library(doParallel)
 
-cl <- makeCluster(2)
+cl <- makeCluster(2, outfile = "")# outfile = paste(folder, "log.txt", sep = ""))
 # Register cluster
 registerDoParallel(cl)
 
@@ -207,4 +207,8 @@ loop <- foreach(i=1:length(files), .combine = "rbind",
 	
 }
 
+
+stopCluster(cl)
 write.table(loop, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
+
+
