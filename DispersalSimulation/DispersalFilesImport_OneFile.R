@@ -83,7 +83,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	mytitle = textGrob(label = fileName)
 	
-	pngHeight = 450 * (23 +1 )# 400 * number of graphs)
+	pngHeight = 480 * (20 +1 )# 400 * number of graphs)
 	
 	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
 	
@@ -416,7 +416,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	p_grob <- arrangeGrob(p14,p15, ncol=2)
 	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p6a, p7, p8, p9, p10, p11, p12, p13, p13a,  p_grob,
-					 p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), 
+					 p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), 
 					main = mytitle))
 	
 	dev.off()
