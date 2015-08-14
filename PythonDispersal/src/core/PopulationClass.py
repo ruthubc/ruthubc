@@ -98,6 +98,9 @@ class Poplt(object):
             #print 'new colony made, id:', self.colony_count
             col = Colony(indFile = self.indFile, colony_ID = self.colony_count, ad_list = [spider], slope = self.comp_slp, colony_age = 1, dispersers = [], pot_juv_food = 0)
             col.num_ads = 1
+            col.newCol = "Yes"
+            adSize = col.ad_list[0].food
+            col.adSz_B4 = [adSize, adSize, adSize, "NA", 1]
             #col.print_dets()
             self.new_cols.extend([col])
 

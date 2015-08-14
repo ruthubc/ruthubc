@@ -16,7 +16,7 @@ def indStat(spiList):
             minm = min(spiList)
             mx = max(spiList)
             mn = np.mean(spiList)
-            sd =  np.std(spiList)
+            sd = (spiList - mn)
             ct = len(spiList)
         else:
             minm = "NA"
@@ -26,7 +26,7 @@ def indStat(spiList):
             ct = "NA"
         return [minm, mx, mn, sd, ct]
 
-print indStat(mylist)[3]
+print indStat(mylist)
 '''
 adSz_B4 = ['NA', 'NA', 'NA', 'NA']
 

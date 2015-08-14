@@ -47,8 +47,8 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated.
     file.write("#PBS -l walltime=70:00:00\n")
-    file.write("#PBS -l pmem=10000mb\n")
-    file.write('#PBS -l procs=5\n')
+    file.write("#PBS -l mem=10000mb\n")
+    file.write('#PBS -l procs=1\n')
     file.write("module load python/2.7.5.anaconda\n")
     file.write("cd $PBS_O_WORKDIR\n")
     file.write("python " + FileName + ".py\n")
@@ -59,7 +59,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
                    max_no_off, ad_disFd_lmt, F_Ln, sim_len): # writing the python file  that runs the model
     name = FileName + '.py'
     file = open(name, 'w+')
-    file.write("from core.DispersalRun import disperal_run\n")
+    file.write("from mySim.DispersalRun import disperal_run\n")
     file.write("sim_len = " + str(sim_len) + "\n")
     file.write('filename = "'  + FileName + '.py"\n')
     file.write("comp_slp = " + str(comp_slp) + "\n")

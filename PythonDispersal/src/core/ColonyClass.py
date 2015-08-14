@@ -42,7 +42,8 @@ class Colony(object):
         self.alive = 'alive'
         self.cal_med_rnk = 0.0
         self.num_moult = 0.0
-        self.adSz_B4 = ['NA', 'NA', 'NA', 'NA', 'NA'] # list order is min, max, mead, standard dev
+        self.newCol = "No"
+        self.adSz_B4 = ['NA', 'NA', 'NA', 'NA', 'NA'] # list order is min, max, mead, standard dev, count
         self.adSz_AF = ['NA', 'NA', 'NA', 'NA', 'NA']
         self.jvSz_B4 = ['NA', 'NA', 'NA', 'NA', 'NA']
         self.jvSz_AF = ['NA', 'NA', 'NA', 'NA', 'NA']
@@ -55,7 +56,7 @@ class Colony(object):
             minm = min(spiList)
             mx = max(spiList)
             mn = np.mean(spiList)
-            sd = round(np.std(spiList), 4)
+            sd = round(np.std(spiList), 4)  # see if I can change to (x - xbar) ^2
             ct = len(spiList)
         else:
             minm = "NA"
@@ -87,6 +88,7 @@ class Colony(object):
         d['cal_med_rnk'] = self.cal_med_rnk
         d['colAlive'] = self.alive
         d['num_juvs_moulting'] = self.num_moult
+        d['new_col?'] = self.newCol
         d['adSz_B4_min'] = self.adSz_B4[0] # list order is min, max, mean, standard dev
         d['adSz_B4_max'] = self.adSz_B4[1]
         d['adSz_B4_mean'] = self.adSz_B4[2]
@@ -275,7 +277,7 @@ class Colony(object):
         ass_tot = sum(jvFdLst)  # total amount of food allocated - redoing after changing some foods!
         perdiff = (abs(ass_tot - self.colony_food) / self.colony_food) * 100
         print 'percentage difference', perdiff
-        if perdiff >= 2.0:
+        if perdiff >= 2.5:
             print "percentage difference is", perdiff
             raise ValueError("assigned food greater than 2% different from calculated food")
         #else:
