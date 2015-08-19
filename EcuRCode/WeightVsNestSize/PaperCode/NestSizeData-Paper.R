@@ -8,7 +8,7 @@
 library('plyr')
 library("ggplot2")
 
-spiderData <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
+spiders <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 
 #removing eggs, parastised individuals and the outlier nest 44.3ex01 as the adults were particularly small
 spiders <- subset(spiderData, Instar != "FALSE" & NestID != "44.3ex01"  & Instar !="egg" & 
@@ -19,7 +19,9 @@ spiders$Instar<-as.character(spiders$Instar) ; spiders$Instar[spiders$AdMaleSubB
 spiders$Instar <-as.factor(spiders$Instar)
 
 #Calculating spider hunger
-spiders$condition <- spiders$Weight.mg/spiders$HeadLength.mm
+#spiders$condition <- spiders$Weight.mg/spiders$HeadLength.mm
+
+spiders$condition <- spiders$Weight.mg/spiders$LegLen.mm
 
 #removing empty levels and ordering for graph
 spiders$Instar <- factor(spiders$Instar, levels= c("Juv4", "Sub1", 
@@ -29,6 +31,7 @@ spiders$Instar <- factor(spiders$Instar, levels= c("Juv4", "Sub1",
 spiders$type <- spiders$Approx..Single.
 
 #log transforming
+spiders$logWt <- log10(spiders$Weight.mg)
 spiders$logCtFm <- log10(spiders$CountFemales)
 spiders$logLeg<- log10(spiders$LegLen.mm)
 spiders$logCond <- log10(spiders$condition)
