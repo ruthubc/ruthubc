@@ -13,13 +13,15 @@ library(lmerTest) # this puts pvalue in lmer
 library(visreg)
 library(multcomp)
 library(gridExtra)
+library(effects)
+library(visreg)
 
 mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
 
-spiders$cond.sqrt <- sqrt((spiders$Weight.mg)/(spiders$LegLen.mm^3)) # very high correlation between weight and condition
+spiders$cond.sqrt <- sqrt((spiders$Weight.mg)/(spiders$LegLen.mm^3))
 
-spidersMul$cond.sqrt <- sqrt((spidersMul$Weight.mg)/(spidersMul$LegLen.mm^3)) # very high correlation between weight and condition
+spidersMul$cond.sqrt <- sqrt((spidersMul$Weight.mg)/(spidersMul$LegLen.mm^3))
 
 
 
@@ -128,6 +130,8 @@ ggplot(data = SpiDiffAve, aes(x = logCtFm , y = MeanLogLegDiff )) + facet_wrap(~
 ggplot(data = SpiDiffAve, aes(x = logCtFm , y = MeanLogWtDiff )) + facet_wrap(~Instar) + geom_point() + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE)
 
+noMales <- subset(spidersVar, Instar != "SubMale" & Instar != "AdMale")
+
 
 ### Stats #########
 #### Leg Length variance 
@@ -135,12 +139,22 @@ ggplot(data = SpiDiffAve, aes(x = logCtFm , y = MeanLogWtDiff )) + facet_wrap(~I
 legDiffLm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
 				I(logCtFm^2):Instar + (1|NestID), data = spidersVar, REML = FALSE)
 
+# squareroon of count female not significant, not by a long way so removing the squareroot term
+
+legDiffLm2 <- lmer(SqRtOfLegDiff ~  logCtFm + Instar+ Instar:logCtFm + (1|NestID), data = spidersVar, REML = FALSE)
+
 modelPlot(legDiffLm)
 
-anova(legDiffLm)
-
 legDiffLm2 <- lmer(SqRtOfLegDiff ~ logCtFm + Instar+ Instar:logCtFm + 
-				(1|NestID), data = spidersVar, REML = FALSE)
+				(1|NestID), data = spidersVar, REML = FALSE)# becomes even more insignificant when removing the square term
+
+anova(legDiffLm2)
+
+legDiffLmNoMales <- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
+				I(logCtFm^2):Instar + (1|NestID), data = noMales, REML = FALSE)
+
+anova(legDiffLmNoMales)
+
 
 anova(legDiffLm2)
 
@@ -205,6 +219,10 @@ CondDiffLm <- lmer(SqRtOfCondDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logC
 
 visreg(CondDiffLm, xvar = "logCtFm", by = "Instar") # This is really useful! Do more research of what this is
 summary(CondDiffLm)
+summary.eff(CondDiffLm)
+plot(allEffects(CondDiffLm), multiline =TRUE)
+print(CondDiffLm)
+fixefTab <- fixef(CondDiffLm)
 
 modelPlot(CondDiffLm)
 

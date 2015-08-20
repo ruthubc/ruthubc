@@ -71,6 +71,8 @@ SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm, CountFemales), summ
 
 )
 
+
+
 ## Removing single nests
 SpiNestAve <- subset(SpiNestAve, type == "multiple")
 ##removing NA's from SpiNestAve
