@@ -9,11 +9,16 @@ library("ggplot2")
 
 spiders <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 
+spiders <- subset(spiders, AdMaleSubBd == "")
+
+
+subset <- subset(spiders, Instar == "AdMale" & logCtFm > 2 & logCtFm < 3)
+
 #changing to simplier name
 spiders$type <- spiders$Approx..Single.
 
 
-spiders <- subset(spiders, select = c(NestID, type, FemalesHaveEggsOrJuvs, Instar, Weight.mg, LegLen.mm, CountFemales ))
+spiders <- subset(spiders, select = c(NestID, type, FemalesHaveEggsOrJuvs, Instar, Weight.mg, LegLen.mm, HeadLength.mm,  CountFemales ))
 
 #removing eggs, parastised individuals and the outlier nest 44.3ex01 as the adults were particularly small
 spiders <- subset(spiders, Instar != "FALSE" & NestID != "44.3ex01"  & Instar !="egg" & 
@@ -28,6 +33,8 @@ spiders$Instar <-as.factor(spiders$Instar)
 
 spiders$condition <- spiders$Weight.mg/spiders$LegLen.mm
 spiders$condCb <- spiders$Weight.mg/(spiders$LegLen.mm^3)
+
+#spiders$condCb <- spiders$Weight.mg/(spiders$HeadLength.mm^3)
 
 # Histograms checking condition distribution
 #ggplot(spiders, aes(spiders$condition)) + geom_histogram() + facet_wrap(~Instar)
@@ -83,6 +90,8 @@ spiders$logCond <- log10(spiders$condition)
 # remove 
 spidersMul <- subset(spiders, type == "multiple") #removing single females
 spidersMul$NestID <- factor(spidersMul$NestID)
+
+#spidersMul <- subset(spiders, CountFemales > 14)
 
 levels(as.factor(spidersMul$CountFemales))
 levels(spidersMul$Instar)
