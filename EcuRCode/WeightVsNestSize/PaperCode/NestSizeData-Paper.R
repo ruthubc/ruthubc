@@ -12,13 +12,13 @@ spiders <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 spiders <- subset(spiders, AdMaleSubBd == "")
 
 
-subset <- subset(spiders, Instar == "AdMale" & logCtFm > 2 & logCtFm < 3)
-
 #changing to simplier name
 spiders$type <- spiders$Approx..Single.
 
 
 spiders <- subset(spiders, select = c(NestID, type, FemalesHaveEggsOrJuvs, Instar, Weight.mg, LegLen.mm, HeadLength.mm,  CountFemales ))
+
+spiders$ID<-seq.int(nrow(spiders))
 
 #removing eggs, parastised individuals and the outlier nest 44.3ex01 as the adults were particularly small
 spiders <- subset(spiders, Instar != "FALSE" & NestID != "44.3ex01"  & Instar !="egg" & 
@@ -79,10 +79,9 @@ spiders$logCond <- log10(spiders$condition)
 #		cvByNCond  = (1+(1/(4*N))) * CVCond,
 #		logcvByNCond = log10(cvByNCond ),
 #		meanLeg.Scal = mean(Leg.Scal),
-#		meanCond.Scal = mean(Cond.Scal)
-#
-#
-#
+#		meanCond.Scal = mean(Cond.Scal)#
+
+
 #)
 
 
