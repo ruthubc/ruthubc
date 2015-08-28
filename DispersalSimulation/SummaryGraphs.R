@@ -9,7 +9,19 @@ folder <- "DisperalSimulationOutput/"
 
 dis_aves <- read.csv(paste(folder, "DispersalAves.csv", sep = ""))
 
+xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd, data = dis_aves)
+ 
 dis_aves$KAndAdDisLmt <- paste("K =", dis_aves$meanK, "AdDisFdLm=", dis_aves$ad_dsp_fd)
+
+
+dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd ), summarise, # need to discount trials where no feeding obs and eve
+		N = length(!is.na(SpiderID)),
+		IndEatDur.Mean = mean(TotalTimeEating, na.rm = TRUE),
+		SumIndEat = sum(TotalTimeEating, na.rm = TRUE),
+		RankEatDur.Mean = mean(Rank.TimeEating, na.rm = TRUE),
+		AveFeed = mean(IndFeedNum, na.rm=TRUE),
+		AveCap = mean(IndCapNum, na.rm= TRUE)
+)
 
 ### ********** Might want to remove populations that did not survive to 200 generations
 
