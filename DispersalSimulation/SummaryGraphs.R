@@ -4,6 +4,7 @@
 ###############################################################################
 
 library(ggplot2)
+library(plyr)
 
 folder <- "DisperalSimulationOutput/"
 
@@ -13,9 +14,11 @@ xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd, data = dis_aves)
  
 dis_aves$KAndAdDisLmt <- paste("K =", dis_aves$meanK, "AdDisFdLm=", dis_aves$ad_dsp_fd)
 
+dis_aves[duplicated(dis_aves$fileNum),] # checking there are no duplicated file numbers
+ 
 
 dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd ), summarise, # need to discount trials where no feeding obs and eve
-		N = length(!is.na(SpiderID)),
+		N = length(!is.na(fileNum)),
 		IndEatDur.Mean = mean(TotalTimeEating, na.rm = TRUE),
 		SumIndEat = sum(TotalTimeEating, na.rm = TRUE),
 		RankEatDur.Mean = mean(Rank.TimeEating, na.rm = TRUE),
