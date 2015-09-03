@@ -32,7 +32,6 @@ fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 min_popAge <-100 # the number of generations to discount from the start of the calculations
 
-files <- fileExistsFn(fileNames)
 
 
 
@@ -240,6 +239,7 @@ summaryFun <- function(fileName, min_popAge){
 }
 
 
+files <- fileExistsFn(fileNames)
 
 
 loop <- foreach(i=1:length(files), .combine = "rbind",
