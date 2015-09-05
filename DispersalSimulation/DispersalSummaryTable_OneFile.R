@@ -10,26 +10,29 @@ library(gridExtra)
 library(reshape2)
 library(doParallel)
 
+### Something to think about. Are there some variables where I don't want to include colonies that are alive at the end of the simulation?
+
 cl <- makeCluster(2, outfile = "")# outfile = paste(folder, "log.txt", sep = ""))
 # Register cluster
 registerDoParallel(cl)
 
 filesCSV <- "FilesCreated.csv"
 
-outputFile <- "Dispersal24Aug.csv"
+outputFile <- "Dispersal5Sept.csv"
 
-folder <- "R_Graphs/"
+#folder <- "R_Graphs/"
+folder <- "DisperalSimulationOutput/"
 
 fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file names csv file
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 
-min_popAge <-100 # the number of generations to discount from the start of the calculations
+min_popAge <-5 # the number of generations to discount from the start of the calculations
 
 
 
-fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and returing a list of existing files
+fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and returning a list of existing files
 	
 	filesThatExist <- c()
 	
@@ -37,11 +40,13 @@ fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and re
 	for (i in 1:nrow(fileNames)){
 		theFileName <-fileNames[i,1]
 		
-		fileToImport <- paste(theFileName, ".py.csv", sep = "")		
+		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+		#fileToImport <- paste(theFileName, ".py.csv", sep = "")		
+		
 		
 		if(file.exists(fileToImport) == "TRUE"){
 			
-			print (paste("The file exists! Yay!. File:", fileToImport))
+			#print (paste("The file exists! Yay!. File:", fileToImport))
 			filesThatExist <- c(filesThatExist,  i)
 			
 		}else{
@@ -57,7 +62,8 @@ summaryFun <- function(fileName, min_pop_age){
 
 		fileNum <- print (substr(fileName, 0, 4))
 
-		fileToImport <- paste(theFileName, ".py.csv", sep = "")
+		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+		#fileToImport <- paste(theFileName, ".py.csv", sep = "")
 
 		
 		File <- read.csv(fileToImport, quote = "")
@@ -65,12 +71,12 @@ summaryFun <- function(fileName, min_pop_age){
 		
 		maxPopAge <- max(File$pop_age)
 		
-		
+		# getting averages for all records, no generations removed
 		FileAves_All<- ddply(File, .(Comp_slope, meanK, Fd_ln, input_var, disp_rsk, ad_dsp_fd, min_juv_fd, min_no_off,
 						max_no_off, min_ad_sze_off, max_ad_sze_off), summarise,
-				all_pop_age = max(pop_age),
+				pop_age = max(pop_age),
 				all_tot_num_cols = max(colony_ID),
-				ave_colAge = mean(colony_age),
+				all_ave_colAge = mean(colony_age),
 				all_se_colAge = sd(colony_age)/sqrt(length(colony_age)),
 				all_min_colAge = min(colony_age),
 				all_max_colAge = max(colony_age),
@@ -91,11 +97,13 @@ summaryFun <- function(fileName, min_pop_age){
 				all_mean_juv_sze = mean(jvSz_B4_mean, na.rm = TRUE)
 		)
 		
+		
 		if(maxPopAge < min_popAge){ # removing first 100 generations
-			fn_min_popAge <- 0
-			print("pop did not survive to pop age generations")
+
+			print("pop did not survive to input number of generations") # inputs NA's as the population did not survive long enough
 			
-			FileAves <- data.frame(	tot_num_cols = NA,
+			FileAves <- data.frame(
+					tot_num_cols = NA,
 					ave_colAge = NA,
 					se_colAge = NA,
 					min_colAge = NA,
@@ -117,14 +125,12 @@ summaryFun <- function(fileName, min_pop_age){
 					mean_juv_sze = NA 
 			)
 		}else{
-			fn_min_popAge <- min_popAge
+
 			File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
 
 		
 		
-		FileAves<- ddply(File, .(Comp_slope, meanK, Fd_ln, input_var, disp_rsk, ad_dsp_fd, min_juv_fd, min_no_off,
-						max_no_off, min_ad_sze_off, max_ad_sze_off), summarise,
-				pop_age = max(pop_age),
+		FileAves<- ddply(File, .(), summarise,
 				tot_num_cols = max(colony_ID),
 				ave_colAge = mean(colony_age),
 				se_colAge = sd(colony_age)/sqrt(length(colony_age)),
@@ -148,10 +154,12 @@ summaryFun <- function(fileName, min_pop_age){
 		)
 		
 	}	
-		# getting data on dispersers
+		
+	# getting data on dispersers
 		Dispersers <- subset(File, dispersers >0)
 		
-		if (nrow(Dispersers) == 0){
+		
+		if (nrow(Dispersers) == 0 | maxPopAge < min_popAge){
 			
 			print ("no dispersers")
 			DispAves <- data.frame(	
@@ -173,9 +181,7 @@ summaryFun <- function(fileName, min_pop_age){
 					min_disp_age = min(colony_age),
 					fstDis_col_size = (num_adsB4_dispersal[colony_age == min_disp_age]),
 					count_col_disp = length(ID)
-			
-			
-			)
+				)
 			
 			
 			DispAves <- ddply(DispAvesByColID, .(), summarise,
@@ -185,11 +191,7 @@ summaryFun <- function(fileName, min_pop_age){
 					se_num_col_disp = sd(count_col_disp), sqrt(length(count_col_disp)),
 					mean_fstDis_col_size = mean(fstDis_col_size),
 					se_fstDis_col_size = sd(fstDis_col_size), sqrt(length(fstDis_col_size))
-			
-			
-			
-			
-			)
+				)
 			
 			DispAves <- subset(DispAves, select = c(
 							age_first_disp,
@@ -198,7 +200,6 @@ summaryFun <- function(fileName, min_pop_age){
 							se_num_col_disp,
 							mean_fstDis_col_size,
 							se_fstDis_col_size
-					
 					
 					))
 			
