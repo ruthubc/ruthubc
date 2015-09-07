@@ -59,7 +59,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
                    max_no_off, ad_disFd_lmt, F_Ln, sim_len): # writing the python file  that runs the model
     name = FileName + '.py'
     file = open(name, 'w+')
-    file.write("from mySim.DispersalRun import disperal_run\n")
+    file.write("from core.DispersalRun import disperal_run\n")
     file.write("sim_len = " + str(sim_len) + "\n")
     file.write('filename = "'  + FileName + '.py"\n')
     file.write("comp_slp = " + str(comp_slp) + "\n")
