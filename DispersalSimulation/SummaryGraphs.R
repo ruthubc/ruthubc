@@ -13,13 +13,17 @@ folder <- "DisperalSimulationOutput/"
 
 dis_aves <- read.csv(paste(folder, "DispersalAves.csv", sep = ""))
 
+rownames(dis_aves)
+
+
 xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd, data = dis_aves)
 
 dis_aves$full <- ifelse(dis_aves$pop_age > 100, 1, 0) # marking which colonies survived over 100 generations and which didn't
 
 dis_aves$dis_bin <- ifelse(is.na(dis_aves$ave_num_disp), ifelse(dis_aves$full == 1, 0, NA), 1) # making binary variable of whether any dispersal occured
 
-nrow(dis_aves[dis_aves$dis_bin == 0,])  # checking if any surviving populations had any colonies that did not disperse
+print("did any populations have colonies that did not disperse?")
+nrow(subset(dis_aves, dis_bin == 0))  # checking if any surviving populations had any colonies that did not disperse
 
 dis_aves$all_dis_bin <- ifelse(is.na(dis_aves$all_ave_num_disp), 0, 1)
 
@@ -81,8 +85,6 @@ dis_ply$VarAndRsk <- paste("Var=", dis_ply$input_var, ", DR=", dis_ply$disp_rsk)
 
 
 ########### Graphs ###############
-
-mytheme = theme(text = element_text(size=18))
 
 mytheme <-theme_bw(base_size=18)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
