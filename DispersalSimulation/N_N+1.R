@@ -7,11 +7,12 @@
 library (plyr)
 library(reshape2)
 library(broom)
-library(doParallel)
+library(ggplot2)
+#library(doParallel)
 
-cl <- makeCluster(2, outfile = "")# outfile = paste(folder, "log.txt", sep = ""))
+#cl <- makeCluster(2, outfile = "")# outfile = paste(folder, "log.txt", sep = ""))
 # Register cluster
-registerDoParallel(cl)
+#registerDoParallel(cl)
 
 
 num_gens <- 500
@@ -19,10 +20,6 @@ num_gens <- 500
 File <- read.csv(paste("DisperalSimulationOutput/SurvivalTest.csv", sep = ""))
 
 File <- subset(File, pop_age > 100)
-
-File$prevDisp <- "n"
-
-cols<- as.numeric(levels(as.factor(File$colony_ID)))
 
 
 ## Updating dispersal information
@@ -46,6 +43,7 @@ File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
 ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, 
 		numAdsB4dis = File$num_adsB4_dispersal, dispersers = File$dispersers, prevDisp = File$prevDisp)
 
+write.csv(ColInfo, file = "DisperalSimulationOutput/ColInfoTest.csv" )
 
 ## Copied from other file -- need to make into function
 
@@ -62,7 +60,7 @@ nnplus1 <- merge(ColInfo, ColInfoPlus1,  by =c("ColAgePlus1", "col_id"))
 
 colnames(nnplus1)[5] <- "N"
 
-#write.csv(nnplus1, file = "DisperalSimulationOutput/nnTest.csv" )
+write.csv(nnplus1, file = "DisperalSimulationOutput/nnTest.csv" )
 
 nnplus1 <- subset(nnplus1, prevDisp != "now")  # removing colonies that have just dispersed
 
@@ -72,12 +70,21 @@ nnplus1 <- subset(nnplus1, pop_age < num_gens - 1 ) # removing nests at the end 
 nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N
 
 
+curve(I((x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x))), 0, 400) # plots the function
+
+
+ggplot(data.frame(x=c(0, 400)), aes(x)) + stat_function(fun=function(x)(x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x)))
+				#I((x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x))))
+
 ######## calculating logistic equation
 
 logisticFn = function(nnplus1){
 	
 	logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
-			algorithm= "port", trace = T)
+			lower=list(a=0, b=0,c=0), algorithm= "port", trace = T)
+	
+	#logistic <- nls(NPlus1 ~ (N * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(b=1.5, c=0.02), 
+			#algorithm= "port", trace = T)
 	return (logistic) #list(a=0.4, b=1.5, c=0.02)
 }	
 
@@ -88,7 +95,22 @@ tryCatchLogistic= function(x) {
 
 logistic <- tryCatchLogistic(nnplus1)
 
-options(warn = -1) #suppress warnings globally
+summary(logistic)
+
+nnplus1$logisticPredict <- predict(logistic)
+
+ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
+		geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
+		geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn")
+
+
+ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
+		geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
+		geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn") + 
+		stat_function(fun=function(x)(x^(1+0.79)) * exp(-1) * (exp(-0.0105 * x)))
+
+
+ options(warn = -1) #suppress warnings globally
 
 if (logistic =="error"){
 	print ("error in logistic calculation") 
@@ -117,19 +139,37 @@ if (logistic =="error"){
 ######## Calculating ricker equation
 
 rickerFn = function(nnplus1){
-	ricker <- nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
+	#ricker <- nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
+			#algorithm= "port", trace = T)
+	
+	ricker <- nls(NPlus1 ~ I((N * lam) * ((1- capA * exp((-a * N )/oth))/((1 + a *N )^b))),
+			data = nnplus1, start = list(capA = 70, a = 0.01, b=1, lam = 1, oth = 1.0), 
 			algorithm= "port", trace = T)
+	
 	return(ricker) # start = list(a=0.4, b=1.5, K=100)
 }
 
 
+
+ricker <- nls(NPlus1 ~ I((N * lam) * ((1 - (capA * exp((-a * N )/oth)))/((1 + a *N )^b))),
+		data = nnplus1, start = list(capA = 40, a = 0.01, b=6, lam = 1, oth = 1.0), 
+		algorithm= "port", trace = T)
 
 tryCatchRicker= function(x) {
 	tryCatch(rickerFn(x), warning = function(w) {print("warning")},
 			error = function(e) {print("error")}) 
 }
 
+
+
 ricker <- tryCatchRicker(nnplus1)
+
+nnplus1$rickerPredict <- predict(ricker)	
+
+ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
+		geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
+		geom_line(aes(x = N, y = rickerPredict), colour = 'blue') + ggtitle("ricker eqn")
+
 
 
 if (ricker =="error"){

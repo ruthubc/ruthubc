@@ -25,7 +25,7 @@ print(msurv)
 
 mean(msurv[,1]) # don't use mean by itself, wrong!
 
-summary(msurv)
+ summary(msurv)
 
 fit <- survfit(data = survivalSub, Surv(colony_age, colAlive == "Alive"))
 
