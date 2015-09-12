@@ -13,6 +13,8 @@ cl <- makeCluster(2)
 # Register cluster
 registerDoParallel(cl, outfile = "")
 
+min_popAge <-1 # the number of generations to discount from the start of the calculations
+
 #graph making function
 graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
@@ -36,7 +38,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	if(maxPopAge < 300){
 		fn_min_popAge <- 0
-		print("pop did not survive to 400 generations")
+		print("pop did not survive to 300 generations")
 	}else{
 		fn_min_popAge <- min_popAge
 		File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
@@ -44,31 +46,24 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	
 	
-	
 	File$AveOffAd <- File$numjuvs/File$num_ads
 	File$AveOffAd[which(File$AveOffAd == Inf)] <- NA
-	
-	
-	File$prevDisp <- "n"
-	
-	cols<- as.numeric(levels(as.factor(File$colony_ID)))
-	for (i in 1:length(cols)){
-		
-		thisCol <- cols[i]
-		#print(thisCol)
 
-		age_FstDisp <- File$colony_age[which(File$dispersers > 0 & File$colony_ID == thisCol)]
-		if (length(age_FstDisp) > 0){
-			min_ageFstDisp <- min(age_FstDisp)
-			#print (min_ageFstDisp)
-			File$prevDisp[which(File$colony_age >= min_ageFstDisp & File$colony_ID == thisCol)] <- "y"
-			
-		}else{
-			#print("no dispersers")
-		}
-	}
 	
-	File$prevDisp[File$dispersers >0] <- "now"
+	#cols<- as.numeric(levels(as.factor(File$colony_ID)))
+	
+	
+	## Updating dispersal information
+	firstDisp <- ddply(subset(File, dispersers > 0), .(colony_ID), summarise,
+			firstDisp = min(pop_age))
+	
+	File <- merge(File, firstDisp, by = "colony_ID", all.x = TRUE)
+	
+	File$prevDisp <-  ifelse(File$firstDisp > File$pop_age | is.na(File$firstDisp), "n", "y" )
+	
+	File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
+	
+
 	
 	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, 
 			numAdsB4dis = File$num_adsB4_dispersal, dispersers = File$dispersers, prevDisp = File$prevDisp)
@@ -224,65 +219,42 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	########## Making n n+1 graphs
 
-	nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = numeric(), prevDisp = character(),
-			stringsAsFactors=FALSE) # creating empty data frame
+	#nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = numeric(), prevDisp = character(),
+	#stringsAsFactors=FALSE) # creating empty data frame
 	
 	counter <- 0
-	
-	cols <- as.numeric(levels(as.factor(ColInfo$col_id)))
+
 	
 	#print(length(cols))
+	ColInfo$ColAgePlus1 <- ColInfo$col_age
+
+	ColInfoPlus1 <- subset(ColInfo, select = c("col_id", "numAdsB4dis", "col_age"))
+
+	colnames(ColInfoPlus1)[2] <- "NPlus1"
+
+	ColInfoPlus1$ColAgePlus1 <- ColInfoPlus1$col_age - 1
+
+	nnplus1 <- merge(ColInfo, ColInfoPlus1,  by =c("ColAgePlus1", "col_id"))
+
+	colnames(nnplus1)[5] <- "N"
+
+
+
+	nnplus1 <- subset(nnplus1, prevDisp != "now")  # removing colonies that have just dispersed
+
+
+	nnplus1 <- subset(nnplus1, pop_age < num_gens - 1 ) # removing nests at the end of generations that might not have died
+
+	nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N	
+
 	
-	for (i in 1:length(cols)){
-		
-		colony <- cols[i]
-		#print ("colony")
-		#print(colony)
-		
-		col_subset <- subset(ColInfo, col_id == colony)
-		
-		
-		maxcol_age <- max(col_subset$col_age)
-		mincol_age <- min(col_subset$col_age)
-		
-		for (age in mincol_age:maxcol_age){
-			#print("age")
-			#print(age)
-			counter <- counter + 1
-			
-			if (col_subset$pop_age[which(col_subset$col_age == age)]){
-				
-				nnplus1[counter,1] <- colony # [row number, col num]
-				nnplus1[counter,2] <- col_subset$pop_age[which(col_subset$col_age == age)]
-				nnplus1[counter,3] <- col_subset$numAdsB4dis[which(col_subset$col_age == age)]
-				nnplus1[counter,5] <- col_subset$dispersers[which(col_subset$col_age == age)]	
-				nnplus1[counter,6] <- as.character(col_subset$prevDisp[which(col_subset$col_age == age)])
-				
-				
-				if (age == maxcol_age){ # setting 
-					nnplus1[counter,4] <- 0 
-				}else{
-					nnplus1[counter,4] <- col_subset$numAdsB4dis[which(col_subset$col_age == (age +1))]	
-				}
-				
-				
-				
-				
-			}
-		}
-	}
-	
-	
-	
-	
-	nnplus1 <- subset(nnplus1, pop_age < num_gens ) # removing nests at the end of generations that might not have died
 	
 	nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N
 	
 	#ave growth rate per ind
 	p13a <- ggplot(data = nnplus1, aes(x  = N, y = AveGrowth)) + geom_point(aes(colour = prevDisp)) + stat_smooth() + mytheme + ggtitle("ave growth rate per ind nnplus1-n/n") + stat_smooth(se = FALSE)
 	
-	nnplus1 <- subset(nnplus1, disp == 0)  # removes colonies that had dispersed as the numbers will be wrong
+
 	
 	######## calculating logistic equation
 	
@@ -463,7 +435,7 @@ fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="") # imp
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 
-min_popAge <-100 # the number of generations to discount from the start of the calculations
+
 
 
 ## TO test the function
@@ -479,14 +451,14 @@ numFiles<- length(files)
 print ("the number of files that exist:")
 print (numFiles)
 
-loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "broom")) %dopar%{
+#loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "broom")) %dopar%{
 	
-#for (i in 1:numFiles){
+for (i in 1:numFiles){
 
 	num <- files[i]
 	
 	theFileName <-fileNames[num,1]
-	print ("file name in loop")
+	print ("file name in loop")                                        
 	print (theFileName)
 	num_gens <- as.numeric(fileNames[num, 3])
 	returnList <- graphFunction(folder, theFileName, num_gens, min_popAge)
@@ -502,7 +474,7 @@ if (length(files) > 1){
 	DF <- rbind(DF, loop[[i]][[1]])
 	N_NPlus1Vars <- rbind(N_NPlus1Vars, loop[[i]][[2]])
 	
-	}
+	}                                
 }
 
 stopCluster(cl)
