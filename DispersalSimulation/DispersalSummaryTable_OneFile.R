@@ -9,6 +9,7 @@ library(ggplot2)
 library(gridExtra)
 library(reshape2)
 library(doParallel)
+library(survival)
 
 ### Something to think about. Are there some variables where I don't want to include colonies that are alive at the end of the simulation?
 
@@ -18,7 +19,7 @@ registerDoParallel(cl)
 
 filesCSV <- "FilesCreated.csv"
 
-outputFile <- "Dispersal5Sept.csv"
+outputFile <- "DispersalTest.csv"
 
 #folder <- "R_Graphs/"
 folder <- "DisperalSimulationOutput/"
@@ -27,7 +28,7 @@ fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file na
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
-
+## Change this to the correct number i want to remove
 min_popAge <-5 # the number of generations to discount from the start of the calculations
 
 
@@ -58,7 +59,7 @@ fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and re
 }
 
 
-summaryFun <- function(fileName, min_pop_age){
+summaryFun <- function(fileName, min_pop_age, numGens){
 
 		fileNum <- print (substr(fileName, 0, 4))
 
@@ -208,12 +209,25 @@ summaryFun <- function(fileName, min_pop_age){
 			
 		}
 		
+		
+		# survival analysis - getting the mean survival time for the colonies
+
+	survivalSub <- subset(survivalSub, colAlive == "dead" | pop_age == numGens)
+	msurv <- with(survivalSub, Surv(colony_age, colAlive =="dead")) # getting the survival thing
+	survivalMean <- as.data.frame(mean(msurv[,1])) # don't use mean without the [,1] by itself, wrong!
+	
+	names(survivalMean)[1] <- "survivalMean"
+	
+	
+
+
+		
 
 		
 
 		
 		rm(File)
-		average <- cbind(FileAves_All, FileAves, DispAves)
+		average <- cbind(FileAves_All, FileAves, DispAves, survivalMean)
 		
 		average$.id <- NULL
 		
@@ -229,18 +243,34 @@ summaryFun <- function(fileName, min_pop_age){
 
 files <- fileExistsFn(fileNames)
 
+numFiles<- length(files)
 
-loop <- foreach(i=1:length(files), .errorhandling='remove', .combine = "rbind",
-				.packages= c("ggplot2", "plyr", "gridExtra", "reshape2")) %dopar%{
-	
-		print(i)	
+print ("the number of files that exist:")
+print (numFiles)
+
+
+
+#loop <- foreach(i=1:numFiles, .errorhandling='remove', .combine = "cbind",
+#				.packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "survival")) %dopar%{
+
+			
+for (i in 1:numFiles){
+	print(i)	
 
 	num <- files[i]
 	
 	theFileName <-fileNames[num,1]
+	numGens <- fileNames[num, 3]
+	
+	print ("num gens")
+	print (numGens)
 
 	print (theFileName)
-	output <- summaryFun(theFileName, min_popAge)
+	output2 <- summaryFun(theFileName, min_popAge, numGens)
+	
+	output <- rbind(output, output2)
+	
+	#print (output)
 
 	
 }

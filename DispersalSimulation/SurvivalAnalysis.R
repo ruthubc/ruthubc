@@ -20,12 +20,14 @@ survivalSub <- subset(survivalTest, colony_ID > 10000 , select = c(pop_age, colo
 
 survivalSub <- subset(survivalSub, colAlive == "dead" | pop_age ==500  )
 
-msurv <- with(survivalSub, Surv(colony_age, colAlive =="alive")) # creates survival object, check i have it the write way around
+msurv <- with(survivalSub, Surv(colony_age, colAlive =="dead")) # creates survival object, check i have it the write way around
 print(msurv)
 
-mean(msurv[,1]) # don't use mean by itself, wrong!
+survivalMean <- as.data.frame(mean(msurv[,1])) # don't use mean by itself, wrong!
 
- summary(msurv)
+names(survivalMean)[1] <- "survivalMean"
+
+summary(msurv)
 
 fit <- survfit(data = survivalSub, Surv(colony_age, colAlive == "Alive"))
 

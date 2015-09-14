@@ -11,7 +11,7 @@ library(doParallel)
 
 cl <- makeCluster(2)
 # Register cluster
-registerDoParallel(cl, outfile = "")
+registerDoParallel(cl)
 
 min_popAge <-1 # the number of generations to discount from the start of the calculations
 
@@ -76,7 +76,12 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	# graph variables
 	
-	mytitle = textGrob(label = fileName)
+	print ("file name before first text grob")
+	print (fileName)
+	
+	#textgrob
+	
+	mytitle = fileName
 	
 	pngHeight = 480 * (20 +1 )# 400 * number of graphs)
 	
@@ -221,8 +226,6 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 
 	#nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = numeric(), prevDisp = character(),
 	#stringsAsFactors=FALSE) # creating empty data frame
-	
-	counter <- 0
 
 	
 	#print(length(cols))
@@ -388,8 +391,10 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	p_grob <- arrangeGrob(p14,p15, ncol=2)
 	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p6a, p7, p8, p9, p10, p11, p12, p13, p13a,  p_grob,
-					 p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), 
-					main = mytitle))
+					 p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), top = mytitle))
+	 
+
+					#main = mytitle))
 	
 	dev.off()
 	
@@ -439,7 +444,7 @@ fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 
 ## TO test the function
-#fileName <- fileNames[22,1]
+#fileName <- fileNames[24,1]
 
 files <- fileExistsFn(fileNames)
 
@@ -451,9 +456,9 @@ numFiles<- length(files)
 print ("the number of files that exist:")
 print (numFiles)
 
-#loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "broom")) %dopar%{
+loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "broom")) %dopar%{
 	
-for (i in 1:numFiles){
+#for (i in 1:numFiles){
 
 	num <- files[i]
 	
