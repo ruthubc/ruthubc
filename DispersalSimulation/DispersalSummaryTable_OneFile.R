@@ -212,7 +212,7 @@ summaryFun <- function(fileName, min_pop_age, numGens){
 		
 		# survival analysis - getting the mean survival time for the colonies
 
-	survivalSub <- subset(survivalSub, colAlive == "dead" | pop_age == numGens)
+	survivalSub <- subset(File, colAlive == "dead" | pop_age == numGens)
 	msurv <- with(survivalSub, Surv(colony_age, colAlive =="dead")) # getting the survival thing
 	survivalMean <- as.data.frame(mean(msurv[,1])) # don't use mean without the [,1] by itself, wrong!
 	
@@ -250,33 +250,29 @@ print (numFiles)
 
 
 
-#loop <- foreach(i=1:numFiles, .errorhandling='remove', .combine = "cbind",
-#				.packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "survival")) %dopar%{
+loop <- foreach(i=1:numFiles, .errorhandling='remove', .combine = "rbind",
+				.packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "survival")) %dopar%{
 
 			
-for (i in 1:numFiles){
-	print(i)	
+#for (i in 1:numFiles){
+	#print(i)	
 
 	num <- files[i]
 	
 	theFileName <-fileNames[num,1]
 	numGens <- fileNames[num, 3]
 	
-	print ("num gens")
-	print (numGens)
+	#print ("num gens")
+	#print (numGens)
 
-	print (theFileName)
-	output2 <- summaryFun(theFileName, min_popAge, numGens)
-	
-	output <- rbind(output, output2)
-	
-	#print (output)
-
+	#print (theFileName)
+	output <- summaryFun(theFileName, min_popAge, numGens)
+	print (output)
 	
 }
 
 
 stopCluster(cl)
-write.table(loop, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
+#write.table(loop, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
 
 

@@ -467,6 +467,7 @@ loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "
 	print (theFileName)
 	num_gens <- as.numeric(fileNames[num, 3])
 	returnList <- graphFunction(folder, theFileName, num_gens, min_popAge)
+
 }
 
 

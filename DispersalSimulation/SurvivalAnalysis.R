@@ -18,7 +18,7 @@ survivalSub <- subset(survivalTest, colony_ID > 10000 , select = c(pop_age, colo
 
 #write.csv(survivalSub, file = "DisperalSimulationOutput/SurvivalTestSubset.csv" )
 
-survivalSub <- subset(survivalSub, colAlive == "dead" | pop_age ==500  )
+survivalSub <- subset(survivalSub, colAlive == "alive")# | pop_age ==500  )
 
 msurv <- with(survivalSub, Surv(colony_age, colAlive =="dead")) # creates survival object, check i have it the write way around
 print(msurv)
