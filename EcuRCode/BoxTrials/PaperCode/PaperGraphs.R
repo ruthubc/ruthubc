@@ -10,6 +10,7 @@ require(reshape2)
 library(nlme)
 library(gridExtra)
 require(scales)
+require(grid)
 
 mytheme <-theme_bw(base_size=30)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), 
 		axis.title.y = element_text(vjust=0), plot.margin=unit(c(1,1,1.5,1.2),"cm"), 
@@ -45,20 +46,34 @@ CapVsEat$FeedIndPos <- factor(CapVsEat$FeedIndPos, levels =c("y", "n"))
 CapVsEat$FeedAndCap <- paste("Cap", CapVsEat$CaptureIndPos, "Feed", CapVsEat$FeedIndPos)
 
 
-
+### Old graph
 ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 		geom_bar(stat="bin", position="fill") + xlab("Participated in Prey Capture")+ ylab("Percentage of Individuals That Fed") + 
 		 facet_wrap(~Treatment) + scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
 		scale_fill_discrete(name = "Fed?", breaks = c("y", "n"),
 				labels = c("Yes", "No"))  + mytheme    + scale_fill_manual("FeedIndPos", values = c("darkblue", "white")) +
-		theme(legend.position = "none") + scale_y_continuous(labels = percent, expand = c(0.001,0.001) )
+		theme(legend.position = "none")# + scale_y_continuous(labels = percent, expand = c(0.001,0.001) )
+
+
+
+##  new graph
+ggplot(data=CapVsEat, aes(x=FeedIndPos, fill =  CaptureIndPos)) +
+		geom_bar(stat="bin", position="fill", colour ="black") + xlab("Fed?")+ ylab("Percentage of Individuals That Fed") + 
+		facet_wrap(~Treatment) + scale_x_discrete(breaks=c("n", "y"), labels=c("No", "Yes")) +
+		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
+		scale_fill_discrete(name = "Captured?", breaks = c("y", "n"),
+				labels = c("Yes", "No"))  + mytheme #    + scale_fill_manual("FeedIndPos", values = c("darkblue", "red")) +
+		#theme(legend.position = "none")
 
 
 #number feeding and capturing prey per box
 ggplot(FdCapByTrial, aes(x = Treatment, y = value)) + geom_boxplot() + facet_grid(Cap ~ Eat) + mytheme + ylab("Number of spiders") + 
 		xlab("Prey Size") + scale_y_continuous(limits = c(0, 10))
 
+ggplot(AveFdOrCap, aes(x = log(PropCheat))) + geom_histogram()
+
+ggplot(AveFdOrCap, aes(x = Treatment, y = log(PropCheat))) + geom_boxplot()
 
 dev.off()
 

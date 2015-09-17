@@ -276,6 +276,10 @@ AveFdOrCap <- ddply(BoxComboMorn, .(TrialID, Treatment, IndBoxID, Instar), summa
 
 )
 
+AveFdOrCap$PropCheat <- AveFdOrCap$NoCapEat/ (AveFdOrCap$NoCapEat+ AveFdOrCap$CapEat)
+
+AveFdOrCap$LogPropCheat <- log(AveFdOrCap$PropCheat)
+
 table(BoxComboMorn$CapAndFeed)
 
 FdCapByTrial<- melt(AveFdOrCap, id = c("TrialID", "Treatment", "IndBoxID", "Instar"))
