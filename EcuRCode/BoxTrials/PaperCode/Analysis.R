@@ -3,6 +3,7 @@
 # Author: Ruth
 ###############################################################################
 
+library(lme4)
 
 #### Box trails graphs. Code importing and manipulating the data is in BoxTrialsData.R
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
@@ -278,7 +279,7 @@ GlmFeedAndCapSm<- glmer(CapAndFeed ~  LogCond + Instar +
 summary(GlmFeedAndCapSm)
 
 GlmFeedAndCapRedSm<- glmer(CapAndFeed ~  Instar + 
-				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "small"), family = binomial(logit))
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "small" & IndFeedNum == 1), family = binomial(logit))
 
 anova(GlmFeedAndCapSm, GlmFeedAndCapRedSm )
 
@@ -287,12 +288,13 @@ anova(GlmFeedAndCapSm, GlmFeedAndCapRedSm )
 
 
 GlmFeedAndCapLg<- glmer(CapAndFeed ~  LogCond + Instar + 
-				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "large"), family = binomial(logit))
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "large"& IndFeedNum == 1), family = binomial(logit))
 
-summary(GlmFeedAndCap)
+summary(GlmFeedAndCapLg)
+visreg(GlmFeedAndCapLg)
 
 GlmFeedAndCapRedLg<- glmer(CapAndFeed ~  Instar + 
-				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "large"), family = binomial(logit))
+				(1|IndBoxID) + (1|IndBoxID:SpiderID), subset(BoxMornFeedOrCap, Treatment == "large" && IndFeedNum == 1), family = binomial(logit))
 
 anova(GlmFeedAndCapLg, GlmFeedAndCapRedLg )
 

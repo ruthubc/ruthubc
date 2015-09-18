@@ -159,7 +159,7 @@ BoxEatLarge<- BoxFeedAve[BoxFeedAve$Treatment == 'large',]
 Largefull<-lmer(LogCond ~ AveCap + Instar  + (1|IndBoxID) + (1 | IndBoxID:TrialID), 
 		BoxEatLarge)
 
-
+visreg(Largefull)
 
 Largered<-lmer(LogCond ~ Instar + (1|IndBoxID) + (1 | IndBoxID:TrialID), 
 		BoxEatLarge)

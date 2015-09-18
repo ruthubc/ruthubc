@@ -6,12 +6,13 @@
 library(ggplot2)
 library(plyr)
 library(gridExtra)
+library(grid)
 
 ## When running this with new  competition slopes, make sure that it updates the comp for the graphs correctly with the lookup table
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "DispersalAves.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "Dispersal8Sept.csv", sep = ""))
 
 rownames(dis_aves)
 
