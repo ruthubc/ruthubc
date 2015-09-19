@@ -278,7 +278,9 @@ AveFdOrCap <- ddply(BoxComboMorn, .(TrialID, Treatment, IndBoxID, Instar), summa
 
 AveFdOrCap$PropCheat <- AveFdOrCap$NoCapEat/ (AveFdOrCap$NoCapEat+ AveFdOrCap$CapEat)
 
-AveFdOrCap$LogPropCheat <- log(AveFdOrCap$PropCheat)
+AveFdOrCap$LogPropCheat <- asin(sqrt(AveFdOrCap$PropCheat))
+
+ggplot(AveFdOrCap, aes(x = LogPropCheat, fill = Treatment)) + geom_histogram()
 
 table(BoxComboMorn$CapAndFeed)
 

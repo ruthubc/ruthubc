@@ -3,7 +3,6 @@ library(ggplot2)
 require(reshape2)
 library(nlme)
 library(gridExtra)
-library(histogram)
 require(scales)
 
 #mytheme <-theme_bw(base_size=30)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
