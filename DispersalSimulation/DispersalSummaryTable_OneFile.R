@@ -250,12 +250,12 @@ print (numFiles)
 
 
 
-loop <- foreach(i=1:numFiles, .errorhandling='remove', .combine = "rbind",
-				.packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "survival")) %dopar%{
+#loop <- foreach(i=1:numFiles, .errorhandling='remove', .combine = "rbind",
+			#	.packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "survival")) %dopar%{
 
 			
-#for (i in 1:numFiles){
-	#print(i)	
+for (i in 1:numFiles){
+	print(i)	
 
 	num <- files[i]
 	
@@ -266,13 +266,18 @@ loop <- foreach(i=1:numFiles, .errorhandling='remove', .combine = "rbind",
 	#print (numGens)
 
 	#print (theFileName)
+			
+	if (i ==1){
 	output <- summaryFun(theFileName, min_popAge, numGens)
-	print (output)
+	} else {
+	output1 <- summaryFun(theFileName, min_popAge, numGens)
+	output <- rbind(output, output1)
+	}
 	
 }
 
 
 stopCluster(cl)
-#write.table(loop, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
+write.table(loop, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
 
 
