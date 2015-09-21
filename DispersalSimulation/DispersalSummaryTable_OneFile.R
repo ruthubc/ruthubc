@@ -8,14 +8,14 @@ library (plyr)
 library(ggplot2)
 library(gridExtra)
 library(reshape2)
-library(doParallel)
+#library(doParallel)
 library(survival)
 
 ### Something to think about. Are there some variables where I don't want to include colonies that are alive at the end of the simulation?
 
-cl <- makeCluster(2, outfile = "")# outfile = paste(folder, "log.txt", sep = ""))
+#cl <- makeCluster(2, outfile = "")# outfile = paste(folder, "log.txt", sep = ""))
 # Register cluster
-registerDoParallel(cl)
+#registerDoParallel(cl)
 
 filesCSV <- "FilesCreated.csv"
 
@@ -97,6 +97,15 @@ summaryFun <- function(fileName, min_pop_age, numGens){
 				all_mean_ad_sze = mean(adSz_B4_mean, na.rm = TRUE),
 				all_mean_juv_sze = mean(jvSz_B4_mean, na.rm = TRUE)
 		)
+		
+		# getting survival mean for all colonies
+		
+		survivalSub <- subset(File, colAlive == "dead" | pop_age == numGens)
+		msurv <- with(survivalSub, Surv(colony_age, colAlive =="dead")) # getting the survival thing
+		survivalMean <- as.data.frame(mean(msurv[,1])) # don't use mean without the [,1] by itself, wrong!
+		
+		names(survivalMean)[1] <- "survivalMean_all"
+		
 		
 		
 		if(maxPopAge < min_popAge){ # removing first 100 generations
@@ -210,14 +219,6 @@ summaryFun <- function(fileName, min_pop_age, numGens){
 		}
 		
 		
-		# survival analysis - getting the mean survival time for the colonies
-
-	survivalSub <- subset(File, colAlive == "dead" | pop_age == numGens)
-	msurv <- with(survivalSub, Surv(colony_age, colAlive =="dead")) # getting the survival thing
-	survivalMean <- as.data.frame(mean(msurv[,1])) # don't use mean without the [,1] by itself, wrong!
-	
-	names(survivalMean)[1] <- "survivalMean"
-	
 	
 
 
@@ -277,7 +278,7 @@ for (i in 1:numFiles){
 }
 
 
-stopCluster(cl)
-write.table(loop, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
+#stopCluster(cl)
+write.table(output, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
 
 

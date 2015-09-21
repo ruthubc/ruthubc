@@ -12,7 +12,7 @@ library(grid)
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "Dispersal8Sept.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "DispersalSummary21Sept.csv", sep = ""))
 
 rownames(dis_aves)
 
@@ -71,7 +71,9 @@ dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, C
 		pcntDisp.mean = mean(ave_perDisp, na.rm = TRUE),
 		pcntDisp.SE = sd(ave_perDisp, na.rm = TRUE), sqrt(N),
 		colSizeDeath.mean = mean(ave_colSize_Death, na.rm = TRUE),
-		colSizeDeath.SE = sd(ave_colSize_Death, na.rm = TRUE)/ sqrt(N)
+		colSizeDeath.SE = sd(ave_colSize_Death, na.rm = TRUE)/ sqrt(N),
+		survival_all.mean = mean(all_survivalMean, na.rm = TRUE),
+		survival_all.SE = sd(all_survivalMean, na.rm = TRUE)/ sqrt(N)
 	
 )
 
@@ -101,9 +103,15 @@ p1 <- ggplot(dis_ply, aes(x = Comp_meas, y = PopAge.Mean, colour = as.factor(ad_
 ### Not sure whether better to graph all generations??? Prob not. 
 # Average colony age at death for all colonies
 p2 <- ggplot(dis_ply, aes(x = Comp_meas, y = colAgeDeath_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk)  +  ggtitle("average colony age at death") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		facet_grid(meanK~VarAndRsk)  +  ggtitle("average colony survival") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
 		geom_errorbar(aes(ymin=colAgeDeath_all.mean-colAgeDeath_all.SE, ymax=colAgeDeath_all.mean + colAgeDeath_all.SE), width = 0.1) + 
 		mytheme + scale_colour_manual(values=c("blue", "red"))
+
+p2a<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
+		facet_grid(meanK~VarAndRsk)  +  ggtitle("average colony age at death") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
+		mytheme + scale_colour_manual(values=c("blue", "red"))
+
 
 
 # Colony size at dispersal
