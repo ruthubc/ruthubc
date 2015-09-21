@@ -72,8 +72,8 @@ dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, C
 		pcntDisp.SE = sd(ave_perDisp, na.rm = TRUE), sqrt(N),
 		colSizeDeath.mean = mean(ave_colSize_Death, na.rm = TRUE),
 		colSizeDeath.SE = sd(ave_colSize_Death, na.rm = TRUE)/ sqrt(N),
-		survival_all.mean = mean(all_survivalMean, na.rm = TRUE),
-		survival_all.SE = sd(all_survivalMean, na.rm = TRUE)/ sqrt(N)
+		survival_all.mean = mean(survivalMean_all, na.rm = TRUE),
+		survival_all.SE = sd(survivalMean_all, na.rm = TRUE)/ sqrt(N)
 	
 )
 
@@ -156,13 +156,13 @@ p8 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDeath.mean, colour = as.fact
 
 
 
-num_graphs <- 8
+num_graphs <- 9
 
 gr_ht <- num_graphs * 650
 
 png("DisperalSimulationOutput/DispersalSummaryGraphs.png", width = 1300, height = gr_ht, units = "px")
 
-grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8,  ncol=1)
+grid.arrange(p1, p2, p2a, p3, p4, p5, p6, p7, p8,  ncol=1)
 
 dev.off()
 
