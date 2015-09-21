@@ -14,15 +14,15 @@ library(ggplot2)
 # Register cluster
 #registerDoParallel(cl)
 
-
+# change this to look up num gens
 num_gens <- 500
 
-File <- read.csv(paste("DisperalSimulationOutput/SurvivalTest.csv", sep = ""))
+File <- read.csv(paste("DisperalSimulationOutput/1444_slp1.25_Rsk0.1_K100_var0.0_dslm0.8.py.csv", sep = ""))
 
 File <- subset(File, pop_age > 100)
 
 
-## Updating dispersal information
+## making a table of dispersal information for each nest so can colour nests that had dispersed and had not
 firstDisp <- ddply(subset(File, dispersers > 0), .(colony_ID), summarise,
 		firstDisp = min(pop_age))
 
@@ -43,7 +43,7 @@ File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
 ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, 
 		numAdsB4dis = File$num_adsB4_dispersal, dispersers = File$dispersers, prevDisp = File$prevDisp)
 
-write.csv(ColInfo, file = "DisperalSimulationOutput/ColInfoTest.csv" )
+# write.csv(ColInfo, file = "DisperalSimulationOutput/ColInfoTest.csv" )
 
 ## Copied from other file -- need to make into function
 
@@ -60,7 +60,7 @@ nnplus1 <- merge(ColInfo, ColInfoPlus1,  by =c("ColAgePlus1", "col_id"))
 
 colnames(nnplus1)[5] <- "N"
 
-write.csv(nnplus1, file = "DisperalSimulationOutput/nnTest.csv" )
+# write.csv(nnplus1, file = "DisperalSimulationOutput/nnTest.csv" ) # testing
 
 nnplus1 <- subset(nnplus1, prevDisp != "now")  # removing colonies that have just dispersed
 
