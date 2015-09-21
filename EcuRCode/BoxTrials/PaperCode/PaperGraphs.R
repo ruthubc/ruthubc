@@ -45,6 +45,8 @@ CapVsEat <-na.omit(CapVsEat)
 CapVsEat$FeedIndPos <- factor(CapVsEat$FeedIndPos, levels =c("y", "n"))
 CapVsEat$FeedAndCap <- paste("Cap", CapVsEat$CaptureIndPos, "Feed", CapVsEat$FeedIndPos)
 
+CapVsEat$Treatment <- factor(CapVsEat$Treatment, levels = c("small", "large"))
+CapVsEat$CaptureIndPos  <- factor(CapVsEat$CaptureIndPos, levels = c("y", "n"))
 
 ### Old graph
 ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
