@@ -270,6 +270,7 @@ class Colony(object):
             #print 'ind_fd', spider.food
 
         if len(self.juv_list) < 20 or self.colony_food < 1:
+        #if len(self.juv_list) <  0 or self.colony_food < 0:
             print "running food correction code"
             self.fd_assign_corretions() # correcting to make equal to colony food
 
@@ -279,9 +280,9 @@ class Colony(object):
         print 'percentage difference', perdiff
         if perdiff >= 2.5:
             print "percentage difference is", perdiff
-            raise ValueError("assigned food greater than 2% different from calculated food")
-        #else:
-            #return [jv.food for jv in self.juv_list]  # for testing
+            raise ValueError("assigned food greater than 2.5% different from calculated food")
+        else: # comment when not testing
+            return [jv.food for jv in self.juv_list]  # for testing, comment when not testing
 
 
 

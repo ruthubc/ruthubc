@@ -15,8 +15,8 @@ import random
 
 # nb changesa = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] 
 #[0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0] # compeition options
-a = [[0.001, 0.1], [3, 20, 200], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]] # xbar, [num juvs] [slp]
-#a = [[0.4], [3.0], [5]] # colfood , [num juvs] [slp]
+#a = [[0.001, 0.1], [3, 20, 200, 2000], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]] # xbar, [num juvs] [slp]
+a = [[0.26666], [3], [1.25]]
 # not sure whether the col food is with or without scaling
 
 ###########################
@@ -48,7 +48,7 @@ for i in range(0, len(combinations)):
         new_juv = Juv()
         juv_list.extend([new_juv])
 
-    myCol = Colony(1, [], tup[2])
+    myCol = Colony("n", 1, [], tup[2])
     myCol.juv_list = juv_list
     myCol.colony_food = colFd
     print "if this doens't work you have not changed outputs in main file"
@@ -75,15 +75,10 @@ for i in range(0, len(combinations)):
     plt.draw()
 
 
-
-
-plt.show()
-
 print "final output list", OutputList
 data = pd.DataFrame(df, columns = [ 'numJuvs', 'input_slp', 'cal_slp', 'colFd', 'calTot', 'med_rnk', 'ass_tot', "NumFdBtwn"])
 print data
 data.to_csv('compEqn.csv', sep = ',')
 
-
-    
+plt.show()
 
