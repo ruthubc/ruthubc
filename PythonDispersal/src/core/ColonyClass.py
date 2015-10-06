@@ -323,7 +323,7 @@ class Colony(object):
             self.juv_rnk_assign()  # assign ranks to juvs
             self.oneSlp_jv_fd()
         else:
-            c_slpe = self.comp_slope() 
+            c_slpe = self.comp_slope()
             self.juv_rnk_assign()  # assign ranks to juvs
             cmp_obj = Comp(self.colony_food, len(self.juv_list), c_slpe)  # making competition object
             self.cal_med_rnk = cmp_obj.CompFunction()
@@ -449,4 +449,4 @@ class Colony(object):
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
             print("number spiders left after dispersal")
             print(len(self.ad_list))
-            self.core_colony_timestep(F_Ln, K, var,  min_juv_fd, pop_export_list, filename, food_scale)
+            self.core_colony_timestep(F_Ln, K, var, min_juv_fd, pop_export_list, filename, food_scale)

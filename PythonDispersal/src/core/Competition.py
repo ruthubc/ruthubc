@@ -118,5 +118,5 @@ class Comp(object):
             if fin_md_rnk == self.low_tot:
                 return   [self.cal_tot, self.low_rnk] #  self.low_rnk # 
             else:
-                return  [self.cal_tot, self.high_rnk] # self.high_rnk #
+                return  [self.cal_tot, self.high_rnk] # self.high_rnk # 
             #when testing chang output to [self.cal_tot, self...]

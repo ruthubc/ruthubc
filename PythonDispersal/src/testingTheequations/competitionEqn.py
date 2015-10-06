@@ -16,8 +16,9 @@ import random
 # nb changesa = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] 
 #[0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0] # compeition options
 #a = [[0.001, 0.1], [3, 20, 200, 2000], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]] # xbar, [num juvs] [slp]
-a = [[0.26666], [3], [1.25]]
+a = [[0.2, 0.4, 0.6, 0.8, 1.0], [400], [0.2]]
 # not sure whether the col food is with or without scaling
+
 
 ###########################
 ## TO get this to work change the output of the compeition function and the juv_fd_assign
@@ -31,6 +32,7 @@ print combinations
 
 
 df = []
+ass_lists = []
 
 for i in range(0, len(combinations)):
     tup = combinations[i]
@@ -62,6 +64,7 @@ for i in range(0, len(combinations)):
     juv_ranks = [jv.rank for jv in myCol.juv_list]
     numSlope = sum(1 for fd in ass_tot if fd < 1 and fd > 0)
     print "numslpe", numSlope
+    ass_lists.append(ass_tot)
 
     OutputList = [numJuv, tup[2], s, colFd] + rankLst + [sum(ass_tot)] + [numSlope]
     #print 'output list', OutputList
@@ -74,9 +77,16 @@ for i in range(0, len(combinations)):
     plt.title(str(tup[2]))
     plt.draw()
 
+print ass_lists
 
 print "final output list", OutputList
-data = pd.DataFrame(df, columns = [ 'numJuvs', 'input_slp', 'cal_slp', 'colFd', 'calTot', 'med_rnk', 'ass_tot', "NumFdBtwn"])
+d = dict(col1 = ass_lists[0], col2 = ass_lists[1])
+#d = {'col1': ass_lists[0], 'col2:': ass_lists[1]}
+
+data = pd.DataFrame({k : pd.Series(v) for k, v in d.iteritems()})
+#data = pd.DataFrame(d)
+
+#data = pd.DataFrame(df, columns = [ 'numJuvs', 'input_slp', 'cal_slp', 'colFd', 'calTot', 'med_rnk', 'ass_tot', "NumFdBtwn"])
 print data
 data.to_csv('compEqn.csv', sep = ',')
 
