@@ -22,7 +22,7 @@ class Comp(object):
         self.slp = slp
         self.xbr = 0
         self.med_rnk = self.num_juv / 2.0
-        self.med_diff = float(num_juv) / 10000.0
+        self.med_diff = float(num_juv) / 100000.0
         self.high_tot = -1
         self.low_tot = -1
         self.low_rnk = 0

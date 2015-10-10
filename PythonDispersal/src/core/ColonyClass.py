@@ -208,7 +208,7 @@ class Colony(object):
     def cal_ind_food(self, ind_rnk):
         slope = self.comp_slope()
         ind_rnk = float(ind_rnk)
-        xbr = float(self.colony_food) / float(len(self.juv_list))
+        xbr = float(self.colony_food) / float(len(self.juv_list)-1)
         if xbr > 1:
             raise Exception("xbar greater than one:", xbr)
         else:
