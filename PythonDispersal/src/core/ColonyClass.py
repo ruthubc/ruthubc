@@ -203,7 +203,7 @@ class Colony(object):
             self.juv_list[i].rank = i
 
     def comp_slope(self):
-        return float(self.slope) / float(len(self.juv_list))
+        return float(self.slope) / float(len(self.juv_list)-1)
 
     def cal_ind_food(self, ind_rnk):
         slope = self.comp_slope()
