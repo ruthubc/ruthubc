@@ -17,14 +17,14 @@ import random
 # # compeition options [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]
 #a = [[0.2, 0.4, 0.6, 0.8], [100], [0.2, 1.25]] # xbar, [num juvs] [slp]
 #a = [[0.4], [200, 400, 600], [0.2]]
-a = [[0.8*30], [30,40], [1.25]]
+a = [[0.8*100], [300, 400], [0.8]]
 # not sure whether the col food is with or without scaling
 
 
 ###########################
 ## TO get this to work change the output of the compeition function and the juv_fd_assign
 
-
+# food scale is taken into account in colony class when setting colony food NOT in any of the competition code
 
 print ("have you changed the comp functin and juv fd assign functiun output???")
 combinations = list(itertools.product(*a))

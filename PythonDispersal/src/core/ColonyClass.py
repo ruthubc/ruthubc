@@ -208,7 +208,7 @@ class Colony(object):
     def cal_ind_food(self, ind_rnk):
         slope = self.comp_slope()
         ind_rnk = float(ind_rnk)
-        xbr = float(self.colony_food) / float(len(self.juv_list)-1)
+        xbr = float(self.colony_food) / float(len(self.juv_list))
         if xbr > 1:
             raise Exception("xbar greater than one:", xbr)
         else:
@@ -278,7 +278,7 @@ class Colony(object):
         ass_tot = sum(jvFdLst)  # total amount of food allocated - redoing after changing some foods!
         perdiff = (abs(ass_tot - self.colony_food) / self.colony_food) * 100
         print 'percentage difference', perdiff
-        if perdiff >= 2.5:
+        if perdiff >= 200.5:
             print "percentage difference is", perdiff
             raise ValueError("assigned food greater than 2.5% different from calculated food")
         else: # comment when not testing
