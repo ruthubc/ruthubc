@@ -5,7 +5,7 @@ Created on Feb 14, 2015
 '''
 import numpy as np
 from heapq import nsmallest
-from core.Competition import Comp
+from core.CompetitionIntercept import Comp
 import itertools
 import pandas as pd
 from core.JuvClass import Juv
@@ -41,7 +41,7 @@ for i in range(0, len(combinations)):
     numJuv = tup[1]
     #colFd = (float(numJuv) * tup[0])
     colFd = tup[0]
-    s = tup[2]/float(numJuv)
+    s = tup[2]
     #print "s", s
     compOb = Comp(colFd, numJuv, s)
     rankLst = compOb.CompFunction()

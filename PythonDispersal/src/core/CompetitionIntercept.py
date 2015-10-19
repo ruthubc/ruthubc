@@ -15,7 +15,7 @@ from fractions import Fraction
 #### TO DO, NEXT JOB: decide what to do with too much food i.e. change slope or intercept??
 
 
-class Comp(object):
+class CompInt(object):
     '''making colony class'''
 
     def __init__(self, col_fd, num_juv, slp):
@@ -28,7 +28,7 @@ class Comp(object):
         self.thisMaxRank = 0
         self.OneMaxRank = 0
 
-    def getIntercept(self):
+    def getIntercept(self): # assigning intercept
         # create intercept dict, gonna have it so the numbers are rounded to one decimal place and made into strings
         IntcptDict = {
                 '0.2': 0.6,
@@ -41,15 +41,11 @@ class Comp(object):
                 '2.5': 1.75,
                 '5.0': 3
                 }
-
         LookUp = str(round(self.slp, 1))
         self.intercept = IntcptDict[LookUp]
 
-
-    def CalSlope(self):
-        self.getIntercept()
-        if self.slp > 1:
-            # some code to account for the multiple individuals getting more than one food
+    def calSlope(self): # calculating the slope based on the tot food and the intercept
+        if self.slp > 1:  # i.e. if the intercept is above one
             print "slope greater than one"
             self.thisSlope = (self.intercept - 2 * (self.intercept ** 2)) / (1 + self.intercept - self.col_fd)
             print "calculated slope", self.thisSlope
@@ -57,43 +53,27 @@ class Comp(object):
             self.thisMaxRank = self.intercept/self.thisSlope
         else:
             self.thisSlope = -(3 * (self.intercept ** 2)) / (3 * self.intercept - self.col_fd) # only true if intercept below 1, 
-            #includes the max rank as the point where the line crosses xaxis
+            #includes the max rank as the point where the line crosses x-axis
             print "calSlope", self.thisSlope
             self.thisMaxRank = self.intercept/self.thisSlope
             print "max Rank = ", self.thisMaxRank
 
-    def maxRankCheck(self):
+    def maxRankCheck(self): # checking if the x-axis intercept is greater than the number of juvs -1
         if self.thisMaxRank > self.maxRank:
-            print "max rank larter than number of juvs"
-            #some code for moving the intercept OR changing the slope
-        else:
-            #basically all done???? Return this slpe and intercept and job done?
+            print "max rank larger than number of juvs"
+            self.exceedMaxRank()
+            
+    def exceedMaxRank(self):
+        # increase intercept, if that is not enough then increase slope
+        sqrtTerm = 1- 10 * self.thisSlope + (self.thisSlope ** 2) + 8 * self.thisSlope * self.col_fd
+        newIntercept = 0.25 * (1-self.thisSlope) + np.sqrt(sqrtTerm) # need to check this equation works in all cases
+        # I guess after getting new intercept I need to calculate the new maxOneRank
+        self.intercept = newIntercept
+        self.OneMaxRank = (1-newIntercept)/self.thisSlope
 
-
-
-    def CompFunction(self):  # calculates the med rank, returns med rank
-        # print 'comp num juvs', self.num_juv
-        self.xbr = float(self.col_fd) / self.num_juv
-
-        run = 0
-        ## print "starting loop, colony food =  %s" % self.col_fd
-        # TODO: Come up with better conditions for the loop
-        while self.high_tot == -1 or self.low_tot == -1:
-            run += 1
-            if run < 50000:
-                self.comp_loop_function()
-            else:
-                # print "col food input", self.col_fd, 'num juvs', self.num_juv
-                raise Exception("med rank loop infinite")
-        # print "Now the loop has ended, cal tot = %s " % self.cal_tot
-        # print "actual col food total we were aiming for = %s " % self.col_fd
-        # print "high total = %s, low tot = %s " % (self.high_tot, self.low_tot)
-        if self.cal_tot == self.col_fd:
-            return [self.cal_tot, self.med_rnk] # self.med_rnk #
-        else:
-            fin_md_rnk = nsmallest(1, [self.low_tot, self.high_tot], key = lambda x: abs(x - self.col_fd))[0]  # returns the number nearest to actual col_fd
-            if fin_md_rnk == self.low_tot:
-                return   [self.cal_tot, self.low_rnk] #  self.low_rnk # 
-            else:
-                return  [self.cal_tot, self.high_rnk] # self.high_rnk # 
-            #when testing chang output to [self.cal_tot, self...]
+    def CompIntFun(self):  # calculates the med rank, returns med rank
+        self.getIntercept()
+        self.calSlope()
+        self.maxRankCheck()
+        print [self.thisSlope, self.intercept]
+        return [self.thisSlope, self.intercept] #  self.low_rnk # 

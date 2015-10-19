@@ -312,7 +312,6 @@ class Colony(object):
                 else:
                     spider.food = 0.0
 
-
     def assign_food(self):
         if len(self.juv_list) <= 1:
             self.juv_list[0].food = self.colony_food  #TODO: maybe put something in here to make sure that nver abv1
@@ -328,6 +327,8 @@ class Colony(object):
             cmp_obj = Comp(self.colony_food, len(self.juv_list), c_slpe)  # making competition object
             self.cal_med_rnk = cmp_obj.CompFunction()
             self.juv_fd_assign()
+            
+
 
     def distr_food(self):
         if self.colony_food > self.num_juvs:
