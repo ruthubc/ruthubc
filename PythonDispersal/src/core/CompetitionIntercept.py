@@ -47,7 +47,9 @@ class CompInt(object):
     def calSlope(self): # calculating the slope based on the tot food and the intercept
         if self.slp > 1:  # i.e. if the intercept is above one
             print "slope greater than one"
-            self.thisSlope = (-self.intercept + 2 * (self.intercept ** 2)) / (-1 + self.intercept + self.col_fd)
+            topExp = -3 + (6 * self.intercept) - (4 * self.intercept ** 2)
+            botExp = -3 + (2 * self.intercept) - (2 * self.col_fd)            
+            self.thisSlope = topExp/botExp
             print "calculated slope", self.thisSlope
             self.OneMaxRank = (1- self.intercept) / self.thisSlope
             self.thisMaxRank = self.intercept / self.thisSlope
@@ -65,16 +67,22 @@ class CompInt(object):
 
     def exceedMaxRank(self):
         print "old slope", self.intercept
-        maxRankAtIntOne = 1/self.thisSlope
+        maxRankAtIntOne = ((self.maxRank * self.thisSlope) + ((self.maxRank **2) * self.thisSlope) + (2* self.col_fd)) / (2*(1+self.maxRank))# calculates whether the interecept will be above or below one, but seems too simple?? 
+        print 'maxRankAtIntOne', maxRankAtIntOne
+        
+        
         if maxRankAtIntOne <= self.maxRank and self.intercept < 1:  # this means that the acutal intercept will be under 1
-            newIntercept = 0.5 * (-self.thisSlope)
+            topExp = (self.maxRank * self.thisSlope) + self.maxRank ** 2 + (2 * self.col_fd)
+            newIntercept = topExp * (2*(1 + self.maxRank))
             
         else: # If the ultimate intercept will be above one
+            print "intercept will be above one, code is not there yet"
         
         # increase intercept, if that is not enough then increase slope
-        sqrtTerm = 1 - (6 * self.thisSlope) + (self.thisSlope ** 2) + (8 * self.thisSlope * self.col_fd)
+        sqrtTerm = -(24 * self.maxRank) + (9 * self.thisSlope) + (24 * self.maxRank * self.thisSlope) + (16 * (self.maxRank ** 2) * self.thisSlope) + (24 * self.col_fd) 
         print "square Root term", sqrtTerm
-        newIntercept = 0.25 *((1+self.thisSlope) + np.sqrt(sqrtTerm)) # need to check this equation works in all cases
+        nonSqrtTerm = 6 - (3 * self.thisSlope) - (2 * self.maxRank * self.thisSlope)
+        newIntercept = Fraction(1, 6) * (nonSqrtTerm + (np.sqrt(self.thisSlope) * np.sqrt(sqrtTerm))) # need to check this equation works in all cases
         # I guess after getting new intercept I need to calculate the new maxOneRank
         self.intercept = newIntercept
         self.OneMaxRank = (1-newIntercept)/self.thisSlope
@@ -85,3 +93,4 @@ class CompInt(object):
         self.maxRankCheck()
         print [self.thisSlope, self.intercept]
         return [self.thisSlope, self.intercept] #  self.low_rnk # 
+ 
