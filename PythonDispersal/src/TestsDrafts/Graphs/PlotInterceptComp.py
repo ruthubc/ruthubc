@@ -9,9 +9,12 @@ import numpy as np
 
 from core.CompetitionIntercept import CompInt
 
-numJuvs = 200
+numJuvs = 200.0
+food = 150.0
 
-compObject = CompInt(150, numJuvs, 1.25)
+compObject = CompInt(food, numJuvs, 0.6) # food, numJuvs, comp input
+
+print "ave food", food/numJuvs
 
 
 output = compObject.CompIntFun()

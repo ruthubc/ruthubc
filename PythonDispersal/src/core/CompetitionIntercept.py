@@ -47,12 +47,12 @@ class CompInt(object):
     def calSlope(self): # calculating the slope based on the tot food and the intercept
         if self.slp > 1:  # i.e. if the intercept is above one
             print "slope greater than one"
-            self.thisSlope = (self.intercept - 2 * (self.intercept ** 2)) / (1 + self.intercept - self.col_fd)
+            self.thisSlope = (-self.intercept + 2 * (self.intercept ** 2)) / (-1 + self.intercept + self.col_fd)
             print "calculated slope", self.thisSlope
-            self.OneMaxRank = (1- self.intercept)/self.thisSlope
-            self.thisMaxRank = self.intercept/self.thisSlope
-        else:
-            self.thisSlope = -(3 * (self.intercept ** 2)) / (3 * self.intercept - self.col_fd) # only true if intercept below 1, 
+            self.OneMaxRank = (1- self.intercept) / self.thisSlope
+            self.thisMaxRank = self.intercept / self.thisSlope
+        else: # intercept < 1
+            self.thisSlope =(-1 + 2* self.intercept) / (1 + 2 * self.col_fd) # only true if intercept below 1, 
             #includes the max rank as the point where the line crosses x-axis
             print "calSlope", self.thisSlope
             self.thisMaxRank = self.intercept/self.thisSlope
@@ -62,11 +62,19 @@ class CompInt(object):
         if self.thisMaxRank > self.maxRank:
             print "max rank larger than number of juvs"
             self.exceedMaxRank()
-            
+
     def exceedMaxRank(self):
+        print "old slope", self.intercept
+        maxRankAtIntOne = 1/self.thisSlope
+        if maxRankAtIntOne <= self.maxRank and self.intercept < 1:  # this means that the acutal intercept will be under 1
+            newIntercept = 0.5 * (-self.thisSlope)
+            
+        else: # If the ultimate intercept will be above one
+        
         # increase intercept, if that is not enough then increase slope
-        sqrtTerm = 1- 10 * self.thisSlope + (self.thisSlope ** 2) + 8 * self.thisSlope * self.col_fd
-        newIntercept = 0.25 * (1-self.thisSlope) + np.sqrt(sqrtTerm) # need to check this equation works in all cases
+        sqrtTerm = 1 - (6 * self.thisSlope) + (self.thisSlope ** 2) + (8 * self.thisSlope * self.col_fd)
+        print "square Root term", sqrtTerm
+        newIntercept = 0.25 *((1+self.thisSlope) + np.sqrt(sqrtTerm)) # need to check this equation works in all cases
         # I guess after getting new intercept I need to calculate the new maxOneRank
         self.intercept = newIntercept
         self.OneMaxRank = (1-newIntercept)/self.thisSlope
