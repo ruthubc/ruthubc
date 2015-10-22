@@ -5,7 +5,8 @@ Created on Feb 14, 2015
 '''
 import numpy as np
 from heapq import nsmallest
-from core.CompetitionIntercept import Comp
+from core.CompetitionIntercept import CompInt
+from core.Competition import Comp
 import itertools
 import pandas as pd
 from core.JuvClass import Juv
@@ -16,8 +17,8 @@ import random
 # nb changesa = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] 
 # # compeition options [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]
 #a = [[0.2, 0.4, 0.6, 0.8], [100], [0.2, 1.25]] # xbar, [num juvs] [slp]
-#a = [[0.4], [200, 400, 600], [0.2]]
-a = [[0.8*100], [300, 400], [0.8]]
+a = [[0.8*10], [10,15,20], [0.8]]
+#a = [[0.5], [10], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]]
 # not sure whether the col food is with or without scaling
 
 
@@ -51,7 +52,7 @@ for i in range(0, len(combinations)):
         new_juv = Juv()
         juv_list.extend([new_juv])
 
-    myCol = Colony("n", 1, [], tup[2])
+    myCol = Colony("N", "n", 1, [], tup[2])
     myCol.juv_list = juv_list
     myCol.colony_food = colFd
     print "if this doens't work you have not changed outputs in main file"

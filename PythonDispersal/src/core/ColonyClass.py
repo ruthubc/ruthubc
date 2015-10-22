@@ -21,14 +21,17 @@ import csv
 class Colony(object):
     '''making colony class'''
 
-    def __init__(self, indFile = "n", colony_ID = 0,
+    def __init__(self,
+                 compType = "I",  # Either I or N (intercept or normal)
+                 indFile = "n",
+                 colony_ID = 0,
                  ad_list = [],
                  slope = 0.10,
                  colony_age=0,
                  dispersers = [],
-                 pot_juv_food = 0,  # potential food to juvs
-                 compType = "I", # Either I or N (intercept or normal)
+                 pot_juv_food = 0  # potential food to juvs
                  ):
+        self.compType = compType
         self.indFile = indFile
         self.colony_ID = colony_ID
         self.ad_list = ad_list
@@ -38,7 +41,6 @@ class Colony(object):
         self.colony_age = colony_age
         self.dispersers = dispersers
         self.pot_juv_food = pot_juv_food
-        self.compType = compType
         self.num_juvs = 0  # as the juv list gets wiped before the end of the loop
         self.num_ads = 0  # to make sure that I get 
         self.num_dis = 0
@@ -46,13 +48,12 @@ class Colony(object):
         self.cal_med_rnk = 0.0
         self.num_moult = 0.0
         self.newCol = "No"
-        self.adSz_B4 = ['NA', 'NA', 'NA', 'NA', 'NA'] # list order is min, max, mead, standard dev, count
+        self.adSz_B4 = ['NA', 'NA', 'NA', 'NA', 'NA']  # list order is min, max, mead, standard dev, count
         self.adSz_AF = ['NA', 'NA', 'NA', 'NA', 'NA']
         self.jvSz_B4 = ['NA', 'NA', 'NA', 'NA', 'NA']
         self.jvSz_AF = ['NA', 'NA', 'NA', 'NA', 'NA']
         self.compIntercept = 0
         self.thisSlope = 0
-        
 
     def __str__(self):
         return "ColID: %s, age: %s, col_food: %s, %s, num adults: %s" % (self.colony_ID, self.colony_age, self.colony_food, self.alive, len(self.ad_list))
@@ -115,23 +116,22 @@ class Colony(object):
         d['jvSz_AF_mean'] = self.jvSz_AF[2]
         d['jvSz_AF_SD'] = self.jvSz_AF[3]
         d['jvSz_AF_ct'] = self.jvSz_AF[4]
-
         return d
 
     def col_age_increase(self):  # increases colony age by one
         self.colony_age += 1
 
-    def col_alive(self): # testing whether colony is dead
+    def col_alive(self):  # testing whether colony is dead
         if not self.juv_list and not self.ad_list:
-            self.alive = 'dead'    #checked feb  12, but need to make sure that the variables are the correct type
+            self.alive = 'dead'
 
     def cal_col_food(self, F_Ln, K):  # returns tot colony food per capita
         # calculates and updates the food to the colony, F_Ln is food to lone individual (n=0+
         N_tot = len(self.ad_list) # to maKe F_Ln actually lone ind food rather than colony of size
         N = N_tot - 1  # to maKe F_Ln actually lone ind food rather than colony of size
         K = K - 1  # same reason
-        NOvK = (N/K)
-        int = np.log(1/F_Ln)
+        NOvK = (N / K)
+        int = np.log(1 / F_Ln)
         F = 1 / (1 - F_Ln)  # intercept
         cal_colFood = np.exp((1-NOvK)*(NOvK-1) *int)
         cap_col_food = cal_colFood
@@ -217,14 +217,14 @@ class Colony(object):
         xbr = float(self.colony_food) / float(len(self.juv_list)) # stupid to calculate this everytime?
         topTerm = (slope * self.cal_med_rnk) * (xbr - ((xbr * ind_rnk) / self.cal_med_rnk))
         fracTerm = topTerm / (np.power(xbr, 2))
-        CompEqn = (1+ fracTerm) * xbr
+        CompEqn = (1 + fracTerm) * xbr
         if CompEqn > 1:
             return 1
         elif CompEqn < 0.001:
             return 0
         else:
             return CompEqn
-            
+
     def cal_ind_food_intercept(self, ind_rnk):
         ind_rnk = float(ind_rnk)
         CompEqn = -self.thisSlope * ind_rnk + self.compIntercept
@@ -276,16 +276,16 @@ class Colony(object):
             print "rem_food", rem_food
             self.juv_list[num_juvs - 1].food = rem_food
 
-    def xbarCheck(self):        
+    def xbarCheck(self):
         xbr = float(self.colony_food) / float(len(self.juv_list))
         if xbr > 1:
             raise Exception("xbar greater than one:", xbr)
-    
+
     def foodAssignCheck(self):
         if len(self.juv_list) < 20 or self.colony_food < 1:
         #if len(self.juv_list) <  0 or self.colony_food < 0:
             print "running food correction code"
-            self.fd_assign_corretions() # correcting to make equal to colony food
+            self.fd_assign_corretions()  # correcting to make equal to colony food
         jvFdLst = [jv.food for jv in self.juv_list]
         ass_tot = sum(jvFdLst)  # total amount of food allocated - redoing after changing some foods!
         perdiff = (abs(ass_tot - self.colony_food) / self.colony_food) * 100
@@ -293,26 +293,24 @@ class Colony(object):
         if perdiff >= 200.5:
             print "percentage difference is", perdiff
             raise ValueError("assigned food greater than 2.5% different from calculated food")
-        else: # comment when not testing
-            return [jv.food for jv in self.juv_list]  # for testing, comment when not testing
 
-    
     def juv_fd_assign(self):
         self.xbarCheck()
-        if self.compType == "N":       
+        if self.compType == "N":
             for spider in self.juv_list:
+                print "normal competition"
                 jv_rnk = spider.rank
                 ind_fd = self.cal_ind_food(jv_rnk)
                 spider.food = ind_fd
-        elif self.compType =="I":
+        elif self.compType == "I":
             for spider in self.juv_list:
+                print "intercept competition"
                 jv_rnk = spider.rank
-                ind_food = self.cal_ind_food_intercept(jv_rnk)
+                ind_fd = self.cal_ind_food_intercept(jv_rnk)
                 spider.food = ind_fd
             #print 'ind_fd', spider.food
         self.foodAssignCheck()
-
-
+        return [jv.food for jv in self.juv_list]  # for testing, when not testing comment out
 
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))
@@ -332,7 +330,7 @@ class Colony(object):
                     spider.food = remain
                 else:
                     spider.food = 0.0
-        else: # just one spider gets food
+        else:  # just one spider gets food
             for spider in self.juv_list:
                 if spider.rank == 0:  # as rank starts at zero
                     spider.food = self.colony_food
@@ -348,21 +346,19 @@ class Colony(object):
             # TODO: make range
             self.juv_rnk_assign()  # assign ranks to juvs
             self.oneSlp_jv_fd()
-        else:        
+        else:
             self.juv_rnk_assign()  # assign ranks to juvs
             if self.compType == "N":
                 self.competitionAssign()
             elif self.compType == "I":
                 self.competitionIntcpt()
-            self.juv_fd_assign()    
-            
-            
+            self.juv_fd_assign()
+
     def competitionAssign(self):
         c_slpe = self.comp_slope()
         cmp_obj = Comp(self.colony_food, len(self.juv_list), c_slpe)  # making competition object
         self.cal_med_rnk = cmp_obj.CompFunction()
-        
-            
+
     def competitionIntcpt(self):
         cmp_obj = CompInt(self.colony_food, len(self.juv_list), self.slope)
         output = cmp_obj.CompIntFun()
