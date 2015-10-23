@@ -282,7 +282,7 @@ class Colony(object):
             raise Exception("xbar greater than one:", xbr)
 
     def foodAssignCheck(self):
-        if len(self.juv_list) < 20 or self.colony_food < 1:
+        if len(self.juv_list) < 100 or self.colony_food < 1:
         #if len(self.juv_list) <  0 or self.colony_food < 0:
             print "running food correction code"
             self.fd_assign_corretions()  # correcting to make equal to colony food
