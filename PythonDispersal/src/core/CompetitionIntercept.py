@@ -45,19 +45,23 @@ class CompInt(object):
         self.intercept = IntcptDict[LookUp]
 
     def calSlope(self): # calculating the slope based on the tot food and the intercept
-        if self.slp > 1:  # i.e. if the intercept is above one
-            print "slope greater than one"
-            topExp = -3 + (6 * self.intercept) - (4 * self.intercept ** 2)
-            botExp = -3 + (2 * self.intercept) - (2 * self.col_fd)
-            self.thisSlope = topExp / botExp
+        if self.intercept > 1:  # i.e. if the intercept is above one
+            print "intercept greater than one"
+            #topExp = -3 + (6 * self.intercept) - (4 * np.square(self.intercept)) # I think these are wrong
+            #botExp = -3 + (2 * self.intercept) - (2 * self.col_fd)
+            #self.thisSlope = topExp / botExp
+            self.thisSlope = (-1 + (2 * self.intercept)) / (-1 + (2 * self.col_fd))
             print "calculated slope", self.thisSlope
-            self.OneMaxRank = (1 - self.intercept) / self.thisSlope
-            self.thisMaxRank = self.intercept / self.thisSlope
+            self.OneMaxRank = np.floor(((1 - self.intercept) / -self.thisSlope))
+            self.thisMaxRank = np.floor((self.intercept / self.thisSlope))
+            print "oneMaxRank", self.OneMaxRank
+            print "thisMaxRank", self.thisMaxRank
         else:  # intercept < 1
-            self.thisSlope =(- 1 + 2* self.intercept) / (1 + 2 * self.col_fd) # only true if intercept below 1, 
+            self.thisSlope = - np.square(self.intercept) / (self.intercept - (2 * self.col_fd))
+            #self.thisSlope = (- 1 + 2 * self.intercept) / (1 + 2 * self.col_fd) # only true if intercept below 1, I think this is wrong
             #includes the max rank as the point where the line crosses x-axis
             print "calSlope", self.thisSlope
-            self.thisMaxRank = self.intercept / self.thisSlope
+            self.thisMaxRank = np.floor(self.intercept / self.thisSlope)
             print "max Rank = ", self.thisMaxRank
 
     def maxRankCheck(self):  # checking if the x-axis intercept is greater than the number of juvs -1
@@ -66,30 +70,35 @@ class CompInt(object):
             self.exceedMaxRank()
 
     def exceedMaxRank(self):
-        print "old slope", self.intercept
-        maxRankAtIntOne = ((self.maxRank * self.thisSlope) + ((self.maxRank ** 2) * self.thisSlope) +
-                           (2 * self.col_fd)) / (2 *(1 + self.maxRank)) # calculates whether the interecept will be above or below one, but seems too simple?? 
-        print 'maxRankAtIntOne', maxRankAtIntOne
+        print "old slope", self.thisSlope
+        EstIntercept = ((self.maxRank * self.thisSlope) + ((self.maxRank ** 2) * self.thisSlope) +
+                           (2 * self.col_fd)) / (2 *(1 + self.maxRank)) # calculates whether the intercept will be above or below one
+        print 'Estimated Intercept', EstIntercept
 
-        if maxRankAtIntOne <= self.maxRank and self.intercept < 1:  # this means that the actual intercept will be under 1
-            topExp = (self.maxRank * self.thisSlope) + self.maxRank ** 2 + (2 * self.col_fd)
-            newIntercept = topExp * (2 * (1 + self.maxRank))
-        else: # If the ultimate intercept will be above one
-            print "intercept will be above one, code is not there yet"
-
+        if EstIntercept <= 1:  # this means that the actual intercept will likely be under 1 - need to check this is always the case
+            # or what to do if it is not. Perhaps put in some error catching thing
+            topExp = (self.maxRank * self.thisSlope) + (np.square(self.maxRank) * self.thisSlope) + (2 * self.col_fd)
+            newIntercept = topExp / (2 * (1 + self.maxRank))
+        else: # If the estimated intercept is above one
+            print "estimated intercept is above one"
         # increase intercept, if that is not enough then increase slope
-        sqrtTerm = -(24 * self.maxRank) + (9 * self.thisSlope) + (24 * self.maxRank * self.thisSlope) + (16 * (self.maxRank ** 2) * self.thisSlope) + (24 * self.col_fd) 
-        print "square Root term", sqrtTerm
-        nonSqrtTerm = 6 - (3 * self.thisSlope) - (2 * self.maxRank * self.thisSlope)
-        newIntercept = Fraction(1, 6) * (nonSqrtTerm + (np.sqrt(self.thisSlope) * np.sqrt(sqrtTerm))) # need to check this equation works in all cases
-        # I guess after getting new intercept I need to calculate the new maxOneRank
+            #wrong I think, sqrtTerm = -(24 * self.maxRank) + (9 * self.thisSlope) + (24 * self.maxRank * self.thisSlope) + (16 * (self.maxRank ** 2) * self.thisSlope) + (24 * self.col_fd) 
+            sqrtTerm = 8 + (8 * self.maxRank) + self.thisSlope - (8 * self.col_fd)
+            if sqrtTerm < 0:
+                raise ValueError('Square root term -comp intercept -  in exed max rank negative')
+            print "square Root term", sqrtTerm
+            #think this is wrong -nonSqrtTerm = 6 - (3 * self.thisSlope) - (2 * self.maxRank * self.thisSlope)
+            nonSqrtTerm = 2 + self.thisSlope + (2 * self.maxRank * self.thisSlope)
+            # I think this is wrong, newIntercept = Fraction(1, 6) * (nonSqrtTerm + (np.sqrt(self.thisSlope) * np.sqrt(sqrtTerm))) # need to check this equation works in all cases
+            newIntercept = 0.5 * (nonSqrtTerm - (np.sqrt(self.thisSlope) * np.sqrt(sqrtTerm)))
         self.intercept = newIntercept
-        self.OneMaxRank = (1 - newIntercept) / self.thisSlope
+        print "new intercept", self.intercept
+        self.OneMaxRank = np.floor((1 - newIntercept) / -self.thisSlope)
+        print "New One Max Rank", self.OneMaxRank
 
-    def CompIntFun(self):  # calculates the med rank, returns med rank
+    def CompIntFun(self):  # calculates the intercept and slope, depending on how much food there is
         self.getIntercept()
         self.calSlope()
         self.maxRankCheck()
         print [self.thisSlope, self.intercept]
         return [self.thisSlope, self.intercept] #  self.low_rnk # 
- 

@@ -282,7 +282,7 @@ class Colony(object):
             raise Exception("xbar greater than one:", xbr)
 
     def foodAssignCheck(self):
-        if len(self.juv_list) < 100 or self.colony_food < 1:
+        if len(self.juv_list) < 10 or self.colony_food < 5:
         #if len(self.juv_list) <  0 or self.colony_food < 0:
             print "running food correction code"
             self.fd_assign_corretions()  # correcting to make equal to colony food
@@ -290,21 +290,21 @@ class Colony(object):
         ass_tot = sum(jvFdLst)  # total amount of food allocated - redoing after changing some foods!
         perdiff = (abs(ass_tot - self.colony_food) / self.colony_food) * 100
         print 'percentage difference', perdiff
-        if perdiff >= 200.5:
+        if perdiff >= 2.5:
             print "percentage difference is", perdiff
             raise ValueError("assigned food greater than 2.5% different from calculated food")
 
     def juv_fd_assign(self):
         self.xbarCheck()
         if self.compType == "N":
+            print "normal competition"
             for spider in self.juv_list:
-                print "normal competition"
                 jv_rnk = spider.rank
                 ind_fd = self.cal_ind_food(jv_rnk)
                 spider.food = ind_fd
         elif self.compType == "I":
+            print "intercept competition"
             for spider in self.juv_list:
-                print "intercept competition"
                 jv_rnk = spider.rank
                 ind_fd = self.cal_ind_food_intercept(jv_rnk)
                 spider.food = ind_fd
@@ -343,7 +343,6 @@ class Colony(object):
         if self.slope < 0.001:
             self.zeroSlp_jv_fd()
         elif self.slope == 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
-            # TODO: make range
             self.juv_rnk_assign()  # assign ranks to juvs
             self.oneSlp_jv_fd()
         else:

@@ -5,16 +5,12 @@ Created on Jul 15, 2014
 '''
 
 import csv
-from core.ColonyClass import Colony
-from core.SpiderClass import Spider
-from core.AdultClass import Adult
-from core.JuvClass import Juv
 from core.StartColsClass import StartCols
 from core.PopulationClass import Poplt
 from core.Functions import export_rownames
 
 
-def disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln):
+def disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln, compType):
     #(1) write rownames to csv fileh
 
     export_rownames(filename + ".csv") # creating file with rownames 
@@ -27,12 +23,12 @@ def disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, mi
         indFiles.close()
 
     #(2) Initial Population
-    cols = StartCols(indFile, K, comp_slp, ad_fd = 0.6)
+    cols = StartCols(indFile, compType, K, comp_slp, ad_fd = 0.6)
     cols.make_col_list()
     col_list = cols.col_list
 
 
-    this_pop = Poplt(col_list, indFile, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln, cols.col_no)
+    this_pop = Poplt(col_list, compType, indFile, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln, cols.col_no)
     this_pop.update_offVar()
 
     #print start_col.colony_list_to_append()

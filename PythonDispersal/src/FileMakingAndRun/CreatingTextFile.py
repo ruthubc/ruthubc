@@ -13,15 +13,16 @@ import time
 indFile = "n"
 
 # input variables here
-#runs = [[0.4, 0.8, 1.25, 2.5], [0.05, 0.1], [100, 1000], [0.0, 0.1, 0.2], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
-runs = [[1.25, 1.25, 1.25, 1.25], [0.05], [100], [0.0], [0.6]]
+#runs = [[], [0.05, 0.1], [100, 1000], [], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
+runs = [[0.4, 0.8, 1.25, 2.5], [0.05], [100], [0.0, 0.1, 0.2], [0.4, 0.8]]
 combinations = list(itertools.product(*runs))
 
 print "number of combinations", len(combinations)
 
 print combinations
 
-sim_len = 500
+sim_len = 5
+comp_type = "I"
 
 def run_numbers(numbersFile):  # Assigns a unique number to each run
     i=[]
@@ -56,7 +57,7 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.close()
 
 def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off,
-                   max_no_off, ad_disFd_lmt, F_Ln, sim_len): # writing the python file  that runs the model
+                   max_no_off, ad_disFd_lmt, F_Ln, sim_len, compType): # writing the python file  that runs the model
     name = FileName + '.py'
     file = open(name, 'w+')
     file.write("from core.DispersalRun import disperal_run\n")
@@ -72,7 +73,8 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
     file.write("ad_disFd_lmt ="  + str(ad_disFd_lmt) + "\n")
     file.write("F_Ln ="  + str(F_Ln) + "\n")
     file.write("indFile=" + '"' + str(indFile) +  '"' + "\n")
-    file.write("disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln)\n")
+    file.write("compType=" + '"' + str(comp_type) +  '"' + "\n")
+    file.write("disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln, compType)\n")
     file.close()
 
 #1) slope [0, 0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0, 10.0]
@@ -102,7 +104,7 @@ for i in range(0, len(combinations)):  # actually produces the files
     print "tup", tup
     print filename
     writePythonRun(filename, slope, risk, K, var, min_juv_size, min_no_off,
-                   max_no_off, ad_disFd_lmt, F_Ln, sim_len)
+                   max_no_off, ad_disFd_lmt, F_Ln, sim_len, comp_type)
     writePBS(filename)
     fileNameLst.extend([filename])
 

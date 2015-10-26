@@ -16,9 +16,9 @@ import random
 
 # nb changesa = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] 
 # # compeition options [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]
-#a = [[0.2, 0.4, 0.6, 0.8], [100], [0.2, 1.25]] # xbar, [num juvs] [slp]
-a = [[0.8*10], [10, 15, 20], [0.8]]
-#a = [[0.5], [10], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]]
+a = [[0.4*100], [100, 120, 150], [0.2]] # xbar, [num juvs] [slp]
+#a = [[0.8*2], [3, 4], [5.0]]
+#a = [[0.5], [100], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]]
 # not sure whether the col food is with or without scaling
 
 
@@ -29,46 +29,55 @@ a = [[0.8*10], [10, 15, 20], [0.8]]
 
 print ("have you changed the comp functin and juv fd assign functiun output???")
 combinations = list(itertools.product(*a))
+compType = "I" # I or N
 
 print combinations
-
 
 df = []
 ass_lists = []
 
 for i in range(0, len(combinations)):
     tup = combinations[i]
-    #print tup
     numJuv = tup[1]
     #colFd = (float(numJuv) * tup[0])
-    colFd = tup[0]
-    s = tup[2]
-    #print "s", s
-    compOb = Comp(colFd, numJuv, s)
-    rankLst = compOb.CompFunction()
+    colFd = tup[0]    
 
     juv_list = []
     for i in range(0, int(numJuv)):
         new_juv = Juv()
         juv_list.extend([new_juv])
 
-    myCol = Colony("N", "n", 1, [], tup[2])
+    myCol = Colony(compType, "n", 1, [], tup[2])  # change I to no
     myCol.juv_list = juv_list
     myCol.colony_food = colFd
-    print "if this doens't work you have not changed outputs in main file"
-    myCol.cal_med_rnk = rankLst[1]
-    print "mycol med rank", myCol.cal_med_rnk
-    myCol.juv_rnk_assign()
-    print [i.rank for i in myCol.juv_list]
+    #print "if this doens't work you have not changed outputs in main file"
+    
+    if compType == "I":
+        s = tup[2]
+        compOb = CompInt(colFd, numJuv, s)
+        rankLst = compOb.CompIntFun()
+        myCol.assign_food()
+    else: # if competition type is N
+        s = tup[2]/float(numJuv-1) # might have to change this when doing intercept competition
+        compOb = compOb = Comp(colFd, numJuv, s)
+        rankLst = compOb.CompFunction()
+        myCol.cal_med_rnk = rankLst[1]
+        myCol.juv_fd_assign()
+        print "mycol med rank", myCol.cal_med_rnk
+
+    print "s", s
+    
+    #print [i.rank for i in myCol.juv_list]
     ass_tot = myCol.juv_fd_assign()
-    print 'slope', tup[2], 'xbar:', tup[0]
-    print 'ass total', ass_tot, 
+    #print 'slope', tup[2], 'xbar:', tup[0]
+    #print 'ass total', ass_tot, 
     juv_ranks = [jv.rank for jv in myCol.juv_list]
     numSlope = sum(1 for fd in ass_tot if fd < 1 and fd > 0)
-    print "numslpe", numSlope
+    #print "numslpe", numSlope
     ass_lists.append(ass_tot)
-
-    OutputList = [numJuv, tup[2], s, colFd] + rankLst + [sum(ass_tot)] + [numSlope]
+    calcTot = sum(ass_tot)
+    percDiff = (np.abs(colFd - calcTot)/ colFd) * 100
+    OutputList = [numJuv, tup[2], s, colFd] + rankLst + [calcTot] + [numSlope] + [percDiff]
     #print 'output list', OutputList
     df.append(OutputList)
     #print "df loop:", df
@@ -82,9 +91,10 @@ for i in range(0, len(combinations)):
 print ass_lists
 
 print "final output list", OutputList
-d = dict(col1 = ass_lists[0], col2 = ass_lists[1])
-data2 = pd.DataFrame(df, columns = [ 'numJuvs', 'input_slp', 'cal_slp', 'colFd', 'calTot', 'med_rnk', 'ass_tot', "NumFdBtwn"])
-#d = {'col1': ass_lists[0], 'col2': ass_lists[1], 'col3': ass_lists[2], 'col4': ass_lists[3]}
+col1 = str(tup[1])
+d = dict(col1 = ass_lists[0], col2 = ass_lists[1], col3 = ass_lists[2])
+data2 = pd.DataFrame(df, columns = [ 'numJuvs', 'input_slp', 'cal_slp', 'colFd', 'calTotOrIncptSlp', 'med_rnkOrInct', 'ass_tot', "NumFdBtwn", "PercDiff"])
+#d = {"col1": ass_lists[0], "col2": ass_lists[1], "col3": ass_lists[2]}
 
 data = pd.DataFrame({k : pd.Series(v) for k, v in d.iteritems()})
 #data = pd.DataFrame(d)

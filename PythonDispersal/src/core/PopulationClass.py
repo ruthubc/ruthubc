@@ -23,7 +23,7 @@ import random
 class Poplt(object):
     '''
     List of all colonies in the population    '''
-    def __init__(self, poplt_list, indFile = "n",  # list of colonies
+    def __init__(self, poplt_list, compType = "N", indFile = "n",  # list of colonies
                  filename = "", # output file name
                  comp_slp = 0.1,
                  disp_rsk = 0.5,
@@ -37,6 +37,7 @@ class Poplt(object):
                  colony_count = 0
                  ):
         self.poplt_list = poplt_list
+        self.compType = compType
         self.indFile = indFile
         self.filename = filename
         self.comp_slp = float(comp_slp)
@@ -96,12 +97,12 @@ class Poplt(object):
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             #print 'new colony made, id:', self.colony_count
-            col = Colony(indFile = self.indFile, colony_ID = self.colony_count, ad_list = [spider], slope = self.comp_slp, colony_age = 1, dispersers = [], pot_juv_food = 0)
+            col = Colony(compType = self.compType, indFile = self.indFile, colony_ID = self.colony_count, ad_list = [spider], slope = self.comp_slp, colony_age = 1, dispersers = [], pot_juv_food = 0)
             col.num_ads = 1
             col.newCol = "Yes"
             adSize = col.ad_list[0].food
             col.adSz_B4 = [adSize, adSize, adSize, "NA", 1]
-            #col.print_dets()
+            #col.print_dets() 
             self.new_cols.extend([col])
 
     def new_cols_to_lst(self):  # add the dispersed colonies to the population list and empties new_col list
@@ -120,6 +121,7 @@ class Poplt(object):
     def poplt_dict(self):  # population dictionary
         d = OrderedDict()
         d['pop_age'] = self.pop_age
+        d['comp_type'] = self.compType
         d['Comp_slope'] = self.comp_slp
         d['num_cols'] = len(self.poplt_list)
         d['meanK'] = self.K
