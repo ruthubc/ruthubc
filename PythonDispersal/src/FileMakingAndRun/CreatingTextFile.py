@@ -21,7 +21,7 @@ print "number of combinations", len(combinations)
 
 print combinations
 
-sim_len = 5
+sim_len = 500
 comp_type = "I"
 
 def run_numbers(numbersFile):  # Assigns a unique number to each run
