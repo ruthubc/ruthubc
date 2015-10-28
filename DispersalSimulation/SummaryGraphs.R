@@ -103,13 +103,9 @@ p1 <- ggplot(dis_ply, aes(x = Comp_meas, y = PopAge.Mean, colour = as.factor(ad_
  
 ### Not sure whether better to graph all generations??? Prob not. 
 # Average colony age at death for all colonies
-p2 <- ggplot(dis_ply, aes(x = Comp_meas, y = colAgeDeath_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk)  +  ggtitle("average colony survival") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		geom_errorbar(aes(ymin=colAgeDeath_all.mean-colAgeDeath_all.SE, ymax=colAgeDeath_all.mean + colAgeDeath_all.SE), width = 0.1) + 
-		mytheme + scale_colour_manual(values=c("blue", "red"))
 
-p2a<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk)  +  ggtitle("average colony age at death") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+p2<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
+		facet_grid(meanK~VarAndRsk)  +  ggtitle("Average colony Survival") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
 		geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
 		mytheme + scale_colour_manual(values=c("blue", "red"))
 
@@ -118,7 +114,7 @@ p2a<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.fact
 # Colony size at dispersal
 
 p3 <- ggplot(dis_ply, aes(x = Comp_meas, y = col_size_disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk, scales = "free")  +  ggtitle("average colony size at dispersal") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		facet_grid(meanK~VarAndRsk, scales = "free")  +  ggtitle("average colony size of dispersing colonies") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
 		geom_errorbar(aes(ymin=col_size_disp.mean-col_size_disp.SE, ymax=col_size_disp.mean + col_size_disp.SE), width = 0.1) + mytheme + 
 		scale_colour_manual(values=c("blue", "red"))
 
@@ -157,13 +153,13 @@ p8 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDeath.mean, colour = as.fact
 
 
 
-num_graphs <- 9
+num_graphs <- 8
 
 gr_ht <- num_graphs * 650
 
 png("DisperalSimulationOutput/DispersalSummaryGraphs26OctIncercept.png", width = 1300, height = gr_ht, units = "px")
 
-grid.arrange(p1, p2, p2a, p3, p4, p5, p6, p7, p8,  ncol=1)
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8,  ncol=1)
 
 dev.off()
 

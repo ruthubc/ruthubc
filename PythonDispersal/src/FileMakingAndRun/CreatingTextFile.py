@@ -99,7 +99,7 @@ for i in range(0, len(combinations)):  # actually produces the files
     min_no_off = 2
     max_no_off = 4
 
-    F_Ln = 0.4
+    F_Ln = 0.6
     filename =  str(number) + "_" + 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) +  "_dslm" + str(ad_disFd_lmt)
     print "tup", tup
     print filename

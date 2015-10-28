@@ -136,10 +136,10 @@ class Colony(object):
         cal_colFood = np.exp((1-NOvK)*(NOvK-1) *int)
         cap_col_food = cal_colFood
         if cap_col_food < 0:
-            print "cal colony food", cal_colFood
+            #print "cal colony food", cal_colFood
             raise ValueError("cal Colony food was negative or zero, numads s%:, cap_col_food s%" % (N_tot, cap_col_food))
         else:
-            print ("no error in cap col food", cap_col_food)
+            #print ("no error in cap col food", cap_col_food)
             return cap_col_food
 
     def col_food_random(self, F_Ln, K, var, food_scale):  # randomly fluctuates colony food 
@@ -155,7 +155,7 @@ class Colony(object):
             self.colony_food = len(self.juv_list)
         else:
             self.colony_food = tot_food
-        print "randomColFood with scaling", self.colony_food
+        #print "randomColFood with scaling", self.colony_food
 
     def col_num_off(self, Off_M, Off_C):  # Calculating the number of offspring and assigning number to adult
         #TODO: test num offspring equation
@@ -171,11 +171,11 @@ class Colony(object):
         pot_juv_fd = tot_food / pot_juvs
         self.pot_juv_food = pot_juv_fd
         #print "adfood", [i.food for i in self.ad_list]
-        print "pot juv food", pot_juv_fd
+        #print "pot juv food", pot_juv_fd
 
     def colDispersal_choice(self,  ad_disFd_lmt):  # deciding whether to reproduce or disperse
             [i.disperseChoice(ad_disFd_lmt) for i in self.ad_list] # dispersal choice ensures adult over specific size to disperse
-            print "tot num of adults before dispersal colDis_choice", len(self.ad_list)
+            #print "tot num of adults before dispersal colDis_choice", len(self.ad_list)
 
     def spis_to_dis_lst(self, adDisLmt):  # makes a list of dispersers and removes them from the old colony
         #print "ad food before dispersal"
@@ -187,8 +187,8 @@ class Colony(object):
             if ad.food > adDisLmt:
                 raise Exception ("Non-dispered adults larger then", adDisLmt, "which was", ad.food)
         #print [i.food for i in self.ad_list]
-        print "spis to dis lst"
-        print "new no of ads:", len(self.ad_list), "num dispersers:", self.num_dis
+        #print "spis to dis lst"
+        #print "new no of ads:", len(self.ad_list), "num dispersers:", self.num_dis
         if self.num_dis > 0:
             self.adSz_AF = self.indStats([i.food for i in self.ad_list]) # ad sizes after dispersal
         else:
@@ -197,7 +197,7 @@ class Colony(object):
     def reproduction(self):  # all remaining adults reproduce, number of offspring depend on adult size
         no_new_off = sum([i.no_off for i in self.ad_list])
         self.num_juvs = no_new_off
-        print "number of offspring", no_new_off
+        #print "number of offspring", no_new_off
         for num in range (0, no_new_off):
             self.juv_list.extend([Juv()])
         # print 'length of juv list', len(self.juv_list)
@@ -239,14 +239,14 @@ class Colony(object):
 
         rnk1jv = next(i for i in self.juv_list if i.rank == 1)  # juv rank number one, so 2nd ranked juv
         any_fd_zrs = len([i for i in self.juv_list if i.food < 0.001])  # checking if any inds have zero food
-        print "length any food zeros", any_fd_zrs
+        #print "length any food zeros", any_fd_zrs
         ass_tot = sum([jv.food for jv in self.juv_list])  # total amount of food allocated
         self.juv_list.sort(key = lambda i: i.rank, reverse = False)  # sorting juv list by rank
 
         #print "ordered jv rank list", [jv.rank for jv in self.juv_list]
 
         if rnk1jv.food < 0.001 and self.colony_food <= 1:  # if too little food and too few tot juvs the 0 (top) ranked ind doesn't get correct amt food sometimes
-            print "rank1juv option and col food equal to or less than one"
+            #print "rank1juv option and col food equal to or less than one"
             rnk0jv = next(i for i in self.juv_list if i.rank == 0)
             inx_0jv = self.juv_list.index(rnk0jv)
             self.juv_list[inx_0jv].food = self.colony_food  # correcting the highest ranked jv's food
@@ -258,22 +258,22 @@ class Colony(object):
             self.juv_list[inx_0jv + 1].food = self.colony_food - self.juv_list[inx_0jv].food
 
         elif any_fd_zrs > 0:  # checking if some inds didn't get any food
-            print "some inds had zero food"
+            #print "some inds had zero food"
             rnknoFd = next(i for i in self.juv_list if i.food < 0.0001)  # highest rank of indivdual with no food
             inx_zr_fd = self.juv_list.index(rnknoFd)  # index of highest ranked ind with no food
             min_ass_ind_fd = self.juv_list[inx_zr_fd - 1].food  # food for lowest ranked ind that gets food
             fd_to_min_ind = self.colony_food - (ass_tot - min_ass_ind_fd)
 
             if fd_to_min_ind >= 0:  # checking that the tot ass food - smallest assigned food is below col food!
-                print " fd to min ind above zero"
+                #print " fd to min ind above zero"
                 self.juv_list[inx_zr_fd - 1].food = fd_to_min_ind
             else:
                 "too much food assigned fd to min ind below zero"
         else:  # all inds get fed, adjusting the lowest ranked inds food
-            print"all inds get fed, adjusting lowest ranked inds food"
+            #print"all inds get fed, adjusting lowest ranked inds food"
             num_juvs = len(self.juv_list)
             rem_food = self.colony_food - (ass_tot - self.juv_list[num_juvs - 1].food)
-            print "rem_food", rem_food
+            #print "rem_food", rem_food
             self.juv_list[num_juvs - 1].food = rem_food
 
     def xbarCheck(self):
@@ -284,12 +284,12 @@ class Colony(object):
     def foodAssignCheck(self):
         if len(self.juv_list) < 10 or self.colony_food < 5:
         #if len(self.juv_list) <  0 or self.colony_food < 0:
-            print "running food correction code"
+            #print "running food correction code"
             self.fd_assign_corretions()  # correcting to make equal to colony food
         jvFdLst = [jv.food for jv in self.juv_list]
         ass_tot = sum(jvFdLst)  # total amount of food allocated - redoing after changing some foods!
         perdiff = (abs(ass_tot - self.colony_food) / self.colony_food) * 100
-        print 'percentage difference', perdiff
+        #print 'percentage difference', perdiff
         if perdiff >= 2.5:
             print "percentage difference is", perdiff
             raise ValueError("assigned food greater than 2.5% different from calculated food")
@@ -297,13 +297,13 @@ class Colony(object):
     def juv_fd_assign(self):
         self.xbarCheck()
         if self.compType == "N":
-            print "normal competition"
+            #print "normal competition"
             for spider in self.juv_list:
                 jv_rnk = spider.rank
                 ind_fd = self.cal_ind_food(jv_rnk)
                 spider.food = ind_fd
         elif self.compType == "I":
-            print "intercept competition"
+            #print "intercept competition"
             for spider in self.juv_list:
                 jv_rnk = spider.rank
                 ind_fd = self.cal_ind_food_intercept(jv_rnk)
@@ -318,7 +318,7 @@ class Colony(object):
             spider.food = ind_fd
 
     def oneSlp_jv_fd(self):  # full contest competition
-        print "one food being used"
+        #print "one food being used"
         if self.colony_food > 1:  # total colony food is more than one, i.e. more than one juv will get food
             #assign all to top ranks
             num_get_fd = np.floor(self.colony_food)
@@ -377,12 +377,12 @@ class Colony(object):
         self.num_moult = len(moult_list)
         if self.num_moult > 0:
             self.ad_list = [Adult(i.SpiderList()) for i in moult_list]  # making adults from juvs
-            print 'number of juvs moulting', len(self.ad_list)
+            #print 'number of juvs moulting', len(self.ad_list)
             self.juv_list = []  # emptying the old juv list
         else:
             self.ad_list = []
             self.juv_list = []
-            print " no juvs moulting"
+            #print " no juvs moulting"
         jvMltLst = [i.food for i in self.ad_list]
         self.jvSz_AF = self.indStats(jvMltLst) # stats for juvs that moulted
 
@@ -464,7 +464,7 @@ class Colony(object):
 
         self.adSz_B4 = self.indStats([i.food for i in self.ad_list]) # ad fd stats before dispersal
 
-        print "juv_disFdLmt", juv_disFd_lmt
+        #print "juv_disFdLmt", juv_disFd_lmt
         if self.pot_juv_food < float(juv_disFd_lmt): # risk calculation already cal'ed in population class
             self.colDispersal_choice(ad_disFd_lmt)
             self.spis_to_dis_lst(ad_disFd_lmt)
@@ -482,6 +482,6 @@ class Colony(object):
             #print "colony dictionary", self.colony_dict()
             print "all spiders dispersed, colony dead"
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
-            print("number spiders left after dispersal")
-            print(len(self.ad_list))
+            #print("number spiders left after dispersal")
+            #print(len(self.ad_list))
             self.core_colony_timestep(F_Ln, K, var, min_juv_fd, pop_export_list, filename, food_scale)

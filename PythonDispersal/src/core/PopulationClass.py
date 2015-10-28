@@ -89,11 +89,11 @@ class Poplt(object):
             self.pop_dispersal_list.remove(random.choice(list(self.pop_dispersal_list)))
 
     def create_new_col(self):  # sets up the dispersing spiders as new colonies
-        print "number of disps before rsk death:", len(self.pop_dispersal_list)
+        #print "number of disps before rsk death:", len(self.pop_dispersal_list)
         self.disp_rsk_remove_spiders() 
-        print "number of disps AFTER rsk death:", len(self.pop_dispersal_list)
+        #print "number of disps AFTER rsk death:", len(self.pop_dispersal_list)
         self.too_many_cols()
-        print "number of dispds After too many cols:", len(self.pop_dispersal_list)
+        #print "number of dispds After too many cols:", len(self.pop_dispersal_list)
         for spider in self.pop_dispersal_list:
             self.colony_count += 1
             #print 'new colony made, id:', self.colony_count
@@ -155,7 +155,7 @@ class Poplt(object):
         self.allCols_OneTimestep()
 
         if self.pop_dispersal_list:
-            print "size of population dispersal list", len(self.pop_dispersal_list)
+            #print "size of population dispersal list", len(self.pop_dispersal_list)
             #(3) Make dispersers into new colonies
             # print 'pop dis list length', len(self.pop_dispersal_list)
             self.create_new_col()
