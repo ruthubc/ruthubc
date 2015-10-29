@@ -341,7 +341,7 @@ class Colony(object):
         if len(self.juv_list) <= 1:
             self.juv_list[0].food = self.colony_food  #TODO: maybe put something in here to make sure that nver abv1
         if self.slope < 0.001:
-            self.zeroSlp_jv_fd()
+            self.zeroSlp_jv_fd() # all individuals get the same amount of food
         elif self.slope == 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
             self.juv_rnk_assign()  # assign ranks to juvs
             self.oneSlp_jv_fd()

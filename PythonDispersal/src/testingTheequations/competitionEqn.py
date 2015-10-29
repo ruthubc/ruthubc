@@ -16,7 +16,7 @@ import random
 
 # nb changesa = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] 
 # # compeition options [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]
-a = [[1.2], [3, 4], [0.2, 0.4]] # xbar, [num juvs] [slp]
+a = [[1.2], [3, 4], [0.8]] # xbar, [num juvs] [slp]
 #a = [[0.8*2], [3, 4], [5.0]]
 #a = [[0.5], [100], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]]
 # not sure whether the col food is with or without scaling
@@ -62,11 +62,12 @@ for i in range(0, len(combinations)):
         compOb = Comp(colFd, numJuv, s)
         rankLst = compOb.CompFunction()
         myCol.cal_med_rnk = rankLst[1]
+        myCol.juv_rnk_assign()
         myCol.juv_fd_assign()
         print "mycol med rank", myCol.cal_med_rnk
 
     print "s", s
-    
+
     #print [i.rank for i in myCol.juv_list]
     ass_tot = myCol.juv_fd_assign()
     #print 'slope', tup[2], 'xbar:', tup[0]
@@ -92,7 +93,7 @@ print ass_lists
 
 print "final output list", OutputList
 col1 = str(tup[1])
-d = dict(col1 = ass_lists[0], col2 = ass_lists[1], col3 = ass_lists[2], col4 = ass_lists[3])
+d = dict(col1 = ass_lists[0], col2 = ass_lists[1])#, col3 = ass_lists[2], col4 = ass_lists[3])
 data2 = pd.DataFrame(df, columns = [ 'numJuvs', 'input_slp', 'cal_slp', 'colFd', 'calTotOrIncptSlp', 'med_rnkOrInct', 'ass_tot', "NumFdBtwn", "PercDiff"])
 #d = {"col1": ass_lists[0], "col2": ass_lists[1], "col3": ass_lists[2]}
 
