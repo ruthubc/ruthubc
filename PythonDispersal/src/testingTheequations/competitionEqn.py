@@ -16,7 +16,7 @@ import random
 
 # nb changesa = [[20.0,30.0, 40.0, 50.0, 500.0, 458.4],[1, 2, 5, 7],[0.001, 0.02, 0.1, 0.2, 0.9, 0.5]] 
 # # compeition options [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]
-a = [[1.2], [3, 4], [0.8]] # xbar, [num juvs] [slp]
+a = [[1.24], [3, 4], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]] # xbar, [num juvs] [slp]
 #a = [[0.8*2], [3, 4], [5.0]]
 #a = [[0.5], [100], [0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.666667, 2.5, 5.0]]
 # not sure whether the col food is with or without scaling
@@ -79,7 +79,7 @@ for i in range(0, len(combinations)):
     calcTot = sum(ass_tot)
     percDiff = (np.abs(colFd - calcTot)/ colFd) * 100
     OutputList = [numJuv, tup[2], s, colFd] + rankLst + [calcTot] + [numSlope] + [percDiff]
-    #print 'output list', OutputList
+
     df.append(OutputList)
     #print "df loop:", df
 
@@ -88,8 +88,12 @@ for i in range(0, len(combinations)):
     plt.xlim([0, numJuv])
     plt.title(str(tup[2]))
     plt.draw()
+    
+print "ass_lists"
+print ass_lists[0]
 
-print ass_lists
+print "len df"
+print len(df)
 
 print "final output list", OutputList
 col1 = str(tup[1])
@@ -97,7 +101,13 @@ d = dict(col1 = ass_lists[0], col2 = ass_lists[1])#, col3 = ass_lists[2], col4 =
 data2 = pd.DataFrame(df, columns = [ 'numJuvs', 'input_slp', 'cal_slp', 'colFd', 'calTotOrIncptSlp', 'med_rnkOrInct', 'ass_tot', "NumFdBtwn", "PercDiff"])
 #d = {"col1": ass_lists[0], "col2": ass_lists[1], "col3": ass_lists[2]}
 
-data = pd.DataFrame({k : pd.Series(v) for k, v in d.iteritems()})
+
+food_dict = {}
+for i in range(len(df)):
+    name = 'slp' + str(df[i][1]) + 'juvs' + str(df[i][0])
+    food_dict[name] = ass_lists[i]
+
+data = pd.DataFrame({k : pd.Series(v) for k, v in food_dict.iteritems()})
 #data = pd.DataFrame(d)
 
 

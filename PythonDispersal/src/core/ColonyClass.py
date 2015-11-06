@@ -310,7 +310,7 @@ class Colony(object):
                 spider.food = ind_fd
             #print 'ind_fd', spider.food
         self.foodAssignCheck()
-        return [jv.food for jv in self.juv_list]  # for testing, when not testing comment out
+        #return [jv.food for jv in self.juv_list]  # for testing, when not testing comment out
 
     def zeroSlp_jv_fd(self):  # dist food if comp slope = 1
         ind_fd = self.colony_food / float(len(self.juv_list))
@@ -373,7 +373,7 @@ class Colony(object):
             self.jvSz_B4 = self.indStats(jvFdLst) # returns the ind stat
 
     def moult(self, min_juvFd):
-        moult_list = [i for i in self.juv_list if i.food >= min_juvFd]
+        moult_list = [i for i in self.juv_list if i.food > min_juvFd]
         self.num_moult = len(moult_list)
         if self.num_moult > 0:
             self.ad_list = [Adult(i.SpiderList()) for i in moult_list]  # making adults from juvs

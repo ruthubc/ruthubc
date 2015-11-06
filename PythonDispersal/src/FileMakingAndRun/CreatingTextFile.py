@@ -14,7 +14,7 @@ indFile = "n"
 
 # input variables here
 #runs = [[], [0.05, 0.1], [100, 1000], [], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
-runs = [[0.4, 0.8, 1.25, 2.5], [0.05], [100], [0.0, 0.1, 0.2], [0.4, 0.8]]
+runs = [[0, 0.4, 0.8, 1.25, 2.5, 1], [0.05], [100], [0.0, 0.1, 0.2], [0.4, 0.8]]
 combinations = list(itertools.product(*runs))
 
 print "number of combinations", len(combinations)
@@ -22,7 +22,7 @@ print "number of combinations", len(combinations)
 print combinations
 
 sim_len = 500
-comp_type = "I"
+comp_type = "N"
 
 def run_numbers(numbersFile):  # Assigns a unique number to each run
     i=[]
@@ -95,11 +95,11 @@ for i in range(0, len(combinations)):  # actually produces the files
     K = tup[2]
     var = tup[3]
     ad_disFd_lmt = tup[4]
-    min_juv_size = 0.19
+    min_juv_size = 0.205
     min_no_off = 2
     max_no_off = 4
+    F_Ln = 0.61
 
-    F_Ln = 0.6
     filename =  str(number) + "_" + 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) +  "_dslm" + str(ad_disFd_lmt)
     print "tup", tup
     print filename

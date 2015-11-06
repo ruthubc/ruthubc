@@ -80,6 +80,8 @@ write.csv(CenSwitch, file = "RuthSync/EggManipulation/RuthDataFiles/CensusSwitch
 
 Weights <- read.csv("RuthSync/EggManipulation/RuthDataFiles/JuvWeights.csv", na.strings = NA)
 
+Weights$Instar <- as.factor(Weights$Instar)
+
 Weights$MeasNo <- as.factor(Weights$MeasNo)
 
 Weights <- Weights[(Weights$Instar != "Sub1"),] # we don't want to include the weight of sub1's
