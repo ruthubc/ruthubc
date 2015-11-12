@@ -15,7 +15,7 @@ require(grid)
 mytheme <-theme_bw(base_size=10)  + theme(plot.title = element_text(vjust=2), plot.margin=unit(c(0.08, 0.08, 0.0, 0.08),"cm"), 
 		axis.title.y = element_text(vjust=0.50),
 		axis.line = element_line(colour = "grey6", linetype=1, size = 0.3), panel.border = element_blank(), 
-		panel.grid.major = element_blank()) +  
+		panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +  
 		theme(strip.background = element_rect(fill = 'white'))
 
 
@@ -92,7 +92,7 @@ prey_labeller <- function(variable,value){
 postscript("RuthEcuador2013/BoxFeedingTrials/Graphs/Sharpe_f3.eps",width = 2.76, height = 2.76)
 
 ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
-		geom_bar(stat="bin", position="fill", colour = "black") + xlab("Participated in prey capture")+ 
+		geom_bar(stat="bin", position="fill", colour = "black", size=0.1) + xlab("Participated in prey capture")+ 
 		ylab("Percentage of individuals") + 
 		 facet_grid(~Treatment, labeller = prey_labeller) + 
 		 scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
@@ -100,9 +100,9 @@ ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 		scale_fill_manual(values=c("dimgrey", "lightgrey"), guide = FALSE) +
 		mytheme + theme(strip.text.x = element_text(size = 8, vjust = 0.5), strip.background = element_rect(colour="white")) + 
 		scale_y_continuous(limits = c(0, 1.06)) + 
-		annotate("text", x = 1.5, y = 1.06, label = "***") + annotate("segment", x = 1, y = 1.05, xend = 2, yend = 1.05) + 
-		annotate("segment", x = 1, y = 1.05, xend = 1, yend = 1.02) +
-		annotate("segment", x = 2, y = 1.05, xend = 2, yend = 1.02) 
+		annotate("text", x = 1.5, y = 1.06, label = "***", size = 3) + annotate("segment", x = 1, y = 1.05, xend = 2, yend = 1.05, size = 0.2) + 
+		annotate("segment", x = 1, y = 1.051, xend = 1, yend = 1.02, size = 0.2) +
+		annotate("segment", x = 2, y = 1.051, xend = 2, yend = 1.02, size = 0.2) 
 
 
 dev.off()
