@@ -173,6 +173,8 @@ CapFdGlmerFd <- glmer(IndCapture ~ Treatment + Instar +  (1|IndBoxID) +
 
 anova(CapFdGlmer, CapFdGlmerFd)
 
+anova(CapFdGlmerFd, CapFdGlmerInt)
+
 ################ Capture vs condition
 
 
