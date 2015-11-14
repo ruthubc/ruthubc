@@ -18,15 +18,17 @@ mytheme <-theme_bw(base_size=10)  + theme(legend.position="none", plot.title = e
 ## good constants chosen to illistrate my point!
 
 A = 0.85
-CostZero = 0.10
+CostZero = 0.2
 CostFun = function(x)(A * x ^(3/2)) + CostZero
 
-BenConst = 1.1
-LmInput = 0.7
+BenConst = 0.35 # initial intake rate
+FdMax = 1.08
 
-BenFun = function(x)ifelse(x > LmInput, (LmInput * BenConst), (x * BenConst))
-pMin = 0.125
-pMax = 0.851
+BenFun = function(x)(FdMax * x)/ (BenConst  + x)
+pMin = 0.0913059# min x of grey box
+pMax = 0.729797 # mas x of grey box
+anTxSz = 2.2
+smp = (pMax-pMin)/2 + pMin
 
 setEPS()
 	
@@ -38,16 +40,17 @@ postscript("RuthEcuador2013/BoxFeedingTrials/Graphs/Sharpe_f4.eps",width = 2.76,
 # CairoPS but makes PS files not eps files
 #http://thepoliticalmethodologist.com/2013/11/25/making-high-resolution-graphics-for-academic-publishing/
 
-anTxSz = 2.5
 
-ggplot(data.frame(x=c(0, 1.1)), aes(x)) +  annotate("rect", xmin = pMin, xmax= pMax, ymin = 0, ymax = 1.1, fill = "light grey") +
-		stat_function(fun=CostFun, aes(linetype = "Cost")) + stat_function(fun = BenFun, aes(linetype = "Benefit")) +
-		xlab("Prey Volume") + ylab("Fitness") + mytheme   +
-		scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) + annotate("text", x = 0.7, y = 0.48, label = "Costs", fontface = "bold", size = anTxSz +0.5) + 
-		annotate("text", x = 0.06, y = 0.25, label = "very\nsmall\nprey", size = anTxSz, fontface= 'italic') + 
-		annotate("text", x = 0.5, y = 0.25, label = "small prey", size = anTxSz, fontface= 'italic') +
-		annotate("text", x = 0.97, y = 0.25, label = "large prey", size = anTxSz, fontface= 'italic') +
-		annotate("text", x = 0.5, y = 0.7, label = "Benefits", fontface = "bold", size = anTxSz + 0.5)
+
+ggplot(data.frame(x=c(0, 0.97)), aes(x)) +  annotate("rect", xmin = pMin, xmax= pMax, ymin = 0, ymax = 1.02, fill = "light grey") +
+		stat_function(fun=CostFun, aes(linetype = "Cost"), size = 0.2) + stat_function(fun = BenFun, aes(linetype = "Benefit"), size = 0.2) +
+		xlab("Prey volume") + ylab("Fitness") + mytheme   +
+		scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) + 
+		annotate("text", x = 0.60, y = 0.50, label = "Costs", fontface = "bold", size = anTxSz +0.2) + 
+		annotate("text", x = 0.044, y = 0.32, label = "very\nsmall\nprey", size = anTxSz, fontface= 'italic') + 
+		annotate("text", x = smp, y = 0.27, label = "small prey", size = anTxSz, fontface= 'italic') +
+		annotate("text", x = 0.85, y = 0.27, label = "large prey", size = anTxSz, fontface= 'italic') +
+		annotate("text", x = 0.50, y = 0.715, label = "Benefits", fontface = "bold", size = anTxSz + 0.2)
 
 # geom_vline(xintercept = pMin, linetype = 3, colour = "grey31", size = 0.5)
 #geom_vline(xintercept = pMax, linetype = 3, colour = "grey31", size = 0.5) + 
