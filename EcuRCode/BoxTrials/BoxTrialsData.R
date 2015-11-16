@@ -326,3 +326,8 @@ FdCap_Eat <- function(var, value){
 
 FdCapByTrial$Cap <- FdCap_Capture('variable', FdCapByTrial$variable)
 FdCapByTrial$Eat <- FdCap_Eat('variable', FdCapByTrial$variable)
+
+
+################ Sample sizes #########
+
+length(levels(BoxComboMorn$TrialID))

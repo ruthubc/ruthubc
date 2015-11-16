@@ -148,6 +148,8 @@ PerDiff(EatConDiff)
 ###########################################
 # Capture vs feeding
 
+CapFeedMorn <- subset(BoxComboMorn, BoxFeedObs == "y")
+
 ##numbers
 
 BoxComboCap$FedWords<-ifelse(BoxComboCap$FeedIndPos == "y", "Fed", "Did Not Feed")
@@ -158,18 +160,18 @@ table(BoxComboMorn$IndCapture, BoxComboMorn$IndFeed)
 
 ### Stats Tests
 CapFdGlmer <- glmer(IndCapture ~ IndFeed + Treatment + Instar + IndFeed:Treatment+  (1|IndBoxID) + 
-				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+				(1|IndBoxID:SpiderID), CapFeedMorn, family = binomial(logit))
 
 summary(CapFdGlmer)
 
 CapFdGlmerInt <- glmer(IndCapture ~ IndFeed + Treatment + Instar +  (1|IndBoxID) + 
-				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+				(1|IndBoxID:SpiderID), CapFeedMorn, family = binomial(logit))
 
 anova(CapFdGlmer, CapFdGlmerInt)
 
 
 CapFdGlmerFd <- glmer(IndCapture ~ Treatment + Instar +  (1|IndBoxID) + 
-				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
+				(1|IndBoxID:SpiderID), CapFeedMorn, family = binomial(logit))
 
 anova(CapFdGlmer, CapFdGlmerFd)
 
