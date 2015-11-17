@@ -17,7 +17,7 @@ spiders$Instar<-as.character(spiders$Instar) ; spiders$Instar[spiders$AdMaleSubB
 spiders$Instar <-as.factor(spiders$Instar)
 
 #Calculating spider hunger
-spiders$hunger <- spiders$HeadLength.mm/spiders$Weight.mg
+spiders$cond <- spiders$Weight.mg/spiders$LegLen.mm
 
 #removing empty levels and ordering for graph
 spiders$Instar <- factor(spiders$Instar, levels= c("Juv4", "Sub1", 
@@ -33,7 +33,7 @@ spiders$logLeg<- log10(spiders$LegLen.mm)
 spiders$logHead <-log10(spiders$HeadLength.mm)
 
 spiders$logAbdm<- log10(spiders$AbdmLen.mm)
-spiders$logcond <- log10(spiders$hunger)
+spiders$logcond <- log10(spiders$cond)
 
 Nests<-levels(spiders$NestID)
 
@@ -60,11 +60,11 @@ SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm, CountFemales), summ
 		CVLeg= sdLeg / meanLeg,
 		cvByNLeg = (1+(1/(4*N))) * CVLeg,
 		logcvByNLeg = log10(cvByNLeg),
-		meanHung = mean(hunger, na.rm = TRUE),
-		sdHung = sd(hunger, na.rm = TRUE),
-		CVHung= sdHung/ meanHung,
-		cvByNHung = (1+(1/(4*N))) * CVHung,
-		logcvByNHung= log10(cvByNHung),
+		meanCond = mean(cond, na.rm = TRUE),
+		sdCond = sd(cond, na.rm = TRUE),
+		CVCond= sdCond/ meanCond,
+		cvByNCond = (1+(1/(4*N))) * CVCond,
+		logcvByNCond= log10(cvByNCond),
 		meanHead =  mean(HeadLength.mm)
 
 
@@ -91,6 +91,8 @@ spidersSglMt <- subset(spidersSglMt , FemalesHaveEggsOrJuvs != "n")
 Spis44 <- subset(spidersSglMt, km == "44.4")
 Spis44 <- subset(Spis44, type == "single" | NestID == "44.4EX03")
 
+spidersMul$ID<-seq.int(nrow(spidersMul))
+
 
 ## looking at small juv 4's to see if needs to be removed from analysis
 
@@ -101,6 +103,6 @@ juvs <- subset(spiderData, Instar == 'Juv4' | Instar =='juv3', select = c('NestI
 
 ##Leticia Export
 
-LAExport <- subset(SpiNestAve, Instar == "Sub1", select = c("NestID", "Instar", "logCtFm", "meanHung", "cvByNHung" ))
+#LAExport <- subset(SpiNestAve, Instar == "Sub1", select = c("NestID", "Instar", "logCtFm", "meanHung", "cvByNHung" ))
 
-write.table(LAExport, "RuthEcuador2013/NestSize/Graphs/CVHunger.csv", sep = ",")
+#write.table(LAExport, "RuthEcuador2013/NestSize/Graphs/CVHunger.csv", sep = ",")
