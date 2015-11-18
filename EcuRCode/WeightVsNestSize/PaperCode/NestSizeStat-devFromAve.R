@@ -60,7 +60,7 @@ summary(legDiffLm)
 legDiffLmNoSq <- lmer(logLegDiff ~  logCtFm +  Instar+ Instar:logCtFm  +  
 				(1|NestID), data = spidersVar, REML = FALSE)
 
-anova(legDiffLmNoSq)
+anova(legDiffLmNoSq)  ## Slight increase with nest size p = 0.091
 visreg(legDiffLmNoSq, xvar = "logCtFm", by = "Instar")
 summary(legDiffLmNoSq)
 
@@ -75,11 +75,10 @@ anova(legDiffLmNoSq, legDiffLmRed)
 condCbDiffLm <- lmer(sqCondCbDiff ~  logCtFm + I(logCtFm ^2)+ Instar + Instar:logCtFm + I(logCtFm ^2):Instar +  
 				(1|NestID), data = spidersVar, REML = FALSE)
 
-anova(condCbDiffLm )
+anova(condCbDiffLm ) 
 visreg(condCbDiffLm , xvar = "logCtFm", by = "Instar")
 
-condCbDiffLmNoSq <- lmer(sqCondCbDiff ~  logCtFm + Instar + Instar:logCtFm  +  
-				(1|NestID), data = spidersVar, REML = FALSE)
+condCbDiffLmNoSq <- lmer(sqCondCbDiff ~  logCtFm + Instar + Instar:logCtFm  + (1|NestID), data = spidersVar, REML = FALSE)
 
 visreg(condCbDiffLmNoSq, xvar ="logCtFm", by ="Instar")
 anova(condCbDiffLmNoSq)

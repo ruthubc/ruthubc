@@ -123,7 +123,7 @@ SumsLegN <- subset(SpiNestAve, N > NMin)
 pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSize.pdf", height=8, width=11)
 
 ggplot(SumsLegN , aes(x=logCtFm, y = log10(meanLeg))) + geom_point(aes(colour = NestID), shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, raw = TRUE), se = TRUE) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, raw = TRUE), se = FALSE) + 
 		ggtitle(paste("Mean leg length with min ", NMin, " spiders", sep = ""))+
 		xlab("Log number of females") + ylab("Log leg length") + mytheme+ 
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + theme(legend.position = "none")
@@ -151,10 +151,9 @@ SumsHungerN <- subset(SpiNestAve, N > NMin)
 
 pdf("RuthEcuador2013/NestSize/Graphs/MeanHungerVsNestSize.pdf", , height=8, width=11)
 
-ggplot(SumsHungerN , aes(x=logCtFm, y = meanHung)) + geom_point(aes(colour = NestID), shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + 
-		ggtitle(paste("Log mean hunger")) +
-		xlab("Log number of females") + ylab("Mean hunger") + mytheme+
+ggplot(SumsHungerN , aes(x=logCtFm, y = meanCondSq)) + geom_point(aes(colour = NestID), shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = FALSE) +
+		xlab("Log number of females") + ylab("Mean condition") + mytheme+
 		facet_wrap(~ Instar, scales = "free_y", ncol = 4) + theme(legend.position = "none")
 
 ggplot(SumsHungerN , aes(x=logCtFm^2, y = cvByNHung)) + geom_point(aes(colour = NestID), shape = 16) + 
@@ -295,12 +294,12 @@ dev.off()
 #GRAPH TO EXPORT ---- Diff in weight between different instars
 ########################################################################################
 
-DifSmWt <- ddply(spiders, .(NestID, logCtFm, Instar), summarise,
+DifSmWt <- ddply(spidersMul, .(NestID, logCtFm, Instar), summarise,
 		N = length(!is.na(Weight.mg)),
-		mean = mean(Weight.mg, na.rm = TRUE)
+		mean = mean(cond, na.rm = TRUE)
 )
 
-DifSmWt <- subset(DifSmWt, N>0)
+DifSmWt <- subset(DifSmWt, N>5)
 
 DifSmWt$NestID <- factor(DifSmWt$NestID)
 
@@ -308,29 +307,24 @@ WtInsrCols<- dcast(subset(DifSmWt, select = c(NestID, Instar, mean, logCtFm)),
 		NestID +  logCtFm ~ Instar, value.var= "mean",  drop = T) #transpose data
 
 WtDiffs <- ddply(WtInsrCols, .(NestID, logCtFm), summarise,
-		AdultVsSub2 = Adult - Sub2,
-		Sub2VsSub1 = Sub2 - Sub1,
-		Sub1VsJuv4 = Sub1 - Juv4,
-		AdMaleVsSub2 = AdMale - Sub2,
-		SubMaleVsSub1 = SubMale - Sub1,
-		AdMaleVsSubMale = AdMale - SubMale
+		AdultVsSub2 = Adult - Sub2
 )
 
 #unstacks the data
 SpiderWtDiffs <- melt(WtDiffs, id.vars=c("NestID","logCtFm"))#dcast(SpiderDiffs, NestID + logCtFm + Instar)
 
-pdf("RuthEcuador2013/NestSize/Graphs/WeightDiffBtwnInstarVsNestSize.pdf",  height=6.5, width=9)
+pdf("RuthEcuador2013/NestSize/Graphs/CondDiffBtwnInstarVsNestSize.pdf",  height=6.5, width=9)
 
-ggplot(data = SpiderWtDiffs, aes(x = logCtFm, y = value)) + geom_point() +
-		stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 1)) +
-		facet_wrap(~ variable, scales = "free") + xlab("Log Number of spiders") +
-		ylab("Log Diff in mean weight") + xlim(1.10,3.75) #+
+ggplot(data = WtDiffs, aes(x = logCtFm, y = AdultVsSub2)) + geom_point() +
+		stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 1)) + xlab("Log Nest Size") +
+		ylab("Difference in mean condition (Adult - Sub2)") + mytheme + xlim(1.8,3.8) #+
 		#ggtitle("Difference in Weight Between Instars") 
 dev.off()
 
+CondDiffLm <- lm(AdultVsSub2 ~ logCtFm, data = WtDiffs)
 
+summary(CondDiffLm)
 
-		
 
 ##### not entirely sure what this is for.. perhapas a more complicated way of doing leg len diff btwn instar
 InstarCols<-na.omit(InstarCols)

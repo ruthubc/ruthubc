@@ -19,20 +19,20 @@ library(visreg)
 mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1))
 
-spiders$cond.sqrt <- sqrt((spiders$Weight.mg)/(spiders$LegLen.mm^3))
+#spiders$cond.sqrt <- sqrt((spiders$Weight.mg)/(spiders$LegLen.mm^3))
 
-spidersMul$cond.sqrt <- sqrt((spidersMul$Weight.mg)/(spidersMul$LegLen.mm^3))
-
-
+#spidersMul$cond.sqrt <- sqrt((spidersMul$Weight.mg)/(spidersMul$LegLen.mm^3))
 
 
-SpiAveMerge<- ddply(spiders, .(NestID, Instar), summarise, # need to discount trials where no feeding obs and eve
+
+
+SpiAveMerge<- ddply(spidersMul, .(NestID, Instar), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(Weight.mg)),
 		WeightMean = mean(Weight.mg, na.rm = TRUE),
 		LogWeightMean = mean(logWeight, na.rm = TRUE),
 		LegMean = mean(LegLen.mm, na.rm = TRUE),
 		LogLegMean = mean(logLeg, na.rm = TRUE),
-		cond.sqrtMean = mean(cond.sqrt, na.rm = TRUE)
+		cond.sqrtMean = mean(conditionSq, na.rm = TRUE)
 		
 		
 
@@ -44,12 +44,13 @@ SpiAveMerge<- ddply(spiders, .(NestID, Instar), summarise, # need to discount tr
 
 spidersVar <- merge(spidersMul, SpiAveMerge, by = c("NestID", "Instar") )
 
-spidersVar <- subset(spidersVar, CountFemales > 60) # removing all nests below 60 ads, about 3 multiple female nests
+spidersVar <- subset(spidersVar, CountFemales > 2) # removing all nests below 60 ads, about 3 multiple female nests
 
 spidersVar$WeightMean[spidersVar$N == 1] <- NA
 spidersVar$LogWeightMean[spidersVar$N == 1] <- NA
 spidersVar$LegDiffFromMean[spidersVar$N == 1] <- NA
 spidersVar$LogLegDiffFromMean[spidersVar$N == 1] <- NA
+spidersVar$sqrt.condDiffFromMean[spidersVar$N == 1] <- NA
 
 
 spidersVar$LogWeightDiffFromMean <- abs(spidersVar$logWeight - spidersVar$LogWeightMean)
@@ -81,6 +82,8 @@ ggplot(spidersVar, aes(sqrt.condDiffFromMean)) + geom_histogram() + facet_wrap(~
 
 ggplot(spidersVar, aes(SqRtOfCondDiff)) + geom_histogram() + facet_wrap(~Instar)
 
+## sqrt of cond difference is the most normal
+
 
 ggplot(data = spidersVar, aes(WeightDiffFromMean)) + geom_histogram() + facet_wrap(~Instar)
 
@@ -96,16 +99,18 @@ ggplot(data = spidersVar, aes(SqRtOfHungDiff)) + geom_histogram() + facet_wrap(~
 
 ggplot(data = spidersVar, aes(SqRtOfLegDiff)) + geom_histogram() + facet_wrap(~Instar)
 
-pdf("RuthEcuador2013/NestSize/Graphs/LegLengthVsNestSizeHungVar.pdf", height=8, width=11)
 
+png("RuthEcuador2013/NestSize/Graphs/DiffFromAve.png")
 
-ggplot(data = spidersVar, aes(x = logCtFm , y = SqRtOfHungDiff)) + facet_wrap(~Instar) + geom_point(aes(colour = NestID), shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + mytheme + scale_colour_discrete(guide = FALSE)
+ggplot(data = spidersVar, aes(x = logCtFm , y = SqRtOfCondDiff)) + facet_wrap(~Instar) + geom_point(aes(colour = NestID), shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + mytheme + scale_colour_discrete(guide = FALSE)
+
+ggplot(data = spidersVar, aes(x = logCtFm , y = SqRtOfLegDiff)) + facet_wrap(~Instar) + geom_point(aes(colour = NestID), shape = 16) + 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + mytheme + scale_colour_discrete(guide = FALSE)
 
 dev.off()
 
-ggplot(data = spidersVar, aes(x = logCtFm , y = SqRtOfLegDiff)) + facet_wrap(~Instar) + geom_point(aes(colour = NestID), shape = 16) + 
-		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + mytheme + scale_colour_discrete(guide = FALSE)
+
 
 ggplot(data = spidersVar, aes(x = logCtFm, y = SqRtOfCondDiff))  + facet_wrap(~Instar) + geom_point(aes(colour = NestID), shape = 16) + 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) + mytheme + scale_colour_discrete(guide = FALSE)
@@ -141,7 +146,6 @@ legDiffLm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm
 
 # squareroon of count female not significant, not by a long way so removing the squareroot term
 
-legDiffLm2 <- lmer(SqRtOfLegDiff ~  logCtFm + Instar+ Instar:logCtFm + (1|NestID), data = spidersVar, REML = FALSE)
 
 modelPlot(legDiffLm)
 
@@ -150,8 +154,10 @@ legDiffLm2 <- lmer(SqRtOfLegDiff ~ logCtFm + Instar+ Instar:logCtFm +
 
 anova(legDiffLm2)
 
+visreg(legDiffLm2, xvar = "logCtFm", by = "Instar")
+
 legDiffLmNoMales <- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
-				I(logCtFm^2):Instar + (1|NestID), data = noMales, REML = FALSE)
+				(1|NestID), data = noMales, REML = FALSE)
 
 anova(legDiffLmNoMales)
 
@@ -162,7 +168,7 @@ anova(legDiffLm2)
 
 ## Adult
 
-legDiffAdLm<- lmer(SqRtOfLegDiff ~ I(logCtFm^2) + logCtFm + (1|NestID), data = subset(spidersVar, Instar == "Adult"), REML = FALSE)
+legDiffAdLm<- lmer(SqRtOfLegDiff ~ logCtFm + (1|NestID), data = subset(spidersVar, Instar == "Adult"), REML = FALSE)
 
 modelPlot(legDiffAdLm)
 
@@ -215,6 +221,8 @@ noMales <- subset(spidersVar, Instar != "SubMale" & Instar != "AdMale")
 CondDiffLm <- lmer(SqRtOfCondDiff ~ I(logCtFm^2) + logCtFm + Instar+ Instar:logCtFm + 
 				I(logCtFm^2):Instar + (1|NestID), data = spidersVar, REML = FALSE)
 
+
+
 # I removed the males and tested wihtout the square term, then there was a sig difference in variance, decreasing as colonies grow in size!
 
 visreg(CondDiffLm, xvar = "logCtFm", by = "Instar") # This is really useful! Do more research of what this is
@@ -229,6 +237,12 @@ modelPlot(CondDiffLm)
 anova(CondDiffLm)
 
 
+CondDiffLmNoSq <- lmer(SqRtOfCondDiff ~  logCtFm + Instar+ Instar:logCtFm + 
+				 (1|NestID), data = spidersVar, REML = FALSE)
+ 
+ anova(CondDiffLmNoSq)
+
+ visreg(CondDiffLmNoSq, xvar = "logCtFm", by = "Instar")
 
 ## Cond Diff Sub1 ###
 
@@ -316,18 +330,24 @@ anova(SmLgLmFull, SmLgLmAdRed)
 
 #### Testing difference in variance between instars
 
-spidersVar$InstarLine<- factor(spidersVar$Instar, levels = c("Adult", "Sub2", "AdMale", "Sub1", "SubMale", "Juv4"))
+spidersVar$InstarLine<- factor(spidersVar$Instar, levels = c("Adult", "Sub2", "Sub1", "Juv4", "AdMale", "SubMale"))
 
 ## Conder
 noMales <- subset(spidersVar, Instar != "SubMale" & Instar != "AdMale")
 
 png("RuthEcuador2013/NestSize/Graphs/ConderInstarVariance.png")
 
+ggplot(data = spidersVar, aes(x = InstarLine, y = SqRtOfCondDiff)) + geom_boxplot() + mytheme
+
+ggplot(data = spidersVar, aes(x = InstarLine, y = SqRtOfLegDiff)) + geom_boxplot() + mytheme
+
+ggplot(data = noMales, aes(x = InstarLine, y = SqRtOfCondDiff)) + geom_boxplot() + mytheme
+
 ggplot(data = noMales, aes(x = InstarLine, y = SqRtOfCondDiff)) + geom_boxplot() + mytheme
 
 dev.off()
 
-LmInstar <- lmer(SqRtOfCondDiff ~ InstarLine + (1|NestID), data = noMales, REML = FALSE)
+LmInstar <- lmer(SqRtOfCondDiff ~ InstarLine + (1|NestID), data = spidersVar, REML = FALSE)
 anova(LmInstar)
 summary(LmInstar)
 
@@ -339,7 +359,7 @@ summary(comp.LmInstar)
 ## Leg
 ggplot(data = noMales, aes(x = InstarLine, y = SqRtOfLegDiff)) + geom_boxplot() + mytheme
 
-LmInstarLeg <- lmer(SqRtOfCondDiff ~ InstarLine + (1|NestID), data = spidersVar, REML = FALSE)
+LmInstarLeg <- lmer(SqRtOfLegDiff ~ InstarLine + (1|NestID), data = spidersVar, REML = FALSE)
 
 anova(LmInstarLeg)
 

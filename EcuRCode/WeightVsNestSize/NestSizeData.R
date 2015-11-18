@@ -19,6 +19,8 @@ spiders$Instar <-as.factor(spiders$Instar)
 #Calculating spider hunger
 spiders$cond <- spiders$Weight.mg/spiders$LegLen.mm
 
+spiders$conditionSq <- sqrt(spiders$cond)
+
 #removing empty levels and ordering for graph
 spiders$Instar <- factor(spiders$Instar, levels= c("Juv4", "Sub1", 
 				"Sub2", "Adult", "SubMale", "AdMale"))
@@ -65,7 +67,8 @@ SpiNestAve<- ddply(spiders, .(NestID, type, Instar, logCtFm, CountFemales), summ
 		CVCond= sdCond/ meanCond,
 		cvByNCond = (1+(1/(4*N))) * CVCond,
 		logcvByNCond= log10(cvByNCond),
-		meanHead =  mean(HeadLength.mm)
+		meanHead =  mean(HeadLength.mm),
+		meanCondSq = mean(conditionSq)
 
 
 

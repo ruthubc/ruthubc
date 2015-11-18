@@ -210,14 +210,14 @@ anova(LegNestSubMaleMd1, LegNestSubMaelMdRed)
 
 
 
-########### Weight vs nest size ################################
+########### Condition vs nest size ################################
 
 
 
-WgtNestSzMdNull <-lmer(logWeight ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
+WgtNestSzMdNull <-lmer(conditionSq ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
 ##full model
-WgtNestSzMd1 <- lmer(logWeight ~ I(logCtFm^2)+ logCtFm + Instar +logCtFm:Instar + 
+WgtNestSzMd1 <- lmer(conditionSq ~ I(logCtFm^2)+ logCtFm + Instar +logCtFm:Instar + 
 				I(logCtFm^2):Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
 modelPlot(WgtNestSzMd1) # all seems good!
@@ -227,11 +227,11 @@ WgtNest1<- multipleModel(WgtNestSzMd1,WgtNestSzMdNull)
 
 
 ##removing fem ct squared and interaction
-WgtNestSzMd2 <- lmer(logWeight ~ logCtFm + Instar +logCtFm:Instar 
+WgtNestSzMd2 <- lmer(conditionSq ~ logCtFm + Instar +logCtFm:Instar 
 				 + (1|NestID), data = spidersMul, REML = FALSE)
 
 modelPlot(WgtNestSzeMd2) # all seems good!
-anova(WgtNestSzeMd2)  # The interactions matter!!
+anova(WgtNestSzMd2)  # The interactions matter!!
 
 WgtNest2<- multipleModel(WgtNestSzMd2,WgtNestSzMdNull)
 
@@ -315,7 +315,7 @@ modelPlot(HungNestSzeMd5a)
 
 #Adult
 
-HungNestAdultMd1 <- lmer(logHung ~   logCtFm + (1|NestID), subset(spidersMul, Instar == "Adult"), REML = FALSE)
+HungNestAdultMd1 <- lmer(conditionSq ~   logCtFm + (1|NestID), subset(spidersMul, Instar == "Adult"), REML = FALSE)
 
 anova(HungNestAdultMd1)
 HungNestAdultMdRed <- lmer(logHung ~  (1|NestID), subset(spidersMul, Instar == "Adult"), REML = FALSE)
@@ -324,7 +324,8 @@ anova(HungNestAdultMd1, HungNestAdultMdRed)
 
 #Sub2
 
-HungNestSub2Md1 <- lmer(logHung ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "Sub2"), REML = FALSE)
+HungNestSub2Md1 <- lmer(conditionSq ~  logCtFm + (1|NestID), subset(spidersMul, Instar == "Sub2"), REML = FALSE)
+anova(HungNestSub2Md1)
 
 HungNestSub2MdRed <- lmer(logHung ~  (1|NestID), subset(spidersMul, Instar == "Sub2"), REML = FALSE)
 
