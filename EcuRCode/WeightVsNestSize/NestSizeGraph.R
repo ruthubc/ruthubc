@@ -74,7 +74,7 @@ ggplot(SpiNestAve, aes(logcvByNLeg)) + geom_histogram() # this is better log tra
 #############################################################################
 ## Summary of weight
 	
-MinNoSpis <- 1; SumsWeightN <- subset(SpiNestAve, N>MinNoSpis)
+MinNoSpis <- 3; SumsWeightN <- subset(SpiNestAve, N>MinNoSpis)
 
 ##removed spiders in single(ish) female nests
 SumsWeightN <- subset(SSummariseWeight, type == "multiple") #options multiple or single
@@ -188,8 +188,8 @@ ggplot(SpiNestAve , aes(x=logCtFm, y = meanHead)) + geom_point(aes(colour = Nest
 
 pdf("RuthEcuador2013/NestSize/Graphs/SingleMultipeNests44.pdf", height = 6, width = 6)
 
-ggplot(Spis44, aes(x=type, y=hunger)) + geom_boxplot() + 
-		ggtitle("Hunger 44.4 nests only ") + ylab("Hunger") + mytheme +theme(axis.title.x = element_blank()) +
+ggplot(Spis44, aes(x=type, y=logcond)) + geom_boxplot() + 
+		ggtitle("Hunger 44.4 nests only ") + ylab("log Cond") + mytheme +theme(axis.title.x = element_blank()) +
 		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single"))
 
 ggplot(Spis44, aes(x=type, y=logLeg)) + geom_boxplot() +
@@ -291,39 +291,6 @@ ggplot(SpiderDiffsLeg, aes(x = logCtFm, y = value)) + geom_point() +
 dev.off()
 
 
-#GRAPH TO EXPORT ---- Diff in weight between different instars
-########################################################################################
-
-DifSmWt <- ddply(spidersMul, .(NestID, logCtFm, Instar), summarise,
-		N = length(!is.na(Weight.mg)),
-		mean = mean(cond, na.rm = TRUE)
-)
-
-DifSmWt <- subset(DifSmWt, N>5)
-
-DifSmWt$NestID <- factor(DifSmWt$NestID)
-
-WtInsrCols<- dcast(subset(DifSmWt, select = c(NestID, Instar, mean, logCtFm)), 
-		NestID +  logCtFm ~ Instar, value.var= "mean",  drop = T) #transpose data
-
-WtDiffs <- ddply(WtInsrCols, .(NestID, logCtFm), summarise,
-		AdultVsSub2 = Adult - Sub2
-)
-
-#unstacks the data
-SpiderWtDiffs <- melt(WtDiffs, id.vars=c("NestID","logCtFm"))#dcast(SpiderDiffs, NestID + logCtFm + Instar)
-
-pdf("RuthEcuador2013/NestSize/Graphs/CondDiffBtwnInstarVsNestSize.pdf",  height=6.5, width=9)
-
-ggplot(data = WtDiffs, aes(x = logCtFm, y = AdultVsSub2)) + geom_point() +
-		stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 1)) + xlab("Log Nest Size") +
-		ylab("Difference in mean condition (Adult - Sub2)") + mytheme + xlim(1.8,3.8) #+
-		#ggtitle("Difference in Weight Between Instars") 
-dev.off()
-
-CondDiffLm <- lm(AdultVsSub2 ~ logCtFm, data = WtDiffs)
-
-summary(CondDiffLm)
 
 
 ##### not entirely sure what this is for.. perhapas a more complicated way of doing leg len diff btwn instar

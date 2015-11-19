@@ -7,6 +7,9 @@ library (lme4)
 library(lmerTest)
 library(visreg)
 
+
+
+
 #  LEG LENGTH vs nest size
 legLmFull <- lmer(logLeg ~  I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + I(logCtFm^2):Instar + 
 				(1|NestID), data = spidersMul, REML = FALSE)
@@ -24,12 +27,12 @@ anova(legLmNoSq) # count female is very significant
 
 legLmRed <- lmer(logLeg ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
-anova(legLmFull, legLmRed) # comparing full model to reduced model: very significant
+anova(legLmNoSq, legLmRed) # comparing full model to reduced model: very significant
 
 #################################################################
 # org condition vs nest size
 
-condLmFull <- lmer(conditionSq ~  I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + I(logCtFm^2):Instar + 
+condLmFull <- lmer(logcond ~  I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + I(logCtFm^2):Instar + 
 				(1|NestID), data = spidersMul, REML = FALSE)
 
 anova(condLmFull) # neither square or non squared term was significant
@@ -37,7 +40,7 @@ anova(condLmFull) # neither square or non squared term was significant
 
 visreg(condLmFull, xvar = "logCtFm", by = "Instar")
 
-condLmNoSq <- lmer(conditionSq ~  logCtFm + Instar + logCtFm:Instar + 
+condLmNoSq <- lmer(logcond ~  logCtFm + Instar + logCtFm:Instar + 
 				(1|NestID), data = spidersMul, REML = FALSE)
 
 visreg(condLmNoSq, xvar = "logCtFm", by = "Instar")
@@ -45,7 +48,7 @@ visreg(condLmNoSq, xvar = "logCtFm", by = "Instar")
 
 anova(condLmNoSq) # count female not significant
 
-condLmRed <- lmer(conditionSq ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
+condLmRed <- lmer(logcond ~ Instar + (1|NestID), data = spidersMul, REML = FALSE)
 
 anova(condLmFull, condLmRed) # comparing full model to reduced model: quite significant but also removes the interaction
 
@@ -144,57 +147,59 @@ legMaleSbLmRed <- lmer(logLeg ~ (1|NestID), data = spiMulMaleSb, REML = FALSE)
 anova(legMaleSbLmNoSq, legMaleSbLmRed )
 
 
-# Cubed condition by individual instar
+#condition by individual instar
 
 
 ## Adult
 
 
-cdCbAdLmNoSq <- lmer(condCbSq ~ logCtFm + (1|NestID), data = spiMulAd, REML = FALSE)
+cdCbAdLmNoSq <- lmer(logcond ~ logCtFm + (1|NestID), data = spiMulAd, REML = FALSE)
 anova(cdCbAdLmNoSq)
 
-cdCbAdLmRed <- lmer(condCbSq ~ (1|NestID), data = spiMulAd, REML = FALSE)
+cdCbAdLmRed <- lmer(logcond ~ (1|NestID), data = spiMulAd, REML = FALSE)
 
 anova(cdCbAdLmNoSq, cdCbAdLmRed)
 
 ## Sub2
 
-cdCbS2LmNoSq <- lmer(condCbSq ~ logCtFm + (1|NestID), data = spiMulS2, REML = FALSE)
+cdCbS2LmNoSq <- lmer(logcond ~ logCtFm + (1|NestID), data = spiMulS2, REML = FALSE)
 summary(cdCbS2LmNoSq)
 anova(cdCbS2LmNoSq)
 
-cdCbS2LmRed <- lmer(condCbSq ~ (1|NestID), data = spiMulS2, REML = FALSE)
+cdCbS2LmRed <- lmer(logcond ~ (1|NestID), data = spiMulS2, REML = FALSE)
 
 anova(cdCbS2LmNoSq, cdCbS2LmRed )
 
 ## Sub1
 
-cdCbS1LmNoSq <- lmer(condCbSq ~ logCtFm + (1|NestID), data = spiMulS1, REML = FALSE)
+cdCbS1LmNoSq <- lmer(logcond ~ logCtFm + (1|NestID), data = spiMulS1, REML = FALSE)
 summary(cdCbS1LmNoSq)
 anova(cdCbS1LmNoSq)
 
-cdCbS1LmRed <- lmer(condCbSq ~ (1|NestID), data = spiMulS1, REML = FALSE)
+cdCbS1LmRed <- lmer(logcond ~ (1|NestID), data = spiMulS1, REML = FALSE)
 
 anova(cdCbS1LmNoSq, cdCbS1LmRed )
 
+visreg(cdCbS1LmNoSq)
+
 ## Juv
 
-cdCbJvLmNoSq <- lmer(condCbSq ~ logCtFm + (1|NestID), data = spiMulJv, REML = FALSE)
+cdCbJvLmNoSq <- lmer(logcond ~ logCtFm + (1|NestID), data = spiMulJv, REML = FALSE)
 summary(cdCbJvLmNoSq)
 anova(cdCbJvLmNoSq)
 
-cdCbJvLmRed <- lmer(condCbSq ~ (1|NestID), data = spiMulJv, REML = FALSE)
+cdCbJvLmRed <- lmer(logcond ~ (1|NestID), data = spiMulJv, REML = FALSE)
 
 anova(cdCbJvLmNoSq, cdCbJvLmRed )
 
 
 ## Ad male
 
-cdCbMaleAdLmNoSq <- lmer(condCbSq ~ logCtFm + (1|NestID), data = spiMulMaleAd, REML = FALSE)
+cdCbMaleAdLmNoSq <- lmer(logcond ~ logCtFm + (1|NestID), data = spiMulMaleAd, REML = FALSE)
 summary(cdCbMaleAdLmNoSq)
 anova(cdCbMaleAdLmNoSq)
 
-cdCbMaleAdLmRed <- lmer(condCbSq ~ (1|NestID), data = spiMulMaleAd, REML = FALSE)
+cdCbMaleAdLmRed <- lmer(logcond ~ (1|NestID), data = spiMulMaleAd, REML = FALSE)
 
 anova(cdCbMaleAdLmNoSq, cdCbMaleAdLmRed )
 
@@ -202,11 +207,11 @@ anova(cdCbMaleAdLmNoSq, cdCbMaleAdLmRed )
 
 ## Sub male
 
-cdCbMaleSbLmNoSq <- lmer(condCbSq ~ logCtFm + (1|NestID), data = spiMulMaleSb, REML = FALSE)
+cdCbMaleSbLmNoSq <- lmer(logcond ~ logCtFm + (1|NestID), data = spiMulMaleSb, REML = FALSE)
 summary(cdCbMaleSbLmNoSq)
 anova(cdCbMaleSbLmNoSq)
 
-cdCbMaleSbLmRed <- lmer(condCbSq ~ (1|NestID), data = spiMulMaleSb, REML = FALSE)
+cdCbMaleSbLmRed <- lmer(logcond ~ (1|NestID), data = spiMulMaleSb, REML = FALSE)
 
 anova(cdCbMaleSbLmNoSq, cdCbMaleSbLmRed )
 

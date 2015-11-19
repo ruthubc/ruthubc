@@ -37,6 +37,9 @@ spiders$logHead <-log10(spiders$HeadLength.mm)
 spiders$logAbdm<- log10(spiders$AbdmLen.mm)
 spiders$logcond <- log10(spiders$cond)
 
+#ggplot(spiders, aes(log(cond))) + geom_histogram() + facet_wrap(~Instar)
+#ggplot(spiders, aes(log10(LegLen.mm))) + geom_histogram() + facet_wrap(~Instar, scales = "free") 
+
 Nests<-levels(spiders$NestID)
 
 ######################################################################################

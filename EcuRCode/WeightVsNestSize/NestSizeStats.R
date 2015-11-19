@@ -37,15 +37,16 @@ anova(SglMtLegRedMod, SglMtLegMod1 )
 
 
 ###  Weight  for all nests ##########
-SglMtWeiMod1 <- lmer(logWeight ~ type + (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
+SglMtWeiMod1 <- lmer(logcond ~ type + (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
 
 modelPlot(SglMtWeiMod1) # very normal and good variance
 summary(SglMtWeiMod1)
+anova(SglMtWeiMod1)
 
 
 ### Testing against reduced model
 
-SglMtWeiRedMod <- lmer(logWeight ~ (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
+SglMtWeiRedMod <- lmer(logcond ~ (1|km) + (1|km:NestID), spidersSglMt, REML = FALSE)
 modelPlot(SglMtWeiRedMod) # same for full model
 
 anova(SglMtWeiRedMod, SglMtWeiMod1 ) # likihood ratio model
