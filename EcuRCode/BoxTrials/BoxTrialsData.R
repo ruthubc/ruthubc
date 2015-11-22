@@ -330,4 +330,7 @@ FdCapByTrial$Eat <- FdCap_Eat('variable', FdCapByTrial$variable)
 
 ################ Sample sizes #########
 
-length(levels(BoxComboMorn$TrialID))
+length(levels((subset(BoxComboMorn, Treatment == "small"))$TrialID))
+
+aggregate(BoxComboMorn$TrialID, by = BoxComboMorn[c('Treatment', 'FeedIndPos')], length)
+
