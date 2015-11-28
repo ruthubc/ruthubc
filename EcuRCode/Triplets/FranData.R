@@ -24,7 +24,7 @@ print(fnSpline(0.01, Census$IndCensus, Census$AdFemale))
 
 
 CensusNum <- data.frame(ColID =Census$ColID, Date = Census$Date, CensusTripNo = Census$CensusTripNo, 
-		IndCensus = Census$IndCensus)
+		IndCensus = Census$IndCensus, NumAds = Census$AdFemales, Treatment = Census$Treatment)
 
 CensusNum <- unique(CensusNum)
 
@@ -40,9 +40,9 @@ Weights$DateFmt <- as.Date(Weights$Date , "%d/%m/%Y")
 #TODO: check what units the mass is in
 BiomassOri <- read.csv("RuthSync/EggManipulation/RuthDataFiles/BiomassData.csv", na.strings = NA)
 
-BiomassMerge <- merge(BiomassOri, CensusNum, by = c("ColID", "CensusTripNo"))
+BiomassMerge <- merge(BiomassOri, CensusNum, by = c("ColID", "CensusTripNo", "Treatment"))
 
-Biomass <- ddply(BiomassMerge, .(ColID, Treatment, IndCensus), summarise,
+Biomass <- ddply(BiomassMerge, .(ColID, Treatment, IndCensus, NumAds), summarise,
 		dryBioTot = sum(DryBiomass, na.rm = TRUE)
 
 )
