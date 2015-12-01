@@ -24,7 +24,7 @@ print(fnSpline(0.01, Census$IndCensus, Census$AdFemale))
 
 
 CensusNum <- data.frame(ColID =Census$ColID, Date = Census$Date, CensusTripNo = Census$CensusTripNo, 
-		IndCensus = Census$IndCensus, NumAds = Census$AdFemales, Treatment = Census$Treatment)
+		IndCensus = Census$IndCensus, NumAds = Census$AdFemales, TotSubs = Census$TotSubs, Treatment = Census$Treatment)
 
 CensusNum <- unique(CensusNum)
 
@@ -42,12 +42,17 @@ BiomassOri <- read.csv("RuthSync/EggManipulation/RuthDataFiles/BiomassData.csv",
 
 BiomassMerge <- merge(BiomassOri, CensusNum, by = c("ColID", "CensusTripNo", "Treatment"))
 
-Biomass <- ddply(BiomassMerge, .(ColID, Treatment, IndCensus, NumAds), summarise,
-		dryBioTot = sum(DryBiomass, na.rm = TRUE)
+BiomassMerge$ID<-seq.int(nrow(BiomassMerge))
+
+Biomass <- ddply(BiomassMerge, .(ColID, Treatment, IndCensus, NumAds, TotSubs, Date.y), summarise, # num ads is just females
+		N = length(ID),
+		dryBioTotMean = mean(DryBiomass, na.rm = TRUE), 
+		dryBioTotSum = sum(DryBiomass, na.rm = TRUE)
+
 
 )
 
-
+Biomass$SubsAds <- Biomass$NumAds + Biomass$TotSubs
 
 NumJuvs <- data.frame(ColID = Census$ColID, Treatment = Census$Treatment, IndCensus =  Census$IndCensus,
 		TotJuvs = Census$TotJuvs)
