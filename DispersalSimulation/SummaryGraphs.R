@@ -13,7 +13,11 @@ library(grid) # not sure if I need this or not.
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "DispersalSummaryIntercept28Oct.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "DispersalSummaryOriComp30Nov.csv", sep = ""))
+
+dis_aves <- subset(dis_aves, Fd_ln == 0.61)
+
+
 
 rownames(dis_aves)
 
@@ -74,7 +78,7 @@ dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, C
 		colSizeDeath.mean = mean(ave_colSize_Death, na.rm = TRUE),
 		colSizeDeath.SE = sd(ave_colSize_Death, na.rm = TRUE)/ sqrt(N),
 		survival_all.mean = mean(survivalMean_all, na.rm = TRUE),
-		survival_all.SE = sd(survivalMean_all, na.rm = TRUE)/ sqrt(N)
+		survival_all.SE = sd(survivalMean_all, na.rm = TRUE)/ sqrt(N_all)
 	
 )
 
@@ -157,7 +161,7 @@ num_graphs <- 8
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalSummaryGraphs28OctIncercept.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/DispersalSummaryGraphs30Nov.png", width = 1300, height = gr_ht, units = "px")
 
 grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8,  ncol=1)
 
@@ -167,5 +171,5 @@ dev.off()
 
 ############## Checking why there is variane in the no variance options
 
-noVar <- subset(dis_ply, input_var == 0)
+#$noVar <- subset(dis_ply, input_var == 0)
 

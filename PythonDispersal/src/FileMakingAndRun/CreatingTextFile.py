@@ -14,7 +14,7 @@ indFile = "n"
 
 # input variables here
 #runs = [[], [0.05, 0.1], [100, 1000], [], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
-runs = [[0, 0.4, 0.8, 1.25, 2.5, 1], [0.05], [100], [0.0, 0.1, 0.2], [0.4, 0.8]]
+runs = [[0, 0.4, 0.8, 1.25, 2.5, 1], [0.05, 0.05, 0.05], [1000], [0.0, 0.1, 0.2], [0.4, 0.8]]
 combinations = list(itertools.product(*runs))
 
 print "number of combinations", len(combinations)
