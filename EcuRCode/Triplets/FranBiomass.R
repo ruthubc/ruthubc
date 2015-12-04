@@ -5,7 +5,7 @@
 library(ggplot2)
 library(plyr)
 library(data.table)
-library()
+
 
 options(scipen = 100)  # disables scientific notation when displaying numbers
 
@@ -17,9 +17,9 @@ Biomass <- subset(Biomass, NumAds > 0)
 
 Biomass$logFm <- log10(Biomass$NumAds)
 
-Biomass$totBioTrans <- Biomass$dryBioTot^(1/3)  # cubed root is the only one that maked it look vaguly noraml
+Biomass$totBioTrans <- Biomass$dryBioTotSum^(1/3)  # cubed root is the only one that maked it look vaguly noraml
 
-Biomass$FdPerAd <- Biomass$dryBioTot / Biomass$NumAds
+Biomass$FdPerAd <- Biomass$dryBioTotTrans / Biomass$NumAds
 
 Biomass$FdPerAdTrans <- Biomass$FdPerAd^(1/3)
 
