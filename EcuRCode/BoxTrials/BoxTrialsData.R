@@ -333,6 +333,8 @@ FdCapByTrial$Eat <- FdCap_Eat('variable', FdCapByTrial$variable)
 
 aggregate(IndBoxID ~ Treatment, AveByTrial, function(x) length(unique(x)))
 
+aggregate(TrialID ~ Treatment, AveByTrial, function(x) length(unique(x)))
+
 aggregate(IndBoxID ~ Treatment, subset(AveByTrial, noCap >0), function(x) length(unique(x)))
 
 aggregate(TrialID ~ Treatment, subset(AveByTrial, noCap >0), function(x) length(unique(x)))
