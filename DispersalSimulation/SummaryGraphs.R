@@ -13,9 +13,11 @@ library(grid) # not sure if I need this or not.
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "DispersalSummaryOriComp30Nov.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "DisSum_OriComp_50Gens_13Dec.csv", sep = ""))
 
 dis_aves <- subset(dis_aves, Fd_ln == 0.61)
+
+numGensRmv <- 50
 
 
 
@@ -24,7 +26,7 @@ rownames(dis_aves)
 
 xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd, data = dis_aves)
 
-dis_aves$full <- ifelse(dis_aves$pop_age > 100, 1, 0) # marking which colonies survived over 100 generations and which didn't
+dis_aves$full <- ifelse(dis_aves$pop_age > numGensRmv, 1, 0) # marking which colonies survived over 100 generations and which didn't
 
 dis_aves$dis_bin <- ifelse(is.na(dis_aves$ave_num_disp), ifelse(dis_aves$full == 1, 0, NA), 1) # making binary variable of whether any dispersal occured
 
@@ -53,7 +55,7 @@ CompLookUp <- data.frame (Comp_slope = c(0, 0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.33, 2
 dis_aves <- merge(dis_aves, CompLookUp, by = "Comp_slope")
 
 ## changing colony age at death to 500 for those populations that had no deaths
-dis_aves$ave_colAge_Death[is.na(dis_aves$ave_colAge_Death) & dis_aves$pop_age > 100] <- 500
+dis_aves$ave_colAge_Death[is.na(dis_aves$ave_colAge_Death) & dis_aves$pop_age > numGensRmv] <- 500
 
 levels(as.factor(dis_aves$ave_colAge_Death))
 
