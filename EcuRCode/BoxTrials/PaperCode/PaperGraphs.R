@@ -93,7 +93,7 @@ postscript("RuthEcuador2013/BoxFeedingTrials/Graphs/Sharpe_f3.eps",width = 2.76,
 
 ggplot(data=CapVsEat, aes(x=CaptureIndPos, fill = FeedIndPos)) +
 		geom_bar(stat="bin", position="fill", colour = "black", size=0.1) + xlab("Participated in prey capture")+ 
-		ylab("Percentage feeding") + 
+		ylab("% individuals that fed") + 
 		 facet_grid(~Treatment, labeller = prey_labeller) + 
 		 scale_x_discrete(breaks=c("y", "n"), labels=c("Yes", "No")) +
 		theme(axis.text=element_text(colour="black"), axis.title = element_blank()) +
