@@ -337,10 +337,18 @@ class Colony(object):
                 else:
                     spider.food = 0.0
 
+    def competitionAssign(self):
+        c_slpe = self.comp_slope()
+        cmp_obj = Comp(self.colony_food, len(self.juv_list), c_slpe)  # making competition object
+        self.cal_med_rnk = cmp_obj.CompFunction()
+        
     def assign_food(self):
+        print "number of juvs:", len(self.juv_list)
         if len(self.juv_list) <= 1:
             self.juv_list[0].food = self.colony_food  #TODO: maybe put something in here to make sure that nver abv1
-        if self.slope < 0.001:
+            if self.colony_food > 1:
+                raise Exception("food greater than num jvs, numJuvs", self.num_juvs, 'colFd', self.colony_food, 'numads', self.num_ads)
+        elif self.slope < 0.001:
             self.zeroSlp_jv_fd() # all individuals get the same amount of food
         elif self.slope == 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
             self.juv_rnk_assign()  # assign ranks to juvs
@@ -352,11 +360,6 @@ class Colony(object):
             elif self.compType == "I":
                 self.competitionIntcpt()
             self.juv_fd_assign()
-
-    def competitionAssign(self):
-        c_slpe = self.comp_slope()
-        cmp_obj = Comp(self.colony_food, len(self.juv_list), c_slpe)  # making competition object
-        self.cal_med_rnk = cmp_obj.CompFunction()
 
     def competitionIntcpt(self):
         cmp_obj = CompInt(self.colony_food, len(self.juv_list), self.slope)

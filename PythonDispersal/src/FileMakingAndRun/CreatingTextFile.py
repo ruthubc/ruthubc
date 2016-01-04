@@ -4,6 +4,8 @@ Created on Feb 25, 2015
 @author: Ruth
 
 ******#TODO: put in code to delete run.sh before writing to it!
+
+# magic f_ln number is 0.61
 '''
 import sys
 import itertools
@@ -12,9 +14,19 @@ import time
 
 indFile = "n"
 
-# input variables here
-#runs = [[], [0.05, 0.1], [100, 1000], [], [0.6, 0.8]] # slope, risk of dispersal, MeanK , Var k, ad dispesal limit
-runs = [[0, 0.4, 0.8, 1.25, 2.5, 1], [0.05, 0.05, 0.05], [1000], [0.0, 0.1, 0.2], [0.4, 0.8]]
+#slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
+slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
+dispersalRisks = [0.05]
+meanK = [300]
+Vars = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+adDisSizes = [0.4, 0.6, 0.8, 1.0]
+minOffNo = [1]
+maxOffNo = [4]
+F_Lns = [0.61]
+
+
+#runs = [[0 - slope], [1- risk of dispersal], [2- meanK], [3- Var], [4- ad dispersal limit], [5- min off], [6- max off], [7- F_ln]]
+runs = [slopes, dispersalRisks, meanK, Vars, adDisSizes, minOffNo, maxOffNo, F_Lns]
 combinations = list(itertools.product(*runs))
 
 print "number of combinations", len(combinations)
@@ -87,6 +99,8 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, min_
 
 fileNameLst = []
 
+#runs = [[0 - slope], [1- risk of dispersal], [2- meanK], [3- Var], [4- ad dispersal limit], [5- min off], [6- max off], [7- F_ln]]
+
 for i in range(0, len(combinations)):  # actually produces the files
     number = run_numbers("RunNumbers.csv")
     tup = combinations[i]
@@ -96,11 +110,11 @@ for i in range(0, len(combinations)):  # actually produces the files
     var = tup[3]
     ad_disFd_lmt = tup[4]
     min_juv_size = 0.205
-    min_no_off = 2
-    max_no_off = 4
-    F_Ln = 0.61
+    min_no_off = tup[5]
+    max_no_off = tup[6]
+    F_Ln = tup[7]
 
-    filename =  str(number) + "_" + 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) +  "_dslm" + str(ad_disFd_lmt)
+    filename =  str(number) + "_" + 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) +  "_dslm" + str(ad_disFd_lmt) + "_maxOff" + str(max_no_off)
     print "tup", tup
     print filename
     writePythonRun(filename, slope, risk, K, var, min_juv_size, min_no_off,
