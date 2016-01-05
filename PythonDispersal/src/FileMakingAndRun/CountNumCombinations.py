@@ -11,7 +11,7 @@ meanK = [300]
 Vars = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
 adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0]
 minOffNo = [1]
-maxOffNo = [4]
+maxOffNo = [6]
 F_Lns = [0.61]
 
 
@@ -19,6 +19,8 @@ F_Lns = [0.61]
 #runs = [[0 - slope], [1- risk of dispersal], [2- meanK], [3- Var], [4- ad dispersal limit], [5- min off], [6- max off], [7- F_ln]]
 runs = [slopes, dispersalRisks, meanK, Vars, adDisSizes, minOffNo, maxOffNo, F_Lns]
 c = list(itertools.product(*runs))
+
+print len(c)
 
 # function to flatten sequence from http://stackoverflow.com/questions/5828123/nested-list-and-count
 def flatten(seq,container=None):  
