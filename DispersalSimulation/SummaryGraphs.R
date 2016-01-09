@@ -9,13 +9,22 @@ library(gridExtra)
 library(grid) # not sure if I need this or not.
 
 
+
+num_graphs <- 8
+
+gr_ht <- num_graphs * 650
+
+png("DisperalSimulationOutput/DispersalSummaryGraphs07Jan.png", width = 1300, height = gr_ht, units = "px")
+
+
+
 ## When running this with new  competition slopes, make sure that it updates the comp for the graphs correctly with the lookup table
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "DisSum_OriComp_50Gens_13Dec.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "DisSum_OriComp_50Gens_7Jan.csv", sep = ""))
 
-dis_aves <- subset(dis_aves, Fd_ln == 0.61)
+#dis_aves <- subset(dis_aves, Fd_ln == 0.61)
 
 numGensRmv <- 50
 
@@ -24,7 +33,7 @@ numGensRmv <- 50
 rownames(dis_aves)
 
 
-xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd, data = dis_aves)
+xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd + max_no_off,  data = dis_aves)
 
 dis_aves$full <- ifelse(dis_aves$pop_age > numGensRmv, 1, 0) # marking which colonies survived over 100 generations and which didn't
 
@@ -59,7 +68,7 @@ dis_aves$ave_colAge_Death[is.na(dis_aves$ave_colAge_Death) & dis_aves$pop_age > 
 
 levels(as.factor(dis_aves$ave_colAge_Death))
 
-dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, Comp_meas), summarise, # need to discount trials where no feeding obs and eve
+dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, Comp_meas, max_no_off), summarise, # need to discount trials where no feeding obs and eve
 		N_all = length(!is.na(fileNum)),
 		N = length(fileNum[which(!is.na(tot_num_cols))]),
 		PopAge.Mean = mean(pop_age, na.rm=TRUE),
@@ -92,7 +101,11 @@ dis_ply$KVarAndRsk <- paste("K =", dis_ply$meanK, "Var =", dis_ply$input_var, "D
 
 dis_ply$VarAndRsk <- paste("Var=", dis_ply$input_var, ", DR=", dis_ply$disp_rsk)
 
+dis_ply$NOffAndVar <- paste("NoOff =", dis_ply$max_no_off, "Var =", dis_ply$input_var)
 
+
+
+myFacet <- facet_grid(max_no_off~VarAndRsk, scales = "free")
 
 ########### Graphs ###############
 
@@ -104,66 +117,61 @@ dis_ply$PopAge.SE <- ifelse(dis_ply$PopAge.SE == 0, NA, dis_ply$PopAge.SE)  # ma
 
 # Population Age
 p1 <- ggplot(dis_ply, aes(x = Comp_meas, y = PopAge.Mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk)  +  ggtitle("average population age") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		geom_errorbar(aes(ymin=PopAge.Mean-PopAge.SE, ymax=PopAge.Mean + PopAge.SE), width = 0.1) + mytheme + scale_colour_manual(values=c("blue", "red"))
+		myFacet  +  ggtitle("average population age") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		geom_errorbar(aes(ymin=PopAge.Mean-PopAge.SE, ymax=PopAge.Mean + PopAge.SE), width = 0.1) + mytheme# + scale_colour_manual(values=c("blue", "red"))
  
 ### Not sure whether better to graph all generations??? Prob not. 
 # Average colony age at death for all colonies
 
 p2<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk)  +  ggtitle("Average colony Survival") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		myFacet  +  ggtitle("Average colony Survival") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
 		geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
-		mytheme + scale_colour_manual(values=c("blue", "red"))
+		mytheme #+ scale_colour_manual(values=c("blue", "red"))
 
 
 
 # Colony size at dispersal
 
 p3 <- ggplot(dis_ply, aes(x = Comp_meas, y = col_size_disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk, scales = "free")  +  ggtitle("average colony size of dispersing colonies") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		geom_errorbar(aes(ymin=col_size_disp.mean-col_size_disp.SE, ymax=col_size_disp.mean + col_size_disp.SE), width = 0.1) + mytheme + 
-		scale_colour_manual(values=c("blue", "red"))
+		myFacet +  ggtitle("average colony size of dispersing colonies") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		geom_errorbar(aes(ymin=col_size_disp.mean-col_size_disp.SE, ymax=col_size_disp.mean + col_size_disp.SE), width = 0.1) + mytheme# + scale_colour_manual(values=c("blue", "red"))
 
 # binary of whether any colonies died
 p4 <- ggplot(dis_ply, aes(x = Comp_meas, y = colDeath_bin_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk, scales = "free")  +  ggtitle("Did any colonies die?") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		mytheme + scale_colour_manual(values=c("blue", "red"))
+		myFacet +  ggtitle("Did any colonies die?") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		mytheme # + scale_colour_manual(values=c("blue", "red"))
 
 # average colony size
 p5 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeB4Disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk, scales = "free")  +  ggtitle("Average colony size (measured before dispersal)") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		mytheme + scale_colour_manual(values=c("blue", "red")) + 
-		geom_errorbar(aes(ymin=colSizeB4Disp.mean-colSizeB4Disp.SE, ymax=colSizeB4Disp.mean + colSizeB4Disp.SE), width = 0.1)
+		myFacet +  ggtitle("Average colony size (measured before dispersal)") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		mytheme +  
+		geom_errorbar(aes(ymin=colSizeB4Disp.mean-colSizeB4Disp.SE, ymax=colSizeB4Disp.mean + colSizeB4Disp.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red"))
 
 # size of colonies that disperse
 
 p6 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDisp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk, scales = "free")  +  ggtitle("Average colony size at dispersal") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		mytheme + scale_colour_manual(values=c("blue", "red")) + 
-		geom_errorbar(aes(ymin=colSizeDisp.mean-colSizeDisp.SE, ymax=colSizeDisp.mean + colSizeDisp.SE), width = 0.1)
+		myFacet +  ggtitle("Average colony size at dispersal") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		mytheme + geom_errorbar(aes(ymin=colSizeDisp.mean-colSizeDisp.SE, ymax=colSizeDisp.mean + colSizeDisp.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
+
+myFacet <- myFacet
 
 # percentage of individuals dispersal
 
 p7 <- ggplot(dis_ply, aes(x = Comp_meas, y = pcntDisp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk, scales = "free")  +  ggtitle("Average percentage that disperse") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		mytheme + scale_colour_manual(values=c("blue", "red")) + 
-		geom_errorbar(aes(ymin=pcntDisp.mean-pcntDisp.SE, ymax=pcntDisp.mean + pcntDisp.SE), width = 0.1)
+		myFacet +  ggtitle("Average percentage that disperse") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		mytheme + 
+		geom_errorbar(aes(ymin=pcntDisp.mean-pcntDisp.SE, ymax=pcntDisp.mean + pcntDisp.SE), width = 0.1) #+ scale_colour_manual(values=c("blue", "red"))
 
 # colony size at death
 
 p8 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDeath.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		facet_grid(meanK~VarAndRsk, scales = "free")  +  ggtitle("Colony Size at Death") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		mytheme + scale_colour_manual(values=c("blue", "red")) + 
-		geom_errorbar(aes(ymin=colSizeDeath.mean-colSizeDeath.SE, ymax=colSizeDeath.mean + colSizeDeath.SE), width = 0.1)
+		myFacet +  ggtitle("Colony Size at Death") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+		mytheme + 
+		geom_errorbar(aes(ymin=colSizeDeath.mean-colSizeDeath.SE, ymax=colSizeDeath.mean + colSizeDeath.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
 
 
 
 
-num_graphs <- 8
-
-gr_ht <- num_graphs * 650
-
-png("DisperalSimulationOutput/DispersalSummaryGraphs06Dec.png", width = 1300, height = gr_ht, units = "px")
 
 grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8,  ncol=1)
 

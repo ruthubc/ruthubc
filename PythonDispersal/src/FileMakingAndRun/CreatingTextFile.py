@@ -21,7 +21,7 @@ meanK = [300]
 Vars = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
 adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0]
 minOffNo = [1]
-maxOffNo = [6]
+maxOffNo = [4, 6]
 F_Lns = [0.61]
 
 
