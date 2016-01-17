@@ -10,11 +10,11 @@ library(grid) # not sure if I need this or not.
 
 
 
-num_graphs <- 16
+num_graphs <- 17
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalSummaryGraphs12Jan.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/DispersalSummaryGraphs14Jan.png", width = 1300, height = gr_ht, units = "px")
 
 
 
@@ -116,111 +116,112 @@ mytheme <-theme_bw(base_size=18)  + theme(plot.title = element_text(vjust=2), pa
 dis_ply$PopAge.SE <- ifelse(dis_ply$PopAge.SE == 0, NA, dis_ply$PopAge.SE)  # making all zero se's into NA's
 
 # Population Age
-p1 <- ggplot(dis_ply, aes(x = Comp_meas, y = PopAge.Mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		myFacet  +  ggtitle("average population age") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		geom_errorbar(aes(ymin=PopAge.Mean-PopAge.SE, ymax=PopAge.Mean + PopAge.SE), width = 0.1) + mytheme# + scale_colour_manual(values=c("blue", "red"))
+p1 <- ggplot(dis_ply, aes(x = Comp_meas, y = PopAge.Mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3) + 
+		myFacet  +  ggtitle("average population age") + geom_line() + mytheme
+		#geom_errorbar(aes(ymin=PopAge.Mean-PopAge.SE, ymax=PopAge.Mean + PopAge.SE), width = 0.1) + # + scale_colour_manual(values=c("blue", "red"))
  
 ### Not sure whether better to graph all generations??? Prob not. 
 # Average colony age at death for all colonies
 
-p2<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		myFacet  +  ggtitle("Average colony Survival") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
-		mytheme #+ scale_colour_manual(values=c("blue", "red"))
+p2<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3) + 
+		myFacet  +  ggtitle("Average colony Survival") + geom_line() + mytheme
+		#geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
+		 #+ scale_colour_manual(values=c("blue", "red"))
 
 
 
 # Colony size at dispersal
 
-p3 <- ggplot(dis_ply, aes(x = Comp_meas, y = col_size_disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		myFacet +  ggtitle("average colony size of dispersing colonies") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		geom_errorbar(aes(ymin=col_size_disp.mean-col_size_disp.SE, ymax=col_size_disp.mean + col_size_disp.SE), width = 0.1) + mytheme# + scale_colour_manual(values=c("blue", "red"))
+p3 <- ggplot(dis_ply, aes(x = Comp_meas, y = col_size_disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("average colony size of dispersing colonies") + geom_line() + mytheme
+		#geom_errorbar(aes(ymin=col_size_disp.mean-col_size_disp.SE, ymax=col_size_disp.mean + col_size_disp.SE), width = 0.1)  + scale_colour_manual(values=c("blue", "red"))
 
 # binary of whether any colonies died
-p4 <- ggplot(dis_ply, aes(x = Comp_meas, y = colDeath_bin_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		myFacet +  ggtitle("Did any colonies die?") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
+p4 <- ggplot(dis_ply, aes(x = Comp_meas, y = colDeath_bin_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Did any colonies die?") + geom_line() +
 		mytheme # + scale_colour_manual(values=c("blue", "red"))
 
 # average colony size
-p5 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeB4Disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		myFacet +  ggtitle("Average colony size (measured before dispersal)") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		mytheme +  
-		geom_errorbar(aes(ymin=colSizeB4Disp.mean-colSizeB4Disp.SE, ymax=colSizeB4Disp.mean + colSizeB4Disp.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red"))
+p5 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeB4Disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Average colony size (measured before dispersal)") + geom_line() + mytheme 
+		#geom_errorbar(aes(ymin=colSizeB4Disp.mean-colSizeB4Disp.SE, ymax=colSizeB4Disp.mean + colSizeB4Disp.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red"))
 
 # size of colonies that disperse
 
-p6 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDisp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		myFacet +  ggtitle("Average colony size at dispersal") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		mytheme + geom_errorbar(aes(ymin=colSizeDisp.mean-colSizeDisp.SE, ymax=colSizeDisp.mean + colSizeDisp.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
+p6 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDisp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Average colony size at dispersal") + geom_line() +
+		mytheme #+ geom_errorbar(aes(ymin=colSizeDisp.mean-colSizeDisp.SE, ymax=colSizeDisp.mean + colSizeDisp.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
 
 
 # percentage of individuals dispersal
 
-p7 <- ggplot(dis_ply, aes(x = Comp_meas, y = pcntDisp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		myFacet +  ggtitle("Average percentage that disperse") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		mytheme + 
-		geom_errorbar(aes(ymin=pcntDisp.mean-pcntDisp.SE, ymax=pcntDisp.mean + pcntDisp.SE), width = 0.1) #+ scale_colour_manual(values=c("blue", "red"))
+p7 <- ggplot(dis_ply, aes(x = Comp_meas, y = pcntDisp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Average percentage that disperse") + geom_line() +
+		mytheme# + geom_errorbar(aes(ymin=pcntDisp.mean-pcntDisp.SE, ymax=pcntDisp.mean + pcntDisp.SE), width = 0.1) #+ scale_colour_manual(values=c("blue", "red"))
 
 # colony size at death
 
-p8 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDeath.mean, colour = as.factor(ad_dsp_fd))) + geom_point(aes(shape = as.factor(ad_dsp_fd)), size = 3) + 
-		myFacet +  ggtitle("Colony Size at Death") + geom_line(aes(linetype = as.factor(ad_dsp_fd))) +
-		mytheme + 
-		geom_errorbar(aes(ymin=colSizeDeath.mean-colSizeDeath.SE, ymax=colSizeDeath.mean + colSizeDeath.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
+p8 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDeath.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Colony Size at Death") + geom_line() +
+		mytheme #+ geom_errorbar(aes(ymin=colSizeDeath.mean-colSizeDeath.SE, ymax=colSizeDeath.mean + colSizeDeath.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
 
 
 
 
-pa1 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = PopAge.Mean, colour = as.factor(Comp_meas))) + geom_point(aes(shape = as.factor(Comp_meas)), size = 3) + 
-		myFacet  +  ggtitle("average population age") + geom_line(aes(linetype = as.factor(Comp_meas))) +
-		geom_errorbar(aes(ymin=PopAge.Mean-PopAge.SE, ymax=PopAge.Mean + PopAge.SE), width = 0.1) + mytheme# + scale_colour_manual(values=c("blue", "red"))
+pa1 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = PopAge.Mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
+		myFacet  +  ggtitle("average population age") + geom_line() + mytheme
+		#geom_errorbar(aes(ymin=PopAge.Mean-PopAge.SE, ymax=PopAge.Mean + PopAge.SE), width = 0.1) + # + scale_colour_manual(values=c("blue", "red"))
 
 ### Not sure whether better to graph all generations??? Prob not. 
 # Average colony age at death for all colonies
 
-pa2<- ggplot(dis_ply, aes(x = ad_dsp_fd, y = survival_all.mean, colour = as.factor(Comp_meas))) + geom_point(aes(shape = as.factor(Comp_meas)), size = 3) + 
-		myFacet  +  ggtitle("Average colony Survival") + geom_line(aes(linetype = as.factor(Comp_meas))) +
-		geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
-		mytheme #+ scale_colour_manual(values=c("blue", "red"))
+pa2<- ggplot(dis_ply, aes(x = ad_dsp_fd, y = survival_all.mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
+		myFacet  +  ggtitle("Average colony Survival") + geom_line() + mytheme
+		#geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
+		 #+ scale_colour_manual(values=c("blue", "red"))
+
+pa2a<- ggplot(dis_ply, aes(x = ad_dsp_fd, y = survival_all.mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
+		facet_wrap(~ max_no_off + VarAndRsk, nrow = 2, scales = "free_y") +  ggtitle("Average colony Survival") + geom_line() +
+		mytheme
+		#geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
 
 
 
 # Colony size at dispersal
 
-pa3 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = col_size_disp.mean, colour = as.factor(Comp_meas))) + geom_point(aes(shape = as.factor(Comp_meas)), size = 3) + 
-		myFacet +  ggtitle("average colony size of dispersing colonies") + geom_line(aes(linetype = as.factor(Comp_meas))) +
+pa3 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = col_size_disp.mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("average colony size of dispersing colonies") + geom_line() +
 		geom_errorbar(aes(ymin=col_size_disp.mean-col_size_disp.SE, ymax=col_size_disp.mean + col_size_disp.SE), width = 0.1) + mytheme# + scale_colour_manual(values=c("blue", "red"))
 
 # binary of whether any colonies died
-pa4 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = colDeath_bin_all.mean, colour = as.factor(Comp_meas))) + geom_point(aes(shape = as.factor(Comp_meas)), size = 3) + 
-		myFacet +  ggtitle("Did any colonies die?") + geom_line(aes(linetype = as.factor(Comp_meas))) +
+pa4 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = colDeath_bin_all.mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Did any colonies die?") + geom_line() +
 		mytheme # + scale_colour_manual(values=c("blue", "red"))
 
 # average colony size
-pa5 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = colSizeB4Disp.mean, colour = as.factor(Comp_meas))) + geom_point(aes(shape = as.factor(Comp_meas)), size = 3) + 
-		myFacet +  ggtitle("Average colony size (measured before dispersal)") + geom_line(aes(linetype = as.factor(Comp_meas))) +
+pa5 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = colSizeB4Disp.mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Average colony size (measured before dispersal)") + geom_line() +
 		mytheme +  
 		geom_errorbar(aes(ymin=colSizeB4Disp.mean-colSizeB4Disp.SE, ymax=colSizeB4Disp.mean + colSizeB4Disp.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red"))
 
 # size of colonies that disperse
 
-pa6 <- ggplot(dis_ply, aes(x =ad_dsp_fd, y = colSizeDisp.mean, colour = as.factor(Comp_meas))) + geom_point(aes(shape = as.factor(Comp_meas)), size = 3) + 
-		myFacet +  ggtitle("Average colony size at dispersal") + geom_line(aes(linetype = as.factor(Comp_meas))) +
+pa6 <- ggplot(dis_ply, aes(x =ad_dsp_fd, y = colSizeDisp.mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Average colony size at dispersal") + geom_line() +
 		mytheme + geom_errorbar(aes(ymin=colSizeDisp.mean-colSizeDisp.SE, ymax=colSizeDisp.mean + colSizeDisp.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
 
 
 # percentage of individuals dispersal
 
-pa7 <- ggplot(dis_ply, aes(x =ad_dsp_fd , y = pcntDisp.mean, colour = as.factor(Comp_meas))) + geom_point(aes(shape = as.factor(Comp_meas)), size = 3) + 
-		myFacet +  ggtitle("Average percentage that disperse") + geom_line(aes(linetype = as.factor(Comp_meas))) +
+pa7 <- ggplot(dis_ply, aes(x =ad_dsp_fd , y = pcntDisp.mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Average percentage that disperse") + geom_line() +
 		mytheme + 
 		geom_errorbar(aes(ymin=pcntDisp.mean-pcntDisp.SE, ymax=pcntDisp.mean + pcntDisp.SE), width = 0.1) #+ scale_colour_manual(values=c("blue", "red"))
 
 # colony size at death
 
-pa8 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = colSizeDeath.mean, colour = as.factor(Comp_meas))) + geom_point(aes(shape = as.factor(Comp_meas)), size = 3) + 
-		myFacet +  ggtitle("Colony Size at Death") + geom_line(aes(linetype = as.factor(Comp_meas))) +
-		mytheme + 
+pa8 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = colSizeDeath.mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
+		myFacet +  ggtitle("Colony Size at Death") + geom_line() + mytheme + 
 		geom_errorbar(aes(ymin=colSizeDeath.mean-colSizeDeath.SE, ymax=colSizeDeath.mean + colSizeDeath.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
 
 
@@ -228,7 +229,7 @@ pa8 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = colSizeDeath.mean, colour = as.fac
 
 
 
-grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, pa1, pa2, pa3, pa4, pa5, pa6, pa7, pa8, ncol=1)
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, pa1, pa2, pa2a,  pa3, pa4, pa5, pa6, pa7, pa8, ncol=1)
 
 dev.off()
 

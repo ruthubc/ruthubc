@@ -143,4 +143,6 @@ file.write("for i in")
 for name in fileNameLst:
     file.write(" " + name + ".pbs")
 file.write ("; do qsub $i; done")
+
+print "end"
     
