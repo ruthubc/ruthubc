@@ -8,29 +8,163 @@ library (plyr)
 library(reshape2)
 library(broom)
 library(ggplot2)
-#library(doParallel)
 
-#cl <- makeCluster(2, outfile = "")# outfile = paste(folder, "log.txt", sep = ""))
-# Register cluster
-#registerDoParallel(cl)
+filesCSV <- "FilesCreated.csv"
 
-# change this to look up num gens
-num_gens <- 500
+outputFile <- "NNTPlus1.csv"
 
-File <- read.csv(paste("DisperalSimulationOutput/1444_slp1.25_Rsk0.1_K100_var0.0_dslm0.8.py.csv", sep = ""))
+#folder <- "R_Graphs/"
+folder <- "DisperalSimulationOutput/"
 
-File <- subset(File, pop_age > 100)
+fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file names csv file
+
+fileNames[] <- lapply(fileNames, as.character) # making factors into strings
+
+## Change this to the correct number i want to remove
+min_popAge <-5 # the number of generations to discount from the start of the calculations
+
+fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and returning a list of existing files
+	
+	filesThatExist <- c()
+	
+	
+	for (i in 1:nrow(fileNames)){
+		theFileName <-fileNames[i,1]
+		
+		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+		#fileToImport <- paste(theFileName, ".py.csv", sep = "")		
+		
+		
+		if(file.exists(fileToImport) == "TRUE"){
+			
+			print (paste("The file exists! Yay!. File:", fileToImport))
+			filesThatExist <- c(filesThatExist,  i)
+			
+		}else{
+			print (paste("file doesn't exist. File:", fileToImport))
+		}
+		
+	}	
+	return (filesThatExist)
+}
+
+FilesExist <- fileExistsFn(fileNames) # move down
 
 
-## making a table of dispersal information for each nest so can colour nests that had dispersed and had not
-firstDisp <- ddply(subset(File, dispersers > 0), .(colony_ID), summarise,
-		firstDisp = min(pop_age))
+## Logistic Function function
+logisticFn = function(nnplus1){
+	
+	logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
+			lower=list(a=0, b=0,c=0), algorithm= "port", trace = T)
+	
+	#logistic <- nls(NPlus1 ~ (N * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(b=1.5, c=0.02), 
+	#algorithm= "port", trace = T)
+	return (logistic) #list(a=0.4, b=1.5, c=0.02)
+}	
 
-File <- merge(File, firstDisp, by = "colony_ID", all.x = TRUE)
+tryCatchLogistic= function(x) {
+	tryCatch(logisticFn(x), warning = function(w) {print("warning")},
+			error = function(e) {print("error")}) 
+}
+
+
+## Ricker equation function
+
+rickerFn = function(nnplus1){
+	#ricker <- nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
+	#algorithm= "port", trace = T)
+	
+	ricker <- nls(NPlus1 ~ I((N * lam) * ((1- capA * exp((-a * N )/oth))/((1 + a *N )^b))),
+			data = nnplus1, start = list(capA = 70, a = 0.01, b=1, lam = 1, oth = 1.0), 
+			algorithm= "port", trace = T)
+	
+	return(ricker) # start = list(a=0.4, b=1.5, K=100)
+}
+
+
+tryCatchRicker= function(x) {
+	tryCatch(rickerFn(x), warning = function(w) {print("warning")},
+			error = function(e) {print("error")}) 
+}
+
+
+
+nntplus1Fun <- function(fileName, min_pop_age, numGens){
+	
+	fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+	#fileToImport <- paste(theFileName, ".py.csv", sep = "")
+	
+	
+	File <- read.csv(fileToImport, quote = "")
+	print (fileToImport)
+	
+	maxPopAge <- max(File$pop_age)
+	
+	## making a table of dispersal information for each nest so can colour nests that had dispersed and had not
+	firstDisp <- ddply(subset(File, dispersers > 0), .(colony_ID), summarise, firstDisp = min(pop_age))
+	File <- merge(File, firstDisp, by = "colony_ID", all.x = TRUE)
+	
+	File$prevDisp <-  ifelse(File$firstDisp > File$pop_age | is.na(File$firstDisp), "n", "y" )
+
+	File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
+	
+	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, 
+		numAdsB4dis = File$num_adsB4_dispersal, dispersers = File$dispersers, prevDisp = File$prevDisp)
+
+	ColInfo$ColAgePlus1 <- ColInfo$col_age
+
+	ColInfoPlus1 <- subset(ColInfo, select = c("col_id", "numAdsB4dis", "col_age"))
+
+	colnames(ColInfoPlus1)[2] <- "NPlus1"
+
+	ColInfoPlus1$ColAgePlus1 <- ColInfoPlus1$col_age - 1
+
+	nnplus1 <- merge(ColInfo, ColInfoPlus1,  by =c("ColAgePlus1", "col_id"))
+
+	colnames(nnplus1)[5] <- "N"
+
+	
+	nnplus1 <- subset(nnplus1, prevDisp != "now")  # removing colonies that have just dispersed
+	
+	nnplus1 <- subset(nnplus1, pop_age < num_gens - 1 ) # removing nests at the end of generations that might not have died
+	
+	nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N
+	
+	logistic <- tryCatchLogistic(nnplus1)
+	
+	if (logistic == "error"){
+		print ("error in logistic calculation")
+	}else{
+		logisticTable <- tidy(logistic)
+	}
+	
+
+	
+	
+	ricker <- tryCatchRicker(nnplus1)
+	
+	if (ricker =="error"){
+		print ("error in ricker calculation") 
+	}else{
+		rickerTable <- tidy(ricker)
+	}
+	
+	return(logistic)
+	
+	
+	
+
+
+}
+
+num <- 22
+
+theFileName <-fileNames[num,1]
+numGens <- fileNames[num, 3]
+
+
+logistic <- nntplus1Fun(theFileName, min_pop_age, numGens)
  
-File$prevDisp <-  ifelse(File$firstDisp > File$pop_age | is.na(File$firstDisp), "n", "y" )
-
-File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
 
 # Testing
 #File<-subset(File, select = c(colony_ID, dispersers, pop_age, firstDisp, prevDisp))
@@ -40,64 +174,34 @@ File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
 
 
 
-ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, 
-		numAdsB4dis = File$num_adsB4_dispersal, dispersers = File$dispersers, prevDisp = File$prevDisp)
 
 # write.csv(ColInfo, file = "DisperalSimulationOutput/ColInfoTest.csv" )
 
 ## Copied from other file -- need to make into function
 
 
-ColInfo$ColAgePlus1 <- ColInfo$col_age
 
-ColInfoPlus1 <- subset(ColInfo, select = c("col_id", "numAdsB4dis", "col_age"))
-
-colnames(ColInfoPlus1)[2] <- "NPlus1"
-
-ColInfoPlus1$ColAgePlus1 <- ColInfoPlus1$col_age - 1
-
-nnplus1 <- merge(ColInfo, ColInfoPlus1,  by =c("ColAgePlus1", "col_id"))
-
-colnames(nnplus1)[5] <- "N"
 
 # write.csv(nnplus1, file = "DisperalSimulationOutput/nnTest.csv" ) # testing
 
-nnplus1 <- subset(nnplus1, prevDisp != "now")  # removing colonies that have just dispersed
 
 
-nnplus1 <- subset(nnplus1, pop_age < num_gens - 1 ) # removing nests at the end of generations that might not have died
-
-nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N
 
 
-curve(I((x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x))), 0, 400) # plots the function
 
 
-ggplot(data.frame(x=c(0, 400)), aes(x)) + stat_function(fun=function(x)(x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x)))
+
+#curve(I((x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x))), 0, 400) # plots the function
+
+
+#ggplot(data.frame(x=c(0, 400)), aes(x)) + stat_function(fun=function(x)(x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x)))
 				#I((x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x))))
 
 ######## calculating logistic equation
 
-logisticFn = function(nnplus1){
-	
-	logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
-			lower=list(a=0, b=0,c=0), algorithm= "port", trace = T)
-	
-	#logistic <- nls(NPlus1 ~ (N * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(b=1.5, c=0.02), 
-			#algorithm= "port", trace = T)
-	return (logistic) #list(a=0.4, b=1.5, c=0.02)
-}	
 
-tryCatchLogistic= function(x) {
-	tryCatch(logisticFn(x), warning = function(w) {print("warning")},
-			error = function(e) {print("error")}) 
-}
 
-logistic <- tryCatchLogistic(nnplus1)
 
-summary(logistic)
-
-nnplus1$logisticPredict <- predict(logistic)
 
 ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
 		geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
@@ -138,27 +242,7 @@ if (logistic =="error"){
 
 ######## Calculating ricker equation
 
-rickerFn = function(nnplus1){
-	#ricker <- nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
-			#algorithm= "port", trace = T)
-	
-	ricker <- nls(NPlus1 ~ I((N * lam) * ((1- capA * exp((-a * N )/oth))/((1 + a *N )^b))),
-			data = nnplus1, start = list(capA = 70, a = 0.01, b=1, lam = 1, oth = 1.0), 
-			algorithm= "port", trace = T)
-	
-	return(ricker) # start = list(a=0.4, b=1.5, K=100)
-}
 
-
-
-ricker <- nls(NPlus1 ~ I((N * lam) * ((1 - (capA * exp((-a * N )/oth)))/((1 + a *N )^b))),
-		data = nnplus1, start = list(capA = 40, a = 0.01, b=6, lam = 1, oth = 1.0), 
-		algorithm= "port", trace = T)
-
-tryCatchRicker= function(x) {
-	tryCatch(rickerFn(x), warning = function(w) {print("warning")},
-			error = function(e) {print("error")}) 
-}
 
 
 
@@ -238,3 +322,4 @@ nnplusoneCom$FileName<-fileName
 
 rm(nnplus1)
 
+nnplus1$rickerPredict <- predict(ricker)	
