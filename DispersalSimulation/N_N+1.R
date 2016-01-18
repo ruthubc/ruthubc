@@ -13,7 +13,7 @@ filesCSV <- "FilesCreated.csv"
 
 outputFile <- "NNTPlus1.csv"
 
-#folder <- "R_Graphs/"
+#folder <- "R_Graphs/" ##########################################################################
 folder <- "DisperalSimulationOutput/"
 
 fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file names csv file
@@ -21,7 +21,22 @@ fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file na
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 ## Change this to the correct number i want to remove
-min_popAge <-5 # the number of generations to discount from the start of the calculations
+min_pop_age <-5 # the number of generations to discount from the start of the calculations
+
+Log_output <- data.frame(Comp = numeric(), # making empty data frame
+		meanK=numeric(),
+		Fd_ln=numeric(), 
+		Variance=numeric(),
+		disp_risk = numeric(),
+		ad_dsp_fd = numeric(),
+		min_juv_fd = numeric(),
+		max_no_off = numeric(),
+		log_a = numeric(),
+		log_b = numeric(),
+		log_c = numeric(),
+		max_pop_age = numeric(),
+		stringsAsFactors=FALSE) 
+
 
 fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and returning a list of existing files
 	
@@ -52,7 +67,7 @@ FilesExist <- fileExistsFn(fileNames) # move down
 
 
 ## Logistic Function function
-logisticFn = function(nnplus1){
+logisticFn = function(nnplus1){ # actually Ricker model from Hart & Aviles eqn 1
 	
 	logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
 			lower=list(a=0, b=0,c=0), algorithm= "port", trace = T)
@@ -68,9 +83,8 @@ tryCatchLogistic= function(x) {
 }
 
 
-## Ricker equation function
-
-rickerFn = function(nnplus1){
+## Ricker equation function, not using now 15th Jan
+rickerFn = function(nnplus1){ # eqn 2 from Hart & Aviles
 	#ricker <- nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
 	#algorithm= "port", trace = T)
 	
@@ -92,234 +106,91 @@ tryCatchRicker= function(x) {
 nntplus1Fun <- function(fileName, min_pop_age, numGens){
 	
 	fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
-	#fileToImport <- paste(theFileName, ".py.csv", sep = "")
-	
+	#fileToImport <- paste(theFileName, ".py.csv", sep = "")##################################	
 	
 	File <- read.csv(fileToImport, quote = "")
-	print (fileToImport)
 	
 	maxPopAge <- max(File$pop_age)
+	
+	if (maxPopAge + 50 > min_pop_age){ File <- subset(File, pop_age >= min_popAge) }	
+	
+	
+	rowVars <- c(File$Comp_slope[1], File$meanK[1], File$Fd_ln[1], File$input_var[1], File$disp_rsk[1], File$ad_dsp_fd[1], 
+			File$min_juv_fd[1], File$max_no_off[1], maxPopAge)
 	
 	## making a table of dispersal information for each nest so can colour nests that had dispersed and had not
 	firstDisp <- ddply(subset(File, dispersers > 0), .(colony_ID), summarise, firstDisp = min(pop_age))
 	File <- merge(File, firstDisp, by = "colony_ID", all.x = TRUE)
 	
 	File$prevDisp <-  ifelse(File$firstDisp > File$pop_age | is.na(File$firstDisp), "n", "y" )
-
 	File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
+
+	File$ColAgePlus1 <- File$colony_age
+
+	ColInfoPlus1 <- subset(File, select = c("colony_ID", "num_adsB4_dispersal", "colony_age"))
 	
-	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, 
-		numAdsB4dis = File$num_adsB4_dispersal, dispersers = File$dispersers, prevDisp = File$prevDisp)
-
-	ColInfo$ColAgePlus1 <- ColInfo$col_age
-
-	ColInfoPlus1 <- subset(ColInfo, select = c("col_id", "numAdsB4dis", "col_age"))
-
-	colnames(ColInfoPlus1)[2] <- "NPlus1"
-
-	ColInfoPlus1$ColAgePlus1 <- ColInfoPlus1$col_age - 1
-
-	nnplus1 <- merge(ColInfo, ColInfoPlus1,  by =c("ColAgePlus1", "col_id"))
-
-	colnames(nnplus1)[5] <- "N"
+	nnplus1 <- subset(File, select = c("colony_ID", "num_adsB4_dispersal", "colony_age", "prevDisp"))
 
 	
+	colnames(ColInfoPlus1)[3] <- "ColAgePlus1"
+	colnames(ColInfoPlus1)[2] <- "numAdsPlus1"
+
+	nnplus1$ColAgePlus1 <- nnplus1$colony_age + 1
+
+	nnplus1 <- merge(nnplus1, ColInfoPlus1,  by =c("ColAgePlus1", "colony_ID"), all.x = TRUE)
+	
+	nnplus1<-nnplus1[!(nnplus1$colony_age==numGens),] # removes colonies that may still have been alive after sim done
+	
+	nnplus1$numAdsPlus1[is.na(nnplus1$numAdsPlus1)] <- 0 # replacing the NA's with zeros
+	#nnplus1merge <- subset(nnplus1merge, colony_ID == 1) # for testing
+	#write.csv(nnplus1merge, file = "nnplus1merge.csv") # for testing
+
 	nnplus1 <- subset(nnplus1, prevDisp != "now")  # removing colonies that have just dispersed
 	
-	nnplus1 <- subset(nnplus1, pop_age < num_gens - 1 ) # removing nests at the end of generations that might not have died
+	#nnplus1 <- subset(nnplus1, pop_age < numGens - 1 ) # removing nests at the end of generations that might not have died, not sure why i did -1
 	
-	nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N
-	
+	colnames(nnplus1)[4] <- "N" # changing names so will work in logistic function
+	colnames(nnplus1)[1] <- "NPlus1"
+
 	logistic <- tryCatchLogistic(nnplus1)
 	
 	if (logistic == "error"){
 		print ("error in logistic calculation")
+		log_list <- c(NA, NA, NA)
 	}else{
 		logisticTable <- tidy(logistic)
-	}
+		a <- logisticTable$estimate[(logisticTable$term=="a")]
+		b <- logisticTable$estimate[(logisticTable$term=="b")]
+		c <- logisticTable$estimate[(logisticTable$term=="c")]
+		log_list <- c(a, b, c)
+		
+	} 
 	
-
+	rowApp<- append(rowVars, log_list)
 	
-	
-	ricker <- tryCatchRicker(nnplus1)
-	
-	if (ricker =="error"){
-		print ("error in ricker calculation") 
-	}else{
-		rickerTable <- tidy(ricker)
-	}
-	
-	return(logistic)
-	
-	
-	
-
+	Log_output[nrow(Log_output) + 1, ] <- rowApp
+	return(Log_output)	
 
 }
 
-num <- 22
 
-theFileName <-fileNames[num,1]
-numGens <- fileNames[num, 3]
-
-
-logistic <- nntplus1Fun(theFileName, min_pop_age, numGens)
- 
-
-# Testing
-#File<-subset(File, select = c(colony_ID, dispersers, pop_age, firstDisp, prevDisp))
-
-#write.csv(test, file = "DisperalSimulationOutput/nnTest.csv" )
-
-
-
-
-
-# write.csv(ColInfo, file = "DisperalSimulationOutput/ColInfoTest.csv" )
-
-## Copied from other file -- need to make into function
-
-
-
-
-# write.csv(nnplus1, file = "DisperalSimulationOutput/nnTest.csv" ) # testing
-
-
-
-
-
-
+for (i in (1:length(FilesExist))){	
+	print(i)	
+	
+	num <- FilesExist[i]
+	numGens <- fileNames[num, 3]
+	print(num)
+	
+	theFileName <-fileNames[num,1]
+	
+	print (theFileName)
+	
+	Log_output <- nntplus1Fun(theFileName, min_pop_age, numGens)
+	
+	
+	
+}
 
 
 #curve(I((x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x))), 0, 400) # plots the function
 
-
-#ggplot(data.frame(x=c(0, 400)), aes(x)) + stat_function(fun=function(x)(x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x)))
-				#I((x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x))))
-
-######## calculating logistic equation
-
-
-
-
-
-ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
-		geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-		geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn")
-
-
-ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
-		geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-		geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn") + 
-		stat_function(fun=function(x)(x^(1+0.79)) * exp(-1) * (exp(-0.0105 * x)))
-
-
- options(warn = -1) #suppress warnings globally
-
-if (logistic =="error"){
-	print ("error in logistic calculation") 
-	
-	p14 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
-			geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA))+
-			ggtitle("logistic eqn did not work :-(")
-	
-	
-} else {
-	print ("logistic equation did work!")
-	
-	nnplus1$logisticPredict <- predict(logistic)
-	
-	p14 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
-			geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-			geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn")
-	
-	logisticTable <- tidy(logistic)
-	logisticTable$type <- "logistic"		
-	
-}
-
-
-
-######## Calculating ricker equation
-
-
-
-
-
-ricker <- tryCatchRicker(nnplus1)
-
-nnplus1$rickerPredict <- predict(ricker)	
-
-ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
-		geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-		geom_line(aes(x = N, y = rickerPredict), colour = 'blue') + ggtitle("ricker eqn")
-
-
-
-if (ricker =="error"){
-	print ("error in ricker calculation") 
-	
-	p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
-			geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-			ggtitle("ricker eqn did not work :-(")
-	
-	
-	
-	
-} else {
-	print ("ricker equation did work!")
-	nnplus1$rickerPredict <- predict(ricker)		
-	
-	p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
-			geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-			geom_line(aes(x = N, y = rickerPredict), colour = 'blue') + ggtitle("ricker eqn")
-	
-	rickerTable <- tidy(ricker)
-	rickerTable$type <- "ricker"
-	
-	
-}
-
-
-options(warn = 0) # turns warnings back on
-
-
-
-if (exists("rickerTable") == TRUE & exists("logisticTable") == TRUE){
-	print ("both tables exist")
-	nnplusoneCom <- rbind(rickerTable, logisticTable)	
-	
-	
-} else {
-	if(exists("rickerTable") == TRUE & exists("logisticTable") == FALSE){
-		print("only ricker")	
-		nnplusoneCom <- rickerTable
-		
-		
-		
-	} else {
-		if(exists("rickerTable") == FALSE & exists("logisticTable") == TRUE){
-			print("only the logistic table exists")
-			nnplusoneCom <- logisticTable
-			
-		}else{	
-			print("neither ricker or logistic worked")
-			nnplusoneCom <- data.frame(term = NA, estimate = NA, std.error = NA,  p.value = NA,
-					type = "both")
-			
-			
-		}
-	}
-}
-
-
-nnplusoneCom$Comp <- DF[1,1]
-nnplusoneCom$disp <- DF[1,2]
-nnplusoneCom$var <- DF[1,3]
-nnplusoneCom$meanK <- DF[1,4]
-nnplusoneCom$FileName<-fileName
-
-
-rm(nnplus1)
-
-nnplus1$rickerPredict <- predict(ricker)	
