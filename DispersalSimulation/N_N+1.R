@@ -31,10 +31,10 @@ Log_output <- data.frame(Comp = numeric(), # making empty data frame
 		ad_dsp_fd = numeric(),
 		min_juv_fd = numeric(),
 		max_no_off = numeric(),
+		max_pop_age = numeric(),+
 		log_a = numeric(),
 		log_b = numeric(),
 		log_c = numeric(),
-		max_pop_age = numeric(),
 		stringsAsFactors=FALSE) 
 
 
@@ -47,7 +47,7 @@ fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and re
 		theFileName <-fileNames[i,1]
 		
 		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
-		#fileToImport <- paste(theFileName, ".py.csv", sep = "")		
+		#fileToImport <- paste(theFileName, ".py.csv", sep = "")	##############################################################	
 		
 		
 		if(file.exists(fileToImport) == "TRUE"){
@@ -112,7 +112,7 @@ nntplus1Fun <- function(fileName, min_pop_age, numGens){
 	
 	maxPopAge <- max(File$pop_age)
 	
-	if (maxPopAge + 50 > min_pop_age){ File <- subset(File, pop_age >= min_popAge) }	
+	if (maxPopAge + 50 > min_pop_age){ File <- subset(File, pop_age >= min_pop_age) }	
 	
 	
 	rowVars <- c(File$Comp_slope[1], File$meanK[1], File$Fd_ln[1], File$input_var[1], File$disp_rsk[1], File$ad_dsp_fd[1], 
@@ -191,6 +191,8 @@ for (i in (1:length(FilesExist))){
 	
 }
 
+
+write.table(Log_output, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
 
 #curve(I((x^(1+0.4)) * exp(1.5) * (exp(-0.02 * x))), 0, 400) # plots the function
 
