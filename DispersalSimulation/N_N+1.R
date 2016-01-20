@@ -21,9 +21,10 @@ fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file na
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 ## Change this to the correct number i want to remove
-min_pop_age <-5 # the number of generations to discount from the start of the calculations
+min_pop_age <-50 # the number of generations to discount from the start of the calculations
 
-Log_output <- data.frame(Comp = numeric(), # making empty data frame
+Log_output <- data.frame(FileNum = numeric(),
+		Comp = numeric(), # making empty data frame
 		meanK=numeric(),
 		Fd_ln=numeric(), 
 		Variance=numeric(),
@@ -31,7 +32,7 @@ Log_output <- data.frame(Comp = numeric(), # making empty data frame
 		ad_dsp_fd = numeric(),
 		min_juv_fd = numeric(),
 		max_no_off = numeric(),
-		max_pop_age = numeric(),+
+		max_pop_age = numeric(),
 		log_a = numeric(),
 		log_b = numeric(),
 		log_c = numeric(),
@@ -52,7 +53,7 @@ fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and re
 		
 		if(file.exists(fileToImport) == "TRUE"){
 			
-			print (paste("The file exists! Yay!. File:", fileToImport))
+			#print (paste("The file exists! Yay!. File:", fileToImport))
 			filesThatExist <- c(filesThatExist,  i)
 			
 		}else{
@@ -112,18 +113,25 @@ nntplus1Fun <- function(fileName, min_pop_age, numGens){
 	
 	maxPopAge <- max(File$pop_age)
 	
-	if (maxPopAge + 50 > min_pop_age){ File <- subset(File, pop_age >= min_pop_age) }	
+	if ((maxPopAge + 50) < min_pop_age){ File <- subset(File, pop_age >= min_pop_age) }	
+	
+	fileNum <- print (substr(fileName, 0, 4))
 	
 	
-	rowVars <- c(File$Comp_slope[1], File$meanK[1], File$Fd_ln[1], File$input_var[1], File$disp_rsk[1], File$ad_dsp_fd[1], 
+	rowVars <- c(fileNum, File$Comp_slope[1], File$meanK[1], File$Fd_ln[1], File$input_var[1], File$disp_rsk[1], File$ad_dsp_fd[1], 
 			File$min_juv_fd[1], File$max_no_off[1], maxPopAge)
 	
-	## making a table of dispersal information for each nest so can colour nests that had dispersed and had not
-	firstDisp <- ddply(subset(File, dispersers > 0), .(colony_ID), summarise, firstDisp = min(pop_age))
-	File <- merge(File, firstDisp, by = "colony_ID", all.x = TRUE)
+	if (sum(File$dispersers) == 0){
+			File$prevDisp <- "n"
+		}else{
 	
-	File$prevDisp <-  ifelse(File$firstDisp > File$pop_age | is.na(File$firstDisp), "n", "y" )
-	File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
+			## making a table of dispersal information for each nest so can colour nests that had dispersed and had not
+			firstDisp <- ddply(subset(File, dispersers > 0), .(colony_ID), summarise, firstDisp = min(pop_age))
+			File <- merge(File, firstDisp, by = "colony_ID", all.x = TRUE)
+	
+			File$prevDisp <-  ifelse(File$firstDisp > File$pop_age | is.na(File$firstDisp), "n", "y" )
+			File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
+		}
 
 	File$ColAgePlus1 <- File$colony_age
 
@@ -154,6 +162,8 @@ nntplus1Fun <- function(fileName, min_pop_age, numGens){
 
 	logistic <- tryCatchLogistic(nnplus1)
 	
+	options(warn= -1)
+	
 	if (logistic == "error"){
 		print ("error in logistic calculation")
 		log_list <- c(NA, NA, NA)
@@ -166,6 +176,7 @@ nntplus1Fun <- function(fileName, min_pop_age, numGens){
 		
 	} 
 	
+	options (warn = 0)
 	rowApp<- append(rowVars, log_list)
 	
 	Log_output[nrow(Log_output) + 1, ] <- rowApp
