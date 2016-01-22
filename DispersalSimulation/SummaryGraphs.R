@@ -10,11 +10,11 @@ library(grid) # not sure if I need this or not.
 
 
 
-num_graphs <- 17
+num_graphs <- 16
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalSummaryGraphs14Jan.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/DispersalSummaryGraphs21JanFln0.3.png", width = 1300, height = gr_ht, units = "px")
 
 
 
@@ -22,7 +22,7 @@ png("DisperalSimulationOutput/DispersalSummaryGraphs14Jan.png", width = 1300, he
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "DisSum_OriComp_50Gens_11Jan.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "DisSum_OriComp_50Gens_21Jan_fd_ln0.3.csv", sep = ""))
 
 #dis_aves <- subset(dis_aves, Fd_ln == 0.61)
 
@@ -180,10 +180,6 @@ pa2<- ggplot(dis_ply, aes(x = ad_dsp_fd, y = survival_all.mean, colour = as.fact
 		#geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
 		 #+ scale_colour_manual(values=c("blue", "red"))
 
-pa2a<- ggplot(dis_ply, aes(x = ad_dsp_fd, y = survival_all.mean, colour = as.factor(Comp_meas))) + geom_point(size = 3) + 
-		facet_wrap(~ max_no_off + VarAndRsk, nrow = 2, scales = "free_y") +  ggtitle("Average colony Survival") + geom_line() +
-		mytheme
-		#geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
 
 
 
@@ -229,7 +225,7 @@ pa8 <- ggplot(dis_ply, aes(x = ad_dsp_fd, y = colSizeDeath.mean, colour = as.fac
 
 
 
-grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, pa1, pa2, pa2a,  pa3, pa4, pa5, pa6, pa7, pa8, ncol=1)
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, pa1, pa2,  pa3, pa4, pa5, pa6, pa7, pa8, ncol=1)
 
 dev.off()
 
