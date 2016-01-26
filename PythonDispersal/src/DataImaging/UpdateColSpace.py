@@ -40,30 +40,39 @@ def checkMissing(L, max):
     #print(list(missing_elements(L,0,len(L)-1)))
     return missingList
 
-def updateColSpace(minColID, maxColID):
-    for i in range(minColID, maxColID):   
+def updateColSpaceWholeTbl(data, minColID, maxColID):
+    for i in range(minColID, maxColID):
         colID = i
-        print "i", i
         colSpace =  max(data[data.colony_ID == colID].col_space)
         data.loc[data.colony_ID == colID, 'col_space'] = colSpace
 
+def updateMissingColSpace(data, pop_age):
+    indexList = data[(pd.isnull(data['col_space'])) & (data['pop_age'] == pop_age)].index.tolist() # list of index that don't have a colony_space
+    if len(indexList) > 1:
+        colSpaceList = data[data.pop_age == pop_age].col_space.values  # getting the list of currenlty assigned col spaces
+        missing = checkMissing(colSpaceList, 200)
+        numToFill = len(indexList)
+        minID = min(data[(pd.isnull(data['col_space'])) & (data['pop_age'] == pop_age)].colony_ID)
+        maxID = max(data[(pd.isnull(data['col_space'])) & (data['pop_age'] == pop_age)].colony_ID)
+        for i in range(0, numToFill):
+            rowInx = indexList[i]
+            newSpace = missing[i]
+            data.ix[rowInx, 4] = newSpace
+        updateColSpaceWholeTbl(data, minID, maxID)
 
-data=pd.read_csv("AnimationData.csv", sep = ',')
 
-data["col_space"] = np.nan # creates an empty column col_space
+def main(data):
+    data["col_space"] = np.nan # creates an empty column col_space
 
-data.loc[data.pop_age == 1, 'col_space'] = data.colony_ID  # updates the col_space as col ID
+    data.loc[data.pop_age == 1, 'col_space'] = data.colony_ID  # updates the col_space as col ID for pop_age 1
 
-minColID = 1
-maxColID =  max(data[data.pop_age == 1].colony_ID)
+    # updates the rest of the table
+    minColID = 1
+    maxColID =  max(data[data.pop_age == 1].colony_ID)
+    updateColSpaceWholeTbl(data, minColID, maxColID)
 
-updateColSpace(minColID, maxColID)
+    maxPopAge = max(data.pop_age)
 
-colSpaceList = data[data.pop_age == 2].col_space.values
-
-#data[['col_space']] = data[['col_space']].astype(int)
-print data.dtypes
-
-print checkMissing(colSpaceList, 45)
-
-print data.tail(5)
+    for i in range(2, maxPopAge + 1):
+        updateMissingColSpace(data, i)
+    #return data
