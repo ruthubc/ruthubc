@@ -9,11 +9,12 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import numpy as np
 import pandas as pd
-import UpdateColSpace
+#from matplotlib.animation import ArtistAnimation
+
 
 data = pd.read_csv("AnimationData.csv", sep = ',') # import data
 
-UpdateColSpace.main(data)  ## updates the colony space
+
 
 
 # first set up fig, the axis and the plot element we want to animate
@@ -38,6 +39,8 @@ plt.show()
 
 numBars = 200
 
+numFrames = max(data.pop_age.values)
+
 fig = plt.figure(figsize=(16,8))
 
 position = np.arange(numBars)# + .5 # number of bars
@@ -46,7 +49,7 @@ position = np.arange(numBars)# + .5 # number of bars
 #plt.tick_params(axis = 'y', colors = '#072b57')
 
 #speeds = [1, 2, 3, 4, 1, 2, 3]
-heights = [0]*200
+heights = [0]*numBars
 rects = plt.bar(position, heights, align = 'center', color = '#b8ff5c')
 #plt.xticks(position, ('A', 'B', 'C', 'D', 'E', 'F'))
 
@@ -59,7 +62,7 @@ plt.xlim((0,numBars))
 
 plt.grid(True)
 
-rs = [r for r in rects]
+rs = [r for r in rects] # rects a BarContainer, rs is the same as rects except it is a list containing rectangle objects
 
 
 def init():
@@ -69,12 +72,20 @@ def animate(i):
     print i
     global rs, heights
     subData = data[data.pop_age == i]
-    subData.sort_index(by=['col_space'])
+    subData.sort_index(by=['col_space'])    
     heights =  subData.num_adsB4_dispersal.values
-    for h,r in zip(heights,rs):
+    heights = heights.tolist()
+    numZeros = numBars - len(heights)
+    heights = heights + [0] * numZeros
+    #colours = ['r'] * 200
+    disps = subData.dispersers.values
+    colours = ['r' if x > 0 else 'b' for x in disps] + ['b'] * numZeros
+    for h,r, c in zip(heights,rs, colours):
         r.set_height(h)
+        r.set_facecolor(c)
     return rs
 
-anim = animation.FuncAnimation(fig, animate, init_func=init,frames=200, interval=1, blit=True) # frames is the number of time to iteriate
+anim = animation.FuncAnimation(fig, animate, init_func=init,frames=numFrames, interval=1, blit=True) # frames is the number of time to iteriate
 
+anim.save('myanimatoin.mp4')
 plt.show()
