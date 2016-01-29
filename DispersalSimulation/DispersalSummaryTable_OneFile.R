@@ -72,6 +72,18 @@ summaryFun <- function(fileName, min_pop_age, numGens){
 		
 		maxPopAge <- max(File$pop_age)
 		
+		sigNests <- subset(File, num_adsB4_dispersal == 1)$colony_ID
+		
+		unique(sigNests)
+		
+		# best way is to do a merge 
+		
+		
+		
+		
+		
+		
+		
 		# getting averages for all records, no generations removed
 		FileAves_All<- ddply(File, .(Comp_slope, meanK, Fd_ln, input_var, disp_rsk, ad_dsp_fd, min_juv_fd, min_no_off,
 						max_no_off, min_ad_sze_off, max_ad_sze_off), summarise,
