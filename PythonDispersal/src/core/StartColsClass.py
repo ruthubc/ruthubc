@@ -19,10 +19,8 @@ class StartCols(object):
         self.ad_fd = ad_fd        
         self.col_no = 0
         self.sze_min = 1
-        self.sze_max = self.K * 3
-        self.intvl = self.sze_max / 40
-        self.sze_rng_lst = [1] + range(self.intvl, (self.sze_max + self.intvl),
-                             self.intvl)
+        self.sze_max = self.K * 2
+        self.intvl = self.sze_max / 30
         self.col_list = []
 
     def make_col(self, colSize):
@@ -35,6 +33,8 @@ class StartCols(object):
         return col
 
     def make_col_list(self):
-        for  j in self.sze_rng_lst:
+        sizeRangeList = [1, 1, 1, 1, 1] + range(self.intvl, (self.sze_max + self.intvl), self.intvl)
+        sizeRangeList = sizeRangeList * 2
+        for  j in sizeRangeList:
             col = self.make_col(j)
             self.col_list.append(col)

@@ -87,5 +87,4 @@ def animate(i):
 
 anim = animation.FuncAnimation(fig, animate, init_func=init,frames=numFrames, interval=1, blit=True) # frames is the number of time to iteriate
 
-anim.save('myanimatoin.mp4')
 plt.show()

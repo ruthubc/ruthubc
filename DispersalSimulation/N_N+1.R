@@ -8,10 +8,11 @@ library (plyr)
 library(reshape2)
 library(broom)
 library(ggplot2)
+source("FilesExist.R")
 
 filesCSV <- "FilesCreated.csv"
 
-outputFile <- "NNTPlus1.csv"
+outputFile <- "NNTPlus1Test.csv"
 
 #folder <- "R_Graphs/" ##########################################################################
 folder <- "DisperalSimulationOutput/"
@@ -39,30 +40,7 @@ Log_output <- data.frame(FileNum = numeric(),
 		stringsAsFactors=FALSE) 
 
 
-fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and returning a list of existing files
-	
-	filesThatExist <- c()
-	
-	
-	for (i in 1:nrow(fileNames)){
-		theFileName <-fileNames[i,1]
-		
-		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
-		#fileToImport <- paste(theFileName, ".py.csv", sep = "")	##############################################################	
-		
-		
-		if(file.exists(fileToImport) == "TRUE"){
-			
-			#print (paste("The file exists! Yay!. File:", fileToImport))
-			filesThatExist <- c(filesThatExist,  i)
-			
-		}else{
-			print (paste("file doesn't exist. File:", fileToImport))
-		}
-		
-	}	
-	return (filesThatExist)
-}
+
 
 FilesExist <- fileExistsFn(fileNames) # move down
 
@@ -110,6 +88,8 @@ nntplus1Fun <- function(fileName, min_pop_age, numGens){
 	#fileToImport <- paste(theFileName, ".py.csv", sep = "")##################################	
 	
 	File <- read.csv(fileToImport, quote = "")
+	
+	File <- subset(File, num_adsB4_dispersal > 1)  # removing single female colonies to see if this improves the estimates
 	
 	maxPopAge <- max(File$pop_age)
 	

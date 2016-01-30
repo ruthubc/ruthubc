@@ -23,7 +23,7 @@ def disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, mi
         indFiles.close()
 
     #(2) Initial Population
-    cols = StartCols(indFile, compType, K, comp_slp, ad_fd = 0.6)
+    cols = StartCols(indFile, compType, K, comp_slp, ad_fd = 0.6) # ad food is the size of the adults
     cols.make_col_list()
     col_list = cols.col_list
 
