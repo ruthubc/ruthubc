@@ -44,7 +44,7 @@ class Poplt(object):
         self.disp_rsk = disp_rsk
         self.K = float(K)
         self.amt_var = amt_var
-        self.min_juv_fd = float(min_juv_fd)
+        self.min_juv_fd = float(min_juv_fd) # min size for juvs to moult
         self.ad_disFd_lmt = ad_disFd_lmt
         self.F_Ln = F_Ln
         self.colony_count = colony_count
@@ -147,6 +147,7 @@ class Poplt(object):
 
     def one_poplt_timestep(self):
         print "***new population time step****"
+        print "juv food limit for ad dispersal", self.juv_disFd_lmt
         self.pop_dispersal_list = []
         #(1) Add one to population age
         self.update_pop_age()

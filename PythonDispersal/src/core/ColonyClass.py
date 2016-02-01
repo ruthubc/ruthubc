@@ -343,7 +343,6 @@ class Colony(object):
         self.cal_med_rnk = cmp_obj.CompFunction()
         
     def assign_food(self):
-        print "number of juvs:", len(self.juv_list)
         if len(self.juv_list) <= 1:
             self.juv_list[0].food = self.colony_food  #TODO: maybe put something in here to make sure that nver abv1
             if self.colony_food > 1:
@@ -452,8 +451,6 @@ class Colony(object):
         #print self.colony_dict()
 
     def colony_timestep(self, F_Ln, K, var, Off_M, Off_C, juv_disFd_lmt, ad_disFd_lmt, pop_dis_list, min_juv_fd,  pop_export_list, filename, food_scale):
-        print "***NEW COLONY TIMESTEP****"
-
             # (1) add one to colony age
         self.col_age_increase()  # updates colony age by one
 
@@ -467,13 +464,13 @@ class Colony(object):
 
         self.adSz_B4 = self.indStats([i.food for i in self.ad_list]) # ad fd stats before dispersal
 
-        #print "juv_disFdLmt", juv_disFd_lmt
+       
         if self.pot_juv_food < float(juv_disFd_lmt): # risk calculation already cal'ed in population class
             self.colDispersal_choice(ad_disFd_lmt)
             self.spis_to_dis_lst(ad_disFd_lmt)
             pop_dis_list.extend(self.dispersers) # adds spiders to population dispersal list
-        else:
-            print "no dispersers - pot juv food too high"
+        #else:
+            #print "no dispersers - pot juv food too high"
 
         self.dispersers = []  # clears the colony dispersal list
 
@@ -485,6 +482,4 @@ class Colony(object):
             #print "colony dictionary", self.colony_dict()
             print "all spiders dispersed, colony dead"
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
-            #print("number spiders left after dispersal")
-            #print(len(self.ad_list))
             self.core_colony_timestep(F_Ln, K, var, min_juv_fd, pop_export_list, filename, food_scale)

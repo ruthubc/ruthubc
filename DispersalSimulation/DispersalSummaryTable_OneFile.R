@@ -10,6 +10,7 @@ library(gridExtra)
 library(reshape2)
 #library(doParallel)
 library(survival)
+source("FilesExist.R")
 
 ### Something to think about. Are there some variables where I don't want to include colonies that are alive at the end of the simulation?
 
@@ -22,48 +23,21 @@ filesCSV <- "FilesCreated.csv"
 outputFile <- "DispersalTest.csv"
 
 #folder <- "R_Graphs/"
-folder <- "DisperalSimulationOutput/"
+folder <- "DisperalSimulationOutput/" #########################################################################################################################
 
 fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file names csv file
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 ## Change this to the correct number i want to remove
-min_popAge <-50 # the number of generations to discount from the start of the calculations
-
-
-
-fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and returning a list of existing files
-	
-	filesThatExist <- c()
-	
-	
-	for (i in 1:nrow(fileNames)){
-		theFileName <-fileNames[i,1]
-		
-		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
-		#fileToImport <- paste(theFileName, ".py.csv", sep = "")		
-		
-		
-		if(file.exists(fileToImport) == "TRUE"){
-			
-			#print (paste("The file exists! Yay!. File:", fileToImport))
-			filesThatExist <- c(filesThatExist,  i)
-			
-		}else{
-			print (paste("file doesn't exist. File:", fileToImport))
-		}
-		
-	}	
-	return (filesThatExist)
-}
+min_popAge <-5 # the number of generations to discount from the start of the calculations ###########################################################################
 
 
 summaryFun <- function(theFileName, min_pop_age, numGens){
 
 		fileNum <- print (substr(theFileName, 0, 4))
 
-		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
+		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "") ###########################################################################################
 		#fileToImport <- paste(theFileName, ".py.csv", sep = "")
 
 		
@@ -76,7 +50,7 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		######################## Single female nests ##################
 		# seeing if single female nests were able to grow
 		
-		sigNestsLst <- subset(File, num_adsB4_dispersal == 1 & pop_age != numGens & pop_age != 1)$colony_ID
+		sigNestsLst <- subset(File, num_adsB4_dispersal == 1 & pop_age != numGens & pop_age != 1)$colony_ID  # list of colony_ID of all single female nests
 		
 		if(length(sigNestsLst) == 0){
 			propSigNestNotGrow <- NA
@@ -85,17 +59,17 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		
 		sigNestsLst <- unique(sigNestsLst)  # check this works
 		
-		numSigNest <- length(sigNestsLst)
+		numSigNest <- length(sigNestsLst)  # number of nests that were at one time single
 		
-		sigNestsDF <- File[,c("colony_ID","num_adsB4_dispersal")]
+		sigNestsDF <- File[,c("colony_ID","num_adsB4_dispersal")]  # makes two column table containing everything
 		
-		sigNestsDF <- sigNestsDF[sigNestsDF$colony_ID %in% sigNestsLst,] # subsets the file for those nests that were single once
+		sigNestsDF <- sigNestsDF[sigNestsDF$colony_ID %in% sigNestsLst,] # subsets the file for those nests that were single once i.e. in sigNestsLst, I never checked this worked 
 		
 		## gets the max colony size of each nest that stated out as a single nest
 		maxRows <- by(sigNestsDF, sigNestsDF$colony_ID, function(X) X[which.max(X$num_adsB4_dispersal),])
 		maxRows <- do.call("rbind", maxRows)
 		
-		numNotGrow <- length(subset(maxRows, maxRows$num_adsB4_dispersal == 1))
+		numNotGrow <- nrow(subset(maxRows, maxRows$num_adsB4_dispersal == 1))  # this is the number of colonies that never grew beyond one female
 		
 		propSigNestNotGrow <- numNotGrow/numSigNest
 		

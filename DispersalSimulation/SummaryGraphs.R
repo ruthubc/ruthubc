@@ -14,7 +14,7 @@ num_graphs <- 10
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalSummaryGraphs29Jan.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/DispersalSummaryGraphs31Jan.png", width = 1300, height = gr_ht, units = "px")
 
 
 
@@ -22,7 +22,7 @@ png("DisperalSimulationOutput/DispersalSummaryGraphs29Jan.png", width = 1300, he
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "DisSum_OriComp_50Gens_11Jan.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "Dispersal31Jan.csv", sep = ""))
 
 #dis_aves <- subset(dis_aves, Fd_ln == 0.61)
 

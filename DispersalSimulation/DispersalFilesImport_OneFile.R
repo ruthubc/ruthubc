@@ -8,6 +8,7 @@ library(gridExtra)
 library(reshape2)
 library(broom)
 library(doParallel)
+source("FilesExist.R")
 
 cl <- makeCluster(2)
 # Register cluster
@@ -22,7 +23,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	print(fileName)
 
 	#### REMEMBER: Before sending to grex remove the printing stuff.
-	#filetoImport <- paste(fileName, ".py.csv", sep = "")
+	#filetoImport <- paste(fileName, ".py.csv", sep = "") #############################################################################################
 	filetoImport <- paste(folder, fileName, ".py.csv", sep = "")
 
 	mytheme = theme(text = element_text(size=16))
@@ -52,16 +53,18 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	#cols<- as.numeric(levels(as.factor(File$colony_ID)))
 	
-	
+	firstDisp <- ddply(subset(File, dispersers > 0), .(colony_ID), summarise, firstDisp = min(pop_age))
 	## Updating dispersal information
-	firstDisp <- ddply(subset(File, dispersers > 0), .(colony_ID), summarise,
-			firstDisp = min(pop_age))
-	
-	File <- merge(File, firstDisp, by = "colony_ID", all.x = TRUE)
-	
-	File$prevDisp <-  ifelse(File$firstDisp > File$pop_age | is.na(File$firstDisp), "n", "y" )
-	
-	File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
+	if(nrow(firstDisp) > 0){
+		
+		File <- merge(File, firstDisp, by = "colony_ID", all.x = TRUE)
+		
+		File$prevDisp <-  ifelse(File$firstDisp > File$pop_age | is.na(File$firstDisp), "n", "y" )
+		
+		File$prevDisp <- ifelse(File$dispersers > 0, "now", File$prevDisp)
+	}else{
+		File$prevDisp <- "n"
+	}
 	
 
 	
@@ -86,12 +89,6 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	pngHeight = 480 * (20 +1 )# 400 * number of graphs)
 	
 	png(pngTitle,  width = 1600, height = pngHeight, units = "px", pointsize = 16) # height = 400* num graphs
-	
-	#print("png title")
-	#print (pngTitle)
-	
-	DF <- data.frame(Comp = File$Comp_slope[1], disp_rsk = File$disp_rsk[1], var = File$input_var[1], 
-			meanK = File$meanK[1], dis_size = File$ad_dsp_fd[1], pop_age = max(File$pop_age), disperse = max(ColInfo$colDisp))#, fileName = character(0))
 	
 	
 	ByPopAge<- ddply(subset(File, num_ads!=0), .(pop_age), summarise,
@@ -150,6 +147,10 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	File$foodPerAd <- File$colony_food / File$num_ads
 	File$foodPerAd[which(File$foodPerAd == Inf)] <- NA
 	
+	File$foodPerJuv <- File$colony_food / File$numjuvs
+	File$foodPerJuv[which(File$foodPerJuv == Inf)] <- NA
+	
+	
 	# Nest size before dispersal vs food per adult 
 #### OK THIS DOESN'T MAKE ANY SENSE. SHOULD BE POTENTIAL FOOD IF NO INDIVIDUAL DISPERSED
 	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = foodPerAd, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
@@ -159,12 +160,13 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	p8 <- ggplot(data = File, aes(x=num_ads, y = foodPerAd, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("num ads after dispersal vs per capita food")
 	
+	p8a <- ggplot(data = File, aes(x=num_ads, y = foodPerJuv, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
+			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("Number Juvs per food")
+	
 	
 	p9 <- ggplot(data = File, aes(x=num_ads, y = AveOffAd, colour = prevDisp )) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("ave offspring per adults vs col size after dispersal")
 	
-	p10 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = AveOffAd, colour = prevDisp )) + geom_point() + stat_smooth(se = FALSE) +  
-			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("ave offspring per adults vs col size BEFORE dispersal")
 	
 	
 	# number juvs moulting with size after dispersal
@@ -376,13 +378,6 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	}
 	
 	
-	nnplusoneCom$Comp <- DF[1,1]
-	nnplusoneCom$disp <- DF[1,2]
-	nnplusoneCom$var <- DF[1,3]
-	nnplusoneCom$meanK <- DF[1,4]
-	nnplusoneCom$FileName<-fileName
-	
-	
 	rm(nnplus1)
 
 	
@@ -390,7 +385,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	h2 <- 3/5
 	
 	p_grob <- arrangeGrob(p14,p15, ncol=2)
-	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p6a, p7, p8, p9, p10, p11, p12, p13, p13a,  p_grob,
+	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p6a, p7, p8, p8a, p9, p11, p12, p13, p13a,  p_grob,
 					 p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), top = mytitle))
 	 
 
@@ -398,53 +393,18 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	dev.off()
 	
-	returnList <- list(DF, nnplusoneCom)
-	#print (returnList)
-	#return(returnList)
-	
 
-}
-
-fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and returing a list of existing files
-
-	filesThatExist <- c()
-	
-
-	for (i in 1:nrow(fileNames)){
-		theFileName <-fileNames[i,1]
-		
-		#fileToImport <- paste(theFileName, ".py.csv", sep = "")
-		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "")
-		
-		
-		if(file.exists(fileToImport) == "TRUE"){
-			
-			print (paste("The file exists! File:", fileToImport))
-			filesThatExist <- c(filesThatExist,  i)
-			
-		}else{
-			print (paste("file(s) don't exist. File:", fileToImport))
-		}
-		
-	}	
-	return (filesThatExist)
 }
 
 
  
-#folder <- "R_Graphs/"
+#folder <- "R_Graphs/" ####################################################################################################################
 folder <- "DisperalSimulationOutput/"
 
 fileNames<-read.csv(paste(folder, "FilesCreated.csv", sep = ""), quote="") # import file names csv file
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
-
-
-
-
-## TO test the function
-#fileName <- fileNames[24,1]
 
 files <- fileExistsFn(fileNames)
 
@@ -466,25 +426,9 @@ loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "
 	print ("file name in loop")                                        
 	print (theFileName)
 	num_gens <- as.numeric(fileNames[num, 3])
-	returnList <- graphFunction(folder, theFileName, num_gens, min_popAge)
+	output <- graphFunction(folder, theFileName, num_gens, min_popAge)
 
-}
-
-
-DF <- loop[[1]][[1]]
-N_NPlus1Vars <- loop[[1]][[2]]
-
-if (length(files) > 1){
-	for(i in 2:length(files)){
-	print (i)
-	DF <- rbind(DF, loop[[i]][[1]])
-	N_NPlus1Vars <- rbind(N_NPlus1Vars, loop[[i]][[2]])
-	
-	}                                
 }
 
 stopCluster(cl)
 
-write.table(DF, paste(folder, "PopDets.csv", sep = ""), sep=",", row.names = FALSE)
-
-write.table(N_NPlus1Vars,paste(folder, "PopMapVars.csv", sep = ""), sep=",", row.names = FALSE)
