@@ -16,13 +16,13 @@ indFile = "n"
 
 #slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
 slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
-dispersalRisks = [0.05]
+dispersalRisks = [0.1]
 meanK = [300]
-Vars = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+Vars = [0, 0.1]
 adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0]
 minOffNo = [1]
 maxOffNo = [4, 6]
-F_Lns = [0.30, 0.30]
+F_Lns = [0.61]
 
 
 

@@ -37,7 +37,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	#print ("maxPop age")
 	#print (maxPopAge)
 	
-	if(maxPopAge < 300){
+	if(maxPopAge < (min_popAge + 50)){
 		fn_min_popAge <- 0
 		print("pop did not survive to 300 generations")
 	}else{
@@ -161,7 +161,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("num ads after dispersal vs per capita food")
 	
 	p8a <- ggplot(data = File, aes(x=num_ads, y = foodPerJuv, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
-			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("Number Juvs per food")
+			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("Food Per Juv")
 	
 	
 	p9 <- ggplot(data = File, aes(x=num_ads, y = AveOffAd, colour = prevDisp )) + geom_point() + stat_smooth(se = FALSE) +  
