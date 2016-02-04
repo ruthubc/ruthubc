@@ -10,7 +10,7 @@ from core.PopulationClass import Poplt
 from core.Functions import export_rownames
 
 
-def disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln, compType):
+def disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, off_list, ad_disFd_lmt, F_Ln, compType):
     #(1) write rownames to csv fileh
 
     export_rownames(filename + ".csv") # creating file with rownames 
@@ -26,6 +26,9 @@ def disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, mi
     cols = StartCols(indFile, compType, K, comp_slp, ad_fd = 0.6) # ad food is the size of the adults
     cols.make_col_list()
     col_list = cols.col_list
+
+    min_no_off = off_list[0]
+    max_no_off = off_list[1]
 
 
     this_pop = Poplt(col_list, compType, indFile, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, min_no_off, max_no_off, ad_disFd_lmt, F_Ln, cols.col_no)

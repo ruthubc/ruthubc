@@ -16,7 +16,7 @@ class StartCols(object):
         self.K = K
         self.compType = compType
         self.comp_slp = comp_slp
-        self.ad_fd = ad_fd        
+        self.ad_fd = ad_fd
         self.col_no = 0
         self.sze_min = 1
         self.sze_max = self.K * 2

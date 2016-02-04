@@ -16,6 +16,19 @@ registerDoParallel(cl)
 
 min_popAge <-1 # the number of generations to discount from the start of the calculations
 
+logisticFn = function(nnplus1){
+	
+	logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
+			algorithm= "port", trace = T)
+	return (logistic) #list(a=0.4, b=1.5, c=0.02)
+}	
+
+tryCatchLogistic= function(x) {
+	tryCatch(logisticFn(x), warning = function(w) {print("warning")},
+			error = function(e) {print("error")}) 
+}
+
+
 #graph making function
 graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
@@ -39,7 +52,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	if(maxPopAge < (min_popAge + 50)){
 		fn_min_popAge <- 0
-		print("pop did not survive to 300 generations")
+		print("pop did not survive to sufficent generations")
 	}else{
 		fn_min_popAge <- min_popAge
 		File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
@@ -261,20 +274,9 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 
 	
-	######## calculating logistic equation
+	######## calculating logistic equation with all nests
 	
-	logisticFn = function(nnplus1){
-		
-		logistic <- nls(NPlus1 ~ I((N^(1+a)) * exp(b) * (exp(-c * N))) , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
-				algorithm= "port", trace = T)
-		return (logistic) #list(a=0.4, b=1.5, c=0.02)
-	}	
-	
-	tryCatchLogistic= function(x) {
-		tryCatch(logisticFn(x), warning = function(w) {print("warning")},
-				error = function(e) {print("error")}) 
-	}
-	
+
 	logistic <- tryCatchLogistic(nnplus1)
 	
 	options(warn = -1) #suppress warnings globally
@@ -294,54 +296,39 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		
 		p14 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-				geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn")
+				geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn with all nests")
 		
-		logisticTable <- tidy(logistic)
-		logisticTable$type <- "logistic"		
 		
 	}
 	
 	
 	
-	######## Calculating ricker equation
-	
-	rickerFn = function(nnplus1){
-		ricker <- nls(NPlus1 ~ I((N^(1+a)) * b * (1-(N/K))) , data = nnplus1, start = list(a=0.4, b=1.5, K=100), 
-				algorithm= "port", trace = T)
-		return(ricker) # start = list(a=0.4, b=1.5, K=100)
-	}
+	######## logisitc equation without single nests
 	
 	
+	nnplus1 <- subset(nnplus1, N >1)
 	
-	tryCatchRicker= function(x) {
-		tryCatch(rickerFn(x), warning = function(w) {print("warning")},
-				error = function(e) {print("error")}) 
-	}
+	logistic <- tryCatchLogistic(nnplus1)
 	
-	ricker <- tryCatchRicker(nnplus1)
+	options(warn = -1) #suppress warnings globally
 	
-	
-	if (ricker =="error"){
-		print ("error in ricker calculation") 
+	if (logistic =="error"){
+		print ("error in logistic calculation") 
 		
-		p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
-				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-				ggtitle("ricker eqn did not work :-(")
-		
-		
+		p15 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
+				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA))+
+				ggtitle("logistic eqn without single nests did not work :-(")
 		
 		
 	} else {
-		print ("ricker equation did work!")
-		nnplus1$rickerPredict <- predict(ricker)		
+		print ("logistic equation did work!")
 		
-		p15 <- 	ggplot(data = nnplus1, aes(x= N, y = NPlus1, colour = prevDisp)) + geom_point() + 
+		nnplus1$logisticPredict <- predict(logistic)
+		
+		p15 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
-				geom_line(aes(x = N, y = rickerPredict), colour = 'blue') + ggtitle("ricker eqn")
-		
-		rickerTable <- tidy(ricker)
-		rickerTable$type <- "ricker"
-		
+				geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn without single nests")
+	
 		
 	}
 	
@@ -349,33 +336,6 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	options(warn = 0) # turns warnings back on
 	
 	
-	
-	if (exists("rickerTable") == TRUE & exists("logisticTable") == TRUE){
-		print ("both tables exist")
-		nnplusoneCom <- rbind(rickerTable, logisticTable)	
-		
-		
-	} else {
-		if(exists("rickerTable") == TRUE & exists("logisticTable") == FALSE){
-			print("only ricker")	
-			nnplusoneCom <- rickerTable
-			
-			
-			
-		} else {
-			if(exists("rickerTable") == FALSE & exists("logisticTable") == TRUE){
-				print("only the logistic table exists")
-				nnplusoneCom <- logisticTable
-				
-			}else{	
-				print("neither ricker or logistic worked")
-				nnplusoneCom <- data.frame(term = NA, estimate = NA, std.error = NA,  p.value = NA,
-						type = "both")
-				
-				
-			}
-		}
-	}
 	
 	
 	rm(nnplus1)
@@ -418,7 +378,7 @@ print (numFiles)
 
 loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "broom")) %dopar%{
 	
-#for (i in 1:numFiles){
+#for (i in 1:numFiles){ # for testing, if you just do the parrallel loop thing errors don't show
 
 	num <- files[i]
 	
