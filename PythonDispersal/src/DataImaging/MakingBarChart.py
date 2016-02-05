@@ -51,6 +51,7 @@ position = np.arange(numBars)# + .5 # number of bars
 #speeds = [1, 2, 3, 4, 1, 2, 3]
 heights = [0]*numBars
 rects = plt.bar(position, heights, align = 'center', color = '#b8ff5c')
+text(100, 100,'matplotlib')
 #plt.xticks(position, ('A', 'B', 'C', 'D', 'E', 'F'))
 
 #plt.xlabel('X Axis', color = '#072b57')
@@ -88,3 +89,6 @@ def animate(i):
 anim = animation.FuncAnimation(fig, animate, init_func=init,frames=numFrames, interval=1, blit=True) # frames is the number of time to iteriate
 
 plt.show()
+
+#anim = animation.FuncAnimation(fig, animate, frames=numFrames, interval=1)
+#anim.save('Animation.gif', writer='imagemagick')
