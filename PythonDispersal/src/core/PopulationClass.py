@@ -56,7 +56,7 @@ class Poplt(object):
         self.Off_C = 0  # used in making the offspring equation
         self.Off_M = 0  # used in making the offspring equation
         self.juv_disFd_lmt = self.disp_rsk * self.F_Ln  # if below this adults should disperse
-        self.food_scale = min_no_off
+        self.food_scale = 2
         self.maxNumCols = 200  #TODO make this an option at the top
 
     def __str__(self):
@@ -147,7 +147,7 @@ class Poplt(object):
 
     def one_poplt_timestep(self):
         print "***new population time step****"
-        print "juv food limit for ad dispersal", self.juv_disFd_lmt
+        #print "juv food limit for ad dispersal", self.juv_disFd_lmt
         self.pop_dispersal_list = []
         #(1) Add one to population age
         self.update_pop_age()

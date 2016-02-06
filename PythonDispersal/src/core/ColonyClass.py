@@ -191,6 +191,7 @@ class Colony(object):
         #print "new no of ads:", len(self.ad_list), "num dispersers:", self.num_dis
         if self.num_dis > 0:
             self.adSz_AF = self.indStats([i.food for i in self.ad_list]) # ad sizes after dispersal
+            #print "Dispersal Takes Place"
         else:
             self.adSz_AF = self.indStats([])
 
@@ -428,8 +429,8 @@ class Colony(object):
             #(5) food calculated and assigned to juvs with random
             self.distr_food()
 
-        else:  # not enough food for any juvs to moult
-            print "not enough food for any spiders to moult"  # TODO check everything that needs to be done here is being done.
+        #else:  # not enough food for any juvs to moult
+            #print "not enough food for any spiders to moult"  # TODO check everything that needs to be done here is being done.
 
         if self.indFile == 'y':
             self.Juv_export(filename)
@@ -480,6 +481,6 @@ class Colony(object):
         if self.alive == 'dead':
             pop_export_list.append(self.colony_list_to_append())  # appends the dictionary values to population export list
             #print "colony dictionary", self.colony_dict()
-            print "all spiders dispersed, colony dead"
+            #print "all spiders dispersed, colony dead"
         else:  # rest of the steps -> which will also apply to the newly dispersed spiders, but have to set up to run seperately on those colonies
             self.core_colony_timestep(F_Ln, K, var, min_juv_fd, pop_export_list, filename, food_scale)

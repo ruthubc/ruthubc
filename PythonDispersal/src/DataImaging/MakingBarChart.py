@@ -36,6 +36,10 @@ plt.subplots_adjust(left=0.03, right=0.99, top=0.99, bottom=0.03)
 plt.show()
 '''
 
+# Setting up formatting for movie files mp4 files
+#Writer = animation.writers['ffmpeg']
+#writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+
 
 numBars = 200
 
@@ -51,7 +55,7 @@ position = np.arange(numBars)# + .5 # number of bars
 #speeds = [1, 2, 3, 4, 1, 2, 3]
 heights = [0]*numBars
 rects = plt.bar(position, heights, align = 'center', color = '#b8ff5c')
-text(100, 100,'matplotlib')
+#fig.annotate("text", xy = (100, 100))
 #plt.xticks(position, ('A', 'B', 'C', 'D', 'E', 'F'))
 
 #plt.xlabel('X Axis', color = '#072b57')
@@ -86,9 +90,17 @@ def animate(i):
         r.set_facecolor(c)
     return rs
 
+# to output to screen
 anim = animation.FuncAnimation(fig, animate, init_func=init,frames=numFrames, interval=1, blit=True) # frames is the number of time to iteriate
-
 plt.show()
 
-#anim = animation.FuncAnimation(fig, animate, frames=numFrames, interval=1)
+# To ouput as gif
+#anim = animation.FuncAnimation(fig, animate, frames=10, interval=1)
 #anim.save('Animation.gif', writer='imagemagick')
+
+#anim = animation.FuncAnimation(fig, animate, init_func = init, frames = numFrames, interval=1, blit=True)
+#anim.save('DispSim.mp4',  fps=10, extra_args=['-vcodec', 'libx264'])
+
+
+
+print "finished"
