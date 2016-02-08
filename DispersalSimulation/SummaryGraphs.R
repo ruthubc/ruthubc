@@ -14,7 +14,7 @@ num_graphs <- 10
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalSummaryGraphs31Jan.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/DispersalSumRsk0.3Feb7.png", width = 1300, height = gr_ht, units = "px")
 
 
 
@@ -22,7 +22,7 @@ png("DisperalSimulationOutput/DispersalSummaryGraphs31Jan.png", width = 1300, he
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "Dispersal31Jan.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "DispersalSumRsk0.3Feb7.csv", sep = ""))
 
 #dis_aves <- subset(dis_aves, Fd_ln == 0.61)
 
@@ -91,7 +91,7 @@ dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, C
 		survival_all.mean = mean(survivalMean_all, na.rm = TRUE),
 		survival_all.SE = sd(survivalMean_all, na.rm = TRUE)/ sqrt(N_all),
 		anyDisp.mean = mean(anyDisp, na.rm = TRUE),
-		propSigNestsNotGrow.mean = mean(propSigNestNotGrow, na.rm = TRUE)
+		propSigNestsGrow.mean = mean((1-propSigNestNotGrow), na.rm = TRUE)
 
 	
 )
@@ -176,8 +176,8 @@ p8 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDeath.mean, colour = as.fact
 
 
 # prop of single nests that grow
-p9 <- ggplot(dis_ply, aes(x = Comp_meas, y = propSigNestsNotGrow.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Prop of single nests that grow") + geom_line() + mytheme
+p9 <- ggplot(dis_ply, aes(x = Comp_meas, y = propSigNestsGrow.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet +  ggtitle("Prop of single nests that grow") + geom_line() + mytheme + ylim(0, 1)
 
 
 
