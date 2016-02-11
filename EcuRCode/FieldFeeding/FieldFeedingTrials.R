@@ -18,9 +18,11 @@ ggplot(Fld_Trials, aes(PreyLen.mm, fill = Size)) + geom_histogram()
 
 
 Fld_Feed$Instar <- factor(Fld_Feed$Instar, levels =c("AdFem", "Sub2", "Sub1", "Juv34", "Juv12", "Male"))
-levels(Fld_Feed$Instar)
+Fld_TimeArr$Instar <- factor(Fld_TimeArr$Instar, levels =c("AdFem", "Sub2", "Sub1", "Juv34", "Juv12", "Male"))
 
 Fld_Combo<- merge(Fld_Feed, Fld_Trials, by = (c("TrialID")))
+
+
 
 # need proportion of total time
 
@@ -41,7 +43,7 @@ ggplot(Fld_Combo, aes(x= Instar, y = PropTimeArc)) + geom_boxplot() + facet_wrap
 ggplot(Fld_TimeArr, aes(MinsFstEat)) + geom_histogram()
 
 
-ggplot(Fld_TimeArr, aes(x= Instar, y = MinsFstEat)) + geom_boxplot()
+ggplot(Fld_TimeArr, aes(x= Instar, y = MinsFstEat)) + geom_boxplot() + facet_wrap(~Size, scales = "free_y")
 
 
 ggplot(DF1, aes(x = Rank, y = value, fill = variable)) + 
