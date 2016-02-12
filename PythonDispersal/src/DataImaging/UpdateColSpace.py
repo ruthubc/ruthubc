@@ -52,8 +52,9 @@ def updateMissingColSpace(data, pop_age):
         colSpaceList = data[data.pop_age == pop_age].col_space.values  # getting the list of currenlty assigned col spaces
         missing = checkMissing(colSpaceList, 200)
         numToFill = len(indexList)
-        minID = min(data[(pd.isnull(data['col_space'])) & (data['pop_age'] == pop_age)].colony_ID)
-        maxID = max(data[(pd.isnull(data['col_space'])) & (data['pop_age'] == pop_age)].colony_ID)
+        cols = data[(pd.isnull(data['col_space'])) & (data['pop_age'] == pop_age)].colony_ID
+        minID = min(cols)
+        maxID = max(cols)
         for i in range(0, numToFill):
             rowInx = indexList[i]
             newSpace = missing[i]
@@ -74,5 +75,7 @@ def main(data):
     maxPopAge = max(data.pop_age)
 
     for i in range(2, maxPopAge + 1):
+
+        print 'age', i, 'of', maxPopAge
         updateMissingColSpace(data, i)
     #return data

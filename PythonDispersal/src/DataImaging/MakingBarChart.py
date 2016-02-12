@@ -77,29 +77,30 @@ def animate(i):
     print i
     global rs, heights
     subData = data[data.pop_age == i]
-    subData.sort_index(by=['col_space'])    
+    subData.sort_index(by=['col_space'])
     heights =  subData.num_adsB4_dispersal.values
     heights = heights.tolist()
     numZeros = numBars - len(heights)
     heights = heights + [0] * numZeros
     #colours = ['r'] * 200
-    disps = subData.dispersers.values
-    colours = ['r' if x > 0 else 'b' for x in disps] + ['b'] * numZeros
+    disps = subData.state.values
+    colours = ['r' if x =='Dalive' else 'k' if x == 'Ndead' else 'y' if x == 'Ddead' else 'b' for x in disps]  + ['b'] * numZeros
+    # black if dead, red if disperse, yellow if dispersing and dying, otherwise blue
     for h,r, c in zip(heights,rs, colours):
         r.set_height(h)
         r.set_facecolor(c)
     return rs
 
 # to output to screen
-anim = animation.FuncAnimation(fig, animate, init_func=init,frames=numFrames, interval=1, blit=True) # frames is the number of time to iteriate
-plt.show()
+#anim = animation.FuncAnimation(fig, animate, init_func=init,frames=numFrames, interval=1, blit=True) # frames is the number of time to iteriate
+#plt.show()
 
 # To ouput as gif
 #anim = animation.FuncAnimation(fig, animate, frames=10, interval=1)
 #anim.save('Animation.gif', writer='imagemagick')
 
-#anim = animation.FuncAnimation(fig, animate, init_func = init, frames = numFrames, interval=1, blit=True)
-#anim.save('DispSim.mp4',  fps=10, extra_args=['-vcodec', 'libx264'])
+anim = animation.FuncAnimation(fig, animate, init_func = init, frames = numFrames, interval=1, blit=True)
+anim.save('DispSim4010.mp4',  fps=5, extra_args=['-vcodec', 'libx264'])
 
 
 

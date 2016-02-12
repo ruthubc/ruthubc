@@ -6,12 +6,14 @@
 
 library(plyr)
 library(ggplot2)
+library(reshape)
 
 Fld_Feed <- read.csv("RuthEcuador2013/FieldFeedingTrials/FeedingData.csv", na.strings = NA)
 Fld_Trials<-read.csv("RuthEcuador2013/FieldFeedingTrials/IndTrials.csv", na.strings = NA)
 Fld_Prey <- read.csv("RuthEcuador2013/FieldFeedingTrials/PreyCapture.csv", na.strings = NA)
 Fld_Census <- read.csv("RuthEcuador2013/FieldFeedingTrials/FieldFeedingCensus.csv", na.strings = NA)
 Fld_TimeArr <- read.csv("RuthEcuador2013/FieldFeedingTrials/TimeFirstArrive.csv", na.strings = NA)
+Fld_TrialTimes<- read.csv("RuthEcuador2013/FieldFeedingTrials/FeedingTrialsTimes.csv", na.strings = NA)
 
 ggplot(Fld_Trials, aes(PreyLen.mm, fill = Size)) + geom_histogram()
 
@@ -48,4 +50,25 @@ ggplot(Fld_TimeArr, aes(x= Instar, y = MinsFstEat)) + geom_boxplot() + facet_wra
 
 ggplot(DF1, aes(x = Rank, y = value, fill = variable)) + 
 		geom_bar(stat = "identity")
+
+#### transpose data
+
+mdata <- melt(Fld_TrialTimes, id = c("TrialID", "Nest", "Instar"))
+
+mdata$variable <- as.character(mdata$variable)
+
+print(mdata$variable)
+
+mdata$variable <- substring(mdata$variable, 2)
+
+mdata$variable <- as.numeric(mdata$variable)
+
+
+TotIndByTrialAndTime<- ddply(mdata, .(TrialID, variable), summarise, # need to discount trials where no feeding obs and eve
+		TotNumInd = sum(value)#, na.rm = TRUE)
+)
+
+mdata<- merge(mdata, TotIndByTrialAndTime, by = (c("TrialID", "variable")))
+
+mdata$prop <- mdata$value/mdata$TotNumInd
 
