@@ -48,9 +48,6 @@ ggplot(Fld_TimeArr, aes(MinsFstEat)) + geom_histogram()
 ggplot(Fld_TimeArr, aes(x= Instar, y = MinsFstEat)) + geom_boxplot() + facet_wrap(~Size, scales = "free_y")
 
 
-ggplot(DF1, aes(x = Rank, y = value, fill = variable)) + 
-		geom_bar(stat = "identity")
-
 #### transpose data
 
 mdata <- melt(Fld_TrialTimes, id = c("TrialID", "Nest", "Instar"))
@@ -64,6 +61,7 @@ mdata$variable <- substring(mdata$variable, 2)
 mdata$variable <- as.numeric(mdata$variable)
 
 
+
 TotIndByTrialAndTime<- ddply(mdata, .(TrialID, variable), summarise, # need to discount trials where no feeding obs and eve
 		TotNumInd = sum(value)#, na.rm = TRUE)
 )
@@ -72,3 +70,17 @@ mdata<- merge(mdata, TotIndByTrialAndTime, by = (c("TrialID", "variable")))
 
 mdata$prop <- mdata$value/mdata$TotNumInd
 
+mdata$PropArc <- asin(sqrt(mdata$prop)) # not normal because too many zeros
+
+ggplot(mdata, aes(PropArc)) + geom_histogram() 
+
+colnames(mdata)[2] <- "time"
+
+
+# find the mean
+propSum<- ddply(mdata, .(Instar, time), summarise, # need to discount trials where no feeding obs and eve
+		prop.mean = mean(prop, na.rm =TRUE)
+)
+
+
+ggplot(propSum, aes(x = time, y = prop.mean)) + geom_point() + geom_smooth(aes(group=Instar), method="lm", se=FALSE) + facet_wrap(~Instar)
