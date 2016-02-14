@@ -72,15 +72,30 @@ mdata$prop <- mdata$value/mdata$TotNumInd
 
 mdata$PropArc <- asin(sqrt(mdata$prop)) # not normal because too many zeros
 
-ggplot(mdata, aes(PropArc)) + geom_histogram() 
 
+t
 colnames(mdata)[2] <- "time"
 
+mdata <- subset(mdata, Instar != "Male")
 
+ggplot(mdata, aes(value)) + geom_histogram()
 # find the mean
 propSum<- ddply(mdata, .(Instar, time), summarise, # need to discount trials where no feeding obs and eve
 		prop.mean = mean(prop, na.rm =TRUE)
 )
 
 
-ggplot(propSum, aes(x = time, y = prop.mean)) + geom_point() + geom_smooth(aes(group=Instar), method="lm", se=FALSE) + facet_wrap(~Instar)
+ggplot(propSum, aes(x = time, y = prop.mean)) + geom_point() + geom_smooth(aes(group=Instar), method="lm", se=FALSE) + 
+		facet_wrap(~Instar)
+
+# lots of zeros so hard to test http://www.ats.ucla.edu/stat/r/dae/zinbreg.htm
+#check this as well	http://stats.stackexchange.com/questions/38195/zero-inflated-negative-binomial-mixed-effects-model-in-r
+
+require(pscl)
+
+mdata$perc <- mdata$prop * 100
+
+m1 <- zeroinfl(value ~ time + Instar,
+		data = mdata)#, dist = "negbin", EM = TRUE)
+summary(m1)
+# find paper Nishii and Tanaka (2012) where they analyse prop data or could just model the counts with nest and trial ID as random factors
