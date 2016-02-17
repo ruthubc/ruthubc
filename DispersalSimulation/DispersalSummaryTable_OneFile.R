@@ -63,7 +63,7 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		
 		sigNestsDF <- File[,c("colony_ID","num_adsB4_dispersal")]  # makes two column table containing everything
 		
-		sigNestsDF <- sigNestsDF[sigNestsDF$colony_ID %in% sigNestsLst,] # subsets the file for those nests that were single once i.e. in sigNestsLst, I never checked this worked 
+		sigNestsDF <- sigNestsDF[sigNestsDF$colony_ID %in% sigNestsLst,] # subsets the file for those nests that were single once i.e. in sigNestsLst
 		
 		## gets the max colony size of each nest that stated out as a single nest
 		maxRows <- by(sigNestsDF, sigNestsDF$colony_ID, function(X) X[which.max(X$num_adsB4_dispersal),])
