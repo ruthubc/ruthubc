@@ -14,7 +14,7 @@ num_graphs <- 10
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/Dispersal16Feb_DisRk0.2.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/Dispersal16Feb_DisRk0.2Test.png", width = 1300, height = gr_ht, units = "px")
 
 
 
@@ -32,14 +32,14 @@ numGensRmv <- 50
 
 xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd + max_no_off,  data = dis_aves)
 
-dis_aves$full <- ifelse(dis_aves$pop_age > numGensRmv, 1, 0) # marking which colonies survived over 100 generations and which didn't
+dis_aves$full <- ifelse(dis_aves$pop_age > numGensRmv, 1, 0) # marking which colonies survived over num generations and which didn't
 
 dis_aves$dis_bin <- ifelse(is.na(dis_aves$ave_num_disp), ifelse(dis_aves$full == 1, 0, NA), 1) # making binary variable of whether any dispersal occured
 
 print("did any populations have colonies that did not disperse?")
 nrow(subset(dis_aves, dis_bin == 0))  # checking if any surviving populations had any colonies that did not disperse
 
-dis_aves$all_dis_bin <- ifelse(is.na(dis_aves$all_ave_num_disp), 0, 1)
+dis_aves$all_dis_bin <- ifelse(!is.na(dis_aves$ave_colSize_Death), 1, ifelse(!is.na(dis_aves$all_ave_num_disp), 0.5, 0))
 
 
 ## Making binary measurement of colony death
@@ -136,7 +136,7 @@ p3 <- ggplot(dis_ply, aes(x = Comp_meas, y = col_size_disp.mean, colour = as.fac
 		myFacet +  ggtitle("average colony size of dispersing colonies") + geom_line() + mytheme
 		#geom_errorbar(aes(ymin=col_size_disp.mean-col_size_disp.SE, ymax=col_size_disp.mean + col_size_disp.SE), width = 0.1)  + scale_colour_manual(values=c("blue", "red"))
 
-# binary of whether any colonies dispersed
+# binary of whether any colonies die
 p4 <- ggplot(dis_ply, aes(x = Comp_meas, y = colDeath_bin_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
 		myFacet +  ggtitle("Did any colonies die?") + geom_line() + ylim(0, 1) + 
 		mytheme # + scale_colour_manual(values=c("blue", "red"))
