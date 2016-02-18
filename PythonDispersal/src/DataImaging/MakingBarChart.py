@@ -12,7 +12,7 @@ import pandas as pd
 #from matplotlib.animation import ArtistAnimation
 
 
-data = pd.read_csv("AnimationData.csv", sep = ',') # import data
+data = pd.read_csv("AnimationData3972.csv", sep = ',') # import data
 
 
 
@@ -95,13 +95,12 @@ def animate(i):
 #anim = animation.FuncAnimation(fig, animate, init_func=init,frames=numFrames, interval=1, blit=True) # frames is the number of time to iteriate
 #plt.show()
 
+
+anim = animation.FuncAnimation(fig, animate, init_func = init, frames = numFrames, interval=1, blit=True)
+anim.save('DispSim3972.mp4',  fps=3, extra_args=['-vcodec', 'libx264']) # min no of fps is 3
+
 # To ouput as gif
 #anim = animation.FuncAnimation(fig, animate, frames=10, interval=1)
 #anim.save('Animation.gif', writer='imagemagick')
-
-anim = animation.FuncAnimation(fig, animate, init_func = init, frames = numFrames, interval=1, blit=True)
-anim.save('DispSim4010.mp4',  fps=5, extra_args=['-vcodec', 'libx264'])
-
-
 
 print "finished"

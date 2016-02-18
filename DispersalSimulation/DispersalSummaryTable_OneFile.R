@@ -8,15 +8,10 @@ library (plyr)
 library(ggplot2)
 library(gridExtra)
 library(reshape2)
-#library(doParallel)
 library(survival)
 source("FilesExist.R")
 
 ### Something to think about. Are there some variables where I don't want to include colonies that are alive at the end of the simulation?
-
-#cl <- makeCluster(2, outfile = "")# outfile = paste(folder, "log.txt", sep = ""))
-# Register cluster
-#registerDoParallel(cl)
 
 filesCSV <- "FilesCreated.csv"
 
@@ -30,7 +25,7 @@ fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file na
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
 ## Change this to the correct number i want to remove
-min_popAge <-5 # the number of generations to discount from the start of the calculations ###########################################################################
+min_popAge <-50 # the number of generations to discount from the start of the calculations ###########################################################################
 
 
 summaryFun <- function(theFileName, min_pop_age, numGens){
@@ -82,6 +77,68 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		
 		rm(sigNestsLst)
 		
+		# getting data on dispersers
+		DispersersAfAge <- subset(File, dispersers >0 & pop_age >= min_popAge)
+		
+		
+		if (nrow(DispersersAfAge) == 0){
+			
+			DispAves <- data.frame(	
+					age_first_disp = NA,
+					se_age_first_disp = NA,
+					mean_num_col_disp = NA,
+					se_num_col_disp = NA,
+					mean_fstDis_col_size = NA,
+					se_fstDis_col_size = NA
+			) # makes a tale of NA's if no inds disp
+			
+			DispersersAll <- subset(File, dispersers >0)
+			
+			if(nrow(DispersersAll) > 0 ){
+				print("only disperses below min pop age")
+				anyDisp <- 0.5 # 0.5 if only dispersers when pop below min pop age
+			}else{
+				anyDisp <- 0
+				print("no dispersers at all")
+			}
+			
+			
+		}else{
+			print ("some dispersers")
+			
+			anyDisp <- 1
+			
+			DispersersAfAge$ID <- seq.int(nrow(DispersersAfAge))
+			
+			DispAvesByColID <- ddply(DispersersAfAge, .(colony_ID), summarise,
+					min_disp_age = min(colony_age),
+					fstDis_col_size = (num_adsB4_dispersal[colony_age == min_disp_age]),
+					count_col_disp = length(ID)
+			)
+			
+			
+			DispAves <- ddply(DispAvesByColID, .(), summarise,
+					age_first_disp = mean(min_disp_age),
+					se_age_first_disp = sd(min_disp_age)/sqrt(length(min_disp_age)),
+					mean_num_col_disp = mean(count_col_disp),
+					se_num_col_disp = sd(count_col_disp), sqrt(length(count_col_disp)),
+					mean_fstDis_col_size = mean(fstDis_col_size),
+					se_fstDis_col_size = sd(fstDis_col_size), sqrt(length(fstDis_col_size))
+			)
+			
+			DispAves <- subset(DispAves, select = c(
+							age_first_disp,
+							se_age_first_disp,
+							mean_num_col_disp,
+							se_num_col_disp,
+							mean_fstDis_col_size,
+							se_fstDis_col_size
+					
+					))
+			
+		}
+		
+		
 		
 		
 		##################################
@@ -119,7 +176,8 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		survivalMean <- as.data.frame(mean(msurv[,1])) # don't use mean without the [,1] by itself, wrong!
 		
 		names(survivalMean)[1] <- "survivalMean_all"
-		
+
+	
 		
 		
 		if(maxPopAge < min_popAge){ # removing first 100 generations
@@ -179,62 +237,7 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		
 	}	
 		
-	# getting data on dispersers
-		Dispersers <- subset(File, dispersers >0)
-		
-		
-		if (nrow(Dispersers) == 0 | maxPopAge < min_popAge){
-			
-			print ("no dispersers")
-			anyDisp <- 0
-			DispAves <- data.frame(	
-					age_first_disp = NA,
-					se_age_first_disp = NA,
-					mean_num_col_disp = NA,
-					se_num_col_disp = NA,
-					mean_fstDis_col_size = NA,
-					se_fstDis_col_size = NA
-			) # makes a tale of NA's if no inds disp
-			
-			
-		}else{
-			print ("some dispersers")
-			
-			anyDisp <- 1
-			
-			Dispersers$ID <- seq.int(nrow(Dispersers))
-			
-			DispAvesByColID <- ddply(Dispersers, .(colony_ID), summarise,
-					min_disp_age = min(colony_age),
-					fstDis_col_size = (num_adsB4_dispersal[colony_age == min_disp_age]),
-					count_col_disp = length(ID)
-				)
-			
-			
-			DispAves <- ddply(DispAvesByColID, .(), summarise,
-					age_first_disp = mean(min_disp_age),
-					se_age_first_disp = sd(min_disp_age)/sqrt(length(min_disp_age)),
-					mean_num_col_disp = mean(count_col_disp),
-					se_num_col_disp = sd(count_col_disp), sqrt(length(count_col_disp)),
-					mean_fstDis_col_size = mean(fstDis_col_size),
-					se_fstDis_col_size = sd(fstDis_col_size), sqrt(length(fstDis_col_size))
-				)
-			
-			DispAves <- subset(DispAves, select = c(
-							age_first_disp,
-							se_age_first_disp,
-							mean_num_col_disp,
-							se_num_col_disp,
-							mean_fstDis_col_size,
-							se_fstDis_col_size
-					
-					))
-			
-			rm(DispAvesByColID)		
-			rm(Dispersers)
-			
-		}
-		
+	
 		
 		rm(File)
 		average <- cbind(FileAves_All, FileAves, DispAves, anyDisp, survivalMean, propSigNestNotGrow)
@@ -246,19 +249,12 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 }
 
 
-
-
 files <- fileExistsFn(fileNames)
 
 numFiles<- length(files)
 
 print ("the number of files that exist:")
 print (numFiles)
-
-
-
-#loop <- foreach(i=1:numFiles, .errorhandling='remove', .combine = "rbind",
-			#	.packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "survival")) %dopar%{
 
 			
 for (i in 1:numFiles){

@@ -14,7 +14,7 @@ num_graphs <- 10
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalSumRsk0.3Feb7.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/Dispersal16Feb_DisRk0.2.png", width = 1300, height = gr_ht, units = "px")
 
 
 
@@ -22,15 +22,12 @@ png("DisperalSimulationOutput/DispersalSumRsk0.3Feb7.png", width = 1300, height 
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "DispersalSumRsk0.3Feb7.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "Dispersal16Feb_DisRk0.2.csv", sep = ""))
 
 #dis_aves <- subset(dis_aves, Fd_ln == 0.61)
 
 numGensRmv <- 50
 
-
-
-rownames(dis_aves)
 
 
 xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd + max_no_off,  data = dis_aves)
@@ -141,12 +138,12 @@ p3 <- ggplot(dis_ply, aes(x = Comp_meas, y = col_size_disp.mean, colour = as.fac
 
 # binary of whether any colonies dispersed
 p4 <- ggplot(dis_ply, aes(x = Comp_meas, y = colDeath_bin_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Did any colonies die?") + geom_line() +
+		myFacet +  ggtitle("Did any colonies die?") + geom_line() + ylim(0, 1) + 
 		mytheme # + scale_colour_manual(values=c("blue", "red"))
 
 # binary of whether any colonies died
 p4a <- ggplot(dis_ply, aes(x = Comp_meas, y = anyDisp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Did any colonies disperse?") + geom_line() +
+		myFacet +  ggtitle("Did any colonies disperse?") + geom_line() + ylim(0, 1) + 
 		mytheme # + scale_colour_manual(values=c("blue", "red"))
 
 # average colony size
