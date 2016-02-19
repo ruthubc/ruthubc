@@ -10,11 +10,11 @@ library(grid) # not sure if I need this or not.
 
 
 
-num_graphs <- 10
+num_graphs <- 11
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/Dispersal16Feb_DisRk0.2Test.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/Dispersal17thFebDisRs0.2.png", width = 1300, height = gr_ht, units = "px")
 
 
 
@@ -22,7 +22,7 @@ png("DisperalSimulationOutput/Dispersal16Feb_DisRk0.2Test.png", width = 1300, he
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "Dispersal16Feb_DisRk0.2.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "Dispersal17thFebDisRs0.2.csv", sep = ""))
 
 #dis_aves <- subset(dis_aves, Fd_ln == 0.61)
 
@@ -39,12 +39,13 @@ dis_aves$dis_bin <- ifelse(is.na(dis_aves$ave_num_disp), ifelse(dis_aves$full ==
 print("did any populations have colonies that did not disperse?")
 nrow(subset(dis_aves, dis_bin == 0))  # checking if any surviving populations had any colonies that did not disperse
 
-dis_aves$all_dis_bin <- ifelse(!is.na(dis_aves$ave_colSize_Death), 1, ifelse(!is.na(dis_aves$all_ave_num_disp), 0.5, 0))
+dis_aves$all_dis_bin <- ifelse(!is.na(dis_aves$ave_colSize_Death), 1, ifelse(!is.na(dis_aves$all_ave_num_disp), 0.5, 0))  #WRONG BUT I DON"T USE
 
 
 ## Making binary measurement of colony death
 
-dis_aves$all_death_bin<- ifelse(is.na(dis_aves$all_ave_colSize_Death), 0, 1)
+dis_aves$all_death_bin<- ifelse(!is.na(dis_aves$ave_colSize_Death), 1, ifelse(!is.na(dis_aves$all_ave_num_disp), 0.5, 0))
+
 
 
 
@@ -128,6 +129,9 @@ p2<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.facto
 		#geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
 		 #+ scale_colour_manual(values=c("blue", "red"))
 
+p2a <- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet  +  ggtitle("Average colony Survival") + geom_line() + mytheme + ylim(0, 100)
+
 
 
 # Colony size at dispersal
@@ -178,7 +182,7 @@ p9 <- ggplot(dis_ply, aes(x = Comp_meas, y = propSigNestsGrow.mean, colour = as.
 
 
 
-grid.arrange(p1, p2, p3, p4, p4a, p5, p6, p7, p8, p9, ncol=1)
+grid.arrange(p1, p2, p2a,  p3, p4, p4a, p5, p6, p7, p8, p9, ncol=1)
 
 dev.off()
 

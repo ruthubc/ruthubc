@@ -4,13 +4,22 @@ Created on Jan 4, 2016
 @author: rvsharpe
 '''
 import itertools
+'''
+slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
+dispersalRisks = [0.3]
+meanK = [300]
+Vars = [0, 0.1, 0.2, 0.3, 0.4]
+adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2]
+off_list = [[0, 2], [2, 4], [4, 6], [6, 8], [8, 10], [10, 12]]
+F_Lns = [0.61]
+'''
 
 slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
-dispersalRisks = [0.2, 0.3]
+dispersalRisks = [0.1]
 meanK = [300]
-Vars = [0, 0.05, 0.1, 0.15, 0.2]
+Vars = [0, 0.1, 0.2]
 adDisSizes = [0.2, 0.6, 1.0]
-off_list = [[2, 4], [4, 6], [6, 8]]
+off_list = [[2, 4], [6, 8]]
 F_Lns = [0.61]
 
 
