@@ -3,7 +3,8 @@
 # Author: Ruth
 ###############################################################################
 
-
+library(ICC)
+library(lme4)
 #### Is personality consistant over time? Intra class correlation
 
 #Use weights table!
@@ -18,6 +19,8 @@ MeltBold$SpiderID <- as.character(MeltBold$SpiderID)
 
 BoldICC<- ICCest(SpiderID, value, data= MeltBold, alpha = 0.05)
 
+BoldICC
+
 ##poke
 
 Poke<-na.omit(subset(Weights, select = c("SpiderID", "Poke.1", "Poke.2")))
@@ -31,14 +34,18 @@ MeltPoke$SpiderID <- as.character(MeltPoke$SpiderID)
 
 PokeICC <- ICCest(SpiderID, value, data= MeltPoke, alpha = 0.05)
 
-##Testing ICC
+PokeICC
+
+##Testing ICC with dummy numbers
 
 ID <- c("ID1", "ID2", "ID3", "ID4", "ID5", "ID1", "ID2", "ID3", "ID4", "ID5")
-Mes1 <- c(1, 2, 3, 4, 5, 5, 4, 3, 2, 1)
+Mes1 <- c(1, 2, 3, 4, 5, 5, 2, 5, 2, 1)
 
 ICCTest <- data.frame(ID, Mes1)
 
 ICCest(ID, Mes1, data= ICCTest, alpha = 0.05)
+
+
 
 ###Trying to make a graph of this
 
