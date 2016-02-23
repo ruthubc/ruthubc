@@ -14,7 +14,7 @@ num_graphs <- 11
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/Dispersal17thFebDisRs0.2.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/DispersalRsk0.1_21Feb.png", width = 1300, height = gr_ht, units = "px")
 
 
 
@@ -22,7 +22,7 @@ png("DisperalSimulationOutput/Dispersal17thFebDisRs0.2.png", width = 1300, heigh
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "Dispersal17thFebDisRs0.2.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "DispersalRsk0.1_21Feb.csv", sep = ""))
 
 #dis_aves <- subset(dis_aves, Fd_ln == 0.61)
 
@@ -130,7 +130,7 @@ p2<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.facto
 		 #+ scale_colour_manual(values=c("blue", "red"))
 
 p2a <- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet  +  ggtitle("Average colony Survival") + geom_line() + mytheme + ylim(0, 100)
+		myFacet  +  ggtitle("Average colony Survival compressed y axis") + geom_line() + mytheme + ylim(0, 100)
 
 
 

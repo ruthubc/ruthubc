@@ -15,12 +15,13 @@ F_Lns = [0.61]
 '''
 
 slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
-dispersalRisks = [0.1]
-meanK = [300]
-Vars = [0, 0.1, 0.2]
+dispersalRisks = [0.3]
+meanK = [200, 400]
+Vars = [0]
 adDisSizes = [0.2, 0.6, 1.0]
-off_list = [[2, 4], [6, 8]]
+off_list = [[2, 4], [4, 6], [6, 8]]
 F_Lns = [0.61]
+
 
 
 #runs = [[0 - slope], [1- risk of dispersal], [2- meanK], [3- Var], [4- ad dispersal limit], [5- min off], [6- max off], [7- F_ln]]
