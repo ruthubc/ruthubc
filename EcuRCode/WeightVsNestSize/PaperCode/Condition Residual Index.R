@@ -12,38 +12,61 @@ library(visreg)
 mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
-
+spiders$InstarOrdered <- factor(spiders$Instar, levels= c("Adult", "Sub2", 
+				"Sub1", "Juv4", "AdMale", "SubMale"))
 
 spiders<- subset(spiders, !is.na(logWt) )
 
+spiders$lnLeg <- log(spiders$LegLen.mm)
+spiders$lnWt <- log(spiders$Weight.mg)
+
+
+
 
 #calculating the residual index
-ggplot(spiders, aes(logLeg, logWt)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE)
+ggplot(spiders, aes(logLeg, logWt)) + geom_point() + geom_smooth(method=lm) + facet_wrap(~Instar,  scales = "free")
+#ggplot(spiders, aes(lnLeg, lnWt)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE) # log or nat log doesn't make a difference
 
-model <- lm(logWt ~ logLeg, spiders )
+model <- lm(logWt ~ logLeg, spiders ) # doesn't matter which way round this is
+#model <- lm(logWt ~ logLeg + Instar + logLeg:Instar, spiders ) # whichever one i use doesn't make a difference
+
+visreg(model, xvar = "logLeg", by = "Instar" )
+
 
 summary(model)
 spiders$condResiduals <- resid(model)  # putting the residuales into the dable
 
-ggplot(spiders, aes(condResiduals)) + geom_histogram() # normal
+ggplot(spiders, aes(condResiduals, fill = Instar)) + geom_histogram() # normal
+
+# plotting res condition against leg length
+ggplot(spiders, aes(x = condResiduals, y = logLeg, colour = Instar)) + geom_point()
+
+# plotting res condition against weight
+ggplot(spiders, aes(x = condResiduals, y = logWt, colour = Instar)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE)
+
+spidersMult <- subset(spiders, type== 'multiple')
 
 ################ graphs  ############
 
 # condition vs nest size
-ggplot(subset(spiders, type == 'multiple'), aes(x = logCtFm, y = condResiduals)) + geom_point()+ 
+ggplot(spidersMult, aes(x = logCtFm, y = condResiduals)) + geom_point()+ 
 		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
 		facet_wrap(~Instar, scales = "free_y") + xlab("Log Nest Size (num ad females)") + ylab("Condition Residuals") + mytheme
 
+ggplot(spidersMult, aes(x = logCtFm, y = condResiduals, colour = Instar)) + geom_point()+ 
+		geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) + 
+		xlab("Log Nest Size (num ad females)") + ylab("Condition Residuals") + mytheme
+
 ## Stats condition vs nest size
 condResLmFull <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  + 
-				(1|NestID), data = spiders, REML = FALSE)
+				(1|NestID), data = spidersMult, REML = FALSE)
 
 visreg(condResLmFull, xvar = "logCtFm", by = "Instar")
 
-anova(condResLmFull) # seems significant
+anova(condResLmFull) 
 
 condResLmRed <- lmer(condResiduals ~   Instar + 
-				(1|NestID), data = spiders, REML = FALSE)
+				(1|NestID), data = spidersMult, REML = FALSE)
 
 
 anova(condResLmFull, condResLmRed) # comparing full model to reduced model
@@ -51,14 +74,13 @@ anova(condResLmFull, condResLmRed) # comparing full model to reduced model
 levels(spiders$Instar)
 
 condResByInstar <- lmer(condResiduals ~  logCtFm  + 
-				(1|NestID), data = subset(spiders, Instar == 'AdMale'), REML = FALSE)
+				(1|NestID), data = subset(spidersMult, Instar == 'Juv4'), REML = FALSE)
 
 summary(condResByInstar)
 
-#adult high significant
-# Sub2 significant
-#sub1 highly significant
-# sub2 not signifcant
+#adult significant
+# Sub2 not significant
+# sub1 not signifcant
 # juv 4 not significant
 #submale not significant
 #ad male not significant
@@ -66,7 +88,7 @@ summary(condResByInstar)
 
 ###############Back to graphs ##############
 #condition vs instar Males have significantly reduced condition compared to all other instars
-ggplot(spiders, aes(x = Instar, y = condResiduals)) + geom_boxplot() + mytheme
+ggplot(spiders, aes(x = InstarOrdered, y = condResiduals)) + geom_boxplot() + mytheme
 
 
 # cond residuals vs multiple and single nests
@@ -74,23 +96,47 @@ ggplot(subset(spiders, Instar == 'Adult'), aes(x = type, y = condResiduals)) + g
 
 
 ## variances for residual conditions
-CVCondRes<- ddply(spiders, .(NestID, type, Instar, logCtFm, CountFemales), summarise,
+
+CVCondRes<- ddply(spidersMult, .(NestID, type, Instar, InstarOrdered, logCtFm, CountFemales), summarise,
 		N = length(!is.na(ID)),
-		meanCondRes = mean(condResiduals, na.rm = TRUE),
+		meanCondRes = abs(mean(condResiduals, na.rm = TRUE)),
 		sdCondRes = sd(condResiduals, na.rm = TRUE),
-		CVCondRes = (1 + (1/N)) * (sdCondRes / meanCondRes)
+		CVCondRes = (1 + (1/(4*N))) * (sdCondRes / meanCondRes),
+		logCVCond = log(CVCondRes)
 )
 
 
-ggplot(CVCondRes, aes((CVCondRes))) + geom_histogram()  # pretty normal without transformatoin
+ggplot(CVCondRes, aes(log(CVCondRes), fill = Instar)) + geom_histogram() 
 
 # graphs of cond Variance, not very exciting!
-ggplot(subset(CVCondRes, type == 'multiple'), aes(x = logCtFm, y = CVCondRes)) + geom_point()+ geom_smooth(method = "lm", formula =y ~  poly(x, 2, raw = TRUE), se = TRUE) +
+ggplot(CVCondRes, aes(x = logCtFm, y = log(CVCondRes))) + geom_point()+ geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
 		facet_wrap(~Instar, scales = "free_y") + xlab("Log Nest Size (num ad females)") + ylab("Condition Residuals Variance") + mytheme
 
 
 #condition variance by instar
-ggplot(CVCondRes, aes(x = Instar, y = CVCondRes)) + geom_boxplot() + mytheme # doesn't show anything anymore
+ggplot(CVCondRes, aes(x = InstarOrdered, y = log(CVCondRes))) + geom_boxplot() + mytheme # doesn't show anything anymore
+
+# testing if the variation changes with sample size
+ggplot(CVCondRes, aes(x = N, y = log(CVCondRes))) + geom_point() + geom_smooth(method = "lm") # it does
+
+CVSmpSize <- lmer(logCVCond ~  N + Instar + N:Instar + 
+				(1|NestID), data = CVCondRes, REML = FALSE)
+
+anova(CVSmpSize)
+
+CVCondResFull <- lmer(logCVCond ~  logCtFm + Instar + logCtFm:Instar  + (1|N) + 
+				(1|NestID), data = CVCondRes, REML = FALSE)
+
+anova(CVCondResFull)
+
+CVCondResRed <- lmer(logCVCond ~  Instar  + (1|N) + 
+				(1|NestID), data = CVCondRes, REML = FALSE)
+
+summary(CVCondResRed)
+anova(CVCondResRed)
+visreg(CVCondResRed, xvar = "logCVCond", by = "Instar")
+
+anova(CVCondResFull, CVCondResRed)
 
 
 ## Difference between instars
@@ -106,7 +152,7 @@ CondInsrCols$Sub1Juv4Diff <- CondInsrCols$Sub1- CondInsrCols$Juv4
 
 ggplot(CondInsrCols, aes(AdSub2Diff)) + geom_histogram()
 
-ggplot(data = subset(CondInsrCols, CountFemales > 5), aes(x = logCtFm, y = AdSub2Diff)) + geom_point() +
+ggplot(data = (CondInsrCols), aes(x = logCtFm, y = AdSub2Diff)) + geom_point() +
 		stat_smooth(method="lm", se=TRUE, formula = y~ poly(x, 1)) + xlab("Log Nest Size") +
 		ylab("Difference in mean condition (Adult - Sub2)") + mytheme
 
@@ -127,3 +173,10 @@ CondDiffLm <- lmer(value ~  logCtFm  + variable + logCtFm:variable +
 summary(CondDiffLm)
 
 visreg(CondDiffLm,  xvar = "logCtFm", by = "variable")
+
+CVCondRes<- ddply(spidersMult, .(NestID, type, Instar, InstarOrdered, logCtFm, CountFemales), summarise,
+		N = length(!is.na(ID)),
+		meanCondRes = abs(mean(condResiduals, na.rm = TRUE)),
+		sdCondRes = sd(condResiduals, na.rm = TRUE),
+		CVCondRes = (1 + (1/N)) * (sdCondRes / meanCondRes)
+)
