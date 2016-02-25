@@ -97,3 +97,26 @@ testFunction <- function(table){
 
 testFunction(df)
 
+########## 24th feb 2016
+#from http://www.mayin.org/ajayshah/KB/R/documents/boot.html
+
+require(boot)
+
+x <- c(1,2,3,4,5,6,7,8,9,10)
+
+samplemean <- function(x, d) {
+	return(mean(x[d]))
+}
+
+samplesd <- function(x, d) {
+	return(c(mean(x[d]), sd(x[d])))
+}
+
+
+
+
+b = boot(x, samplesd,  R=10)   
+
+print(b$t[1,1])  # shows all samplemeans
+
+plot(b)

@@ -17,8 +17,8 @@ spiders$InstarOrdered <- factor(spiders$Instar, levels= c("Adult", "Sub2",
 
 spiders<- subset(spiders, !is.na(logWt) )
 
-spiders$lnLeg <- log(spiders$LegLen.mm)
-spiders$lnWt <- log(spiders$Weight.mg)
+#spiders$lnLeg <- log(spiders$LegLen.mm)
+#spiders$lnWt <- log(spiders$Weight.mg) # natural log rather than log10 but doesn't matter
 
 
 
@@ -35,6 +35,7 @@ visreg(model, xvar = "logLeg", by = "Instar" )
 
 summary(model)
 spiders$condResiduals <- resid(model)  # putting the residuales into the dable
+spidersMult <- subset(spiders, type== 'multiple') # remving single nests
 
 ggplot(spiders, aes(condResiduals, fill = Instar)) + geom_histogram() # normal
 
@@ -44,7 +45,7 @@ ggplot(spiders, aes(x = condResiduals, y = logLeg, colour = Instar)) + geom_poin
 # plotting res condition against weight
 ggplot(spiders, aes(x = condResiduals, y = logWt, colour = Instar)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE)
 
-spidersMult <- subset(spiders, type== 'multiple')
+
 
 ################ graphs  ############
 
@@ -97,7 +98,7 @@ ggplot(subset(spiders, Instar == 'Adult'), aes(x = type, y = condResiduals)) + g
 
 ## variances for residual conditions
 
-CVCondRes<- ddply(spidersMult, .(NestID, type, Instar, InstarOrdered, logCtFm, CountFemales), summarise,
+CVCondRes<- ddply(spidersMult, .(NestID, type, Instar, InstarOrdered, InstarNumber, logCtFm, CountFemales), summarise,
 		N = length(!is.na(ID)),
 		meanCondRes = abs(mean(condResiduals, na.rm = TRUE)),
 		sdCondRes = sd(condResiduals, na.rm = TRUE),
@@ -105,7 +106,7 @@ CVCondRes<- ddply(spidersMult, .(NestID, type, Instar, InstarOrdered, logCtFm, C
 		logCVCond = log(CVCondRes)
 )
 
-
+#histogram to check normality
 ggplot(CVCondRes, aes(log(CVCondRes), fill = Instar)) + geom_histogram() 
 
 # graphs of cond Variance, not very exciting!
@@ -114,27 +115,47 @@ ggplot(CVCondRes, aes(x = logCtFm, y = log(CVCondRes))) + geom_point()+ geom_smo
 
 
 #condition variance by instar
-ggplot(CVCondRes, aes(x = InstarOrdered, y = log(CVCondRes))) + geom_boxplot() + mytheme # doesn't show anything anymore
+ggplot(CVCondRes, aes(x = InstarOrdered, y = log(CVCondRes))) + geom_boxplot() + mytheme #  might show something
+ggplot(CVCondRes, aes(x = InstarNumber, y = log(CVCondRes))) + geom_point() + geom_smooth(method = "lm") + mytheme 
+
+CVNoMales <- subset(CVCondRes, !is.na(InstarNumber) & N > 1)
+
+InstarCondFull <- lmer(logCVCond ~   InstarNumber  + N  + 
+				(1|NestID), CVNoMales, REML = FALSE)
+
+anova(InstarCondFull)
+visreg(InstarCondFull, xvar = "InstarNumber" )
+
+InstarCondRed <- lmer(logCVCond ~  N + (1|NestID),
+				CVNoMales, REML = FALSE)
+
+anova(InstarCondFull, InstarCondRed)
+
+
+
+# Sample size by instar
+ggplot(subset(CVCondRes, "N" >1), aes(InstarNumber, N)) + geom_point() + geom_smooth(method = "lm") # random factors can only be catogorical
+
 
 # testing if the variation changes with sample size
-ggplot(CVCondRes, aes(x = N, y = log(CVCondRes))) + geom_point() + geom_smooth(method = "lm") # it does
+ggplot(CVCondRes, aes(x = N, y = log(CVCondRes))) + geom_point() + geom_smooth(method = "lm", formula = y~ poly(x, 1)) # it does
 
 CVSmpSize <- lmer(logCVCond ~  N + Instar + N:Instar + 
 				(1|NestID), data = CVCondRes, REML = FALSE)
 
 anova(CVSmpSize)
 
-CVCondResFull <- lmer(logCVCond ~  logCtFm + Instar + logCtFm:Instar  + (1|N) + 
+CVCondResFull <- lmer(logCVCond ~  logCtFm + Instar + logCtFm:Instar  + N + 
 				(1|NestID), data = CVCondRes, REML = FALSE)
 
 anova(CVCondResFull)
 
-CVCondResRed <- lmer(logCVCond ~  Instar  + (1|N) + 
+CVCondResRed <- lmer(logCVCond ~  Instar  + N + 
 				(1|NestID), data = CVCondRes, REML = FALSE)
 
 summary(CVCondResRed)
 anova(CVCondResRed)
-visreg(CVCondResRed, xvar = "logCVCond", by = "Instar")
+visreg(CVCondResRed, xvar = "Instar")
 
 anova(CVCondResFull, CVCondResRed)
 

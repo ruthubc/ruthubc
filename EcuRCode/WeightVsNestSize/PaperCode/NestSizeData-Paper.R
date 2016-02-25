@@ -16,7 +16,7 @@ spiders <- subset(spiders, AdMaleSubBd == "")
 spiders$type <- spiders$Approx..Single.
 
 
-spiders <- subset(spiders, select = c(NestID, type, FemalesHaveEggsOrJuvs, Instar, Weight.mg, LegLen.mm, HeadLength.mm,  CountFemales ))
+spiders <- subset(spiders, select = c(NestID, type, FemalesHaveEggsOrJuvs, Instar, InstarNumber,  Weight.mg, LegLen.mm, HeadLength.mm,  CountFemales ))
 
 spiders$ID<-seq.int(nrow(spiders))
 
