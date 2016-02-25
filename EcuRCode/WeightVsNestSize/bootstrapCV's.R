@@ -113,10 +113,10 @@ samplesd <- function(x, d) {
 }
 
 
+sample(x, size = 2)
 
+b = boot(sample(x, size = 5), samplesd,  R=10)   
 
-b = boot(x, samplesd,  R=10)   
-
-print(b$t[1,1])  # shows all samplemeans
+print(b$t)  # shows all samplemeans
 
 plot(b)

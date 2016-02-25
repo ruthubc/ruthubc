@@ -191,13 +191,22 @@ ggplot(data = CondDiff, aes(x = logCtFm, y = value)) + geom_point() +
 CondDiffLm <- lmer(value ~  logCtFm  + variable + logCtFm:variable + 
 				(1|NestID), data = CondDiff, REML = FALSE)
 
-summary(CondDiffLm)
+anova(CondDiffLm)
 
 visreg(CondDiffLm,  xvar = "logCtFm", by = "variable")
 
-CVCondRes<- ddply(spidersMult, .(NestID, type, Instar, InstarOrdered, logCtFm, CountFemales), summarise,
+
+############ Overall variances for nests NOT by instar
+
+CVCondResAll<- ddply(spidersMult, .(NestID, type, logCtFm, CountFemales), summarise,
 		N = length(!is.na(ID)),
 		meanCondRes = abs(mean(condResiduals, na.rm = TRUE)),
 		sdCondRes = sd(condResiduals, na.rm = TRUE),
-		CVCondRes = (1 + (1/N)) * (sdCondRes / meanCondRes)
+		CVCondRes = (1 + (1/(4*N))) * (sdCondRes / meanCondRes),
+		logCVCond = log(CVCondRes)
 )
+
+
+ggplot(CVCondResAll, aes(x = N, y = logCVCond)) + geom_point() + geom_smooth(method = "lm", formula = y~ poly(x, 1))
+
+
