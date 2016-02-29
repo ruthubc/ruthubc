@@ -5,7 +5,7 @@
 
 require(reshape2)
 library (ggplot2)
-library (gridExtra)
+library (grid)
 library (lme4)
 library(lmerTest)
 library(visreg)
@@ -112,6 +112,19 @@ ggplot(CVCondRes, aes(log(CVCondRes), fill = Instar)) + geom_histogram()
 # graphs of cond Variance, not very exciting!
 ggplot(CVCondRes, aes(x = logCtFm, y = log(CVCondRes))) + geom_point()+ geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
 		facet_wrap(~Instar, scales = "free_y") + xlab("Log Nest Size (num ad females)") + ylab("Condition Residuals Variance") + mytheme
+
+## Stats
+condVarLmFull <- lmer(logCVCond ~  logCtFm + Instar + logCtFm:Instar  + N + 
+				(1|NestID), data = CVCondRes, REML = FALSE)
+
+summary(condVarLmFull)
+
+visreg(condVarLmFull, xvar = "logCtFm", by = "Instar" )
+
+
+condVarLmAd <- lm(logCVCond ~  logCtFm + N , data = subset(CVCondRes, Instar == 'Adult'))
+
+summary(condVarLmAd)
 
 
 #condition variance by instar

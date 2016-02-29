@@ -106,7 +106,7 @@ dis_ply$NOffAndVar <- paste("NoOff =", dis_ply$max_no_off, "Var =", dis_ply$inpu
 
 
 
-myFacet <- facet_grid(max_no_off~VarAndRsk, scales = "free")
+myFacet <- facet_grid(max_no_off~KAndVar, scales = "free")
 
 ########### Graphs ###############
 
