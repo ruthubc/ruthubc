@@ -24,7 +24,7 @@ spiders<- subset(spiders, !is.na(logWt) )
 
 
 #calculating the residual index
-ggplot(spiders, aes(logLeg, logWt)) + geom_point() + geom_smooth(method=lm) + facet_wrap(~Instar,  scales = "free")
+ggplot(spiders, aes(logLeg, logWt)) + geom_point() + geom_smooth(method=lm)# + facet_wrap(~Instar,  scales = "free")
 #ggplot(spiders, aes(lnLeg, lnWt)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE) # log or nat log doesn't make a difference
 
 model <- lm(logWt ~ logLeg, spiders ) # doesn't matter which way round this is
@@ -113,6 +113,9 @@ ggplot(CVCondRes, aes(log(CVCondRes), fill = Instar)) + geom_histogram()
 ggplot(CVCondRes, aes(x = logCtFm, y = log(CVCondRes))) + geom_point()+ geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
 		facet_wrap(~Instar, scales = "free_y") + xlab("Log Nest Size (num ad females)") + ylab("Condition Residuals Variance") + mytheme
 
+ggplot(subset(CVCondRes, Instar == "Adult"), aes(x = logCtFm, y = log(CVCondRes))) + geom_point()+ geom_smooth(method = "lm", formula =y ~  poly(x, 1, raw = TRUE), se = TRUE) +
+		 xlab("Log Nest Size (num ad females)") + ylab("Condition Residuals Variance") + mytheme
+
 ## Stats
 condVarLmFull <- lmer(logCVCond ~  logCtFm + Instar + logCtFm:Instar  + N + 
 				(1|NestID), data = CVCondRes, REML = FALSE)
@@ -128,7 +131,18 @@ summary(condVarLmAd)
 
 
 #condition variance by instar
+
+pdf("RuthEcuador2013/NestSize/Graphs/ConditionVsInstarBoxplot.pdf", width =30, height =20)
 ggplot(CVCondRes, aes(x = InstarOrdered, y = log(CVCondRes))) + geom_boxplot() + mytheme #  might show something
+dev.off()
+
+
+InstarCondFull <- lmer(logCVCond ~   Instar + N  + 
+				(1|NestID), CVCondRes, REML = FALSE)
+
+anova(InstarCondFull)
+
+
 ggplot(CVCondRes, aes(x = InstarNumber, y = log(CVCondRes))) + geom_point() + geom_smooth(method = "lm") + mytheme 
 
 CVNoMales <- subset(CVCondRes, !is.na(InstarNumber) & N > 1)
