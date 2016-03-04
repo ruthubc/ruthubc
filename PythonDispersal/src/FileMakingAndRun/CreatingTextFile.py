@@ -15,11 +15,11 @@ import time
 indFile = "n"
 
 slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
-dispersalRisks = [0.3]
+dispersalRisks = [0.05]
 meanK = [300]
-Vars = [0, 0.1, 0.2, 0.3, 0.4]
+Vars = [0, 0.02, 0.04, 0.06]
 adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2]
-off_list = [ [6, 8], [8, 10]]
+off_list = [ [6, 8] ]# [6, 8]
 F_Lns = [0.61]
 
 
