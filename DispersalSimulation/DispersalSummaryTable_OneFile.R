@@ -1,5 +1,4 @@
-# TODO: Add comment
-# 
+
 # Author: Ruth
 ###############################################################################
 
@@ -11,7 +10,6 @@ library(reshape2)
 library(survival)
 source("FilesExist.R")
 
-### Something to think about. Are there some variables where I don't want to include colonies that are alive at the end of the simulation?
 
 filesCSV <- "FilesCreated.csv"
 
@@ -24,8 +22,38 @@ fileNames<-read.csv(paste(folder, filesCSV, sep = ""), quote="")# import file na
 
 fileNames[] <- lapply(fileNames, as.character) # making factors into strings
 
-## Change this to the correct number i want to remove
+
 min_popAge <-50 # the number of generations to discount from the start of the calculations ###########################################################################
+
+#function to output perc cols disperse, cols die without dispersal etc.
+DispersalFun <- function(inputFile){
+	
+	DispConsqByCol<- ddply(File, .(colony_ID), summarise,
+			tot_num_disp = sum(dispersers),
+			max_col_age = max(colony_age),
+			num_times_disp = length(dispersers[dispersers > 0]),
+			disp_freq = ifelse(num_times_disp > 0, (max_col_age/tot_num_disp), NA),
+			col_died = length(colAlive[colAlive == "dead"]),  # 0 = no 1 = yes
+			size_at_death = ifelse(col_died == 1, num_adsB4_dispersal[colAlive == "dead"], NA)
+	
+	)
+	
+	
+	DispConsq<- ddply(DispConsqByCol, .(), summarise,
+			num_cols = length(colony_ID),
+			num_cols_disp = length(colony_ID[num_times_disp > 0]),
+			perc_cols_disp = ifelse(num_cols_disp > 0, num_cols_disp/num_cols, 0),
+			mean_freq_disp = mean(disp_freq, na.rm = TRUE),
+			num_cols_die = length(colony_ID[col_died > 0]),
+			num_die_no_disp = length(colony_ID[col_died > 0 & tot_num_disp > 0]),
+			perc_die_no_disp = ifelse(num_cols_die > 0, num_die_no_disp/num_cols_die, NA)
+	
+	)
+	return(DispConsq)
+}
+
+
+
 
 
 summaryFun <- function(theFileName, min_pop_age, numGens){
@@ -33,6 +61,7 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		fileNum <- print (substr(theFileName, 0, 4))
 
 		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "") ###########################################################################################
+
 		#fileToImport <- paste(theFileName, ".py.csv", sep = "")
 
 		
@@ -69,13 +98,18 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		propSigNestNotGrow <- numNotGrow/numSigNest
 		
 		
-		rm(maxRows)
-		rm(sigNestsDF)
+		
 		
 		}
 		
 		
-		rm(sigNestsLst)
+		
+		
+		#dispersal percentage, freq, death without dispersal etc
+
+		DispFunOutput <- DispersalFun(file)
+		
+		
 		
 		# getting data on dispersers
 		DispersersAfAge <- subset(File, dispersers >0 & pop_age >= min_popAge)
@@ -180,7 +214,7 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 	
 		
 		
-		if(maxPopAge < min_popAge){ # removing first 100 generations
+		if(maxPopAge < min_popAge){ # removing first x number of generations
 
 			print("pop did not survive to input number of generations") # inputs NA's as the population did not survive long enough
 			
@@ -239,9 +273,9 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		
 	
 		
-		rm(File)
-		average <- cbind(FileAves_All, FileAves, DispAves, anyDisp, survivalMean, propSigNestNotGrow)
-		average$.id <- NULL
+		
+		average <- cbind(FileAves_All, FileAves, DispAves, anyDisp, survivalMean, propSigNestNotGrow, DispFunOutput)
+		#average$.id <- NULL
 		average$fileNum <- fileNum
 		return(average)
 	
@@ -284,3 +318,16 @@ for (i in 1:numFiles){
 write.table(output, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
 
 
+# Percentage colonies that dispersed experimenting 
+
+#File<-read.csv(paste(folder, "3840_slp0.8_Rsk0.3_K300_var0_dslm1.0_maxOff4.py.csv", sep = ""), quote="")# import file names csv file
+
+#test<- DispersalFun(File)
+
+outputnames <- colnames(output)
+
+output1names <- colnames(output1)
+
+list <- outputnames %in% output1names
+
+setdiff(outputnames, output1names)
