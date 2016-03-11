@@ -28,7 +28,7 @@ min_popAge <-50 # the number of generations to discount from the start of the ca
 #function to output perc cols disperse, cols die without dispersal etc.
 DispersalFun <- function(inputFile){
 	
-	DispConsqByCol<- ddply(File, .(colony_ID), summarise,
+	DispConsqByCol<- ddply(inputFile, .(colony_ID), summarise,
 			tot_num_disp = sum(dispersers),
 			max_col_age = max(colony_age),
 			num_times_disp = length(dispersers[dispersers > 0]),
@@ -107,7 +107,7 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		
 		#dispersal percentage, freq, death without dispersal etc
 
-		DispFunOutput <- DispersalFun(file)
+		DispFunOutput <- DispersalFun(File)
 		
 		
 		
@@ -275,7 +275,8 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 		
 		
 		average <- cbind(FileAves_All, FileAves, DispAves, anyDisp, survivalMean, propSigNestNotGrow, DispFunOutput)
-		#average$.id <- NULL
+		ids <- grep(".id", colnames(average))
+		average <- average[, -ids]
 		average$fileNum <- fileNum
 		return(average)
 	
@@ -320,14 +321,14 @@ write.table(output, paste(folder, outputFile, sep = ""), sep=",", row.names = FA
 
 # Percentage colonies that dispersed experimenting 
 
-#File<-read.csv(paste(folder, "3840_slp0.8_Rsk0.3_K300_var0_dslm1.0_maxOff4.py.csv", sep = ""), quote="")# import file names csv file
+#File<-read.csv(paste(folder, "3736_slp1_Rsk0.3_K300_var0_dslm1.0_maxOff4.py.csv", sep = ""), quote="")# import file names csv file
 
 #test<- DispersalFun(File)
 
-outputnames <- colnames(output)
+#outputnames <- colnames(output)
 
-output1names <- colnames(output1)
+#output1names <- colnames(output1)
 
-list <- outputnames %in% output1names
+#list <- outputnames %in% output1names
 
-setdiff(outputnames, output1names)
+#setdiff(outputnames, output1names)
