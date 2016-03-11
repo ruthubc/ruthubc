@@ -57,8 +57,8 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.write("#PBS -S /bin/bash\n")
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated.
-    file.write("#PBS -l walltime=70:00:00\n")
-    file.write("#PBS -l mem=10000mb\n")
+    file.write("#PBS -l walltime=15:00:00\n")
+    file.write("#PBS -l mem=300mb\n")
     file.write('#PBS -l procs=1\n')
     file.write("module load python/2.7.5.anaconda\n")
     file.write("cd $PBS_O_WORKDIR\n")
