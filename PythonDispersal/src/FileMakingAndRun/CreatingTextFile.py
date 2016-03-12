@@ -15,11 +15,11 @@ import time
 indFile = "n"
 
 slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
-dispersalRisks = [0.05]
+dispersalRisks = [0.3]
 meanK = [300]
-Vars = [0, 0.02, 0.04, 0.06]
-adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2]
-off_list = [ [6, 8] ]# [6, 8]
+Vars = [0, 0.1, 0.2]
+adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0]#, 1.2]
+off_list = [[2,4], [6, 8], [8,10] ]
 F_Lns = [0.61]
 
 
@@ -57,8 +57,8 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.write("#PBS -S /bin/bash\n")
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated.
-    file.write("#PBS -l walltime=70:00:00\n")
-    file.write("#PBS -l mem=10000mb\n")
+    file.write("#PBS -l walltime=15:00:00\n")
+    file.write("#PBS -l mem=300mb\n")
     file.write('#PBS -l procs=1\n')
     file.write("module load python/2.7.5.anaconda\n")
     file.write("cd $PBS_O_WORKDIR\n")
