@@ -18,9 +18,11 @@ slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
 dispersalRisks = [0.3]
 meanK = [300]
 Vars = [0, 0.1, 0.2]
-adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0]#, 1.2]
+adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0]# [1.2] 
 off_list = [[2,4], [6, 8], [8,10] ]
 F_Lns = [0.61]
+
+runtime = "15:00:00"
 
 
 #runs = [[0 - slope], [1- risk of dispersal], [2- meanK], [3- Var], [4- ad dispersal limit], [5- min off], [6- max off], [7- F_ln]]
@@ -57,10 +59,10 @@ def writePBS(FileName):  # writes the PBS file for each run
     file.write("#PBS -S /bin/bash\n")
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated.
-    file.write("#PBS -l walltime=15:00:00\n")
+    file.write("#PBS -l walltime=" + runtime + "\n")
     file.write("#PBS -l mem=300mb\n")
     file.write('#PBS -l procs=1\n')
-    file.write("module load python/2.7.5.anaconda\n")
+    file.write("module load python/2.7.2\n")# on grex: file.write("module load python/2.7.5.anaconda\n")
     file.write("cd $PBS_O_WORKDIR\n")
     file.write("python " + FileName + ".py\n")
     file.write("""echo "Program "$0" finished with exit code $? at: `date`" """)
