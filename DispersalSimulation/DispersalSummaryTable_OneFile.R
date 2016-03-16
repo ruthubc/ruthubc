@@ -315,7 +315,7 @@ for (i in 1:numFiles){
 }
 
 
-#stopCluster(cl)
+
 write.table(output, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
 
 
