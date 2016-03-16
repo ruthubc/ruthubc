@@ -53,7 +53,29 @@ DispersalFun <- function(inputFile){
 }
 
 
-
+AgeAveFun<- function(inputFile){
+	
+	if (nrow(inputFile) == 0){
+			
+			MeanNoCol <- data.frame(MeanNoCols = NA)
+			
+			
+		}else{
+	
+	AveByPopAge<- ddply(inputFile, .(pop_age), summarise,
+			NoCols = length(colony_ID)
+	)
+	
+	MeanNoCol<- ddply(AveByPopAge, .(), summarise,
+			MeanNoCols = mean(NoCols, na.rm = TRUE)
+	)
+	
+	}
+	
+	return(MeanNoCol)
+	
+	
+}
 
 
 summaryFun <- function(theFileName, min_pop_age, numGens){
@@ -66,9 +88,13 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 
 		
 		File <- read.csv(fileToImport, quote = "")
+		
 		print (fileToImport)
 		
 		maxPopAge <- max(File$pop_age)
+		
+		FileGensRmv <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
+		
 		
 		
 		######################## Single female nests ##################
@@ -238,15 +264,16 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 					col_size_disp =NA,
 					se_age_first_disp = NA,
 					mean_ad_sze = NA,
-					mean_juv_sze = NA 
+					mean_juv_sze = NA,
+					var_pop_size = NA
 			)
 		}else{
 
-			File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
-
+################################################## place where first generations removed ################################################################
+	
 		
 		
-		FileAves<- ddply(File, .(), summarise,
+		FileAves<- ddply(FileGensRmv, .(), summarise,
 				tot_num_cols = max(colony_ID),
 				ave_colAge = mean(colony_age),
 				se_colAge = sd(colony_age)/sqrt(length(colony_age)),
@@ -266,15 +293,16 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 				col_size_disp = mean(num_adsB4_dispersal[dispersers>0]),
 				se_age_first_disp = sd(num_adsB4_dispersal[dispersers>0])/sqrt(length(num_adsB4_dispersal[dispersers>0])),
 				mean_ad_sze = mean(adSz_B4_mean, na.rm = TRUE),
-				mean_juv_sze = mean(jvSz_B4_mean, na.rm = TRUE)
+				mean_juv_sze = mean(jvSz_B4_mean, na.rm = TRUE),
+				var_pop_size = sd(num_adsB4_dispersal[num_adsB4_dispersal > 1])/ mean(num_adsB4_dispersal[num_adsB4_dispersal > 1])  # single nest removes
 		)
 		
 	}	
+			
+
 		
-	
-		
-		
-		average <- cbind(FileAves_All, FileAves, DispAves, anyDisp, survivalMean, propSigNestNotGrow, DispFunOutput)
+		AveNoCols <- AgeAveFun(FileGensRmv)	
+		average <- cbind(FileAves_All, FileAves, DispAves, anyDisp, survivalMean, propSigNestNotGrow, DispFunOutput, AveNoCols)
 		ids <- grep(".id", colnames(average))
 		average <- average[, -ids]
 		average$fileNum <- fileNum

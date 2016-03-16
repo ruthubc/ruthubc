@@ -22,7 +22,7 @@ adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0]# [1.2]
 off_list = [[2,4], [6, 8], [8,10] ]
 F_Lns = [0.61]
 
-runtime = "15:00:00"
+
 
 
 #runs = [[0 - slope], [1- risk of dispersal], [2- meanK], [3- Var], [4- ad dispersal limit], [5- min off], [6- max off], [7- F_ln]]
@@ -51,7 +51,7 @@ def run_numbers(numbersFile):  # Assigns a unique number to each run
 
 # pbs instructions https://www.westgrid.ca/files/PBS%20Script_0.pdf
 
-def writePBS(FileName):  # writes the PBS file for each run
+def writePBS(FileName, runtime):  # writes the PBS file for each run
     print('Creating new file')
     name =FileName + '.pbs' # Name of text file coerced with +.txt
     file = open(name,'w+')   # Trying to create a new file or open one'
@@ -111,7 +111,14 @@ for i in range(0, len(combinations)):  # actually produces the files
     print filename
     writePythonRun(filename, slope, risk, K, var, min_juv_size, off_list,
                    ad_disFd_lmt, F_Ln, sim_len, comp_type)
-    writePBS(filename)
+
+    ### runtime if statement
+    if ad_disFd_lmt > 1:
+        runtime = "01:30:00"
+    else:
+        runtime = "15:00:00"
+
+    writePBS(filename, runtime)
     fileNameLst.extend([filename])
 
 #print "filenameList:", fileNameLst
