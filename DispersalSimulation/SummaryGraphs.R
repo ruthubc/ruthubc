@@ -10,11 +10,11 @@ library(grid) # not sure if I need this or not.
 
 
 
-num_graphs <- 11
+num_graphs <- 16
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalRsk0.3_LabMeeting.png", width = 1300, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/DispersalTest.png", width = 1300, height = gr_ht, units = "px")
 
 
 
@@ -22,7 +22,7 @@ png("DisperalSimulationOutput/DispersalRsk0.3_LabMeeting.png", width = 1300, hei
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "Dispersal17thFebDisRs0.3.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "DispersalTest.csv", sep = ""))
 
 #dis_aves <- subset(dis_aves, Fd_ln == 0.61)
 
@@ -89,7 +89,13 @@ dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, C
 		survival_all.mean = mean(survivalMean_all, na.rm = TRUE),
 		survival_all.SE = sd(survivalMean_all, na.rm = TRUE)/ sqrt(N_all),
 		anyDisp.mean = mean(anyDisp, na.rm = TRUE),
-		propSigNestsGrow.mean = mean((1-propSigNestNotGrow), na.rm = TRUE)
+		propSigNestsGrow.mean = mean((1-propSigNestNotGrow), na.rm = TRUE),
+		MeanPopSize = mean(MeanNoCols, na.rm = TRUE),
+		MeanDispFreq = mean(mean_freq_disp, na.rm = TRUE),
+		MeanPerColsDisp = mean(perc_cols_disp, na.rm = TRUE),
+		MeanPerDieNoDsp = mean(perc_die_no_disp, na.rm = TRUE),
+		MeanPopSizeVar = mean(var_pop_size, na.rm = TRUE)
+		
 
 	
 )
@@ -107,7 +113,6 @@ dis_ply$NOffAndVar <- paste("NoOff =", dis_ply$max_no_off, "Var =", dis_ply$inpu
 dis_ply$VarWords <- paste("Envirn Variation = " , dis_ply$input_var)
 
 dis_ply$OffWords <- paste("Offspring = " , dis_ply$max_no_off)
-
 
 
 myFacet <- facet_grid(OffWords~VarWords)
@@ -186,7 +191,7 @@ p7 <- ggplot(dis_ply, aes(x = Comp_meas, y = pcntDisp.mean, colour = as.factor(a
 p8 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDeath.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
 		myFacet +  ggtitle("Average size of colony when it dies") + geom_line() + ylab("Number of adults") + 
 		scale_colour_discrete(legendLabel) + xlab(xlabel) + mytheme
-		mytheme #+ geom_errorbar(aes(ymin=colSizeDeath.mean-colSizeDeath.SE, ymax=colSizeDeath.mean + colSizeDeath.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
+		 #+ geom_errorbar(aes(ymin=colSizeDeath.mean-colSizeDeath.SE, ymax=colSizeDeath.mean + colSizeDeath.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
 
 
 
@@ -195,8 +200,30 @@ p9 <- ggplot(dis_ply, aes(x = Comp_meas, y = propSigNestsGrow.mean, colour = as.
 		myFacet +  ggtitle("Prop of single nests that grow") + geom_line() + mytheme + ylim(0, 1)
 
 
+#Ave num cols in metapopulatiobn
+p10 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPopSize, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet +  ggtitle("Average number of populations in the metapopulation at each time step") + geom_line() + mytheme
 
-grid.arrange(p1, p2, p2a,  p3, p4, p4a, p5, p6, p7, p8, p9, ncol=1)
+
+# Average frequence of disperal per nest
+p11 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanDispFreq, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet +  ggtitle("Average disperal frequency per population") + geom_line() + mytheme
+
+# Average percentage of populations that disperse
+p12 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerColsDisp, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet +  ggtitle("Average percentage of colonies that disperse") + geom_line() + mytheme
+
+
+#Perc cols die without dispersing
+p13 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerDieNoDsp, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet +  ggtitle("Average percentage of colonies that die without dispersing") + geom_line() + mytheme
+
+#Overall varience in population size - sig nests removed
+p14 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPopSizeVar, colour = as.factor(ad_dsp_fd))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet +  ggtitle("Average variance in population sizes within the metapopulation -sig nests removed") + geom_line() + mytheme
+
+
+grid.arrange(p1, p2, p2a,  p3, p4, p4a, p5, p6, p7, p8, p9, p10, p11, p13, p14,  ncol=1)
 
 dev.off()
 
