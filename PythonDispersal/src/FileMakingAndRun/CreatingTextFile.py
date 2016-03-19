@@ -18,8 +18,8 @@ slopes = [0, 0.4, 0.8, 1.25, 2.5, 1]
 dispersalRisks = [0.3]
 meanK = [300]
 Vars = [0, 0.1, 0.2]
-adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0]# [1.2] 
-off_list = [[2,4], [6, 8], [8,10] ]
+adDisSizes = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2] 
+off_list = [[4,6]]#[[2,4], [4, 6], [6, 8], [8,10] ]
 F_Lns = [0.61]
 
 
@@ -116,7 +116,7 @@ for i in range(0, len(combinations)):  # actually produces the files
     if ad_disFd_lmt > 1:
         runtime = "01:30:00"
     else:
-        runtime = "15:00:00"
+        runtime = "35:00:00"
 
     writePBS(filename, runtime)
     fileNameLst.extend([filename])
