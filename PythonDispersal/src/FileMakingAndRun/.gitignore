@@ -263,3 +263,7 @@
 /TEST_slp0.8_Rsk0.1_K100_var0.0_dslm0.6.py
 /TEST_slp0.8_Rsk0.1_K100_var0.0_dslm0.6.py.csv
 /qsubFile.txt
+/slp0.8_Rsk0.05_K100_var0.1_dslm0.8_rn343.py_inds.csv
+/slp0.8_Rsk0.05_K100_var0.1_dslm0.8_rn343.py.csv
+/run2.sh
+/FilesCreated_old.csv

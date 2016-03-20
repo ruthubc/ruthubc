@@ -1,10 +1,10 @@
 from core.DispersalRun import disperal_run
-sim_len = 20
+sim_len = 5
 filename = "TESTING.py"
 comp_slp = 0.8
 disp_risk =0.3
 K=300
-amt_var =0.0
+amt_var =0.1
 min_juv_size =0.205
 off_list =[2, 4]
 ad_disFd_lmt =0.2

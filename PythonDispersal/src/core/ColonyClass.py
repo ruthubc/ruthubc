@@ -38,8 +38,10 @@ class Colony(object):
         self.juv_list = []
         self.colony_food = 0.0
         self.slope = slope
+        self.calFdB4rand = 0.0
         self.colony_age = colony_age
         self.dispersers = dispersers
+        self.pot_num_juvs = 0
         self.pot_juv_food = pot_juv_food
         self.num_juvs = 0  # as the juv list gets wiped before the end of the loop
         self.num_ads = 0  # to make sure that I get 
@@ -88,9 +90,11 @@ class Colony(object):
         d['num_adsB4_dispersal'] = self.num_ads
         d['num_ads'] = self.num_ads - self.num_dis
         d['numjuvs'] = self.num_juvs
+        d['col_fd_B4_rnd'] = self.calFdB4rand
         d['colony_food'] = self.colony_food
         d['ave_food']= 0 if self.num_juvs == 0 else self.colony_food/self.num_juvs
         d['dispersers'] = self.num_dis
+        d['pot_col_num_juvs'] = self.pot_num_juvs
         d['pot_juv_fd'] = self.pot_juv_food
         d['cal_med_rnk'] = self.cal_med_rnk
         d['colAlive'] = self.alive
@@ -145,6 +149,7 @@ class Colony(object):
     def col_food_random(self, F_Ln, K, var, food_scale):  # randomly fluctuates colony food 
         from core.Functions import random_gus
         cap_food = self.cal_col_food(F_Ln, K)
+        self.calFdB4rand= cap_food * len(self.ad_list) * food_scale
         cap_food = random_gus(cap_food, var) * food_scale
         tot_food = cap_food * len(self.ad_list)
         if len(self.ad_list) and len(self.juv_list) == 0:
@@ -168,6 +173,7 @@ class Colony(object):
     def cal_pot_juv_food(self, F_Ln, K, Off_M, Off_C, food_scale):  # updates potential juv food
         tot_food = self.cal_col_food(F_Ln, K) * len(self.ad_list) * food_scale
         pot_juvs = self.col_num_off(Off_M, Off_C)
+        self.pot_num_juvs = pot_juvs
         pot_juv_fd = tot_food / pot_juvs
         self.pot_juv_food = pot_juv_fd
         #print "adfood", [i.food for i in self.ad_list]
@@ -178,17 +184,12 @@ class Colony(object):
             #print "tot num of adults before dispersal colDis_choice", len(self.ad_list)
 
     def spis_to_dis_lst(self, adDisLmt):  # makes a list of dispersers and removes them from the old colony
-        #print "ad food before dispersal"
-        #print [i.food for i in self.ad_list]
         self.dispersers = [i for i in self.ad_list if i.disperse == 1]
         self.num_dis = len(self.dispersers)
         self.ad_list = [i for i in self.ad_list if i.disperse == 0]
         for ad in self.ad_list:
             if ad.food > adDisLmt:
                 raise Exception ("Non-dispered adults larger then", adDisLmt, "which was", ad.food)
-        #print [i.food for i in self.ad_list]
-        #print "spis to dis lst"
-        #print "new no of ads:", len(self.ad_list), "num dispersers:", self.num_dis
         if self.num_dis > 0:
             self.adSz_AF = self.indStats([i.food for i in self.ad_list]) # ad sizes after dispersal
             #print "Dispersal Takes Place"
@@ -350,7 +351,7 @@ class Colony(object):
                 raise Exception("food greater than num jvs, numJuvs", self.num_juvs, 'colFd', self.colony_food, 'numads', self.num_ads)
         elif self.slope < 0.001:
             self.zeroSlp_jv_fd() # all individuals get the same amount of food
-        elif self.slope == 10.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
+        elif self.slope > 9.0: # arbiarity number! maybe make this more a range jsut to make sure it is captured in the code.
             self.juv_rnk_assign()  # assign ranks to juvs
             self.oneSlp_jv_fd()
         else:

@@ -32,9 +32,9 @@ DispersalFun <- function(inputFile){
 			tot_num_disp = sum(dispersers),
 			max_col_age = max(colony_age),
 			num_times_disp = length(dispersers[dispersers > 0]),
-			disp_freq = ifelse(num_times_disp > 0, (max_col_age/tot_num_disp), NA),
+			disp_freq = ifelse(num_times_disp > 0, (tot_num_disp/max_col_age), NA),
 			col_died = length(colAlive[colAlive == "dead"]),  # 0 = no 1 = yes
-			size_at_death = ifelse(col_died == 1, num_adsB4_dispersal[colAlive == "dead"], NA)
+			size_at_death = ifelse(col_died == 1, log10_num_adsB4_dispersal[colAlive == "dead"], NA)
 	
 	)
 	
@@ -44,8 +44,8 @@ DispersalFun <- function(inputFile){
 			num_cols_disp = length(colony_ID[num_times_disp > 0]),
 			perc_cols_disp = ifelse(num_cols_disp > 0, num_cols_disp/num_cols, 0),
 			mean_freq_disp = mean(disp_freq, na.rm = TRUE),
-			num_cols_die = length(colony_ID[col_died > 0]),
-			num_die_no_disp = length(colony_ID[col_died > 0 & tot_num_disp > 0]),
+			num_cols_die = length(colony_ID[col_died > 0]), # col died no = 0, yes = 1
+			num_die_no_disp = length(colony_ID[col_died > 0 & tot_num_disp == 0]),
 			perc_die_no_disp = ifelse(num_cols_die > 0, num_die_no_disp/num_cols_die, NA)
 	
 	)
@@ -53,7 +53,29 @@ DispersalFun <- function(inputFile){
 }
 
 
-
+AgeAveFun<- function(inputFile){
+	
+	if (nrow(inputFile) == 0){
+			
+			MeanNoCol <- data.frame(MeanNoCols = NA)
+			
+			
+		}else{
+	
+	AveByPopAge<- ddply(inputFile, .(pop_age), summarise,
+			NoCols = length(colony_ID)
+	)
+	
+	MeanNoCol<- ddply(AveByPopAge, .(), summarise,
+			MeanNoCols = mean(NoCols, na.rm = TRUE)
+	)
+	
+	}
+	
+	return(MeanNoCol)
+	
+	
+}
 
 
 summaryFun <- function(theFileName, min_pop_age, numGens){
@@ -66,9 +88,18 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 
 		
 		File <- read.csv(fileToImport, quote = "")
+		
+		File$log10_num_adsB4_dispersal <- log10(File$num_adsB4_dispersal)
+		File$log10_num_ads <- ifelse(File$num_ads > 0, log10(File$num_ads), NA)	
+		File$log10_dispersers <- ifelse(File$dispersers > 0, log10(File$dispersers), NA)
+
+		
 		print (fileToImport)
 		
 		maxPopAge <- max(File$pop_age)
+		
+		FileGensRmv <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
+		
 		
 		
 		######################## Single female nests ##################
@@ -186,18 +217,18 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 				all_se_colAge = sd(colony_age)/sqrt(length(colony_age)),
 				all_min_colAge = min(colony_age),
 				all_max_colAge = max(colony_age),
-				all_ave_num_disp= mean(dispersers[dispersers!=0]),
-				all_se_num_disp = sd(dispersers[dispersers!=0])/sqrt(length(dispersers[dispersers!=0])),
+				all_ave_num_disp= mean(log10_dispersers, na.rm = TRUE),
+				all_se_num_disp = "Not used", #sd(log10_dispersers, na.rm = TRUE)/sqrt(length(dispersers)),
 				all_ave_perDisp= mean((dispersers/num_adsB4_dispersal)[dispersers!=0]),
 				all_se_perDisp = sd((dispersers/num_adsB4_dispersal)[dispersers!=0])/sqrt(length(dispersers[dispersers!=0])),
-				all_ave_colSizeB4Disp = mean(num_adsB4_dispersal),
-				all_se_colSizeB4Disp  = sd(num_adsB4_dispersal)/sqrt(length(num_adsB4_dispersal)),
+				all_ave_colSizeB4Disp = mean(log10_num_adsB4_dispersal),
+				all_se_colSizeB4Disp  = sd(log10_num_adsB4_dispersal)/sqrt(length(num_adsB4_dispersal)),
 				all_max_colSizeB4Disp = max(num_adsB4_dispersal),
-				all_ave_colSize_Death =  mean(num_adsB4_dispersal[colAlive=="dead"]),
-				all_se_colSize_Death = sd(num_adsB4_dispersal[colAlive=="dead"])/sqrt(length(num_adsB4_dispersal[colAlive=="dead"])),
+				all_ave_colSize_Death =  mean(log10_num_adsB4_dispersal[colAlive=="dead"]),
+				all_se_colSize_Death = sd(log10_num_adsB4_dispersal[colAlive=="dead"])/sqrt(length(log10_num_adsB4_dispersal[colAlive=="dead"])),
 				all_ave_colAge_Death = mean(colony_age[colAlive=='dead']),
 				all_se_colAge_Death = sd(colony_age[colAlive=="dead"])/sqrt(length(colony_age[colAlive=="dead"])),
-				all_col_size_disp = mean(num_adsB4_dispersal[dispersers>0]),
+				all_col_size_disp = mean(log10_num_adsB4_dispersal[dispersers>0]),
 				all_se_age_first_disp = sd(num_adsB4_dispersal[dispersers>0])/sqrt(length(num_adsB4_dispersal[dispersers>0])),
 				all_mean_ad_sze = mean(adSz_B4_mean, na.rm = TRUE),
 				all_mean_juv_sze = mean(jvSz_B4_mean, na.rm = TRUE)
@@ -238,43 +269,47 @@ summaryFun <- function(theFileName, min_pop_age, numGens){
 					col_size_disp =NA,
 					se_age_first_disp = NA,
 					mean_ad_sze = NA,
-					mean_juv_sze = NA 
+					mean_juv_sze = NA,
+					var_pop_size_noSig = NA,
+					var_pop_size = NA
 			)
 		}else{
 
-			File <- subset(File, pop_age >= min_popAge) # removing the first x number of gens before do cals
-
+################################################## place where first generations removed ################################################################
+	
 		
 		
-		FileAves<- ddply(File, .(), summarise,
+		FileAves<- ddply(FileGensRmv, .(), summarise,
 				tot_num_cols = max(colony_ID),
 				ave_colAge = mean(colony_age),
 				se_colAge = sd(colony_age)/sqrt(length(colony_age)),
 				min_colAge = min(colony_age),
 				max_colAge = max(colony_age),
-				ave_num_disp= mean(dispersers[dispersers!=0]),
-				se_num_disp = sd(dispersers[dispersers!=0])/sqrt(length(dispersers[dispersers!=0])),
+				ave_num_disp= mean(log10_dispersers, na.rm = TRUE),
+				se_num_disp = "Not Used",#sd(dispersers[dispersers!=0])/sqrt(length(dispersers[dispersers!=0])),
 				ave_perDisp= mean((dispersers/num_adsB4_dispersal)[dispersers!=0]),
 				se_perDisp = sd((dispersers/num_adsB4_dispersal)[dispersers!=0])/sqrt(length(dispersers[dispersers!=0])),
-				ave_colSizeB4Disp = mean(num_adsB4_dispersal),
-				se_colSizeB4Disp  = sd(num_adsB4_dispersal)/sqrt(length(num_adsB4_dispersal)),
+				ave_colSizeB4Disp = mean(log10_num_adsB4_dispersal),
+				se_colSizeB4Disp  = sd(log10_num_adsB4_dispersal)/sqrt(length(num_adsB4_dispersal)),
 				max_colSizeB4Disp = max(num_adsB4_dispersal),
-				ave_colSize_Death =  mean(num_adsB4_dispersal[colAlive=="dead"]),
+				ave_colSize_Death =  mean(log10_num_adsB4_dispersal[colAlive=="dead"]),
 				se_colSize_Death = sd(num_adsB4_dispersal[colAlive=="dead"])/sqrt(length(num_adsB4_dispersal[colAlive=="dead"])),
 				ave_colAge_Death = mean(colony_age[colAlive=='dead']),
 				se_colAge_Death = sd(colony_age[colAlive=="dead"])/sqrt(length(colony_age[colAlive=="dead"])),
-				col_size_disp = mean(num_adsB4_dispersal[dispersers>0]),
-				se_age_first_disp = sd(num_adsB4_dispersal[dispersers>0])/sqrt(length(num_adsB4_dispersal[dispersers>0])),
+				col_size_disp = mean(log10_num_adsB4_dispersal[dispersers>0]),
+				se_age_first_disp = "not used",#sd(num_adsB4_dispersal[dispersers>0])/sqrt(length(num_adsB4_dispersal[dispersers>0])),
 				mean_ad_sze = mean(adSz_B4_mean, na.rm = TRUE),
-				mean_juv_sze = mean(jvSz_B4_mean, na.rm = TRUE)
+				mean_juv_sze = mean(jvSz_B4_mean, na.rm = TRUE),
+				var_pop_size_noSig = sd(log10_num_adsB4_dispersal[num_adsB4_dispersal > 1], na.rm = TRUE)/ mean(log10_num_adsB4_dispersal[num_adsB4_dispersal > 1], na.rm = TRUE),  # single nest removes
+				var_pop_size = sd(log10_num_adsB4_dispersal, na.rm = TRUE)/ mean(log10_num_adsB4_dispersal, na.rm = TRUE)
 		)
 		
 	}	
+			
+
 		
-	
-		
-		
-		average <- cbind(FileAves_All, FileAves, DispAves, anyDisp, survivalMean, propSigNestNotGrow, DispFunOutput)
+		AveNoCols <- AgeAveFun(FileGensRmv)	
+		average <- cbind(FileAves_All, FileAves, DispAves, anyDisp, survivalMean, propSigNestNotGrow, DispFunOutput, AveNoCols)
 		ids <- grep(".id", colnames(average))
 		average <- average[, -ids]
 		average$fileNum <- fileNum
@@ -315,7 +350,7 @@ for (i in 1:numFiles){
 }
 
 
-#stopCluster(cl)
+
 write.table(output, paste(folder, outputFile, sep = ""), sep=",", row.names = FALSE)
 
 

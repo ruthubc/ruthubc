@@ -134,6 +134,7 @@ class Poplt(object):
         d['max_no_off'] = self.off_nmbr_list[1]
         d['min_ad_sze_off'] = self.off_nmbr_list[2]
         d['max_ad_sze_off'] = self.off_nmbr_list[3]
+        d['juv_fd_lmt_disp'] = self.juv_disFd_lmt
         return d
 
     def poplt_export(self):  # appends one time step of information to file
