@@ -7,7 +7,7 @@ library(ggplot2)
 library(gridExtra)
 library(xlsx)
 
-Times <-read.xlsx("RuthSync/DisperalSimulation/Simulations_Need_More_TimeHERMES.xlsx", sheetIndex = 1)
+Times <-read.csv("RuthSync/DisperalSimulation/Simulations_Need_More_TimeHERMES.csv")
 
 
 ggplot(Times, aes(x = Slp, y = RunOutTimeBinary, colour = as.factor(dslm))) + geom_point(size = 3, position = position_jitter(w = 0.03, h = 0.0)) + 
