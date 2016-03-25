@@ -41,7 +41,7 @@ anova(PJMod4, PJRedModTreat)
 #####################################################################################
 ## Condition vs feeding
 
-##### Means and se's 
+##### MEANS ETC.###############
 ddply(BoxComboMorn,. (FeedIndPos),
 		summarise,
 		mean = mean(Cond.Scal, na.rm = TRUE), SE = sd(Cond.Scal, na.rm = TRUE)/sqrt(length(Cond.Scal)))
@@ -87,7 +87,7 @@ condSNonFdSD <-sd(BoxComboMorn$Cond.Scal [BoxComboMorn$FeedIndPos == "n" & BoxCo
 sqrt(condSFdSD^ 2 +  condSNonFdSD ^ 2)
 
 
-
+###################### STATISTICS #######################
 # removing interactions as they either are insignificant or don't make sense
 EatBinMod3 <- glmer(IndFeed ~ LogHunger + Treatment + Instar + Treatment:LogHunger +  (1|IndBoxID)+
 				(1|IndBoxID:SpiderID), BoxComboMorn, family = binomial(logit))
