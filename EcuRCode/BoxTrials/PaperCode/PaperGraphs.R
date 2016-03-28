@@ -37,12 +37,12 @@ ggplot(AveByTrial, aes(x= Treatment, y =PJEven)) + stat_boxplot(geom ='errorbar'
 		annotate("segment", x = 2, y = 0.97, xend = 2, yend = 0.94)
 
 
-## Logistic plot of feed vs condition
+
 dev.off()
 
 
 
-
+## Logistic plot of feed vs condition
 
 postscript("RuthEcuador2013/BoxFeedingTrials/Graphs/Sharpe_f2b.eps",width = 2.76, height = 2.76)
 
@@ -123,3 +123,9 @@ ggplot(subset(BoxComboMorn, IndFeed == "y"), aes(x = Cond.Scal, y = IndCapNum, l
 
 
 dev.off()
+
+
+############# Histogram of individual residual conditions 
+# Run Residual Condition code
+
+ggplot(Weights, aes(condResiduals, fill = Instar)) + geom_histogram() + mytheme
