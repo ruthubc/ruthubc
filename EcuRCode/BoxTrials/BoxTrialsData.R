@@ -14,6 +14,13 @@ library(plyr)
 library(nlme)
 library(reshape)
 
+
+mytheme <-theme_bw(base_size=10)  + theme(plot.title = element_text(vjust=2), plot.margin=unit(c(0.08, 0.08, 0.0, 0.08),"cm"), 
+				axis.title.y = element_text(vjust=0.50),
+				axis.line = element_line(colour = "grey6", linetype=1, size = 0.3), panel.border = element_blank(), 
+				panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +  theme(strip.background = element_rect(fill = 'white'))
+
+
 Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv", na.strings = NA)
 Feeding <-read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv", na.strings = NA)
 Weights <-read.csv("RuthEcuador2013/BoxFeedingTrials/Weights.csv", na.strings = NA)
@@ -338,5 +345,7 @@ aggregate(TrialID ~ Treatment, AveByTrial, function(x) length(unique(x)))
 aggregate(IndBoxID ~ Treatment, subset(AveByTrial, noCap >0), function(x) length(unique(x)))
 
 aggregate(TrialID ~ Treatment, subset(AveByTrial, noCap >0), function(x) length(unique(x)))
+
+
 
 

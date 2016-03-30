@@ -128,4 +128,15 @@ dev.off()
 ############# Histogram of individual residual conditions 
 # Run Residual Condition code
 
-ggplot(Weights, aes(condResiduals, fill = Instar)) + geom_histogram() + mytheme
+
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/Histogram_ResidualCond.pdf", width =6, height =6)
+ggplot(Weights, aes(condResiduals, fill = Instar)) + geom_histogram(colour = "white") + mytheme + scale_fill_grey(start = 0, end = .4)
+dev.off()
+
+
+pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/Histogram_OldCond.pdf", width =6, height =6)
+
+ggplot(Weights, aes(LogCond, fill = Instar)) + geom_histogram(colour = "white") + mytheme + scale_fill_grey(start = 0, end = .4)
+
+
+dev.off()
