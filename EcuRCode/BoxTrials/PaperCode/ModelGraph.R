@@ -34,7 +34,7 @@ setEPS()
 	
 #pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/ModelGraph.pdf", width =10, height =10, unit)
 
-postscript("RuthEcuador2013/BoxFeedingTrials/Graphs/Sharpe_f4.eps",width = 2.76, height = 2.76)
+#postscript("RuthEcuador2013/BoxFeedingTrials/Graphs/Sharpe_f4.eps",width = 2.76, height = 2.76)
 
 #postscript is the other option but can't find way to increase resolution
 # CairoPS but makes PS files not eps files
@@ -55,4 +55,4 @@ ggplot(data.frame(x=c(0, 0.97)), aes(x)) +  annotate("rect", xmin = pMin, xmax= 
 # geom_vline(xintercept = pMin, linetype = 3, colour = "grey31", size = 0.5)
 #geom_vline(xintercept = pMax, linetype = 3, colour = "grey31", size = 0.5) + 
 #+ annotate("text", x = 0.115, y = 0.03, label = "PS min", size = 3.5 ) + annotate("text", x = 0.72, y = 0.03, label = "PS max", size = 3.5)
-dev.off()
+#dev.off()
