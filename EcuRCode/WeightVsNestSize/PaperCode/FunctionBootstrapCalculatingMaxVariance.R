@@ -5,9 +5,17 @@
 library("plyr")
 
 
-noBoots <- 1000000
-decPlaces <- 3
-Instar <- "Adult"
+noBoots <- 50000
+decPlaces <- 10
+instarInput <- "Adult"
+
+		
+FileSubset <- subset(spidersMul, Instar == instarInput, select = c(NestID, logLeg))
+
+maxVariable <- max(FileSubset$logLeg)
+minVariable <- min(FileSubset$logLeg)
+
+FileSubset <- subset(spidersMul, Instar == instarInput & NestID == "28.8EXa03", select = c(NestID, logLeg))
 
 
 
@@ -18,7 +26,7 @@ sampleFunction <- function(sampleSize, noBoots, minVariable, maxVariable, rowNum
 		rowNum <- rowNumStart + b
 		rndSample <-runif(sampleSize, minVariable, maxVariable)  # random number generator
 		mean <- mean(rndSample)
-		COfV <- sd(rndSample)/ mean
+		COfV <- sd(rndSample)#/ mean
 		outputList <- c(sampleSize, mean, COfV)
 		#print(outputList)
 		output[rowNum,] <- outputList
@@ -29,10 +37,8 @@ sampleFunction <- function(sampleSize, noBoots, minVariable, maxVariable, rowNum
 }
 
 
+relativeVarFun <- function(noBoots, decPlaces, spidersBoot){
 
-relativeVarFun <- function(instarInput, noBoots, decPlaces){
-
-	spidersBoot<- subset(spidersMul, Instar == instarInput, select = c(NestID, logLeg))
 
 	spidersBoot <- spidersBoot[complete.cases(spidersBoot), ]  # removing any NA's
 
@@ -46,8 +52,8 @@ relativeVarFun <- function(instarInput, noBoots, decPlaces){
 	sampleSizes <- unique(spidersBootAve$N)  # list of unique sample sizes
 
 
-	maxVariable <- max(spidersBoot$variable)
-	minVariable <- min(spidersBoot$variable)
+	maxVariable# <- max(spidersBoot$variable)
+	minVariable# <- min(spidersBoot$variable)
 
 
 	iterations <- noBoots  * length(sampleSizes)
@@ -83,6 +89,7 @@ relativeVarFun <- function(instarInput, noBoots, decPlaces){
 	outputDF[,'mean']=round(outputDF[,'mean'], decPlaces )  # rounding decimal places
 
 	spidersBootAve$maxVar <- as.numeric(NA)
+	spidersBootAve$NumMatch <- as.numeric(NA)
 	
 	outputDF$sampleSize <- as.integer(outputDF$sampleSize)
 
@@ -95,17 +102,25 @@ relativeVarFun <- function(instarInput, noBoots, decPlaces){
 		smpSzeOrg <- spidersBootAve$N[nest]
 		subTab <- subset(outputDF, mean == meanOrg & sampleSize == smpSzeOrg)
 		print("length of sub table")
-		print(nrow(subTab))
+		subTabLen <- nrow(subTab)
 		maxCOfV <- max(subTab$COfV) # max coefficient of variation
 		spidersBootAve$maxVar[nest] <- maxCOfV
+		spidersBootAve$NumMatch[nest] <- subTabLen
 		
 	}
 	
-	return(spidersBootAve) #(spidersBootAve)
+	return(outputDF) #(spidersBootAve)
 	
 }
 
 
 
-SpiderVarOutput <- relativeVarFun(Instar, noBoots, decPlaces)
+SpiderVarOutput <- relativeVarFun(noBoots, decPlaces, FileSubset)
 
+#write.csv(SpiderVarOutput, file = "RuthEcuador2013/NestSize/MaxVariance/Adults_logLeg.csv")
+
+
+
+#check <- subset(spidersMul, NestID == "28.8EXa03" & Instar == "Adult")
+
+ggplot(SpiderVarOutput, aes(x = mean, y = COfV)) + geom_point()
