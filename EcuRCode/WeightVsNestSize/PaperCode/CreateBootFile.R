@@ -30,10 +30,10 @@ sampleFunction <- function(sampleSize, noBoots, minVariable, maxVariable){
 	
 }
 
-output <- sampleFunction(5, 500000, 1, 10 )
+output <- sampleFunction(17, 1000000, 1, 4)
 
 #ggplot (output, aes(mean)) + geom_histogram()
 
-outputSub <- subset(output, mean > 7.999 & mean < 8.001)
+outputSub <- subset(output, mean > 1.99 & mean < 2.01)
 
-write.csv(outputSub, "boots.csv")
+write.csv(outputSub, "boots_sample17_mean2.csv")
