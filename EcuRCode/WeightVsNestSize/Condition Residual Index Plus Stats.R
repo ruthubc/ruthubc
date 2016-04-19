@@ -158,7 +158,7 @@ summary(condVarLmAd)
 #condition variance by instar
 
 pdf("RuthEcuador2013/NestSize/Graphs/ConditionVsInstarBoxplot.pdf", width =30, height =20)
-ggplot(CVCondRes, aes(x = InstarOrdered, y = log(CVCondRes))) + geom_boxplot() + mytheme #  might show something
+ggplot(CVCondRes, aes(x = Instar, y = log(CVCondRes))) + geom_boxplot() + mytheme #  might show something
 dev.off()
 
 
