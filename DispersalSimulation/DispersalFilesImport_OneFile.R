@@ -34,17 +34,17 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	print("START")
 	print(fileName)
-
+	
 	#### REMEMBER: Before sending to grex remove the printing stuff.
 	#filetoImport <- paste(fileName, ".py.csv", sep = "") #############################################################################################
 	filetoImport <- paste(folder, fileName, ".py.csv", sep = "")
-
+	
 	mytheme = theme(text = element_text(size=16))
-
+	
 	
 	pngTitle <- paste(folder, fileName, "_graph", ".png", sep = "")
-
-
+	
+	
 	File <- read.csv(filetoImport, quote = "")
 	maxPopAge <- max(File$pop_age)
 	#print ("maxPop age")
@@ -62,7 +62,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	File$AveOffAd <- File$numjuvs/File$num_ads
 	File$AveOffAd[which(File$AveOffAd == Inf)] <- NA
-
+	
 	
 	#cols<- as.numeric(levels(as.factor(File$colony_ID)))
 	
@@ -79,7 +79,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		File$prevDisp <- "n"
 	}
 	
-
+	
 	
 	ColInfo <- data.frame(pop_age = File$pop_age, col_age = File$colony_age, col_id = File$colony_ID, 
 			numAdsB4dis = File$num_adsB4_dispersal, dispersers = File$dispersers, prevDisp = File$prevDisp)
@@ -110,9 +110,9 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 			maxNumAds = max(num_ads),
 			minNumAds = min(num_ads),
 			meanNumAds = mean(num_ads)
-		)
+	)
 	
-
+	
 	
 	File$pcntDisperse <- File$dispersers / File$num_adsB4_dispersal
 	File$pcntDisperse[which(File$pcntDisperse == Inf)] <- NA
@@ -123,7 +123,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	interval <- ceiling(max(File$num_adsB4_dispersal)/200)
 	
 	#Histogram of colony sizes
-
+	
 	p0 <- ggplot(data = File, aes(x= num_adsB4_dispersal, fill = prevDisp)) + geom_histogram(binwidth = interval) +  mytheme + ggtitle("histogram of colony sizes")
 	
 	p00 <- ggplot(data = subset(File, num_ads > 1) , aes(x= num_adsB4_dispersal, fill = prevDisp)) + geom_histogram(binwidth = interval) +  
@@ -137,8 +137,8 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	#number of adults per nest
 	p3 <- ggplot(data = ByPopAge, aes(x= pop_age, y = meanNumAds)) + geom_line() +  geom_line(aes(x=pop_age, y = maxNumAds), colour = "blue") +
-			  geom_line(aes(x=pop_age, y = minNumAds), colour = "red")+ mytheme + ggtitle("Mean, max and min num ads in nest")
-
+			geom_line(aes(x=pop_age, y = minNumAds), colour = "red")+ mytheme + ggtitle("Mean, max and min num ads in nest")
+	
 	#average age
 	#p4 <- ggplot(data = ByPopAgeAndCol, aes(x= factorAge, y = colony_age)) + geom_point(size = 1) +  mytheme + ggtitle("colony age by population age")
 	
@@ -165,7 +165,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	
 	# Nest size before dispersal vs food per adult 
-#### OK THIS DOESN'T MAKE ANY SENSE. SHOULD BE POTENTIAL FOOD IF NO INDIVIDUAL DISPERSED
+	#### OK THIS DOESN'T MAKE ANY SENSE. SHOULD BE POTENTIAL FOOD IF NO INDIVIDUAL DISPERSED
 	p7 <- ggplot(data = File, aes(x=num_adsB4_dispersal, y = foodPerAd, colour = prevDisp)) + geom_point() + stat_smooth(se = FALSE) +  
 			mytheme + scale_y_continuous(limits = c(0, NA)) + ggtitle("colony food per capita before dispersal x=num_adsB4_dispersal, y = colony_food/num_ads")
 	
@@ -187,14 +187,14 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 			scale_y_continuous(limits = c(0, 1)) + ggtitle("percentage juvs moults vs. num ads after dispersal")
 	
 	# percentage of adults dispersing by nest size
-
+	
 	## AGAIN I DON'T THINK THIS MAKES SENSE 
 	p12 <- ggplot(data = File, aes(x=num_ads, y = ave_food, colour = prevDisp)) + geom_point() +
 			mytheme + scale_y_continuous(limits = c(0, 1)) + stat_smooth(se = FALSE) + ggtitle("ave food per adult")
 	
 	rm(ByPopAge)
 	
-
+	
 	deadcols <- subset(File, colAlive== 'dead')
 	
 	if (nrow(deadcols) == 0){
@@ -202,17 +202,17 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		p13<-ggplot(df) + geom_point() + xlim(0, 10) + ylim(0, 100) + ggtitle("NO COLONIES DIED!!")
 		print("no colonies died")
 	}else{
-	# histogram of size of dead colonies
+		# histogram of size of dead colonies
 		p13 <- ggplot(data = subset(File, colAlive== 'dead'), aes(x= num_ads, fill = prevDisp )) + geom_histogram() + mytheme + ggtitle("histogram of size of colonies when died (num ads after dispersal)")
 	}
 	rm(deadcols)
-
+	
 	
 	
 	
 	#### Ind Files Graphs
-
-
+	
+	
 	
 	AdsByPopAgeAndCol <- melt(File, id.vars = c("colony_ID", "colony_age", "num_adsB4_dispersal"), 
 			measure.vars = c("adSz_B4_min", "adSz_B4_max", "adSz_B4_mean"), variable.name="MinMax", value.name="AdSize")
@@ -222,49 +222,49 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1)) + ggtitle("ad size vs col size b4 dispersal")
 	
 	rm(AdsByPopAgeAndCol)
-
+	
 	
 	JuvsByPopAgeAndCol <- melt(File, id.vars = c("colony_ID", "colony_age", "num_adsB4_dispersal"), 
 			measure.vars = c("jvSz_B4_min", "jvSz_B4_max", "jvSz_B4_mean"), variable.name="MinMax", value.name="JuvSize")
-		
+	
 	# Colony size by number of juvs
 	p17 <- ggplot(data = JuvsByPopAgeAndCol, aes(x= num_adsB4_dispersal, y = JuvSize, colour = MinMax)) + geom_point() +
 			stat_smooth(se = FALSE) + mytheme + scale_y_continuous(limits = c(0, 1)) + ggtitle("juv size vs ads before dispersal")
 	
-
+	
 	rm(JuvsByPopAgeAndCol)		
 	
 	
 	rm(File)
 	
 	########## Making n n+1 graphs
-
+	
 	#nnplus1 <- data.frame(col_id=numeric(), pop_age = numeric(),  N=numeric(), NPlus1=numeric(), disp = numeric(), prevDisp = character(),
 	#stringsAsFactors=FALSE) # creating empty data frame
-
+	
 	
 	#print(length(cols))
 	ColInfo$ColAgePlus1 <- ColInfo$col_age
-
+	
 	ColInfoPlus1 <- subset(ColInfo, select = c("col_id", "numAdsB4dis", "col_age"))
-
+	
 	colnames(ColInfoPlus1)[2] <- "NPlus1"
-
+	
 	ColInfoPlus1$ColAgePlus1 <- ColInfoPlus1$col_age - 1
-
+	
 	nnplus1 <- merge(ColInfo, ColInfoPlus1,  by =c("ColAgePlus1", "col_id"))
-
+	
 	colnames(nnplus1)[5] <- "N"
-
-
-
+	
+	
+	
 	nnplus1 <- subset(nnplus1, prevDisp != "now")  # removing colonies that have just dispersed
-
-
+	
+	
 	nnplus1 <- subset(nnplus1, pop_age < num_gens - 1 ) # removing nests at the end of generations that might not have died
-
+	
 	nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N	
-
+	
 	
 	
 	nnplus1$AveGrowth <- (nnplus1$NPlus1 - nnplus1$N) / nnplus1$N
@@ -272,11 +272,11 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	#ave growth rate per ind
 	p13a <- ggplot(data = nnplus1, aes(x  = N, y = AveGrowth)) + geom_point(aes(colour = prevDisp)) + stat_smooth() + mytheme + ggtitle("ave growth rate per ind nnplus1-n/n") + stat_smooth(se = FALSE)
 	
-
+	
 	
 	######## calculating logistic equation with all nests
 	
-
+	
 	logistic <- tryCatchLogistic(nnplus1)
 	
 	options(warn = -1) #suppress warnings globally
@@ -328,7 +328,7 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 		p15 <- ggplot(data = nnplus1, aes(x= N, y = NPlus1)) + geom_point() + 
 				geom_abline(intercept = 0, slope = 1 ) + scale_y_continuous(limits = c(0, NA)) + scale_x_continuous(limits = c(0, NA)) +
 				geom_line(aes(x = N, y = logisticPredict), colour = 'blue') + ggtitle("logistic eqn without single nests")
-	
+		
 		
 	}
 	
@@ -339,25 +339,25 @@ graphFunction <- function(folder, fileName, num_gens, min_popAge){
 	
 	
 	rm(nnplus1)
-
+	
 	
 	h1 <- 2/5
 	h2 <- 3/5
 	
 	p_grob <- arrangeGrob(p14,p15, ncol=2)
 	print(grid.arrange(p0, p00, p1, p2, p3,  p4, p5, p6, p6a, p7, p8, p8a, p9, p11, p12, p13, p13a,  p_grob,
-					 p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), top = mytitle))
-	 
-
-					#main = mytitle))
+					p16, p17, ncol = 1, heights = c(h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h1, h2, h1, h1), top = mytitle))
+	
+	
+	#main = mytitle))
 	
 	dev.off()
 	
-
+	
 }
 
 
- 
+
 #folder <- "R_Graphs/" ####################################################################################################################
 folder <- "DisperalSimulationOutput/"
 
@@ -379,7 +379,7 @@ print (numFiles)
 loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "plyr", "gridExtra", "reshape2", "broom")) %dopar%{
 	
 #for (i in 1:numFiles){ # for testing, if you just do the parrallel loop thing errors don't show
-
+	
 	num <- files[i]
 	
 	theFileName <-fileNames[num,1]
@@ -387,7 +387,7 @@ loop <- foreach(i=1:numFiles, .errorhandling='remove', .packages= c("ggplot2", "
 	print (theFileName)
 	num_gens <- as.numeric(fileNames[num, 3])
 	output <- graphFunction(folder, theFileName, num_gens, min_popAge)
-
+	
 }
 
 stopCluster(cl)

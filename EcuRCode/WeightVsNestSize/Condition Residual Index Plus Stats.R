@@ -9,13 +9,20 @@ library (grid)
 library (lme4)
 library(lmerTest)
 library(visreg)
+
+ggplot(spiders, aes(x = log10(HeadLength.mm))) + geom_histogram()
+
+
 mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 spiders$InstarOrdered <- factor(spiders$Instar, levels= c("Adult", "Sub2", 
 				"Sub1", "Juv4", "AdMale", "SubMale"))
 
+
+spiders <- mutate(spiders, logHead = log10(HeadLength.mm))
 spiders<- subset(spiders, !is.na(logWt) )
+spiders<- subset(spiders, !is.na(logHead) )
 
 #spiders$lnLeg <- log(spiders$LegLen.mm)
 #spiders$lnWt <- log(spiders$Weight.mg) # natural log rather than log10 but doesn't matter
@@ -24,13 +31,13 @@ spiders<- subset(spiders, !is.na(logWt) )
 
 
 #calculating the residual index
-ggplot(spiders, aes(logLeg, logWt)) + geom_point() + geom_smooth(method=lm)# + facet_wrap(~Instar,  scales = "free")
+ggplot(spiders, aes(logHead, logWt)) + geom_point() + geom_smooth(method=lm)# + facet_wrap(~Instar,  scales = "free")
 #ggplot(spiders, aes(lnLeg, lnWt)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE) # log or nat log doesn't make a difference
 
-model <- lm(logWt ~ logLeg, spiders ) # doesn't matter which way round this is
+model <- lm(logWt ~ logHead, spiders ) # doesn't matter which way round this is
 #model <- lm(logWt ~ logLeg + Instar + logLeg:Instar, spiders ) # whichever one i use doesn't make a difference
 
-visreg(model, xvar = "logLeg", by = "Instar" )
+visreg(model, xvar = "logHead", by = "Instar" )
 
 
 summary(model)
@@ -75,7 +82,7 @@ anova(condResLmFull, condResLmRed) # comparing full model to reduced model
 levels(spiders$Instar)
 
 condResByInstar <- lmer(condResiduals ~  logCtFm  + 
-				(1|NestID), data = subset(spidersMult, Instar == 'Juv4'), REML = FALSE)
+				(1|NestID), data = subset(spidersMult, Instar == 'Sub2'), REML = FALSE)
 
 summary(condResByInstar)
 
@@ -86,10 +93,28 @@ summary(condResByInstar)
 #submale not significant
 #ad male not significant
 
+LMERS_fun <- function(data) {
+	condResByInstar <- lmer(condResiduals ~  logCtFm  + 
+					(1|NestID), data, REML = FALSE)
+	condRed <- lmer(condResiduals ~  (1|NestID), data, REML = FALSE)
+	return(list(condResByInstar, condRed))
+	
+}
+
+
+instarLMER <- dlply(spidersMult, .(Instar),        
+		function(x) LMERS_fun(x))
+
+sink('analysis-output.txt')
+
+lapply(instarLMER, FUN = function(x) anova(x[[1]], x[[2]]))
+
+sink()
+
 
 ###############Back to graphs ##############
 #condition vs instar Males have significantly reduced condition compared to all other instars
-ggplot(spiders, aes(x = InstarOrdered, y = condResiduals)) + geom_boxplot() + mytheme
+ggplot(spiders, aes(x = Instar, y = condResiduals)) + geom_boxplot() + mytheme
 
 
 # cond residuals vs multiple and single nests
@@ -133,7 +158,7 @@ summary(condVarLmAd)
 #condition variance by instar
 
 pdf("RuthEcuador2013/NestSize/Graphs/ConditionVsInstarBoxplot.pdf", width =30, height =20)
-ggplot(CVCondRes, aes(x = InstarOrdered, y = log(CVCondRes))) + geom_boxplot() + mytheme #  might show something
+ggplot(CVCondRes, aes(x = Instar, y = log(CVCondRes))) + geom_boxplot() + mytheme #  might show something
 dev.off()
 
 
