@@ -2,6 +2,7 @@
 ###############################################################################
 
 library(plyr)
+library(dplyr)
 
 # function to calculate maximum variance
 calMaxVarFun <- function(mean, sampSize, min, max){
@@ -35,67 +36,61 @@ calMaxVarFun <- function(mean, sampSize, min, max){
 	
 }
 
-## put in check that no max sd is larger than data sd
-
-#instarInput <- "Adult"
 
 
-spidersBoot <- subset(spidersMul, select = c(NestID, Instar, logLeg))
-
-#spidersBoot <- subset(spidersMul, Instar == instarInput & NestID == "28.8EXa03", select = c(NestID, logLeg))
-
-spidersBoot <- spidersBoot[complete.cases(spidersBoot), ]  # removing any NA's
-
-colnames(spidersBoot)[3] <- "variable"  # changing name of variable of interest for function
-
-spidersBoot$variable <- spidersBoot$variable + 1
-
-spidersMinMaxVar <- ddply(spidersBoot, .(Instar), summarise,
-		max_variable = max(variable),
-		min_variable = min(variable)
-)
-
-
-spidersBootAve <- ddply(spidersBoot, .(NestID, Instar), summarise,
-		N = length(variable),
-		mean = mean(variable),
-		sd_data = sd(variable)
-)
-
-spidersBootAve <- merge(spidersBootAve, spidersMinMaxVar, by = c("Instar"))
-
-spidersBootAve <- spidersBootAve[complete.cases(spidersBootAve), ]
-
-
-spidersBootAve$mean_list <- as.numeric(NA)
-spidersBootAve$sd_Max <- as.numeric(NA)
-
-numNests <- nrow(spidersBootAve)
-
-for(nest in 1:numNests){
+calRelVariance <- function(data, inputVar) {
 	
-	print(nest)
-	data_mean <- spidersBootAve$mean[nest]
-	sampSize <- spidersBootAve$N[nest]
-	minVariable <- spidersBootAve$min_variable[nest]
-	maxVariable <- spidersBootAve$max_variable[nest]	
-	maxVarList<- calMaxVarFun(data_mean, sampSize, minVariable,  maxVariable )  # mean, sampleSize, minVar, maxVar
-	print(maxVarList)
-	mean_list <- mean(maxVarList)
-	sd_max <- sd(maxVarList)
-	spidersBootAve[nest, 8] <- mean_list
-	spidersBootAve[nest, 9] <- sd_max
+	
+	column_index <- which(names(data) == inputVar)
+	
+	if(length(column_index) == 0){ stop('variable not found - check spelling')}
+	
+	
+	spidersBoot <- select(data, one_of(c("NestID", "Instar", "CountFemales", "logCtFm", inputVar)))
+	spidersBoot <- spidersBoot[complete.cases(spidersBoot), ]  # removing any NA's
+	colnames(spidersBoot)[5] <- "variable"  # changing name of variable of interest for function
+	
+	spidersBoot <- ddply(spidersBoot, "Instar", transform, maxVar = max(variable), minVar = min(variable)) # calculating max and min
+	
+	spidersBootAve <- ddply(spidersBoot, .(NestID, Instar, CountFemales, logCtFm, minVar, maxVar), summarise,
+			N = length(variable),
+			mean = mean(variable),
+			sd_data = sd(variable)
+	)
+	
+	spidersBootAve <- spidersBootAve[complete.cases(spidersBootAve), ]
+	
+	
+	spidersBootAve$mean_list <- as.numeric(NA)
+	spidersBootAve$sd_Max <- as.numeric(NA)
+	
+	numNests <- nrow(spidersBootAve)
+	
+	for(nest in 1:numNests){
+		
+		print(nest)
+		data_mean <- spidersBootAve$mean[nest]
+		sampSize <- spidersBootAve$N[nest]
+		minVariable <- spidersBootAve$minVar[nest]
+		maxVariable <- spidersBootAve$maxVar[nest]	
+		maxVarList<- calMaxVarFun(data_mean, sampSize, minVariable,  maxVariable )  # mean, sampleSize, minVar, maxVar
+		mean_list <- mean(maxVarList)
+		sd_max <- sd(maxVarList)
+		spidersBootAve[nest, 10] <- mean_list
+		spidersBootAve[nest, 11] <- sd_max
+	}
+	
+	spidersBootAve <- mutate(spidersBootAve, relativeVar =sd_data/sd_Max)
+	
+	print (max(spidersBootAve$relativeVar) )
+	
+	if(max(spidersBootAve$relativeVar) >= 1) { warning("something went wrong - real variance more than calculated max variance") }
+
+	
+	return(spidersBootAve)
+	
+	
 }
-	
-spidersBootAve$relativeVar <- spidersBootAve$sd_data/spidersBootAve$sd_Max
-
-out <- calMaxVarFun(mean, sampSize, maxVariable, minVariable) 
-out <- calMaxVarFun(0.449, 18, 0.41, 0.557)   # mean, sampleSize, minVar, maxVar
-out
-
-mean(out)
-sd(out)
-
 
 
 
