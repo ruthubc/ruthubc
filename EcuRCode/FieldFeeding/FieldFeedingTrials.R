@@ -7,8 +7,9 @@
 library(plyr)
 library(ggplot2)
 library(reshape)
-library(glmmADMB)
+#library(glmmADMB)
 library(gridExtra)
+library(lmerTest)
 
 Fld_Feed <- read.csv("RuthEcuador2013/FieldFeedingTrials/FeedingData.csv", na.strings = NA)
 Fld_Trials<-read.csv("RuthEcuador2013/FieldFeedingTrials/IndTrials.csv", na.strings = NA)
@@ -126,3 +127,14 @@ fit<- glmmadmb(value ~ time*Instar*Size +(Nest|TrialID),
 		family="poisson")
 
 summary(fit)
+
+
+########### Testing as count data #####
+
+ggplot(mdata, aes(x = TotNumInd)) + geom_histogram()
+
+# poisson
+glmFFT <- glmer(TotNumInd ~ time + Size + Instar + Instar:time +  (1|TrialID), data = mdata, family = poisson(link = "log"))
+
+summary(glmFFT)
+anova(glmFFT)

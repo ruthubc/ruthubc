@@ -9,7 +9,7 @@ library (lme4)
 library(lmerTest)
 library(visreg)
 
-condition_residuals <- function(inputData, bodyLenVar) {
+condition_residuals <- function(inputData, bodyLenVar, subset_multiple) {
 	
 	column_index <- which(names(inputData) == bodyLenVar)
 	
@@ -23,6 +23,11 @@ condition_residuals <- function(inputData, bodyLenVar) {
 	model <- lm(logWt ~ variable, inputData )
 	
 	inputData$condResiduals <- resid(model)  # putting the residuales into the dable
+	
+	if (subset_multiple == "y") {
+		inputData <- subset(inputData, type == "multiple")
+		
+	}
 
 	
 	return(inputData)
@@ -32,7 +37,9 @@ condition_residuals <- function(inputData, bodyLenVar) {
 
 printOutput <- function(model) {
 	
-	print(model)
+	print("")
+	print("NEW MODEL")
+	print(model@call)
 	print("")
 	print("Anova on single model")
 	print(anova(model))
