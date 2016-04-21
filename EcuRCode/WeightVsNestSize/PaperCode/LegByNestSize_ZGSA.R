@@ -2,7 +2,7 @@
 
 ######## Leg vs Nest Size #####
 
-InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "y", "LegLengthvsNestSize_by_Instar_ZGSA")
+
 
 LMERS_fun <- function(myData) {
 	lmFull <- lm(logLeg ~  logCtFm, data = myData)
@@ -48,4 +48,4 @@ sink()
 
 
 
-
+InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "y", "LegLengthvsNestSize_by_Instar_ZGSA", legLmNoSq)

@@ -4,7 +4,7 @@ spiConRes <- condition_residuals(spiders, "logLeg", "y")
 
 ######## Condition vs Nest Size #####
 
-InstarGridGraph(spiConRes, "condResiduals", "Body Condition", "y", "BodyCondvsNestSize_by_Instar_ZGSA")
+
 
 LMERS_fun <- function(myData) {
 	lmFull <- lm(condResiduals ~  logCtFm, data = myData)
@@ -46,4 +46,7 @@ print("leg length by instar")
 lapply(instarLMER, FUN = function(x) anova(x[[1]], x[[2]]))
 
 sink()
+
+
+InstarGridGraph(spiConRes, "condResiduals", "Body Condition", "y", "BodyCondvsNestSize_by_Instar_ZGSA", legLmNoSq)
 
