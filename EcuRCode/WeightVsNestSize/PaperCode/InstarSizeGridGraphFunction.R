@@ -13,8 +13,9 @@ library(RGraphics)
 #
 
 
-InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName = "" ) {	
+InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName = "", model ) {	
 	
+	# whether or not to export the data
 	if (export == "y") {
 		outputpath <- paste("RuthEcuador2013/NestSize/Graphs/", fileName, ".pdf", sep = "")
 		print(outputpath)
@@ -24,13 +25,21 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	
 	column_index <- which(names(spiderData) == variable)
 	
+	### error checking for input variable
 	if(length(column_index) == 0){ stop('variable not found - check spelling')}
 	
 	no_rows <- nrow(spiderData)
+	
+	minNstSz <- min(spiderData$CountFemales)
+	
+	
+	
 
 	
-	MyPlots <- function(data, var, num_rows) { # function to make the graphs
+	MyPlots <- function(data, var, num_rows, model, minNstSz) { # function to make the graphs
 		current.Instar <- as.character(unique(data$Instar)) # get the Name of the current subset
+		
+		
 		
 		data$variable <- data[,column_index]
 		
@@ -45,12 +54,27 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 		}
 		
 		
-		p <- p + geom_point() + ggtitle(current.Instar) + 
-				stat_smooth(method = "lm", formula = y~x, se = FALSE) + 
-				scale_x_log10(limits = c(1, 6000 )) + theme_classic(base_size=15) + 
+		p <- p + geom_point() + ggtitle(current.Instar) + 				
+				scale_x_log10(limits = c(minNstSz, 6000 )) + theme_classic(base_size=15) + 
 				theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
 				theme(panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1)) +
 				theme(panel.margin= unit(0.0, "lines")) + theme(plot.title = element_text(size=15))
+		
+		
+		if (typeof(model) == "character") {
+			
+			p <- p + stat_smooth(method = "lm", formula = y~x, se = FALSE)
+			
+		} else {
+			
+			Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit
+			
+			Vis_fit <- subset(Vis_fit, Instar == current.Instar)
+			
+			p <- p + geom_line(data = Vis_fit, aes(x = (10^logCtFm), y= visregFit))
+			
+			
+		}
 				
 		
 		return(p)  
@@ -58,7 +82,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	
 	# this creates a list of plots
 	my.plots <- dlply(spiderData, .(Instar),        
-			function(x) MyPlots(x, variable, no_rows))
+			function(x) MyPlots(x, variable, no_rows, model, minNstSz))
 	
 	define_region <- function(row, col){
 		viewport(layout.pos.row = row, layout.pos.col = col)
@@ -82,19 +106,28 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	print(my.plots$Adult, vp=define_region(1:2, 5))
 	print(my.plots$SubMale, vp = define_region(3:4, 3))
 	print(my.plots$AdMale, vp = define_region(3:4, 4))
-	print((arrow(angle = 30, length = unit(0.25, "inches"),ends = "last", type = "open")), vp=define_region(1,2))
 	
 	
 	# adding text
 	grid.text('Females', vp=define_region(1,2), gp=gpar(fontsize=18))#x=1.1, y=0.1)# adds text to the plot
-	grid.text('Males', vp=define_region(4,2), gp=gpar(fontsize=18))
+	grid.text('  Males', vp=define_region(4,2), gp=gpar(fontsize=18))
 	grid.text('Nest Size (Number of Adult Females)', vp=define_region(5,3:4), x=0.5, y=1, gp=gpar(fontsize=15))
 	grid.text(yaxisLabel, vp=define_region(2:3,1), rot = 90, just = "top", x=0.8, y=0.5, gp=gpar(fontsize=15))
-	#grid.lines(x = unit(c(0, 1), "npc"), y = unit(c(0, 1), "npc"), default.units = "npc")vp=define_region(1,2)
-#	grid.lines(x = (c(0, 0)), y = (c(0.5, 0.5)), arrow = arrow(angle = 30, length = unit(0.5, "inches"),
-#					ends = "last", type = "open"), vp=define_region(1,2))
 
-	
+	## Arrows on graph
+	arrow_gp <- gpar(fill = TRUE, lwd = 3)
+	arrow_vars <- arrow(angle = 30, length = unit(0.1, "inches"), type = 'closed')
+	x_coors = (c(0.75, 0.95))
+	grid.lines(x = x_coors, y = (c(0.5, 0.4)), gp = arrow_gp, 
+		arrow = arrow_vars, vp=define_region(1,2))
+	grid.lines(x = x_coors, y = (c(0.5, 0.6)), gp = arrow_gp, 
+		arrow = arrow_vars, vp=define_region(4,2))
+
+
+
+				
+
+
 	if (export == "y") {
 		dev.off()
 		print ("graph exported")
@@ -104,5 +137,4 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 
 
 
-InstarGridGraph()
-InstarGridGraph(spidersMul, "logLeg", "testing yet again", "y", "testGraph2")
+InstarGridGraph(spidersMul, "logLeg", "testing wiht visreg", "n", "_testGraph2",  "n")
