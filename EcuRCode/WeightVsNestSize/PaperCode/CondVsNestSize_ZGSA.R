@@ -50,3 +50,8 @@ sink()
 
 InstarGridGraph(spiConRes, "condResiduals", "Body Condition", "y", "BodyCondvsNestSize_by_Instar_ZGSA", legLmNoSq)
 
+pdf("RuthEcuador2013/NestSize/Graphs/ConditionModel.pdf", height=8, width=10)
+ggplot(spiders, aes(x = logLeg, y = logWt)) + geom_point(aes(colour = Instar)) + mytheme + stat_smooth(method = "lm", formula = y~x, se = FALSE) +
+		ylab("Spider Weight (log)") + xlab("Leg Length (log)")
+dev.off()
+
