@@ -42,6 +42,7 @@ PJRedModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), SubAveByTrial, REML = 
 
 anova(PJMod4, PJRedModTreat)
 
+# testing instar
 PJRedModInstar <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), SubAveByTrial, REML = FALSE)
 
 anova(PJMod4, PJRedModInstar)
