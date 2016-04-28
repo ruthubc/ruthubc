@@ -3,7 +3,8 @@
 # Author: Ruth
 ###############################################################################
 
-library(lme4)
+library(lmerTest)
+library(visreg)
 
 #### Box trails graphs. Code importing and manipulating the data is in BoxTrialsData.R
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/BoxTrialsData.R")
@@ -33,9 +34,17 @@ PJMod4 <-  lmer(AsinPJEven ~ Treatment +Instar+ (1|IndBoxID), SubAveByTrial, REM
 #mod4 has no interaction as interaction is very not significant
 #Glmer very very overdispersed. Lmer Fits assumptions reasonably well
 
+anova(PJMod4)
+
+visreg(PJMod4)
+
 PJRedModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), SubAveByTrial, REML = FALSE)
 
 anova(PJMod4, PJRedModTreat)
+
+PJRedModInstar <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), SubAveByTrial, REML = FALSE)
+
+anova(PJMod4, PJRedModInstar)
 
 
 #####################################################################################
