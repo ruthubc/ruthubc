@@ -30,13 +30,21 @@ ddply(AveByTrial,. (Treatment),
 #######################################################################################
 # Evenness vs prey size
 
+PJModInteraction <-  lmer(AsinPJEven ~ Treatment +Instar + Treatment:Instar + (1|IndBoxID), SubAveByTrial, REML = FALSE)
+
+anova(PJModInteraction)
+
+
 PJMod4 <-  lmer(AsinPJEven ~ Treatment +Instar+ (1|IndBoxID), SubAveByTrial, REML = FALSE)
 #mod4 has no interaction as interaction is very not significant
 #Glmer very very overdispersed. Lmer Fits assumptions reasonably well
 
 anova(PJMod4)
 
+
 visreg(PJMod4)
+
+anova(PJMod4, PJModInteraction)
 
 PJRedModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), SubAveByTrial, REML = FALSE)
 

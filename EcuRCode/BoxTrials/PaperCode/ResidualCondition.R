@@ -46,7 +46,7 @@ ggplot(Weights, aes(condResiduals, fill = Instar)) + geom_histogram() # normal
 #ggplot(Weights, aes(x = condResiduals, y = logHead, colour = Instar)) + geom_point()
 
 # plotting res condition against weight
-#ggplot(Weights, aes(x = condResiduals, y = logWt, colour = Instar)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE)
+ggplot(Weights, aes(x = condResiduals, y = logWt, colour = Instar)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE)
 
 ### Is there a difference in residual condition between instars
 
