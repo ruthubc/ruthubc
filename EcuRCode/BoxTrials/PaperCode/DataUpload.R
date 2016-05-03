@@ -33,7 +33,12 @@ colnames(BoxTrialsDataAcc)[which(names(BoxTrialsDataAcc) == "BoxCapture")] <- 'P
 # put time eating and capture to NA if evening
 # Only include trials where they actually ate or where prey capture was observed, some boxes captured but did not eat.
 
+BoxTrialsDataAcc$PreyCaptureObserved <- ifelse(BoxTrialsDataAcc$TimeOfDay == 'eve', "n", BoxTrialsDataAcc$PreyCaptureObserved)
+
+
 
 BoxTrialsDataAcc$TotalTimeEating.mins <- ifelse(BoxTrialsDataAcc$TimeOfDay == 'eve', NA, BoxTrialsDataAcc$TotalTimeEating.mins)
 
-BoxTrialsDataAcc$IndCapture <- ifelse(BoxTrialsDataAcc$PreyCaptureObserved == 'n', NA, BoxTrialsDataAcc$IndCapture)
+BoxTrialsDataAcc$IndCapture <- ifelse(BoxTrialsDataAcc$PreyCaptureObserved == 'n' , NA, BoxTrialsDataAcc$IndCapture)
+
+write.csv(BoxTrialsDataAcc, file = "RuthEcuador2013/BoxFeedingTrials/Sharpe_PreySizeCompetition.csv")

@@ -29,7 +29,7 @@ Weights<- subset(Weights, !is.na(logWt)& !is.na(logHead))
 #ggplot(Weights, aes(logHead, logWt)) + geom_point() + geom_smooth(method=lm)# + facet_wrap(~Instar,  scales = "free")
 #ggplot(spiders, aes(lnLeg, lnWt)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE) # log or nat log doesn't make a difference
 
-model <- lm(logWt ~ logHead, Weights ) # doesn't matter which way round this is
+model <- lm(logWt ~ logHead + Instar, Weights ) # doesn't matter which way round this is
 # If instar is included in this model the interaction in prey capture is only just not significant. 
 #model <- lm(logWt ~ logHead + Instar + logHead:Instar, spiders ) # whichever one i use doesn't make a difference
 

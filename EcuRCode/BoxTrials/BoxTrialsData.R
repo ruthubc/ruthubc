@@ -347,5 +347,27 @@ aggregate(IndBoxID ~ Treatment, subset(AveByTrial, noCap >0), function(x) length
 aggregate(TrialID ~ Treatment, subset(AveByTrial, noCap >0), function(x) length(unique(x)))
 
 
+### Residual Condition for Histograme
+
+Weights$logHead <- log10(Weights$HeadLen.mm)
+Weights$logWt <- log10(Weights$Weight.1)
+
+Weights<- subset(Weights, !is.na(logWt)& !is.na(logHead))
+
+#calculating the residual index
+#ggplot(Weights, aes(logHead, logWt)) + geom_point() + geom_smooth(method=lm)# + facet_wrap(~Instar,  scales = "free")
+#ggplot(spiders, aes(lnLeg, lnWt)) + geom_point() + geom_smooth(method=lm, fullrange = TRUE) # log or nat log doesn't make a difference
+
+model <- lm(logWt ~ logHead + Instar, Weights ) # doesn't matter which way round this is
+# If instar is included in this model the interaction in prey capture is only just not significant. 
+#model <- lm(logWt ~ logHead + Instar + logHead:Instar, spiders ) # whichever one i use doesn't make a difference
+
+#visreg(model, xvar = "logHead", by = "Instar" )
+
+
+#summary(model)
+Weights$condResiduals <- resid(model) 
+
+
 
 

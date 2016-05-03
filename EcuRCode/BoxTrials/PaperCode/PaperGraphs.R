@@ -129,14 +129,31 @@ dev.off()
 # Run Residual Condition code
 
 
-pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/Histogram_ResidualCond.pdf", width =6, height =6)
-ggplot(Weights, aes(condResiduals, fill = Instar)) + geom_histogram(colour = "white") + mytheme + scale_fill_grey(start = 0, end = .4)
+hist_theme <-theme_bw(base_size=17)  + theme(axis.title.y = element_text(vjust=0.50),
+				axis.line = element_line(colour = "grey6", linetype=1, size = 0.3), panel.border = element_blank(), 
+				panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +  
+				theme(strip.background = element_rect(fill = 'white'))
+
+LegendFormat <- scale_fill_grey(start = 0, end = .4, breaks=c("Sub1", "Sub2"), labels=c("Subadult1", "Subadult2"))
+
+axis_x_Gap <- scale_x_continuous(expand = c(0.01,0.01))
+axis_y_Gap <- scale_y_continuous(expand = c(0,0)) 
+
+
+png("RuthEcuador2013/BoxFeedingTrials/Graphs/Appendix_ResidualCond_Histogram.png", width = 600, height = 400, units = "px")
+
+
+
+ggplot(Weights, aes(condResiduals, fill = Instar)) + geom_histogram(lty = 0) + hist_theme + scale_fill_grey(start = 0, end = .4) + 
+		xlab("Residual Condition Index") + ylab("Number of Individuals") + LegendFormat + axis_x_Gap + axis_y_Gap + geom_histogram(colour = "white", show_guide = FALSE)
+
 dev.off()
 
+png("RuthEcuador2013/BoxFeedingTrials/Graphs/Appendix_LogCond_Histogram.png", width = 600, height = 400, units = "px")
 
-pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/Histogram_OldCond.pdf", width =6, height =6)
 
-ggplot(Weights, aes(LogCond, fill = Instar)) + geom_histogram(colour = "white") + mytheme + scale_fill_grey(start = 0, end = .4)
+ggplot(Weights, aes(LogCond, fill = Instar)) + geom_histogram(lty = 0) + hist_theme + LegendFormat + 
+		xlab("Log of Ratio Index") + ylab("Number of Individuals") + axis_x_Gap + axis_y_Gap + geom_histogram(colour = "white", show_guide = FALSE)
 
 
 dev.off()
