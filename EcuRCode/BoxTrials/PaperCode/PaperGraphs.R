@@ -152,7 +152,7 @@ dev.off()
 png("RuthEcuador2013/BoxFeedingTrials/Graphs/Appendix_LogCond_Histogram.png", width = 600, height = 400, units = "px")
 
 
-ggplot(Weights, aes(LogCond, fill = Instar)) + geom_histogram(lty = 0) + hist_theme + LegendFormat + 
+ggplot(Weights, aes(LogCond, fill = Instar)) + geom_histogram(lty = 0) + hist_theme + 
 		xlab("Log of Ratio Index") + ylab("Number of Individuals") + axis_x_Gap + axis_y_Gap + geom_histogram(colour = "white", show_guide = FALSE)
 
 
