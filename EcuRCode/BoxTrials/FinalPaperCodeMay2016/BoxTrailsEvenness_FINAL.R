@@ -2,67 +2,67 @@
 # 
 # Author: Ruth
 ###############################################################################
+### Links can use for glmer http://www.heuschele.com/?page_id=6
 
 library(lmerTest)
-library(visreg)
+
+
 
 #### Box trails graphs. Code importing and manipulating the data is in BoxTrialsData.R
 source("G:/PhDWork/EclipseWorkspace/R/EcuRCode/BoxTrials/FinalPaperCodeMay2016/BoxTrialsData_FINAL.R")
 
 
-## number of boxes per treatment
-ddply(BoxComboMorn,. (Treatment),
-		summarise,
-		BoxCount = length(unique(IndBoxID)))
-
-## number of boxes with prey capture
-ddply(BoxComboMorn[BoxComboMorn$CaptureIndPos == 'y',],. (Treatment),
-		summarise,
-		BoxCount = length(unique(IndBoxID)))
-
-
-### Means of intrabox evenness by prey size
-ddply(AveByTrial,. (Treatment),
-		summarise,
-		mean = mean(AsinPJEven), SE = sd(AsinPJEven)/sqrt(length(AsinPJEven)))
-
-
 #######################################################################################
 # Evenness vs prey size
 
+sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/EvennessVsPreySize.txt')
+print("AsinPJ Means and StdDevs")
+xtabs(AsinPJEven ~ Treatment + Instar, aggregate(AsinPJEven ~ Treatment + Instar, AveByTrial, FUN = function(x) c(mean = mean(x), StdDev = sd(x))))
+print("SampleSize")
+sampleSize <- xtabs(IndBoxID ~ Treatment + Instar, aggregate(IndBoxID~ Treatment + Instar, AveByTrial, FUN = function(x) length(unique(x))))
+addmargins(sampleSize)
+print("")
 
-# http://rpackages.ianhowson.com/cran/lme4/man/merMod-class.html
+print("Model with interaction")
+
 PJModInteraction <-  lmer(AsinPJEven ~ Treatment +Instar + Treatment:Instar + (1|IndBoxID), AveByTrial, REML = FALSE)
-
-anova(PJModInteraction)
-
 formula(PJModInteraction)
+print("")
+anova(PJModInteraction)
+print("")
 
-nobs(PJModInteraction ~ Instar)
+print("Model without Interaction")
 
-terms(PJModInteraction)
+PJMod <-  lmer(AsinPJEven ~ Treatment +Instar+ (1|IndBoxID), AveByTrial, REML = FALSE)
+formula(PJMod)
 
+print("")
+anova(PJMod)
+print("")
 
+print("Anova model comparison Treatment")
+print("")
 
-PJMod4 <-  lmer(AsinPJEven ~ Treatment +Instar+ (1|IndBoxID), SubAveByTrial, REML = FALSE)
-#mod4 has no interaction as interaction is very not significant
-#Glmer very very overdispersed. Lmer Fits assumptions reasonably well
+PJRedModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), AveByTrial, REML = FALSE)
+anova(PJMod, PJRedModTreat)
+print("")
 
-anova(PJMod4)
+print("AIC difference")
+AIC(PJRedModTreat) - AIC(PJMod) 
 
+print("")
+print("Anova model comparison Instar")
+print("")
 
-visreg(PJMod4)
+##### testing instar
+PJRedModInstar <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), AveByTrial, REML = FALSE)
+anova(PJMod, PJRedModInstar)
 
-anova(PJMod4, PJModInteraction)
+print("")
+print("AIC difference")
+AIC(PJRedModInstar) - AIC(PJMod) 
 
-PJRedModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), SubAveByTrial, REML = FALSE)
-
-anova(PJMod4, PJRedModTreat)
-
-# testing instar
-PJRedModInstar <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), SubAveByTrial, REML = FALSE)
-
-anova(PJMod4, PJRedModInstar)
+sink()
 
 
 #####################################################################################
