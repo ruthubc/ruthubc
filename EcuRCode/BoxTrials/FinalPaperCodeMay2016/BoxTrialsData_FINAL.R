@@ -2,6 +2,8 @@
 ###############################################################################
 library(plyr)
 library(data.table)
+library(lmerTest)
+library(ggplot2)
 
 Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv", na.strings = NA)
 Feeding <-read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv", na.strings = NA)
@@ -85,6 +87,8 @@ BoxCombo$IndCapNum<- ifelse(BoxCombo$CaptureIndPos=="y", 1,
 BoxCombo$IndFeedNum<- ifelse(BoxCombo$FeedIndPos=="y", 1,
 		ifelse(BoxCombo$FeedIndPos =="n", 0, NA))
 
+BoxCombo$FeedIndPos <- as.factor(BoxCombo$FeedIndPos)
+
 ### New Table only with morning Only 
 
 BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
@@ -100,4 +104,19 @@ AveByTrial <- ddply(BoxComboMorn, .(TrialID, Treatment, Instar, PJEven, AsinPJEv
 AveByTrial <- subset(AveByTrial, N > 0)
 
 
+######## Function for comparative anova tests
+
+RedVsFull_fun <- function(Text, RedModel, FullModel) {
+	
+	print(Text)	
+	
+	print(anova(RedModel, FullModel)) #very significant interaction effect
+	
+	print("AIC difference")
+	print(AIC(FullModel) - AIC(RedModel))
+	
+	print("")
+	
+	
+}
 

@@ -5,6 +5,7 @@
 # Evenness vs prey size
 
 sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/EvennessVsPreySize.txt')
+print("Box Evenness")
 print("AsinPJ Means and StdDevs")
 xtabs(AsinPJEven ~ Treatment + Instar, aggregate(AsinPJEven ~ Treatment + Instar, AveByTrial, FUN = function(x) c(mean = mean(x), StdDev = sd(x))))
 print("SampleSize")
@@ -21,38 +22,22 @@ PJModInteraction <-  lmer(AsinPJEven ~ Treatment +Instar + Treatment:Instar + (1
 formula(PJModInteraction)
 print("")
 anova(PJModInteraction)
+print("Treatment:Instar not significant so removed from full model")
 print("")
 
 print("Model without Interaction")
 
 PJMod <-  lmer(AsinPJEven ~ Treatment +Instar+ (1|IndBoxID), AveByTrial, REML = FALSE)
 formula(PJMod)
-
-print("")
 anova(PJMod)
 print("")
 
-print("Anova model comparison Treatment")
-print("")
-
-PJRedModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), AveByTrial, REML = FALSE)
-anova(PJMod, PJRedModTreat)
-print("")
-
-print("AIC difference")
-AIC(PJRedModTreat) - AIC(PJMod) 
-
-print("")
-print("Anova model comparison Instar")
-print("")
+PJModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), AveByTrial, REML = FALSE)
+RedVsFull_fun("Testing Treatment", PJMod, PJModTreat)
 
 ##### testing instar
-PJRedModInstar <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), AveByTrial, REML = FALSE)
-anova(PJMod, PJRedModInstar)
-
-print("")
-print("AIC difference")
-AIC(PJRedModInstar) - AIC(PJMod) 
+PJModInstar <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), AveByTrial, REML = FALSE)
+RedVsFull_fun("Testing Instar", PJMod, PJModInstar)
 
 sink()
 
