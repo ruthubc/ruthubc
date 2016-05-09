@@ -1,8 +1,8 @@
 
-
-
 #####################################################################################
 ## Condition vs feeding
+
+require(tigerstats)
 
 sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/CondVsFeeding.txt')
 
@@ -10,7 +10,7 @@ BoxTest <- subset(BoxComboMorn, !is.na(residCond) & !is.na(FeedIndPos))
 
 print("Feeding vs Condition")
 ##### MEANS ETC.###############
-print("Cond  Means and StdDevs")
+print("Condition  Means and StdDevs")
 xtabs(residCond ~ Treatment + Instar + FeedIndPos, aggregate(residCond ~ Treatment + Instar + FeedIndPos, BoxTest, FUN = function(x) c(mean = mean(x), StdDev = sd(x))))
 
 
@@ -52,6 +52,14 @@ sqrt(condSFdSD^ 2 +  condSNonFdSD ^ 2)
 print("")
 
 
+print("counts of numbers feeding")
+
+counts<- xtabs(~ FeedIndPos + Instar, data = BoxTest)
+counts
+
+print("percentages")
+colPerc(counts)
+print("")
 
 ###################### STATISTICS #######################
 # removing interactions as they either are insignificant or don't make sense

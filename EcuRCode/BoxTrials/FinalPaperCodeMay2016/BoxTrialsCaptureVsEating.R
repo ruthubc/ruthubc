@@ -33,6 +33,7 @@ CapFdGlmerInt <- glmer(IndCapture ~ IndFeed + Treatment + Instar +  (1|IndBoxID)
 
 CapFdGlmerInt@call
 summary(CapFdGlmerInt)$coefficients
+print("")
 
 ########### Testing Individual feed ##########
 CapFdGlmerFd <- glmer(IndCapture ~ Treatment + Instar +  (1|IndBoxID) + 

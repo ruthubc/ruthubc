@@ -32,6 +32,8 @@ formula(PJMod)
 anova(PJMod)
 print("")
 
+RedVsFull_fun("Testing Interaction", PJMod, PJModInteraction)
+
 PJModTreat <-  lmer(AsinPJEven ~ Instar+ (1|IndBoxID), AveByTrial, REML = FALSE)
 RedVsFull_fun("Testing Treatment", PJMod, PJModTreat)
 
