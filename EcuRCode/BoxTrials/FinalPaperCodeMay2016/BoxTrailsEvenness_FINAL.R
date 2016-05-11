@@ -5,6 +5,7 @@
 # Evenness vs prey size
 
 sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/EvennessVsPreySize.txt')
+date()
 print("Box Evenness")
 print("AsinPJ Means and StdDevs")
 xtabs(AsinPJEven ~ Treatment + Instar, aggregate(AsinPJEven ~ Treatment + Instar, AveByTrial, FUN = function(x) c(mean = mean(x), StdDev = sd(x))))

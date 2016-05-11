@@ -2,13 +2,21 @@
 #####################################################################################
 ## Condition vs feeding
 
-require(tigerstats)
+
 
 sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/CondVsFeeding.txt')
+date()
 
 BoxTest <- subset(BoxComboMorn, !is.na(residCond) & !is.na(FeedIndPos))
 
 print("Feeding vs Condition")
+print("")
+
+print("SampleSize - num trials")
+sampleSize <- xtabs(TrialID ~ Treatment + Instar, aggregate(TrialID~ Treatment + Instar, BoxTest, FUN = function(x) length(unique(x))))
+addmargins(sampleSize)
+print("")
+
 ##### MEANS ETC.###############
 print("Condition  Means and StdDevs")
 xtabs(residCond ~ Treatment + Instar + FeedIndPos, aggregate(residCond ~ Treatment + Instar + FeedIndPos, BoxTest, FUN = function(x) c(mean = mean(x), StdDev = sd(x))))

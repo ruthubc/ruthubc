@@ -4,10 +4,16 @@
 ## Condition vs feeding
 
 sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/CondVsCapture.txt')
+date()
 
 BoxTest <- subset(BoxComboMorn, !is.na(residCond) & !is.na(CaptureIndPos))
 
 print("Condition Vs. Capture")
+
+print("SampleSize - num trials")
+sampleSize <- xtabs(TrialID ~ Treatment + Instar, aggregate(TrialID~ Treatment + Instar, BoxTest, FUN = function(x) length(unique(x))))
+addmargins(sampleSize)
+print("")
 
 ##### MEANS ETC.###############
 print("Cond  Means and StdDevs")

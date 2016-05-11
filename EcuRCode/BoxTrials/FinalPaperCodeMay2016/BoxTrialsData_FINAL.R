@@ -4,6 +4,7 @@ library(plyr)
 library(data.table)
 library(lmerTest)
 library(ggplot2)
+require(tigerstats)
 
 Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv", na.strings = NA)
 Feeding <-read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv", na.strings = NA)
