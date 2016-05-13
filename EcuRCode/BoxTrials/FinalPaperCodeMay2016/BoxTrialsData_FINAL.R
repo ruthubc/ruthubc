@@ -121,3 +121,8 @@ RedVsFull_fun <- function(Text, RedModel, FullModel) {
 	
 }
 
+#resdCondMd <- lmer(Instar ~ Instar, data = subset(Weights, !is.na(residCond)))
+#resdCondMdRed <- lm(residCond ~ 1, data = subset(Weights, !is.na(residCond)))
+
+#anova(resdCondMd)
+
