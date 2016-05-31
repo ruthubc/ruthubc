@@ -27,4 +27,8 @@ survivalMean <- as.data.frame(mean(msurv[,1])) # don't use mean without the [,1]
 
 prop.survfit <- survfit(Surv(DiffDays, AliveOrDeadOrEnd =="Dead", type = "right") ~ 1, data = props)
 
+pdf("PropaguleData/SurvivalCurve.pdf")
+
 plot(prop.survfit)
+
+dev.off()
