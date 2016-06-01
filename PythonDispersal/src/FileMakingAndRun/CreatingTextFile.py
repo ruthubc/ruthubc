@@ -121,8 +121,7 @@ for i in range(0, len(combinations)):  # actually produces the files
         runtime = "35:00:00"
     else:
         runtime = "15:00:00"
-        
-        
+
     writePBS(filename, runtime)
     fileNameLst.extend([filename])
 
