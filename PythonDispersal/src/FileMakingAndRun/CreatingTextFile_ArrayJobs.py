@@ -14,10 +14,21 @@ import itertools
 import csv
 import time
 import os.path
+'''
+q1 = input("\nAre you using your work computer? Answer y or n")
 
-
-savePath  = 'G:\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
-
+if q1 == "y":
+    print("You said work computer")
+    savePath  = 'G:\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
+elif q1 == "n":
+    savePath  = 'C:\\Work\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
+    print("You said home computer")
+else:
+    print("You did not answer properly")
+    sys.exit("Stoping code!")
+    
+'''
+savePath  = 'C:\\Work\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
 indFile = "n"
 
 slopes = [0, 0.4, 0.8, 1, 1.25, 2.5, 10]
@@ -69,6 +80,7 @@ def writePBS(PBSFileName, pyNameFile, runtime, numFiles):  # writes the PBS file
     file.write("""echo "Task index number : $PBS_ARRAYID"\n""")
     file.write("\n")
     file.write("file=`sed -n ''${PBS_ARRAYID}'p' " + pyNameFile + ".txt`\n")
+    file.write("""echo "file is: $file"\n""")
     file.write("python $file\n")
     file.write("""echo "Program "$0" finished with exit code $? at: `date`"\n""")
     file.close()
@@ -134,7 +146,7 @@ for i in range(0, len(combinations)):  # actually produces the files
     elif ad_disFd_lmt == 0.4 and slope > 0.7  and slope < 1.3 and off_list[1] > 5 and off_list[1] < 7:
         runtime = "72:00:00"
         fileNameLst_72hrs.extend([filename])
-    elif off_list[1] < 5:
+    elif off_list[1] < 6 or slope == 0.4:
         runtime = "35:00:00"
         fileNameLst_35hrs.extend([filename])
     else:
