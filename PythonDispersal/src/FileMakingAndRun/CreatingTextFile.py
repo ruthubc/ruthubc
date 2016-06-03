@@ -130,6 +130,7 @@ for i in range(0, len(combinations)):  # actually produces the files
 #file = open("qsubFile.txt", 'w+')
 
 
+
 for name in fileNameLst: # writes the names of the files created to csv file for my records and 
     #print name
     #file.write("qsub " + name + ".pbs; ")

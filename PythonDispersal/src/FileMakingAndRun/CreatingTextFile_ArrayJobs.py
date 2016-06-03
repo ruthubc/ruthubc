@@ -15,6 +15,7 @@ import csv
 import time
 import os.path
 
+
 savePath  = 'G:\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
 
 indFile = "n"
