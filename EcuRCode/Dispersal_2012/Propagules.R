@@ -4,6 +4,8 @@
 library(plyr)
 library(survival)
 library(muhaz)
+library(ggplot2)
+library(survminer)
 
 props <- read.csv("PropaguleData/dispersal_propagule_data.csv")
 
@@ -39,17 +41,19 @@ prop.survfit <- survfit(Surv(DiffDays, AliveOrDeadOrEnd =="Dead", type = "right"
 summary(prop.survfit)
 print(prop.survfit)#, show.rmean=T)
 
-library(survminer)
 
 
-pdf("PropaguleData/SurvivalCurve_Propagules.pdf")
+
+pdf("PropaguleData/SurvivalCurve_Propagules.pdf", width = 10, height = 6)
 
 # this is the best graph
 ## Info here http://www.sthda.com/english/wiki/survminer-r-package-survival-data-analysis-and-visualization
 
-ggsurvplot(prop.survfit,color = "#2E9FDF", break.time.by = 5, xlab = "Days", ylab = "Propagule survival probability",  censor = FALSE)
+ggsurvplot(prop.survfit,color = "#2E9FDF", break.time.by = 5, xlab = "Days until propagule death", ylab = "Propagule survival probability",  censor = FALSE)
 
 dev.off()
+
+#### Experimenting with code ######
 
 #propsHaz <- kphaz.fit(props$DiffDays, props$Dead_bin)
 #kphaz.plot(propsHaz)
