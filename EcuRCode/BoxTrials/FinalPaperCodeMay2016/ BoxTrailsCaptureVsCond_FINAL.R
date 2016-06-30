@@ -1,8 +1,7 @@
 
 
 #####################################################################################
-## Condition vs feeding
-
+## Condition vs capture
 sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/CondVsCapture.txt')
 date()
 
@@ -76,7 +75,7 @@ summary(CapBinModFull)$coefficients
 print("")
 print("testingTreatment:Hunger interaction")
 
-CapBinRedModInt <- glmer(CaptureIndPos ~ residCond + Treatment + Instar + (1|IndBoxID) +
+CapBinRedModInt <- glmer(CaptureIndPos ~ residCond + Treatment  + (1|IndBoxID) +
 				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
 
 
@@ -89,7 +88,7 @@ AIC(CapBinRedModInt) - AIC(CapBinModFull)
 print("")
 print("testing treatment")
 
-CapBinRedModTreatment <- glmer(CaptureIndPos ~ residCond  + Instar + (1|IndBoxID)+
+CapBinRedModTreatment <- glmer(CaptureIndPos ~ residCond  + (1|IndBoxID)+
 				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
 
 
@@ -164,3 +163,12 @@ test <- lapply(treatGLMER, FUN = function(x) printGLMER_fun(x))# anova(x[[1]], x
 print(test)
 
 sink()
+
+### Done with LA 30th June
+
+
+CapBinModFull <- glmer(CaptureIndPos ~ residCond + Treatment + Treatment:residCond +  (1|IndBoxID)+
+				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
+anova(CapBinModFull)
+AIC(CapBinModFull)
+

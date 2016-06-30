@@ -6,7 +6,7 @@
 
 sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/LeticiasAIC.txt')
 date()
-print("Leticia's requested AIC values")
+print("AIC values 30 June")
 
 BoxTest <- subset(BoxComboMorn, !is.na(residCond) & !is.na(FeedIndPos))
 
@@ -19,8 +19,16 @@ EatBinModFull <- glmer(FeedIndPos ~ residCond + Treatment + Instar + Treatment:r
 EatBinModFull@call
 
 print("AIC Value")
+print("")
+print("Feed vs cond with no interaction")
+EatBinModNoInt<- glmer(FeedIndPos ~ residCond + Treatment + Instar  +  (1|IndBoxID)+
+				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
 
-AIC(EatBinModFull)
+EatBinModNoInt@call
+
+print("AIC Value")
+
+AIC(EatBinModNoInt)
 print("")
 
 print("Capture vs condition, treatment and interaction")
@@ -35,6 +43,19 @@ CapBinModFull@call
 print("AIC Value")
 
 AIC(CapBinModFull)
+print("")
+
+print("Capture vs condition, treatment with no interaction")
+
+
+CapBinModNoInt <- glmer(CaptureIndPos ~ residCond + Treatment + Instar + Treatment:residCond +  (1|IndBoxID)+
+				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
+
+CapBinModNoInt@call
+
+print("AIC Value")
+
+AIC(CapBinModNoInt)
 
 
 
