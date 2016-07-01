@@ -121,6 +121,24 @@ RedVsFull_fun <- function(Text, RedModel, FullModel) {
 	
 }
 
+########### Function to print AIC's of models ######################
+
+modelAIC <- function(model_list) {
+	
+	for (m in 1:length(model_list)){
+		model <- model_list[[m]]
+		print(paste("model count:", m))
+	
+		print(model@call)
+		print(AIC(model))
+	
+		print("")
+	}
+	
+	
+}
+
+
 #resdCondMd <- lmer(Instar ~ Instar, data = subset(Weights, !is.na(residCond)))
 #resdCondMdRed <- lm(residCond ~ 1, data = subset(Weights, !is.na(residCond)))
 

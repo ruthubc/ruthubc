@@ -62,6 +62,7 @@ print("")
 # removing interactions as they either are insignificant or don't make sense
 
 
+
 print("Statistics")
 print("Full Model")
 CapBinModFull <- glmer(CaptureIndPos ~ residCond + Treatment + Instar + Treatment:residCond +  (1|IndBoxID)+
@@ -70,6 +71,16 @@ CapBinModFull <- glmer(CaptureIndPos ~ residCond + Treatment + Instar + Treatmen
 CapBinModFull@call
 
 summary(CapBinModFull)$coefficients
+print("")
+
+
+## From LA June 30th 2016###
+print("full model WITHOUT instar -> Lowest AIC: LA June 30th")
+CapBinModFullLA <- glmer(CaptureIndPos ~ residCond + Treatment + Treatment:residCond +  (1|IndBoxID)+
+				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
+CapBinModFullLA@call
+
+summary(CapBinModFullLA)$coefficients
 
 
 print("")
@@ -80,10 +91,10 @@ CapBinRedModInt <- glmer(CaptureIndPos ~ residCond + Treatment  + (1|IndBoxID) +
 
 
 
-anova(CapBinRedModInt, CapBinModFull) #very significant interaction effect
+anova(CapBinRedModInt, CapBinModFullLA) #very significant interaction effect
 
 print("AIC difference")
-AIC(CapBinRedModInt) - AIC(CapBinModFull)
+AIC(CapBinRedModInt) - AIC(CapBinModFullLA)
 
 print("")
 print("testing treatment")
@@ -92,27 +103,27 @@ CapBinRedModTreatment <- glmer(CaptureIndPos ~ residCond  + (1|IndBoxID)+
 				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
 
 
-anova(CapBinRedModTreatment, CapBinModFull)
+anova(CapBinRedModTreatment, CapBinModFullLA)
 
 print("AIC difference")
-AIC(CapBinRedModTreatment) - AIC(CapBinModFull)
+AIC(CapBinRedModTreatment) - AIC(CapBinModFullLA)
 
 
 print("")
 print("testing Condition")
-CapBinRedModCond <- glmer(CaptureIndPos ~ Treatment  + Instar + (1|IndBoxID) +
+CapBinRedModCond <- glmer(CaptureIndPos ~ Treatment   + (1|IndBoxID) +
 				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
 
-anova(CapBinRedModCond, CapBinModFull)
+anova(CapBinRedModCond, CapBinModFullLA)
 
 print("AIC difference")
-AIC(CapBinRedModCond) - AIC(CapBinModFull)
+AIC(CapBinRedModCond) - AIC(CapBinModFullLA)
 
 
 
 print("")
-print("testing instar")
-CapBinRedModInstar <- glmer(CaptureIndPos ~ Treatment  + residCond + (1|IndBoxID) +
+print("testing instar aganist FULL model")
+CapBinRedModInstar <- glmer(CaptureIndPos ~ Treatment  + residCond + Treatment:residCond+ (1|IndBoxID) +
 				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
 
 anova(CapBinRedModInstar, CapBinModFull)
@@ -124,10 +135,10 @@ AIC(CapBinRedModInstar) - AIC(CapBinModFull)
 
 
 GLMERS_fun <- function(myData) {
-	glmerFull <- glmer(CaptureIndPos ~ residCond + Instar + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+	glmerFull <- glmer(CaptureIndPos ~ residCond + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
 			data = myData, family = binomial(logit))
 	
-	glmerRed <- glmer(CaptureIndPos ~ Instar + (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
+	glmerRed <- glmer(CaptureIndPos ~ (1|IndBoxID)+ (1|IndBoxID:SpiderID), 
 			data = myData, family = binomial(logit))
 	
 	lstToReturn <-  list(glmerFull, glmerRed)
@@ -162,13 +173,19 @@ print("AdHoc Testing split up by treatment")
 test <- lapply(treatGLMER, FUN = function(x) printGLMER_fun(x))# anova(x[[1]], x[[2]]))
 print(test)
 
+
+
+
+
+
+########### Model AIC's  ########################
+print("")
+print("model AIC's")
+model_list <- c(CapBinModFull, CapBinModFullLA, CapBinRedModCond, CapBinRedModInstar, CapBinRedModInt, CapBinRedModTreatment)
+modelAIC(model_list)
+
+print("AIC difference model with and without instar")
+AIC(CapBinModFull) - AIC(CapBinModFullLA)
+
+
 sink()
-
-### Done with LA 30th June
-
-
-CapBinModFull <- glmer(CaptureIndPos ~ residCond + Treatment + Treatment:residCond +  (1|IndBoxID)+
-				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
-anova(CapBinModFull)
-AIC(CapBinModFull)
-

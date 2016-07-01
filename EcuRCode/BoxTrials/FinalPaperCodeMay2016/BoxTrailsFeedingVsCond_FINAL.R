@@ -108,10 +108,15 @@ RedVsFull_fun("Testing condition", EatBinRedModCond, EatBinModFull)
 
 
 ## Testing Instar 
-EatBinRedModInstar <- glmer(FeedIndPos ~ Treatment  + residCond + (1|IndBoxID) +
+EatBinRedModInstar <- glmer(FeedIndPos ~ Treatment  + residCond + Treatment:residCond +  (1|IndBoxID) +
 				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
 
 RedVsFull_fun("Testing Instar", EatBinRedModInstar, EatBinModFull)
+
+print("")
+print("model AIC's")
+model_list <- c(EatBinModFull, EatBinRedModCond, EatBinRedModInstar, EatBinRedModInt, EatBinRedModTreatment)
+modelAIC(model_list)
 
 
 ## Ad hoc testing 
