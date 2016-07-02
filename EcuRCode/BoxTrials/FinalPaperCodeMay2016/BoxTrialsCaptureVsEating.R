@@ -4,7 +4,7 @@
 ###########################################
 # Capture vs feeding
 
-sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/CaptureVsFeeding.txt')
+sink('RuthEcuador2013/BoxFeedingTrials/StatsOutput/CaptureVsFeeding_noInstarFullModel.txt')
 date()
 print("Capture Vs Feeding")
 BoxTest <- subset(BoxComboMorn, !is.na(residCond) & !is.na(FeedIndPos) & !is.na(CaptureIndPos))
@@ -55,23 +55,25 @@ print("")
 ########### Testing Individual feed:treatment interaction ##########
 RedVsFull_fun("Testing Individual feed:treatment interaction", CapFdGlmerInt, CapFdGlmer)
 
-########### Testing Individual feed ##########
-CapFdGlmerFd <- glmer(IndCapture ~ Treatment + Instar +  (1|IndBoxID) + 
-				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
-
-RedVsFull_fun("Testing individual Feed", CapFdGlmerFd, CapFdGlmerInt )
-
-########### Testing Treatment ##########
-CapFdGlmerTreat <- glmer(IndCapture ~ Instar + IndFeed +  (1|IndBoxID) + 
-				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
-
-RedVsFull_fun("Testing  treatment", CapFdGlmerTreat, CapFdGlmerInt )
-
 ########### Testing Instar ##########
 CapFdGlmerInstar <- glmer(IndCapture ~ Treatment + IndFeed +  (1|IndBoxID) + 
 				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
 
 RedVsFull_fun("Testing instar", CapFdGlmerInstar, CapFdGlmerInt )
+
+
+########### Testing Individual feed ##########
+CapFdGlmerFd <- glmer(IndCapture ~ Treatment  +  (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
+
+RedVsFull_fun("Testing individual Feed", CapFdGlmerFd, CapFdGlmerInstar )
+
+########### Testing Treatment ##########
+CapFdGlmerTreat <- glmer(IndCapture ~ IndFeed +  (1|IndBoxID) + 
+				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
+
+RedVsFull_fun("Testing  treatment", CapFdGlmerTreat, CapFdGlmerInstar)
+
 
 
 ########### Testing Instar Interaction ##########
