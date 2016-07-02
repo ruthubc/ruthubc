@@ -28,7 +28,15 @@ print("percentages the other way around")
 rowPerc(counts)
 print("")
 
+print("Testing Fullest Model")
 
+CapFdGlmerFullest <- glmer(IndFeed ~ IndCapture + Treatment + Instar + IndCapture:Treatment+ Instar:IndCapture +  
+				(1|IndBoxID:SpiderID), BoxTest, family = binomial(logit))
+
+
+CapFdGlmerFullest @call
+summary(CapFdGlmerFullest)$coefficients
+print("")
 
 
 
@@ -86,8 +94,16 @@ RedVsFull_fun("Testing instar interaction", CapFdGlmerInstarNoInt, CapFdGlmerIns
 
 print("")
 print("model AIC's")
-model_list <- c(CapFdGlmer, CapFdGlmerFd, CapFdGlmerInstar, CapFdGlmerInstarInteraction, CapFdGlmerInt, CapFdGlmerTreat)
+model_list <- c(CapFdGlmerFullest, CapFdGlmer, CapFdGlmerFd, CapFdGlmerInstar, CapFdGlmerInstarInteraction, CapFdGlmerInt, CapFdGlmerTreat)
 modelAIC(model_list)
+
+print("")
+print("AIC difference fullest model vs. model with no interactions")
+
+AIC(CapFdGlmerFullest) - AIC(CapFdGlmerInt)
+print("models:")
+CapFdGlmerFullest@call
+CapFdGlmerInt@call
 
 sink()
 
