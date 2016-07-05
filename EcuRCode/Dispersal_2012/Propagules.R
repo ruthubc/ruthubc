@@ -44,7 +44,7 @@ print(prop.survfit)#, show.rmean=T)
 
 
 
-pdf("PropaguleData/SurvivalCurve_Propagules.pdf", width = 10, height = 6)
+pdf("PropaguleData/SurvivalCurve_Propagules.pdf", width = 8, height = 5)
 
 # this is the best graph
 ## Info here http://www.sthda.com/english/wiki/survminer-r-package-survival-data-analysis-and-visualization

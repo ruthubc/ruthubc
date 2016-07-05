@@ -24,7 +24,7 @@ mytheme <-theme_bw(base_size=10)  + theme(plot.title = element_text(vjust=2), pl
 ### Box evenness vs prey size box plot
 
 
-#pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/PaperGraphsNov1.pdf", width =10, height =10, unit)
+
 
 setEPS()
 
