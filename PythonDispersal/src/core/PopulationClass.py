@@ -147,7 +147,7 @@ class Poplt(object):
         self.pop_export_list= []  # clears the list once it has been appended to the csv file
 
     def one_poplt_timestep(self):
-        print "***new population time step****"
+        #print "***new population time step****"
         #print "juv food limit for ad dispersal", self.juv_disFd_lmt
         self.pop_dispersal_list = []
         #(1) Add one to population age

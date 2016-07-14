@@ -83,6 +83,7 @@ def writePBS(PBSFileName, pyNameFile, runtime, numFiles):  # writes the PBS file
     file.write("""echo "file is: $file"\n""")
     file.write("python $file\n")
     file.write("""echo "Program "$0" finished with exit code $? at: `date`"\n""")
+    file.write("""echo "file is: $file"\n""")
     file.close()
 
 
@@ -114,7 +115,7 @@ fileNameLst = []  # for all files
 runTimeList = []
 
 fileNameLst_2hrs = []
-fileNameLst_15hrs = []
+fileNameLst_20hrs = []
 fileNameLst_35hrs = []
 fileNameLst_72hrs = []
 
@@ -150,8 +151,8 @@ for i in range(0, len(combinations)):  # actually produces the files
         runtime = "35:00:00"
         fileNameLst_35hrs.extend([filename])
     else:
-        runtime = "15:00:00"
-        fileNameLst_15hrs.extend([filename])
+        runtime = "20:00:00"
+        fileNameLst_20hrs.extend([filename])
 
 
     fileNameLst.extend([(filename, runtime)])
@@ -178,30 +179,35 @@ def writeArrayTxtFiles(listName, fileName):
         file.write(name + ".py")
         file.write("\n")
 
-writeArrayTxtFiles(fileNameLst_15hrs, "python_15hrs.txt")
+writeArrayTxtFiles(fileNameLst_20hrs, "python_20hrs.txt")
 writeArrayTxtFiles(fileNameLst_2hrs, "python_2hrs.txt")
 writeArrayTxtFiles(fileNameLst_35hrs, "python_35hrs.txt")
 writeArrayTxtFiles(fileNameLst_72hrs, "python_72hrs.txt")
 
 
 writePBS("arrayJob_2hrs", "python_2hrs", "02:00:00", len(fileNameLst_2hrs))
-writePBS("arrayJob_15hrs", "python_15hrs", "15:00:00", len(fileNameLst_15hrs))
+writePBS("arrayJob_20hrs", "python_20hrs", "20:00:00", len(fileNameLst_20hrs))
 writePBS("arrayJob_35hrs", "python_35hrs", "35:00:00", len(fileNameLst_35hrs))
-writePBS("arrayJob_72hrs", "python_72hrs", "72:00:00", len(fileNameLst_35hrs))
+writePBS("arrayJob_72hrs", "python_72hrs", "72:00:00", len(fileNameLst_72hrs))
 
-pbsNameList = ["arrayJob_2hrs", "arrayJob_15hrs", "arrayJob_35hrs", "arrayJob_72hrs"]
+pbsNameList = ["arrayJob_2hrs", "arrayJob_20hrs", "arrayJob_35hrs", "arrayJob_72hrs"]
+fileLenList = [len(fileNameLst_2hrs), len(fileNameLst_20hrs), len(fileNameLst_35hrs), len(fileNameLst_72hrs) ]
+indexList = [index for index, value in enumerate(fileLenList) if value > 0] # getting the list index for populated files
+pbs_full = [pbsNameList[i] for i in indexList] # picking only the populated ones to put in the sh file
+
 # making .sh file
 completeName = os.path.join( savePath, "ForCluster", "run.sh")
 file = open(completeName, "w+")
 file.write("for i in")
 
-for name in pbsNameList:
+
+for name in pbs_full:
     file.write(" " + name + ".pbs")
 file.write ("; do qsub $i; done")
 
 print "Total number of combinations", len(combinations)
 print "Number 2 hours: ", len(fileNameLst_2hrs)
-print "Number 15 hours: ", len(fileNameLst_15hrs)
+print "Number 20 hours: ", len(fileNameLst_20hrs)
 print "Number 35 hours: ", len(fileNameLst_35hrs)
 print "Number 72 hours: ", len(fileNameLst_72hrs)
 print "end"
