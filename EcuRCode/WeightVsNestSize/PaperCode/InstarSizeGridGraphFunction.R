@@ -50,7 +50,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 			
 		} else {
 			#dataSummary <- data
-			p <- ggplot(data, aes(x = CountFemales , y = relativeVar))		
+			p <- ggplot(data, aes(x = CountFemales , y = variable))		
 		}
 		
 		

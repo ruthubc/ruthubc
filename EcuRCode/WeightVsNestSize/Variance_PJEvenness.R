@@ -20,7 +20,16 @@ PJEvenVar <- function(data){
 	spidersBoot<-ddply(spidersBoot, .(NestID, Instar), transform, PJFracSum=sum(PJEvenFrac))
 	
 	spidersBoot$PJEven <- -spidersBoot$PJFracSum/log(spidersBoot$count)
-	ggplot(spidersBoot, aes(x = PJEven)) + geom_histogram()
+	
+	
+	sum <- ddply(spidersBoot, .(NestID, Instar, CountFemales), summarise,
+			N = mean(count), 
+			PJ = min(PJEven))
+	
+	sum$PJAsin <- asin(sqrt(sum$PJ))
+	
+	
+	return(sum)
 	
 	
 	
@@ -28,3 +37,9 @@ PJEvenVar <- function(data){
 	
 	
 }
+
+return <- PJEvenVar(spidersMul)
+
+ggplot(return, aes(x = PJAsin)) + geom_histogram()
+
+InstarGridGraph(return, "PJAsin", "Leg Length Variance", "n", "LegLengthVariancePJ", "")

@@ -4,7 +4,7 @@
 library(plyr)
 library(dplyr)
 
-# function to calculate maximum variance
+# function to calculate maximum variance for eea
 calMaxVarFun <- function(mean, sampSize, min, max){
 
 	data_tot <- mean * sampSize
