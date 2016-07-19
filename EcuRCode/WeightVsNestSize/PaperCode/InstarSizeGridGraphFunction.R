@@ -136,5 +136,5 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 }
 
 
-
-InstarGridGraph(spidersMul, "logLeg", "testing wiht visreg", "n", "_testGraph2",  "n")
+#Testing
+#InstarGridGraph(spidersMul, "logLeg", "testing wiht visreg", "n", "_testGraph2",  "n")

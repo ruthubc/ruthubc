@@ -1,26 +1,68 @@
 # Author: Ruth
 ###############################################################################
 
-num_IDs <- 300
+num_IDs <- 500
+
 
 ID <- 1:num_IDs
 
 prob_list <- seq(0, 1, by = (1/(num_IDs - 1)))
 
-N_tot <- 20000
+N_tot <- 3500
 
 ID_list <- sample(ID, N_tot, replace = TRUE, prob = prob_list)
 
+measures <- seq(10, 30, by =  0.05)
+
+variable <- sample(measures, N_tot/2, replace = TRUE)
+
+#sample2 different mean
+
+ID <- (num_IDs+1):(num_IDs*2)
+
+ID_list2 <- sample(ID, N_tot, replace = TRUE, prob = prob_list)
+
 measures <- seq(0, 20, by =  0.05)
 
-variable <- sample(measures, N_tot, replace = TRUE)
+variable2 <- sample(measures, N_tot/2, replace = TRUE)
+
+ID_list <- c(ID_list, ID_list2)
+
+variable <- c(variable, variable2)
+
+
+
+
+###############################################################
+
+############ Making a more specific sample ######
+
+numNests <-200
+
+sizeDistNests <- seq(1:20)
+measures <- seq(10, 30, by =  0.05)
+
+ID_list <- c()
+variable <- c()
+
+repsize<- rep(sizeDistNests, 200)
+
+for (i in seq(1:numNests)) {
+	
+	ID <- i
+	nestSize <- repsize[i]
+	randSamp <- sample(measures, nestSize)
+	IDVect <- rep(i, nestSize)
+	ID_list <- c(ID_list, IDVect)
+	variable <- c(variable, randSamp)
+	
+	
+}
 
 spidersBoot <- data.frame(ID_list, variable)
 
 
-
-
-
+################################################################
 spidersBoot <- ddply(spidersBoot, "ID_list", transform) # calculating max and min
 
 spidersBoot$minVar <- min(spidersBoot$variable)
@@ -45,22 +87,78 @@ numNests <- nrow(spidersBootAve)
 		minVariable <- spidersBootAve$minVar[nest]
 		maxVariable <- spidersBootAve$maxVar[nest]	
 		maxVarList<- calMaxVarFun(data_mean, sampSize, minVariable,  maxVariable )  # mean, sampleSize, minVar, maxVar
-		mean_list <- mean(maxVarList)
+		mean_Maxlist <- mean(maxVarList)
 		sd_max <- sd(maxVarList)
 		spidersBootAve[nest, 7] <- mean_list
 		spidersBootAve[nest, 8] <- sd_max
 	}
 	
 	spidersBootAve <- mutate(spidersBootAve, relativeVar =sd_data/sd_Max)
+	spidersBootAve <- mutate(spidersBootAve, CofV =sd_data/mean)
+	spidersBootAve <- mutate(spidersBootAve, CofVSamp =(1 + (1/ (4*sampSize))   * CofV))
 	
 	#print (max(spidersBootAve$relativeVar) )
 	
 #if(max(spidersBootAve$relativeVar) >= 1) { warning("something went wrong - real variance more than calculated max variance") }
 
+## Note: the coefficient of variaion changes a lot with mean
 
+ggplot(spidersBootAve, aes(x = sd_data)) + geom_histogram()
+ggplot(spidersBootAve, aes(x = relativeVar)) + geom_histogram()
+ggplot(spidersBootAve, aes(x = mean)) + geom_histogram()
+
+
+
+# Graphs by N
 ggplot(spidersBootAve, aes(x = N, y = sd_data)) + geom_point() + geom_smooth()
 
-ggplot(spidersBootAve, aes(x = N, y = relativeVar/mean)) + geom_point() + geom_smooth()
+ggplot(spidersBootAve, aes(x = N, y = CofV)) + geom_point() + geom_smooth()
 
-ggplot(spidersBootAve, aes(x = mean, y = sd_max)) + geom_point() + geom_smooth()
+ggplot(spidersBootAve, aes(x = N, y = CofVSamp)) + geom_point() + geom_smooth()
+
+ggplot(spidersBootAve, aes(x = N, y = relativeVar)) + geom_point() + geom_smooth()
+
+ggplot(spidersBootAve, aes(x = N, y = mean)) + geom_point() + geom_smooth()
+
+#Graphs by Mean
+
+ggplot(spidersBootAve, aes(x = mean, y = sd_data)) + geom_point() + geom_smooth()
+
+ggplot(spidersBootAve, aes(x = mean, y = CofV)) + geom_point() + geom_smooth()
+
+ggplot(spidersBootAve, aes(x = mean, y = relativeVar)) + geom_point() + geom_smooth()
+
+
+# Others
+ggplot(spidersBootAve, aes(x = sd_data, y = CofV)) + geom_point() + geom_smooth()
+
+ggplot(spidersBootAve, aes(x = sd_data, y = relativeVar)) + geom_point() + geom_smooth()
+
+ggplot(spidersBootAve, aes(x = CofV, y = relativeVar)) + geom_point() + geom_smooth()
+
+ggplot(spidersBootAve, aes(x = N, y = sd_Max)) + geom_point() + geom_smooth()
+
+ggplot(spidersBootAve, aes(x = N, y = mean)) + geom_point() + geom_smooth()
+
+
+
+AveofAve<- ddply(spidersBootAve, .(N), summarise,
+		NumSamps = length(N),
+		sd_of_mean = sd(mean),
+		sd_of_sd = sd(sd_data)
+)
+
+ggplot(AveofAve, aes(x = N, y = NumSamps)) + geom_point() + geom_smooth()
+
+ggplot(AveofAve, aes(x = N, y = sd_of_mean)) + geom_point() + geom_smooth()
+
+ggplot(AveofAve, aes(x = N, y = sd_of_sd)) + geom_point() + geom_smooth()
+
+ 
+
+
+
+
+
+
 

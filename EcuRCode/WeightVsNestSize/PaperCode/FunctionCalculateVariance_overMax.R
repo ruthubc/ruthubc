@@ -19,7 +19,7 @@ calMaxVarFun <- function(mean, sampSize, min, max){
 	
 		
 		n <- n -1
-		print(n)
+		#print(n)
 		# numToInsert <- max + min # no idea what this is
 		
 		if (numToInput < max){

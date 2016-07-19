@@ -147,7 +147,7 @@ for i in range(0, len(combinations)):  # actually produces the files
     elif ad_disFd_lmt == 0.4 and slope > 0.7  and slope < 1.3 and off_list[1] > 5 and off_list[1] < 7:
         runtime = "72:00:00"
         fileNameLst_72hrs.extend([filename])
-    elif off_list[1] < 6 or slope == 0.4:
+    elif off_list[1] <= 6 or slope == 0.4:
         runtime = "35:00:00"
         fileNameLst_35hrs.extend([filename])
     else:
@@ -184,13 +184,14 @@ writeArrayTxtFiles(fileNameLst_2hrs, "python_2hrs.txt")
 writeArrayTxtFiles(fileNameLst_35hrs, "python_35hrs.txt")
 writeArrayTxtFiles(fileNameLst_72hrs, "python_72hrs.txt")
 
+pbsNameList = ["3_arrayJob_2hrs", "3_arrayJob_20hrs", "3_arrayJob_35hrs", "3_arrayJob_72hrs"]
 
-writePBS("arrayJob_2hrs", "python_2hrs", "02:00:00", len(fileNameLst_2hrs))
-writePBS("arrayJob_20hrs", "python_20hrs", "20:00:00", len(fileNameLst_20hrs))
-writePBS("arrayJob_35hrs", "python_35hrs", "35:00:00", len(fileNameLst_35hrs))
-writePBS("arrayJob_72hrs", "python_72hrs", "72:00:00", len(fileNameLst_72hrs))
+writePBS(pbsNameList[0], "python_2hrs", "02:00:00", len(fileNameLst_2hrs))
+writePBS(pbsNameList[1], "python_20hrs", "20:00:00", len(fileNameLst_20hrs))
+writePBS(pbsNameList[2], "python_35hrs", "35:00:00", len(fileNameLst_35hrs))
+writePBS(pbsNameList[3], "python_72hrs", "72:00:00", len(fileNameLst_72hrs))
 
-pbsNameList = ["arrayJob_2hrs", "arrayJob_20hrs", "arrayJob_35hrs", "arrayJob_72hrs"]
+
 fileLenList = [len(fileNameLst_2hrs), len(fileNameLst_20hrs), len(fileNameLst_35hrs), len(fileNameLst_72hrs) ]
 indexList = [index for index, value in enumerate(fileLenList) if value > 0] # getting the list index for populated files
 pbs_full = [pbsNameList[i] for i in indexList] # picking only the populated ones to put in the sh file
