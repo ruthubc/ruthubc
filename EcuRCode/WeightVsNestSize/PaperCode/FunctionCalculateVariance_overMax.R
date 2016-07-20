@@ -12,17 +12,16 @@ calMaxVarFun <- function(mean, sampSize, min, max){
 	calTot<- sum(list)
 	totDiff <- data_tot - calTot	
 	n <- sampSize + 1
-	numToInput <- totDiff + min
+	numToInput <- totDiff + min  # because you are removing a min value
 	
 	
-	while(abs(totDiff) > 0.001){
+	while(abs(totDiff) > 0.0001){
 	
 		
 		n <- n -1
-		#print(n)
-		# numToInsert <- max + min # no idea what this is
 		
-		if (numToInput < max){
+		
+		if (numToInput <= max){
 			list[n] <- numToInput
 			
 		}else{

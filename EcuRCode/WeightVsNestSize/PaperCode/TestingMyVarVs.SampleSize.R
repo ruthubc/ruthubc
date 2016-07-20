@@ -37,17 +37,21 @@ variable <- c(variable, variable2)
 
 ############ Making a more specific sample ######
 
-numNests <-200
+numNests <-500
 
-sizeDistNests <- seq(1:20)
+sizeDistNests <- 10
 measures <- seq(10, 30, by =  0.05)
 
 ID_list <- c()
 variable <- c()
-
-repsize<- rep(sizeDistNests, 200)
+multpBy_list <- seq(1, 10, by = 0.005)
+repsize<- rep(sizeDistNests, 2000)
 
 for (i in seq(1:numNests)) {
+	
+	# Changing mean
+	multpBy <- sample(multpBy_list, 1)
+	measures <- seq(0*multpBy, 30*multpBy, by =  0.05)
 	
 	ID <- i
 	nestSize <- repsize[i]
@@ -76,6 +80,19 @@ spidersBootAve <- ddply(spidersBoot, .(ID_list,  minVar, maxVar), summarise,
 	
 spidersBootAve$mean_list <- as.numeric(NA)
 spidersBootAve$sd_Max <- as.numeric(NA)
+
+spidersBootAve$one <- as.numeric(NA)
+spidersBootAve$two <- as.numeric(NA)
+spidersBootAve$three <- as.numeric(NA)
+spidersBootAve$four <- as.numeric(NA)
+spidersBootAve$five <- as.numeric(NA)
+spidersBootAve$six <- as.numeric(NA)
+spidersBootAve$seven <- as.numeric(NA)
+spidersBootAve$eight <- as.numeric(NA)
+spidersBootAve$nine <- as.numeric(NA)
+spidersBootAve$ten <- as.numeric(NA)
+
+
 	
 numNests <- nrow(spidersBootAve)
 	
@@ -89,8 +106,9 @@ numNests <- nrow(spidersBootAve)
 		maxVarList<- calMaxVarFun(data_mean, sampSize, minVariable,  maxVariable )  # mean, sampleSize, minVar, maxVar
 		mean_Maxlist <- mean(maxVarList)
 		sd_max <- sd(maxVarList)
-		spidersBootAve[nest, 7] <- mean_list
+		spidersBootAve[nest, 7] <- mean_Maxlist
 		spidersBootAve[nest, 8] <- sd_max
+		spidersBootAve[nest, 9:18] <- maxVarList
 	}
 	
 	spidersBootAve <- mutate(spidersBootAve, relativeVar =sd_data/sd_Max)
@@ -128,11 +146,16 @@ ggplot(spidersBootAve, aes(x = mean, y = CofV)) + geom_point() + geom_smooth()
 
 ggplot(spidersBootAve, aes(x = mean, y = relativeVar)) + geom_point() + geom_smooth()
 
+ggplot(spidersBootAve, aes(x = mean, y = sd_Max)) + geom_point() + geom_point(aes(x = mean, y = sd_data))
+
+ggplot(spidersBootAve, aes(x = mean, y = sd_Max/mean)) + geom_point()
 
 # Others
 ggplot(spidersBootAve, aes(x = sd_data, y = CofV)) + geom_point() + geom_smooth()
 
 ggplot(spidersBootAve, aes(x = sd_data, y = relativeVar)) + geom_point() + geom_smooth()
+
+
 
 ggplot(spidersBootAve, aes(x = CofV, y = relativeVar)) + geom_point() + geom_smooth()
 
@@ -158,7 +181,5 @@ ggplot(AveofAve, aes(x = N, y = sd_of_sd)) + geom_point() + geom_smooth()
 
 
 
-
-
-
+write.csv(spidersBootAve, 'spidersBootAve.csv')
 
