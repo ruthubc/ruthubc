@@ -13,22 +13,21 @@ import sys
 import itertools
 import csv
 import time
-import os.path
-'''
-q1 = input("\nAre you using your work computer? Answer y or n")
+import platform
+import socket
+import os
 
-if q1 == "y":
-    print("You said work computer")
+compName = platform.node()
+
+if compName == 'Sony-PC':
+    print("This is work computer")
     savePath  = 'G:\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
-elif q1 == "n":
-    savePath  = 'C:\\Work\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
-    print("You said home computer")
 else:
-    print("You did not answer properly")
-    sys.exit("Stoping code!")
-    
-'''
-savePath  = 'C:\\Work\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
+    savePath  = 'C:\\Work\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
+    print("this is the home computer")
+
+#savePath  = 'C:\\Work\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
+
 indFile = "n"
 
 slopes = [0, 0.4, 0.8, 1, 1.25, 2.5, 10]
@@ -184,7 +183,7 @@ writeArrayTxtFiles(fileNameLst_2hrs, "python_2hrs.txt")
 writeArrayTxtFiles(fileNameLst_35hrs, "python_35hrs.txt")
 writeArrayTxtFiles(fileNameLst_72hrs, "python_72hrs.txt")
 
-pbsNameList = ["3_arrayJob_2hrs", "3_arrayJob_20hrs", "3_arrayJob_35hrs", "3_arrayJob_72hrs"]
+pbsNameList = ["4_arrayJob_2hrs", "4_arrayJob_20hrs", "4_arrayJob_35hrs", "4_arrayJob_72hrs"]
 
 writePBS(pbsNameList[0], "python_2hrs", "02:00:00", len(fileNameLst_2hrs))
 writePBS(pbsNameList[1], "python_20hrs", "20:00:00", len(fileNameLst_20hrs))
