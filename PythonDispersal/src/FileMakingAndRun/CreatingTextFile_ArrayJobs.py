@@ -143,7 +143,7 @@ for i in range(0, len(combinations)):  # actually produces the files
     if ad_disFd_lmt > 1:
         runtime = "02:00:00"
         fileNameLst_2hrs.extend([filename])
-    elif ad_disFd_lmt == 0.4 and slope > 0.7  and slope < 1.3 and off_list[1] > 5 and off_list[1] < 7:
+    elif ad_disFd_lmt == 0.6 and slope == 2.5 and off_list[1] == 6 and risk == 0.3:
         runtime = "72:00:00"
         fileNameLst_72hrs.extend([filename])
     elif off_list[1] <= 6 or slope == 0.4:
