@@ -80,7 +80,7 @@ AgeAveFun<- function(inputFile){
 
 summaryFun <- function(theFileName, min_pop_age, numGens){
 
-		fileNum <- print (substr(theFileName, 0, 4))
+		fileNum <- print (substr(theFileName, 0, 5))
 
 		fileToImport <- paste(folder, theFileName, ".py.csv", sep = "") ###########################################################################################
 
