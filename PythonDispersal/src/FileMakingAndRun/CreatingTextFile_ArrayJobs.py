@@ -183,7 +183,7 @@ writeArrayTxtFiles(fileNameLst_2hrs, "python_2hrs.txt")
 writeArrayTxtFiles(fileNameLst_35hrs, "python_35hrs.txt")
 writeArrayTxtFiles(fileNameLst_72hrs, "python_72hrs.txt")
 
-pbsNameList = ["4_arrayJob_2hrs", "4_arrayJob_20hrs", "4_arrayJob_35hrs", "4_arrayJob_72hrs"]
+pbsNameList = ["5_arrayJob_2hrs", "5_arrayJob_20hrs", "5_arrayJob_35hrs", "5_arrayJob_72hrs"]
 
 writePBS(pbsNameList[0], "python_2hrs", "02:00:00", len(fileNameLst_2hrs))
 writePBS(pbsNameList[1], "python_20hrs", "20:00:00", len(fileNameLst_20hrs))
