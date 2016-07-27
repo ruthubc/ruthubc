@@ -4,7 +4,7 @@
 
 ############ Making a more specific sample ######
 
-numNests <-2000
+numNests <-200
 
 sizeDistNests <- (2:20)
 #measures <- seq(10, 30, by =  0.05)

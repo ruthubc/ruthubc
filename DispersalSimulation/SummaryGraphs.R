@@ -8,13 +8,13 @@ library(plyr)
 library(gridExtra)
 library(grid) # not sure if I need this or not.
 
-
+## Combining csvs by cmd line http://www.tomnash.eu/how-to-combine-multiple-csv-files-into-one-using-cmd/
 
 num_graphs <- 18 #aka length of doc
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalGrex18Mar_DisRsk0.3.png", width = 1600, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/DispersalJuly2016.png", width = 1600, height = gr_ht, units = "px")
 
 
 
@@ -22,9 +22,9 @@ png("DisperalSimulationOutput/DispersalGrex18Mar_DisRsk0.3.png", width = 1600, h
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "DispersalSummary18March_ALL.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "SummaryCombine.csv", sep = ""))
 
-dis_aves <-subset(dis_aves, disp_rsk == 0.3)
+
 
 #dis_aves <- subset(dis_aves, Fd_ln == 0.61)
 
