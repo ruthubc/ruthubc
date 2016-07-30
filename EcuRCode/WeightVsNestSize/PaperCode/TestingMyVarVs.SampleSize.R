@@ -226,13 +226,15 @@ cbind(duration.cumfreq)
 
 #########
 library(SciencesPo)
-a_test<- detail(spidersBootAve)
+library(stringr)
+
+
 
 a_test <- freq(spidersBootAve$sd_data)
 
 a_freqBins <- as.character(a_test$class)
 
-library(stringr)
+
 
 str_replace("don[", "[[]", "t")
 
@@ -248,34 +250,75 @@ a_table <- read.table(text = a_freqBins, sep = ",",  colClasses = "character", c
 an_table <- cbind(a_table, a_test)
 
 
+makeDistInputMean <- function(inputMean, sampleSize, minSize, maxSize) {
+	
+	measures <- seq(minSize, maxSize, by =  0.005)
+	
+	sumAim <- inputMean * sampleSize
+	
+	sumSample <- sumAim
+	while (sumSample >= (sumAim + minSize)) {
+		randSamp <- sample(measures, (sampleSize-1))
+		
+		sumSample <- sum(randSamp)
+		
+	}
+	
+	diff <-  sumAim - sumSample
+	output <- c(randSamp, diff)
+	return(output)
+}
 
-str_replace(fruits, "[aeiou]", "-")
-str_replace_all(fruits, "[aeiou]", "-")
-str_replace(fruits, "([aeiou])", "")
-str_replace(fruits, "([aeiou])", "\\1\\1")
-str_replace(fruits, "[aeiou]", c("1", "2", "3"))
-str_replace(fruits, c("a", "e", "i"), "-")
-fruits <- c("one apple", "two pears", "three bananas")
-str_replace(fruits, "[aeiou]", "-")
-str_replace_all(fruits, "[aeiou]", "-")
-str_replace_all(fruits, "([aeiou])", "")
-str_replace_all(fruits, "([aeiou])", "\\1\\1")
-str_replace_all(fruits, "[aeiou]", c("1", "2", "3"))
-str_replace_all(fruits, c("a", "e", "i"), "-")
+
+df <- data.frame(mean=numeric(), SD = numeric())
+
+i <- 0
+
+while (i <= 100) {
+	i <- i + 1
+	output <- makeDistInputMean(20, 10, 0, 100)
+	randMean <- mean(output)
+	randSD <- sd(output)
+	df <- rbind(df, c(randMean, randSD))
+}
+
+names(df)[1] <- "mean"
+names(df)[2] <- "SD"
+
+require(reshape)
+library(SciencesPo)
+library(stringr)
+library(qdap)
+freqDist <- freq(df$SD)
+
+freqDist$class <- as.character(freqDist$class)
+
+freqDist$class <- gsub("]", "", freqDist$class)
+freqDist$class<- gsub("\\(", "", freqDist$class)
+freqDist$class <- gsub("\\[", "", freqDist$class)
 
 
-fruits <- c(
-		"apples and oranges and pears and bananas",
-		"pineapples and mangos and guavas"
-)
-a_test<- str_split(fruits, " and ")
-# Specify n to restrict the number of possible matches
-18 str_sub
-str_split(fruits, " and ", n = 3)
-str_split(fruits, " and ", n = 2)
-# If n greater than number of pieces, no padding occurs
-str_split(fruits, " and ", n = 5)
-# Use fixed to return a character matrix
-str_split_fixed(fruits, " and ", 3)
-str_split_fixed(fruits, " and ", 4)
+
+dfTest = transform(freqDist, colsplit(class, split = ",", names = c('a', 'b')))
+colsplit(freqDist$class, split = ",", names = c('a', 'b'))
+
+colsplit2df(dataframe, splitcol = 1, new.names = NULL,
+		sep = ".", keep.orig = FALSE)
+
+
+freqDist <- within(freqDist, class <-data.frame(do.call('rbind', strsplit(as.character(class), ',', fixed=TRUE))))
+
+names(freqDist)[1] <- "lowLimit"
+
+SD_ecdf <- ecdf(df$SD)
+
+plot(SD_ecdf)
+
+#a_test<- 
+a_freqBins <- str_split(a_freqBins, ",")
+
+a_table <- read.table(text = a_freqBins, sep = ",",  colClasses = "character", col.names = c("name", "name2"))
+
+an_table <- cbind(a_table, a_test)
+cbind(duration.cumfreq)
 
