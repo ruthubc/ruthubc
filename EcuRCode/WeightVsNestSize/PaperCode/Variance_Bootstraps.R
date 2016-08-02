@@ -34,11 +34,14 @@ makeDistInputMean <- function(inputMean, sampleSize, minSize, maxSize) {
 
 bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVariance){
 	
+	
+	print()
+	
 	df <- data.frame(mean=numeric(), SD = numeric())
 	
 	i <- 0
 	
-	while (i <= 100) {
+	while (i <= 5000) {
 		i <- i + 1
 		output <- makeDistInputMean(inputMean, sampleSize, minSize, maxSize)
 		randMean <- mean(output)
@@ -81,3 +84,43 @@ plot(SD_ecdf)
 
 
 
+find_bootstrapVariance <- function(data, inputVar){
+	
+	column_index <- which(names(data) == inputVar)
+	
+	if(length(column_index) == 0){ stop('variable not found - check spelling')}
+	
+	
+	spidersBoot <- select(data, one_of(c("NestID", "Instar", "CountFemales", "logCtFm", "InstarNumber", "InstarSex", "type", inputVar)))
+	spidersBoot <- spidersBoot[complete.cases(spidersBoot), ]  # removing any NA's
+	colnames(spidersBoot)[8] <- "variable"  # changing name of variable of interest for function
+	
+	spidersBoot <- ddply(spidersBoot, "Instar", transform, maxVar = max(variable), minVar = min(variable)) # calculating max and min
+	
+	spidersBootAve <- ddply(spidersBoot, .(NestID, Instar, CountFemales, logCtFm, minVar, maxVar, InstarNumber, InstarSex, type), summarise,
+			N = length(variable),
+			mean = mean(variable),
+			sd_data = sd(variable)
+	)
+	
+	spidersBootAve <- spidersBootAve[complete.cases(spidersBootAve), ]
+	
+	
+	numNests <- nrow(spidersBootAve)
+	
+	for(nest in 1:numNests){
+		
+		print(nest)
+		data_mean <- spidersBootAve$mean[nest]
+		sampSize <- spidersBootAve$N[nest]
+		minVariable <- spidersBootAve$minVar[nest]
+		maxVariable <- spidersBootAve$maxVar[nest]
+		sd_org <- spidersBootAve$sd_data[nest]
+		bootstrapVarReturn <- bootstrapVariance(data_mean, sampSize, minVariable, maxVariable, sd_org) #inputMean, sampleSize, minSize, maxSize, inputVariance
+		print(bootstrapVarReturn)
+
+	}	
+	
+}
+
+find_bootstrapVariance(spidersMul, "logWt")
