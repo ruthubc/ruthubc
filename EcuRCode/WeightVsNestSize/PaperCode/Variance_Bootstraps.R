@@ -14,7 +14,7 @@ library(tidyr)
 
 makeDistInputMean <- function(inputMean, sampleSize, minSize, maxSize) {
 	
-	measures <- seq(minSize, maxSize, by =  0.005)
+	measures <- seq(minSize, maxSize, by =  0.00005)
 	
 	sumAim <- inputMean * sampleSize
 	
@@ -39,7 +39,7 @@ bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVari
 	
 	i <- 0
 	
-	while (i <= 5000) {
+	while (i <= 100000) {
 		i <- i + 1
 		output <- makeDistInputMean(inputMean, sampleSize, minSize, maxSize)
 		randMean <- mean(output)
@@ -51,7 +51,7 @@ bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVari
 	names(df)[2] <- "SD"
 	
 	
-	freqDist <- freq(df$SD)
+	freqDist <- freq(df$SD, breaks = 30, digits = 5)
 	
 	freqDist$class <- as.character(freqDist$class)
 	
@@ -67,18 +67,12 @@ bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVari
 	rowIndex <- which(freqDist$lowerLmt <= inputVariance & freqDist$upperLmt > inputVariance)
 	
 	bootVar <- freqDist$cumperc[rowIndex]
-	
-	return(bootVar)
+	return(freqDist)
+	#return(bootVar)
 	
 }
 
-
-bootstrapVariance(20, 10, 0, 100, 14)
-
-
-SD_ecdf <- ecdf(df$SD)
-
-plot(SD_ecdf)
+testExport100000 <- bootstrapVariance(3.754795, 18, 3.491362,  4.135133, 0.08454537)
 
 
 
@@ -102,13 +96,14 @@ find_bootstrapVariance <- function(data, inputVar){
 	)
 	
 	spidersBootAve <- spidersBootAve[complete.cases(spidersBootAve), ]
+	spidersBootAve$bootStrpSD <-NA
 	
 	
 	numNests <- nrow(spidersBootAve)
 	
 	for(nest in 1:numNests){
 		
-		print(nest)
+		print(str_c(nest, "/", numNests))
 		print(as.character(spidersBootAve$NestID[nest]))
 		print(as.character(spidersBootAve$Instar[nest]))
 		data_mean <- spidersBootAve$mean[nest]
@@ -117,11 +112,20 @@ find_bootstrapVariance <- function(data, inputVar){
 		maxVariable <- spidersBootAve$maxVar[nest]
 		sd_org <- spidersBootAve$sd_data[nest]
 		bootstrapVarReturn <- bootstrapVariance(data_mean, sampSize, minVariable, maxVariable, sd_org) #inputMean, sampleSize, minSize, maxSize, inputVariance
+		spidersBootAve$bootStrpSD[nest] <- ifelse(length(bootstrapVarReturn) > 0, bootstrapVarReturn, NA)
+		#return(bootstrapVarReturn)
 		print(str_c("bootstrap variance:", bootstrapVarReturn))
 
 	}	
-	
+	return(spidersBootAve)
 }
 
-find_bootstrapVariance(spidersMul, "logWt")
+bootVarTst <- find_bootstrapVariance(spidersMul, "logWt")
 ## just need to add an empty data frame to spidersBootAve then write the boot variance to it.
+
+bootstrapVariance(20, 10, 0, 100, 14)
+
+
+SD_ecdf <- ecdf(df$SD)
+
+plot(SD_ecdf)

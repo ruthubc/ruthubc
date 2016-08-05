@@ -4,3 +4,5 @@ source("C:/Work/EclipseWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/Nes
 source("C:/Work/EclipseWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CondResidualFunction.R")
 source("C:/Work/EclipseWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/FunctionCalculateVariance_overMax.R") # importing function
 source("C:/Work/EclipseWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/InstarSizeGridGraphFunction.R")
+
+
