@@ -124,3 +124,4 @@ find_bootstrapVariance <- function(data, inputVar){
 }
 
 find_bootstrapVariance(spidersMul, "logWt")
+## just need to add an empty data frame to spidersBootAve then write the boot variance to it.
