@@ -18,7 +18,8 @@ makeDistInputMean <- function(inputMean, sampleSize, minSize, maxSize) {
 	
 	sumAim <- inputMean * sampleSize
 	
-	sumSample <- sumAim
+	sumSample <- sumAim + 100
+	
 	while (sumSample >= (sumAim + minSize)) {
 		randSamp <- sample(measures, (sampleSize-1))
 		
@@ -33,10 +34,7 @@ makeDistInputMean <- function(inputMean, sampleSize, minSize, maxSize) {
 
 
 bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVariance){
-	
-	
-	print()
-	
+
 	df <- data.frame(mean=numeric(), SD = numeric())
 	
 	i <- 0
@@ -111,13 +109,15 @@ find_bootstrapVariance <- function(data, inputVar){
 	for(nest in 1:numNests){
 		
 		print(nest)
+		print(as.character(spidersBootAve$NestID[nest]))
+		print(as.character(spidersBootAve$Instar[nest]))
 		data_mean <- spidersBootAve$mean[nest]
 		sampSize <- spidersBootAve$N[nest]
 		minVariable <- spidersBootAve$minVar[nest]
 		maxVariable <- spidersBootAve$maxVar[nest]
 		sd_org <- spidersBootAve$sd_data[nest]
 		bootstrapVarReturn <- bootstrapVariance(data_mean, sampSize, minVariable, maxVariable, sd_org) #inputMean, sampleSize, minSize, maxSize, inputVariance
-		print(bootstrapVarReturn)
+		print(str_c("bootstrap variance:", bootstrapVarReturn))
 
 	}	
 	
