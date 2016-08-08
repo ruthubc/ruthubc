@@ -1,6 +1,5 @@
 ### Importing the data
 
-library('plyr')
 
 spiders <- read.csv("RuthEcuador2013/NestSize/CombinedNestVsWeight.csv")
 
