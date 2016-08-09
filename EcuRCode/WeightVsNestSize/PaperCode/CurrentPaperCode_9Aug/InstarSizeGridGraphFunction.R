@@ -1,9 +1,4 @@
-# Author: Ruth
-###############################################################################
-library (plyr)
-library(ggplot2)
-library(gridExtra)
-library(RGraphics) 
+
 
 # Function to make instar grid graphs
 
@@ -31,7 +26,6 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	no_rows <- nrow(spiderData)
 	
 	minNstSz <- min(spiderData$CountFemales)
-	
 	
 	
 

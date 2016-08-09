@@ -11,6 +11,7 @@ library(SciencesPo)
 library(stringr)
 library(qdap)
 library(tidyr)
+library(MASS)
 
 
 comp_name <- Sys.info()["nodename"]

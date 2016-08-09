@@ -1,8 +1,7 @@
 # Author: Ruth
 ###############################################################################
 
-library(plyr)
-library(dplyr)
+
 
 # function to calculate maximum variance for eea
 calMaxVarFun <- function(mean, sampSize, min, max){

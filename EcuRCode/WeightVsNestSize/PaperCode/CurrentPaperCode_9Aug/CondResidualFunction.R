@@ -2,13 +2,6 @@
 ###############################################################################
 
 
-require(reshape2)
-library (ggplot2)
-library (grid)
-library (lme4)
-library(lmerTest)
-library(visreg)
-
 condition_residuals <- function(inputData, bodyLenVar, subset_multiple) {
 	
 	column_index <- which(names(inputData) == bodyLenVar)
