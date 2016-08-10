@@ -1,0 +1,55 @@
+
+
+---
+title: "Leg Length vs Nest Size"
+author: "Ruth Sharpe"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+
+---
+
+AIC Values of all possible models with instar included
+------------------
+(note: If include models without instar as a factor the results seem strange and
+no significance to lowest AIC model as it doesn't have instar)
+
+
+```{r kable, echo = FALSE}
+
+kable(result, digits = 2, row.names = FALSE, align = "l")
+
+	
+```
+\
+\
+
+Graph with lowest AIC model superimposed
+------------------
+ 
+
+```{r, fig.height=8, fig.width=13, echo = FALSE}
+
+InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "LegLengthvsNestSize_by_Instar_ZGSA", legLmFull)
+
+```
+
+Statistics of lowest AIC model
+------------------
+
+
+```{r xtable, results="asis", echo = FALSE}
+
+myFormula1 <- as.character(legLmFull@call[2])
+myFormulaRed <- as.character(legLmRed@call[2])
+
+anv1 <- anova(legLmFull)
+
+tab1 <- xtable(anv1, caption = paste("Table 1: anova on single lmer:", myFormula1))
+print(tab1, type = "html")
+
+anv2 <- anova(legLmFull, legLmRed)
+
+tab2 <- xtable(anova(legLmFull, legLmRed), caption = paste("Table 2: anova full vs reduced model. Formulas:", myFormula1, " Reduced:", "myFormulaRed"))
+
+print(tab2, type = "html")
+	
+```
