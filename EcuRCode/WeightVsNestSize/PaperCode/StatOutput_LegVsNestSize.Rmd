@@ -37,19 +37,21 @@ Statistics of lowest AIC model
 
 
 ```{r xtable, results="asis", echo = FALSE}
-
+#https://cran.r-project.org/web/packages/xtable/xtable.pdf
 myFormula1 <- as.character(legLmFull@call[2])
 myFormulaRed <- as.character(legLmRed@call[2])
 
 anv1 <- anova(legLmFull)
 
 tab1 <- xtable(anv1, caption = paste("Table 1: anova on single lmer:", myFormula1))
-print(tab1, type = "html")
+print(paste("Anova of full model:", myFormula1))
+print(tab1, type = "html",  caption.placement = "top", caption.colour = "black")
 
 anv2 <- anova(legLmFull, legLmRed)
 
-tab2 <- xtable(anova(legLmFull, legLmRed), caption = paste("Table 2: anova full vs reduced model. Formulas:", myFormula1, " Reduced:", "myFormulaRed"))
+tab2 <- xtable(anova(legLmFull, legLmRed), caption = paste("Table 2: anova full vs reduced model. Formulas:", myFormula1, " Reduced:", myFormulaRed))
 
-print(tab2, type = "html")
+print(tab2, type = "html", caption.placement = "top", caption.text.colour = "black")
 	
 ```
+

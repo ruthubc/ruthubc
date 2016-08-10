@@ -14,6 +14,10 @@ library(tidyr)
 library(MASS)
 library(visreg)
 library(grid)
+library(knitr)
+library(doBy)
+library(xtable)
+
 
 
 comp_name <- Sys.info()["nodename"]

@@ -4,8 +4,7 @@
 ###############################################################################
 ### From here http://rpubs.com/kaz_yos/exhaustive
 
-library(doBy)
-library(knitr)
+
 
 
 
