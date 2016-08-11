@@ -13,14 +13,21 @@ AIC Values of all possible models with instar included
 no significance to lowest AIC model as it doesn't have instar)
 
 
-```{r kable, echo = FALSE}
+```{r kable, results='asis',  echo = FALSE}
+#pander options http://rapporter.github.io/pander/#general-options
+row.names(result) <- NULL # removing row names
 
-kable(result, digits = 2, row.names = FALSE, align = "l")
+panderOptions('table.split.table', Inf)
+panderOptions('digits', 4)
+panderOptions('keep.line.breaks', TRUE)
+
+
+pander(result,  row.names = NULL, justify = 'left', split.cells = c(2, 60, 2))
 
 	
 ```
-\
-\
+
+
 
 Graph with lowest AIC model superimposed
 ------------------
@@ -36,22 +43,16 @@ Statistics of lowest AIC model
 ------------------
 
 
-```{r xtable, results="asis", echo = FALSE}
-#https://cran.r-project.org/web/packages/xtable/xtable.pdf
+
+```{r xtable,  echo = FALSE}
+##https://cran.r-project.org/web/packages/xtable/xtable.pdf
 myFormula1 <- as.character(legLmFull@call[2])
-myFormulaRed <- as.character(legLmRed@call[2])
-
+FormulaRed <- as.character(legLmRed@call[2])
+cat(paste("Anova of full model by itself. Model:", myFormula1))
 anv1 <- anova(legLmFull)
-
-tab1 <- xtable(anv1, caption = paste("Table 1: anova on single lmer:", myFormula1))
-print(paste("Anova of full model:", myFormula1))
-print(tab1, type = "html",  caption.placement = "top", caption.colour = "black")
-
+kable(anv1, caption = paste("Anova of full model by itself. Model:", myFormula1))
+cat("\n\r")
 anv2 <- anova(legLmFull, legLmRed)
+kable(anv2, caption = paste("Anova of full vs reduced model. Formulas:", myFormula1, " Reduced:", myFormulaRed))
 
-tab2 <- xtable(anova(legLmFull, legLmRed), caption = paste("Table 2: anova full vs reduced model. Formulas:", myFormula1, " Reduced:", myFormulaRed))
-
-print(tab2, type = "html", caption.placement = "top", caption.text.colour = "black")
-	
 ```
-
