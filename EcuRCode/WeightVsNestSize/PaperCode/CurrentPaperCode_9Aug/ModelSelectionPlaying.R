@@ -5,9 +5,6 @@
 ### From here http://rpubs.com/kaz_yos/exhaustive
 
 
-
-
-
 ## Create vectors for outcome and predictors
 
 
@@ -54,7 +51,7 @@ allModelsAIC <- function(outcome, predictors, dataset) {
 	result <- result[(result$dup == "FALSE"), ]
 	
 	result <- result[, c('AIC', 'model', 'num.predictors')]
-	return(result)
+	return(results)
 	
 	
 }
@@ -65,7 +62,7 @@ allModelsAIC <- function(outcome, predictors, dataset) {
 #print(result)
 
 
-#Sys.setenv(RSTUDIO_PANDOC = "C:/Users/user/AppData/Local/Pandoc")
+#Sys.setenv(RSTUDIO_PANDOC = "C:/Users/Ruth/AppData/Local/Pandoc")
 
 #Sys.getenv("RSTUDIO_PANDOC")
 

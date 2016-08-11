@@ -15,14 +15,14 @@ no significance to lowest AIC model as it doesn't have instar)
 
 ```{r kable, results='asis',  echo = FALSE}
 #pander options http://rapporter.github.io/pander/#general-options
-row.names(result) <- NULL # removing row names
+row.names(legLegAllMods) <- NULL # removing row names
 
 panderOptions('table.split.table', Inf)
 panderOptions('digits', 4)
 panderOptions('keep.line.breaks', TRUE)
 
 
-pander(result,  row.names = NULL, justify = 'left', split.cells = c(2, 60, 2))
+pander(legLegAllMods,  row.names = NULL, justify = 'left', split.cells = c(2, 60, 2))
 
 	
 ```
@@ -47,7 +47,7 @@ Statistics of lowest AIC model
 ```{r xtable,  echo = FALSE}
 ##https://cran.r-project.org/web/packages/xtable/xtable.pdf
 myFormula1 <- as.character(legLmFull@call[2])
-FormulaRed <- as.character(legLmRed@call[2])
+myFormulaRed <- as.character(legLmRed@call[2])
 cat(paste("Anova of full model by itself. Model:", myFormula1))
 anv1 <- anova(legLmFull)
 kable(anv1, caption = paste("Anova of full model by itself. Model:", myFormula1))
