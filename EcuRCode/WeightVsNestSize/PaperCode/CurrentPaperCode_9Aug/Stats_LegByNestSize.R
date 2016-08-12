@@ -13,18 +13,32 @@ legLegAllMods <- allModelsAIC(outcome, predictors, dataset)
 
 
 ## Model with lowest AIC value
-legLmFull <- lmer(logLeg ~  I(logCtFm^2) + logCtFm + Instar  + 
-				(1|NestID), data = spidersMul, REML = FALSE)
-anova(legLmFull)
+legLmFull <- lmer(logLeg ~  I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + I(logCtFm^2):Instar + 
+				(1|NestID)  , data = spidersMul, REML = FALSE)
+
+
+
 
 legLmRed <- lmer(logLeg ~ Instar  + 
 				(1|NestID), data = spidersMul, REML = FALSE)
 
-anova(legLmFull, legLmRed)
+
+
+## Model without square term
+
+legLmNoSqFull <- lmer(logLeg ~  logCtFm + Instar  + 
+				(1|NestID), data = spidersMul, REML = FALSE)
 
 
 
-InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "LegLengthvsNestSize_by_Instar_ZGSA", legLmFull)
+############# Using non-squared term as full model
+FullModel <- lmer(logLeg ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
+RedModel <- lmer(logLeg ~  Instar +  (1|NestID)  , data = spidersMul, REML = FALSE)
+anova(FullModel, RedModel)
+
+
+
+#InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "LegLengthvsNestSize_by_Instar_ZGSA", legLmFull)
 
 
 

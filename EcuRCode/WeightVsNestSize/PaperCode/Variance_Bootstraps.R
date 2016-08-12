@@ -2,11 +2,11 @@
 ###############################################################################
 
 
-require(reshape)
-library(SciencesPo)
+require(dplyr)
+require(plyr)
 library(stringr)
 library(qdap)
-library(tidyr)
+library(SciencesPo)
 
 #TODO: (1) Errorhandling: if input variance is not in the cumDist table http://adv-r.had.co.nz/Exceptions-Debugging.html#condition-handling
 #      (2) Increase number of bins
@@ -39,7 +39,7 @@ bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVari
 	
 	i <- 0
 	
-	while (i <= 100000) {
+	while (i <= 10) { # i <= 100000
 		i <- i + 1
 		output <- makeDistInputMean(inputMean, sampleSize, minSize, maxSize)
 		randMean <- mean(output)
@@ -71,9 +71,6 @@ bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVari
 	#return(bootVar)
 	
 }
-
-testExport100000 <- bootstrapVariance(3.754795, 18, 3.491362,  4.135133, 0.08454537)
-
 
 
 find_bootstrapVariance <- function(data, inputVar){
@@ -120,12 +117,12 @@ find_bootstrapVariance <- function(data, inputVar){
 	return(spidersBootAve)
 }
 
-bootVarTst <- find_bootstrapVariance(spidersMul, "logWt")
+bootVarTst <- find_bootstrapVariance(myData, "condResiduals")
 ## just need to add an empty data frame to spidersBootAve then write the boot variance to it.
 
-bootstrapVariance(20, 10, 0, 100, 14)
+#bootstrapVariance(20, 10, 0, 100, 14)
 
 
-SD_ecdf <- ecdf(df$SD)
+#SD_ecdf <- ecdf(df$SD)
 
-plot(SD_ecdf)
+#plot(SD_ecdf)

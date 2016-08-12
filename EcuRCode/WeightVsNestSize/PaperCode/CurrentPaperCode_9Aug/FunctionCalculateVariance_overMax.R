@@ -62,7 +62,7 @@ calRelVariance <- function(data, inputVar) {
 	if(length(column_index) == 0){ stop('variable not found - check spelling')}
 	
 	
-	spidersBoot <- select(data, one_of(c("NestID", "Instar", "CountFemales", "logCtFm", "InstarNumber", "InstarSex", "type", inputVar)))
+	spidersBoot <- dplyr::select(data, one_of(c("NestID", "Instar", "CountFemales", "logCtFm", "InstarNumber", "InstarSex", "type", inputVar)))
 	spidersBoot <- spidersBoot[complete.cases(spidersBoot), ]  # removing any NA's
 	colnames(spidersBoot)[8] <- "variable"  # changing name of variable of interest for function
 	

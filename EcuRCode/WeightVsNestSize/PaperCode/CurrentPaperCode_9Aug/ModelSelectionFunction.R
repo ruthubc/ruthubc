@@ -44,28 +44,19 @@ allModelsAIC <- function(outcome, predictors, dataset) {
 	
 	result$dup <- duplicated(result[,c('num.predictors', 'AIC')])
 	
-	result <- orderBy(~ -AIC, result)
-	
+	result <- orderBy(~ AIC, result)	
 	
 	
 	result <- result[(result$dup == "FALSE"), ]
 	
-	result <- result[, c('AIC', 'model', 'num.predictors')]
-	return(results)
+	lowestAIC <- min(result$AIC)
+	result$AIC_Diff <- result$AIC - lowestAIC
+			
+	result <- result[, c('AIC_Diff', 'AIC', 'model', 'num.predictors')]
+	
+	
+	return(result)
 	
 	
 }
-## The lines below should not need modification.
 
-## Create list of models
-
-#print(result)
-
-
-#Sys.setenv(RSTUDIO_PANDOC = "C:/Users/Ruth/AppData/Local/Pandoc")
-
-#Sys.getenv("RSTUDIO_PANDOC")
-
-#Sys.setenv(pdflatex = "C:/Program Files (x86)/MiKTeX 2.9/miktex/bin")
-
-#rmarkdown::render()

@@ -1,0 +1,126 @@
+
+
+---
+title: "Variance in Condition vs Nest Size"
+author: "Ruth Sharpe"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+
+---
+
+AIC Values of all possible models with instar included
+------------------
+
+
+```{r kable, results='asis',  echo = FALSE}
+#pander options http://rapporter.github.io/pander/#general-options
+modTable <- varianceCondAllMods
+
+row.names(modTable) <- NULL # removing row names
+
+panderOptions('table.split.table', Inf)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('keep.line.breaks', TRUE)
+
+
+pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(2, 60, 2))
+
+	
+```
+
+
+
+Graph with square only model superimposed
+------------------
+ 
+
+```{r, fig.height=8, fig.width=12, echo = FALSE}
+
+InstarGridGraph(spiConRes, "condResiduals", "Individual Condition", "n", "", condSqOnlyLm)
+
+```
+
+Statistics of model with square and non-square nest size
+------------------
+
+
+
+```{r lowestAIC_Stats,  echo = FALSE, comment = ""}
+
+FullModel <- condLmFull
+RedModel <- condLmRed
+lines <- "---------------------------------------------------------------------------------------"
+
+myFormula1 <- as.character(FullModel@call[2])
+myFormulaRed <- as.character(legLmRed@call[2])
+cat(lines, "Anova of full model alone",  paste("Model:", myFormula1),  sep = '\n')
+anv1 <- anova(FullModel)
+kable(anv1)
+anv2 <- anova(FullModel, RedModel)
+cat(lines, 
+		"Anova of full vs reduced model", 
+		paste("Full Model:", myFormula1), 
+		paste("Reduced Model:", myFormulaRed), 
+		sep = '\n')
+kable(anv2)
+cat(lines)
+
+
+```
+
+Statistics of model only nest size square term
+------------------
+
+
+
+```{r modelWithOnlyFemSquareTerm_Stats,  echo = FALSE, comment = ""}
+
+FullModel <- condSqOnlyLm
+RedModel <- condLmRed
+lines <- "---------------------------------------------------------------------------------------"
+
+myFormula1 <- as.character(FullModel@call[2])
+myFormulaRed <- as.character(legLmRed@call[2])
+cat(lines, "Anova of full model alone",  paste("Model:", myFormula1),  sep = '\n')
+anv1 <- anova(FullModel)
+kable(anv1)
+anv2 <- anova(FullModel, RedModel)
+cat(lines, 
+		"Anova of full vs reduced model", 
+		paste("Full Model:", myFormula1), 
+		paste("Reduced Model:", myFormulaRed), 
+		sep = '\n')
+kable(anv2)
+cat(lines)
+
+
+```
+
+
+Statistics of model without nest size square term
+------------------
+
+
+
+```{r modelWithoutFemSquareTerm_Stats,  echo = FALSE, comment = ""}
+
+FullModel <- condLmNoSq
+RedModel <- condLmRed
+lines <- "---------------------------------------------------------------------------------------"
+
+myFormula1 <- as.character(FullModel@call[2])
+myFormulaRed <- as.character(legLmRed@call[2])
+cat(lines, "Anova of full model alone",  paste("Model:", myFormula1),  sep = '\n')
+anv1 <- anova(FullModel)
+kable(anv1)
+anv2 <- anova(FullModel, RedModel)
+cat(lines, 
+		"Anova of full vs reduced model", 
+		paste("Full Model:", myFormula1), 
+		paste("Reduced Model:", myFormulaRed), 
+		sep = '\n')
+kable(anv2)
+cat(lines)
+
+
+```
