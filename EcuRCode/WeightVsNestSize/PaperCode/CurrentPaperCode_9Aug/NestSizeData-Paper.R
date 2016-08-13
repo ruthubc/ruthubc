@@ -34,7 +34,7 @@ spiders$logLeg<- log10(spiders$LegLen.mm*1000)
 spiders$logHead <- log10(spiders$HeadLength.mm*1000)
 
 
-
+spiders <- condition_residuals(spiders, "logLeg")
 
 
 ############ Inserting Spider Number #########

@@ -2,7 +2,9 @@
 ###############################################################################
 
 
-condition_residuals <- function(inputData, bodyLenVar, subset_multiple) {
+condition_residuals <- function(TheData, bodyLenVar) {
+	
+	inputData <- TheData
 	
 	column_index <- which(names(inputData) == bodyLenVar)
 	
@@ -17,13 +19,12 @@ condition_residuals <- function(inputData, bodyLenVar, subset_multiple) {
 	
 	inputData$condResiduals <- resid(model)  # putting the residuales into the dable
 	
-	if (subset_multiple == "y") {
-		inputData <- subset(inputData, type == "multiple")
-		
-	}
-
+	inputData <- subset(inputData, select = c(ID, condResiduals))
 	
-	return(inputData)
+	mergeTable <- merge(TheData, inputData, by = "ID", all = TRUE)
+	
+	
+	return(mergeTable)
 	
 }
 

@@ -1,7 +1,7 @@
 
 
 ---
-title: "Individual Condition vs Nest Size"
+title: "Host Vs Propagule
 author: "Ruth Sharpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 geometry: margin=1.5cm
@@ -21,13 +21,11 @@ AIC Values of all possible models with instar always included
 ====================
 
 ```{r kable, results='asis',  echo = FALSE}
+#pander options http://rapporter.github.io/pander/#general-options
 
-myData <- spidersMul
-
-
-outcome    <- c("condResiduals")
+outcome    <- c("logLeg")
 predictors <- c("logCtFm", "logCtFm:Instar", "I(logCtFm^2)", "I(logCtFm^2):Instar")
-dataset    <- myData
+dataset    <- spidersMul
 
 modTable <- allModelsAIC(outcome, predictors, dataset)
 
@@ -53,31 +51,49 @@ Graph with lowest AIC model superimposed
 
 ```{r, fig.height=7, fig.width=13}
 
-FullModel <- lmer(condResiduals ~ logCtFm + Instar + logCtFm:Instar +
-				(1|NestID), data = myData, REML = FALSE)
+FullModel <- lmer(logLeg ~  I(logCtFm^2) + logCtFm + Instar + logCtFm:Instar + I(logCtFm^2):Instar + 
+				(1|NestID), data = spidersMul, REML = FALSE)
 
 
 cat("Model:", as.character(FullModel@call[2]), sep = '\n')
 
-InstarGridGraph(myData, "condResiduals", "Condition", "n", "", FullModel)
+InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", FullModel)
 
 ```
 
 \pagebreak
 
-
-Statistics using model without squared values as the full model (Lowest AIC Model)
+Graph with model without squared values of nest size
 ====================
+ 
+
+```{r, fig.height=7, fig.width=13}
+
+FullModel <- lmer(logLeg ~  logCtFm + Instar + logCtFm:Instar  + 
+				(1|NestID)  , data = spidersMul, REML = FALSE)
+
+
+cat("Model:", as.character(FullModel@call[2]), sep = '\n')
+
+InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", FullModel)
+
+```
+
+\pagebreak
+
+Statistics using model without squared values as the full model
+====================
+(seems too complicated to include the squared vaules, esp as the patter is not clear)
 
 
 ```{r Stats,  results='asis', echo = FALSE, comment = "", }
 
-FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = myData, REML = FALSE)
+FullModel <- lmer(logLeg ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
 
 
-TestInteraction  <- c("Testing Interaction Term", lmer(condResiduals~  logCtFm + Instar + (1|NestID)  , data = myData, REML = FALSE))
-TestInstar <- c( "Testing Instar Term", lmer(condResiduals~  logCtFm +  (1|NestID)  , data = myData, REML = FALSE))
-TestNestSize <- c("Testing Nest Size", lmer(condResiduals ~  Instar +  (1|NestID)  , data = myData, REML = FALSE))
+TestInteraction  <- c("Testing Interaction Term", lmer(logLeg ~  logCtFm + Instar + (1|NestID)  , data = spidersMul, REML = FALSE))
+TestInstar <- c( "Testing Instar Term", lmer(logLeg ~  logCtFm +  (1|NestID)  , data = spidersMul, REML = FALSE))
+TestNestSize <- c("Testing Nest Size", lmer(logLeg ~  Instar +  (1|NestID)  , data = spidersMul, REML = FALSE))
 
 
 RedModels <- list(TestNestSize, TestInstar, TestInteraction)
@@ -97,14 +113,14 @@ Testing Individual Instars
 
 
 LMERS_fun <- function(myData) { # function to test individual instars 	
-    lmFull <- lmer(condResiduals ~  logCtFm + (1|NestID), data = myData)
-    lmRed <- lmer(condResiduals ~  + (1|NestID), data = myData)
+    lmFull <- lmer(logLeg ~  logCtFm + (1|NestID), data = myData)
+    lmRed <- lmer(logLeg ~  + (1|NestID), data = myData)
     return(list(lmFull, lmRed))
 	
     }
 
 
-instarLMER <- dlply(myData, .(Instar),        
+instarLMER <- dlply(spidersMul, .(Instar),        
 		function(x) LMERS_fun(x))
 
 
@@ -126,4 +142,9 @@ kable(results$AdMale, caption = "AdMale")
 kable(results$SubMale, caption = "SubMale")
 	
 ```
+
+
+
+
+
 

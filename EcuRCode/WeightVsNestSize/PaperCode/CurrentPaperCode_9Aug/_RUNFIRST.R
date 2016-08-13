@@ -26,22 +26,24 @@ comp_name <- Sys.info()["nodename"]
 
 if (comp_name == "DELL-1545") {
 	print("You are using your home computer")
+	path <- "C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
 	
-	source("C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/NestSizeData-Paper.R")
-	source("C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/CondResidualFunction.R")
-	source("C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/FunctionCalculateVariance_overMax.R") # importing function
-	source("C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/InstarSizeGridGraphFunction.R")
-	source("C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/ModelSelectionFunction.R")
+
 	
 	print("data loaded")
 }else{
 	print("You are using your school computer")
-	source("G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/NestSizeData-Paper.R")
-	source("G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/CondResidualFunction.R")
-	source("G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/FunctionCalculateVariance_overMax.R") # importing function
-	source("G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/InstarSizeGridGraphFunction.R")
-	source("G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/ModelSelectionFunction.R")
-	print("data loaded")
+	setwd("G:/Dropbox/")
+	path <- "G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
+
 }
 
 
+source(paste(path, "NestSizeData-Paper.R", sep = ""))
+source(paste(path, "CondResidualFunction.R", sep = ""))
+source(paste(path, "FunctionCalculateVariance_overMax.R", sep = "")) # importing function
+source(paste(path,"InstarSizeGridGraphFunction.R", sep = ""))
+source(paste(path,"ModelSelectionFunction.R", sep = ""))
+source(paste(path, "Function_MDAnovaOutput.R", sep = ""))
+
+print("data imported")

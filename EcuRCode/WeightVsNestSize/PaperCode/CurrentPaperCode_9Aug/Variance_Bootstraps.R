@@ -39,7 +39,7 @@ bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVari
 	
 	i <- 0
 	
-	while (i <= 10) { # i <= 100000
+	while (i <= 100) { # i <= 100000
 		i <- i + 1
 		output <- makeDistInputMean(inputMean, sampleSize, minSize, maxSize)
 		randMean <- mean(output)
@@ -51,7 +51,7 @@ bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVari
 	names(df)[2] <- "SD"
 	
 	
-	freqDist <- freq(df$SD, breaks = 30, digits = 5)
+	freqDist <- freq(df$SD, breaks = 20, digits = 5, include.lowest = TRUE)
 	
 	freqDist$class <- as.character(freqDist$class)
 	
@@ -67,8 +67,8 @@ bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVari
 	rowIndex <- which(freqDist$lowerLmt <= inputVariance & freqDist$upperLmt > inputVariance)
 	
 	bootVar <- freqDist$cumperc[rowIndex]
-	return(freqDist)
-	#return(bootVar)
+	#return(freqDist) #For testig
+	return(bootVar)
 	
 }
 
@@ -80,7 +80,7 @@ find_bootstrapVariance <- function(data, inputVar){
 	if(length(column_index) == 0){ stop('variable not found - check spelling')}
 	
 	
-	spidersBoot <- select(data, one_of(c("NestID", "Instar", "CountFemales", "logCtFm", "InstarNumber", "InstarSex", "type", inputVar)))
+	spidersBoot <- dplyr::select(data, one_of(c("NestID", "Instar", "CountFemales", "logCtFm", "InstarNumber", "InstarSex", "type", inputVar)))
 	spidersBoot <- spidersBoot[complete.cases(spidersBoot), ]  # removing any NA's
 	colnames(spidersBoot)[8] <- "variable"  # changing name of variable of interest for function
 	
@@ -117,12 +117,21 @@ find_bootstrapVariance <- function(data, inputVar){
 	return(spidersBootAve)
 }
 
+myData <- subset(spiders, CountFemales > 1000 & Instar =="Adult")
+
 bootVarTst <- find_bootstrapVariance(myData, "condResiduals")
 ## just need to add an empty data frame to spidersBootAve then write the boot variance to it.
 
-#bootstrapVariance(20, 10, 0, 100, 14)
+bootstrapVariance(20, 10, 0, 100, 14)
 
 
 #SD_ecdf <- ecdf(df$SD)
 
 #plot(SD_ecdf)
+
+#### For testing
+spidersBootAve <- ddply(spiders, .(NestID, Instar, CountFemales, logCtFm, InstarNumber, InstarSex, type), summarise,
+		N = length(condResiduals),
+		mean = mean(condResiduals),
+		sd_data = sd(condResiduals)
+)
