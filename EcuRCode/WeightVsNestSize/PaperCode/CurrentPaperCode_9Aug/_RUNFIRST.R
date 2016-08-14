@@ -28,9 +28,6 @@ if (comp_name == "DELL-1545") {
 	print("You are using your home computer")
 	path <- "C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
 	
-
-	
-	print("data loaded")
 }else{
 	print("You are using your school computer")
 	setwd("G:/Dropbox/")
@@ -39,11 +36,12 @@ if (comp_name == "DELL-1545") {
 }
 
 
-source(paste(path, "NestSizeData-Paper.R", sep = ""))
+
 source(paste(path, "CondResidualFunction.R", sep = ""))
 source(paste(path, "FunctionCalculateVariance_overMax.R", sep = "")) # importing function
 source(paste(path,"InstarSizeGridGraphFunction.R", sep = ""))
 source(paste(path,"ModelSelectionFunction.R", sep = ""))
 source(paste(path, "Function_MDAnovaOutput.R", sep = ""))
+source(paste(path, "NestSizeData-Paper.R", sep = ""))
 
 print("data imported")

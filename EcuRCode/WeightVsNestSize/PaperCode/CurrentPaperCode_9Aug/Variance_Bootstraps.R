@@ -75,6 +75,9 @@ bootstrapVariance <- function(inputMean, sampleSize, minSize, maxSize, inputVari
 
 find_bootstrapVariance <- function(data, inputVar){
 	
+	ptm <- proc.time()
+	
+	
 	column_index <- which(names(data) == inputVar)
 	
 	if(length(column_index) == 0){ stop('variable not found - check spelling')}
@@ -112,6 +115,7 @@ find_bootstrapVariance <- function(data, inputVar){
 		spidersBootAve$bootStrpSD[nest] <- ifelse(length(bootstrapVarReturn) > 0, bootstrapVarReturn, NA)
 		#return(bootstrapVarReturn)
 		print(str_c("bootstrap variance:", bootstrapVarReturn))
+		print(proc.time() - ptm)
 
 	}	
 	return(spidersBootAve)
@@ -130,8 +134,16 @@ bootstrapVariance(20, 10, 0, 100, 14)
 #plot(SD_ecdf)
 
 #### For testing
-spidersBootAve <- ddply(spiders, .(NestID, Instar, CountFemales, logCtFm, InstarNumber, InstarSex, type), summarise,
+
+mySpiders <- subset(spiders, !is.na(condResiduals))
+
+spidersBootAve <- ddply(mySpiders, .(NestID, Instar, CountFemales, logCtFm, InstarNumber, InstarSex, type), summarise,
 		N = length(condResiduals),
 		mean = mean(condResiduals),
 		sd_data = sd(condResiduals)
 )
+
+output<- subset(spidersBootAve, !is.na(sd_data))
+
+
+write.csv(output, file = "spidersAverage.csv")

@@ -34,7 +34,6 @@ spiders$logLeg<- log10(spiders$LegLen.mm*1000)
 spiders$logHead <- log10(spiders$HeadLength.mm*1000)
 
 
-spiders <- condition_residuals(spiders, "logLeg")
 
 
 ############ Inserting Spider Number #########
@@ -45,6 +44,8 @@ spiders$InstarNumber <- instarNum[spiders$Instar]
 
 instarSex<- c(Juv4 = "F", Sub1 = "F", Sub2 = "F", Adult = "F", SubMale = "M", AdMale = "M")
 spiders$InstarSex <- instarSex[spiders$Instar]
+
+spiders <- condition_residuals(spiders, "logLeg")
 
 
 spidersMul <- subset(spiders, type == "multiple") #removing single females
