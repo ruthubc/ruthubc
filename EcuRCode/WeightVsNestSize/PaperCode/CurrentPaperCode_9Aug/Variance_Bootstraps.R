@@ -123,6 +123,8 @@ find_bootstrapVariance <- function(data, inputVar){
 
 myData <- subset(spiders, CountFemales > 1000 & Instar =="Adult")
 
+
+
 bootVarTst <- find_bootstrapVariance(myData, "condResiduals")
 ## just need to add an empty data frame to spidersBootAve then write the boot variance to it.
 
@@ -133,13 +135,16 @@ bootstrapVariance(20, 10, 0, 100, 14)
 
 #plot(SD_ecdf)
 
-#### For testing
+#### For testing and sending to python
 
 mySpiders <- subset(spiders, !is.na(condResiduals))
 
-spidersBootAve <- ddply(mySpiders, .(NestID, Instar, CountFemales, logCtFm, InstarNumber, InstarSex, type), summarise,
+mySpiders <- ddply(mySpiders, "Instar", transform, maxCond = max(condResiduals), minCond = min(condResiduals)) # calculating max and min
+
+spidersBootAve <- ddply(mySpiders, .(NestID, Instar, CountFemales, logCtFm, InstarNumber, InstarSex, type, maxCond, minCond), summarise,
 		N = length(condResiduals),
-		mean = mean(condResiduals),
+		mean_data = mean(condResiduals),
+		sum_data = sum(condResiduals),
 		sd_data = sd(condResiduals)
 )
 
