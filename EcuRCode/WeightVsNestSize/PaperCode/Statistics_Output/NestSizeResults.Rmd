@@ -1,0 +1,247 @@
+
+---
+title: "Weight Vs Nest Size Results"
+author: "Ruth Sharpe"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+	
+```
+
+Leg Vs. Nest Size
+--------------------
+
+```{r LegNS, results='asis',  echo = FALSE}
+##### Leg length vs nest size
+
+
+FullModel <- lmer(logLeg ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
+NSModel <- lmer(logLeg ~  Instar + (1|NestID)  , data = spidersMul, REML = FALSE)
+
+NSResults <- outputResultsWord(FullModel, NSModel)
+	
+```
+
+Leg length increases as nest size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
+,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
+`r NSResults[[5]]`).
+
+
+```{r LegInstar, results='asis',  echo = FALSE}
+##### Leg length vs instar
+FullModel <- lmer(logLeg ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
+InstarModel <- lmer(logLeg ~  logCtFm + (1|NestID)  , data = spidersMul, REML = FALSE)
+
+InstarResults <- outputResultsWord(FullModel, InstarModel)
+	
+```
+Leg length is significantly correlated with instar, but that is not surprising (lmer; $\chi$^2^~`r InstarResults[[1]]`
+,`r InstarResults[[2]]`~= `r InstarResults[[3]]`, p = `r InstarResults[[4]]`
+`r InstarResults[[5]]`).
+
+```{r LegInteraction, results='asis',  echo = FALSE}
+##### Leg length vs instar
+FullModel <- lmer(logLeg ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
+InstarModel <- lmer(logLeg ~  logCtFm + Instar +  (1|NestID)  , data = spidersMul, REML = FALSE)
+
+Results <- outputResultsWord(FullModel, InstarModel)
+	
+```
+There is a significant interaction between instar and nest size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
+`r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`).
+
+
+
+```{r LegIndInstar, results='asis',  echo = FALSE}
+##### Leg length vs interaction
+
+FullModel <- lmer(logLeg ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "Adult"))
+RedModel <- lmer(logLeg ~  (1|NestID)  , data = subset(spidersMul, Instar == "Adult"))
+
+AdultRes <- outputResultsWord(FullModel, RedModel)
+
+FullModel <- lmer(logLeg ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "Sub2"))
+RedModel <- lmer(logLeg ~  (1|NestID)  , data = subset(spidersMul, Instar == "Sub2"))
+
+Sub2Res <- outputResultsWord(FullModel, RedModel)
+
+FullModel <- lmer(logLeg ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "Sub1"))
+RedModel <- lmer(logLeg ~  (1|NestID)  , data = subset(spidersMul, Instar == "Sub1"))
+
+Sub1Res <- outputResultsWord(FullModel, RedModel)
+
+FullModel <- lmer(logLeg ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "Juv4"))
+RedModel <- lmer(logLeg ~  (1|NestID)  , data = subset(spidersMul, Instar == "Juv4"))
+
+Juv4Res <- outputResultsWord(FullModel, RedModel)
+
+FullModel <- lmer(logLeg ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "AdMale"))
+RedModel <- lmer(logLeg ~  (1|NestID)  , data = subset(spidersMul, Instar == "AdMale"))
+
+AdMaleRes <- outputResultsWord(FullModel, RedModel)
+
+FullModel <- lmer(logLeg ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "SubMale"))
+RedModel <- lmer(logLeg ~  (1|NestID)  , data = subset(spidersMul, Instar == "SubMale"))
+
+SubMaleRes <- outputResultsWord(FullModel, RedModel)
+	
+```
+
+Testing each instar separately, the only juvenile stage 4 and subadult stage 1
+spiders did not show a significant decrease in leg length with nest size (table
+1). 
+
+| Instar   |      $\chi$^2^        |  p value                                | 
+|----------|---------------------|--------------------------------------| 
+|Adult  |  `r (AdultRes[[3]])` |`r AdultRes[[4]]` `r AdultRes[[5]]`  | 
+| Sub2 | `r (Sub2Res[[3]])` |   `r Sub2Res[[4]]` `r Sub2Res[[5]]`  | 
+| Sub1 | `r (Sub1Res[[3]])` |   `r Sub1Res[[4]]` `r Sub1Res[[5]]`  | 
+|Juv4 | `r (Juv4Res[[3]])` |   `r Juv4Res[[4]]` `r Juv4Res[[5]]`  | 
+|Adult Male | `r (AdMaleRes[[3]])` |   `r AdMaleRes[[4]]` `r AdMaleRes[[5]]`  | 
+|Sub Male| `r (SubMaleRes[[3]])` |   `r SubMaleRes[[4]]` `r SubMaleRes[[5]]`  | 
+
+Table 1: Statistical results of leg length against nest size for each
+instar tested individually
+
+```{r LegGraph, fig.height=7, fig.width=13}
+
+FullModel <- lmer(logLeg ~  logCtFm + Instar + logCtFm:Instar  + 
+				(1|NestID)  , data = spidersMul, REML = FALSE)
+
+
+
+InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", FullModel)
+
+```
+  
+Figure 1: Leg length against nest size. The overlaid model
+is `r as.character(FullModel@call[2])`. Overall leg length decreases with
+nest size (p = `r NSResults[[4]]` `r NSResults[[5]]`) and there is a
+significant interaction with instar(p = `r InstarResults[[4]]`
+`r InstarResults[[5]]`).
+
+
+Condition Vs. Nest Size
+--------------------
+
+
+
+```{r CondNS, results='asis',  echo = FALSE}
+##### Leg length vs nest size
+
+
+FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
+NSModel <- lmer(condResiduals ~  Instar + (1|NestID)  , data = spidersMul, REML = FALSE)
+
+NSResults <- outputResultsWord(FullModel, NSModel)
+	
+```
+
+Condition decreases as nest size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
+,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
+`r NSResults[[5]]`).
+
+
+```{r ConditionInstar, results='asis',  echo = FALSE}
+##### Leg length vs instar
+FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
+InstarModel <- lmer(condResiduals ~  logCtFm + (1|NestID)  , data = spidersMul, REML = FALSE)
+
+InstarResults <- outputResultsWord(FullModel, InstarModel)
+	
+```
+Condition is significantly correlated with instar (lmer; $\chi$^2^~`r InstarResults[[1]]`
+,`r InstarResults[[2]]`~= `r InstarResults[[3]]`, p = `r InstarResults[[4]]`
+`r InstarResults[[5]]`).
+
+```{r ConditionInteraction, results='asis',  echo = FALSE}
+##### Leg length vs instar
+FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
+InstarModel <- lmer(condResiduals ~  logCtFm + Instar +  (1|NestID)  , data = spidersMul, REML = FALSE)
+
+Results <- outputResultsWord(FullModel, InstarModel)
+
+FullModel <- lmer(condResiduals ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "Adult"))
+RedModel <- lmer(condResiduals ~  (1|NestID)  , data = subset(spidersMul, Instar == "Adult"))
+AdultResults <- outputResultsWord(FullModel, RedModel)
+		
+	
+```
+Again there is a significant interaction between instar and nest size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
+`r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`). When performing ad-hoc tests on the instars individually we find that only adult 
+condition decreases with nest size (lmer; $\chi$^2^~`r AdultResults[[1]]`,`r AdultResults[[2]]`~ =
+`r AdultResults[[3]]`, p = `r AdultResults[[4]]` `r AdultResults[[5]]`).
+
+
+```{r ConditionGraph, fig.height=7, fig.width=13}
+
+FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  + 
+				(1|NestID)  , data = spidersMul, REML = FALSE)
+
+
+
+InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", FullModel)
+
+```
+  
+Figure
+2: Individual condition against nest size. The overlaid model is
+`r as.character(FullModel@call[2])`. Overall leg length decreases with nest size
+(p = `r NSResults[[4]]` `r NSResults[[5]]`) and there is a significant
+interaction with instar(p = `r InstarResults[[4]]` `r InstarResults[[5]]`).
+
+
+Original Nest Vs Propagule
+--------------------
+
+```{r LegSing, results='asis',  echo = FALSE}
+##### Leg length vs nest size
+
+
+FullModel <- lmer(logLeg ~  type  +  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
+NSModel <- lmer(logLeg ~   (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
+
+NSResults <- outputResultsWord(FullModel, NSModel)
+	
+```
+  
+Leg length is larger in propagules compared to the source nest (lmer;
+$\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~= `r NSResults[[3]]`, p =
+`r NSResults[[4]]` `r NSResults[[5]]`).
+
+
+
+```{r CondSing, results='asis',  echo = FALSE}
+##### Leg length vs nest size
+
+
+FullModel <- lmer(condResiduals ~  type  +  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
+NSModel <- lmer(condResiduals ~  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
+
+NSResults <- outputResultsWord(FullModel, NSModel)
+	
+```
+
+Individuals in propagules have greater conditions compared to those in the
+original nests (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
+`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`).
+
+```{r SingGraphs, fig.height=9, fig.width=13}
+
+p1 <- ggplot(nestsToTestSigCond, aes(x=type, y=condResiduals)) + geom_boxplot() + 
+		ylab("Individual Condition") + mytheme+ theme(axis.title.x = element_blank()) +
+		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single"))
+
+p2 <- ggplot(nestsToTestSig, aes(x=type, y=logLeg)) + geom_boxplot()  +
+		mytheme +  theme(axis.title.x = element_blank()) +
+		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single"))
+
+
+grid.arrange(p1, p2, ncol = 2)
+
+
+```
+  
+Figure 3: Condition and leg length of adult females in propagues and their source nest

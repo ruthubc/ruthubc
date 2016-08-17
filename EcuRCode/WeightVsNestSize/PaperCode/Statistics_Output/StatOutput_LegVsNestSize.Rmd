@@ -12,7 +12,7 @@ header-includes:
 \captionsetup[table]{labelformat=empty}
 
 ```{r include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = "", cache.lazy = TRUE)
+knitr::opts_chunk$set(echo = FALSE, comment = "")
 	
 ```
 
