@@ -14,7 +14,7 @@ num_graphs <- 18 #aka length of doc
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalJuly2016.png", width = 1600, height = gr_ht, units = "px")
+#png("DisperalSimulationOutput/DispersalJuly2016.png", width = 1600, height = gr_ht, units = "px")
 
 
 
@@ -22,7 +22,7 @@ png("DisperalSimulationOutput/DispersalJuly2016.png", width = 1600, height = gr_
 
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "SummaryCombine.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "SummaryCombine26July2016.csv", sep = ""))
 
 
 
@@ -229,7 +229,7 @@ p14b <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPopSizeVarNoSig, colour = as.
 
 
 
-grid.arrange(p1, p2, p2a,  p3, p4, p4a, p5, p7, p8, p9, p10, p11, p13, p14, p14a, p14b,  ncol=1)
+#grid.arrange(p1, p2, p2a,  p3, p4, p4a, p5, p7, p8, p9, p10, p11, p13, p14, p14a, p14b,  ncol=1)
 
-dev.off()
+#dev.off()
 

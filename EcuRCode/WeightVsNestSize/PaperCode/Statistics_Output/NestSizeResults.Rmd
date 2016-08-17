@@ -23,8 +23,8 @@ NSModel <- lmer(logLeg ~  Instar + (1|NestID)  , data = spidersMul, REML = FALSE
 NSResults <- outputResultsWord(FullModel, NSModel)
 	
 ```
-
-Leg length increases as nest size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
+The model with the lowest AIC included nest size, instar and instar x nest size interaction. Using this as the full model we found that
+leg length increases as nest size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`).
 
@@ -138,7 +138,7 @@ NSModel <- lmer(condResiduals ~  Instar + (1|NestID)  , data = spidersMul, REML 
 NSResults <- outputResultsWord(FullModel, NSModel)
 	
 ```
-
+Again the model with the lowest AIC included nest size, instar and instar x nest size interaction.
 Condition decreases as nest size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`).
@@ -185,12 +185,50 @@ FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +
 InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", FullModel)
 
 ```
-  
-Figure
-2: Individual condition against nest size. The overlaid model is
+
+  Figure 2: Individual condition against nest size. The overlaid model is
 `r as.character(FullModel@call[2])`. Overall leg length decreases with nest size
 (p = `r NSResults[[4]]` `r NSResults[[5]]`) and there is a significant
 interaction with instar(p = `r InstarResults[[4]]` `r InstarResults[[5]]`).
+
+
+
+Within Nest Variance Vs. Nest Size
+--------------------
+
+```{r CondVar, results='asis',  echo = FALSE}
+##### Leg length vs nest size
+
+
+FullModel <- lmer(relativeVar ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = condVar, REML = FALSE)
+Model <- lmer(relativeVar ~  logCtFm + (1|NestID)  , data = condVar, REML = FALSE)
+
+IntResults <- outputResultsWord(FullModel, Model)
+
+Model <- lmer(relativeVar ~  Instar + (1|NestID)  , data = condVar, REML = FALSE)
+
+NSResults <- outputResultsWord(FullModel, Model)
+	
+```
+### Condition Variance
+The model with the lowest AIC value only included nest size and instar as explantory factors.
+Instar was significant (lmer; $\chi$^2^~`r Results[[1]]`
+,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
+`r IntResults[[5]]`), however nest size was not (lmer; $\chi$^2^~`r NSResults[[1]]`
+,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
+`r NSResults[[5]]`).
+
+
+```{r, fig.height=4, fig.width=5, echo = FALSE}
+ggplot(data = condVar, aes(x = Instar, y = relativeVar, fill = InstarSex)) +
+	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
+
+```
+  
+Figure 3. Condition variance within nests by instar. I am not sure yet whether
+this is a real results and/or intereseting to the story
+
+Variance in leg length was not significant for any factors.
 
 
 Original Nest Vs Propagule
@@ -228,7 +266,7 @@ Individuals in propagules have greater conditions compared to those in the
 original nests (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
 `r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`).
 
-```{r SingGraphs, fig.height=9, fig.width=13}
+```{r SingGraphs, fig.height=6, fig.width=12}
 
 p1 <- ggplot(nestsToTestSigCond, aes(x=type, y=condResiduals)) + geom_boxplot() + 
 		ylab("Individual Condition") + mytheme+ theme(axis.title.x = element_blank()) +
@@ -244,4 +282,25 @@ grid.arrange(p1, p2, ncol = 2)
 
 ```
   
-Figure 3: Condition and leg length of adult females in propagues and their source nest
+Figure 4: Condition and leg length of adult females in propagues and their
+source nest
+
+
+Propagule survival
+--------------------
+
+We found that nests with single females spiders had a very low survival rate
+(figure 5).
+
+```{r PropaguleSurvivalGraph, fig.height=3, fig.width=4}
+
+ggsurvplot(prop.survfit,color = "#2E9FDF", break.time.by = 5, 
+		xlab = "Days until propagule death", ylab = "Propagule survival probability",  censor = FALSE)
+
+nProps <- nlevels(props$propID)
+nOriginalNests <- nlevels(props$nestID)
+
+```
+  
+Figure 5: The survival function of `r nProps` propagules from `r nOriginalNests`
+source nests.

@@ -99,3 +99,8 @@ lapply(instarLMER, FUN = function(x) anova(x[[1]], x[[2]]))
 sink()
 
 
+
+ggplot(data = condVar, aes(x = Instar, y = relativeVar, fill = InstarSex)) + labs(x = "Instar") +
+		labs(y = "Variance in Condition") + geom_boxplot() + mytheme
+
+

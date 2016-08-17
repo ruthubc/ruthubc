@@ -23,7 +23,7 @@ outputResultsWord <- function(FullModel, RedModel) {
 		stars <- "** "
 		
 	}else if (pValue <= 0.05) {
-		stars <- "** "
+		stars <- "* "
 	
 	}else{
 		stars <-""

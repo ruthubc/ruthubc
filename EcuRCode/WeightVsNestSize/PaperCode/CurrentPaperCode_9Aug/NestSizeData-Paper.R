@@ -47,15 +47,53 @@ spiders$InstarSex <- instarSex[spiders$Instar]
 
 spiders <- condition_residuals(spiders, "logLeg")
 
+condVar <- calRelVariance(spiders, "condResiduals")
+
+legVar <- calRelVariance(spiders, "logLeg")
+
+
 
 spidersMul <- subset(spiders, type == "multiple") #removing single females
 spidersMul$NestID <- factor(spidersMul$NestID)
 
-#### Creating subset tables of each instar
-#
-#spiMulAd <- subset(spidersMul, Instar == "Adult")
-#spiMulS1 <- subset(spidersMul, Instar == "Sub1")
-#spiMulS2 <- subset(spidersMul, Instar == "Sub2")
-#spiMulJv <- subset(spidersMul, Instar == "Juv4")
-#spiMulMaleSb <- subset(spidersMul, Instar == "SubMale")
-#spiMulMaleAd <- subset(spidersMul, Instar == "AdMale")
+#### Propagules against original nest
+
+nestsSigOnly<- subset(spiders, type != "multiple" & Instar == "Adult")
+
+OrgNests <- subset(spidersMul, Instar == "Adult")
+OrgNests <- subset(OrgNests, NestID == "44.4EX03" | NestID == "28.8EX15")
+OrgNests$OrigNest <- OrgNests$NestID
+
+nestsSigOnly$OrigNest <- ifelse(grepl("^4",as.character(nestsSigOnly$NestID)) == TRUE, "44.4EX03", "28.8EX15")
+
+nestsToTestSig <- rbind(nestsSigOnly, OrgNests)
+
+nestsSigOnlyCond<- subset(nestsSigOnly, nestsSigOnly$FemalesHaveEggsOrJuvs == "y")
+
+nestsToTestSigCond <- rbind(nestsSigOnlyCond, OrgNests)
+
+
+
+############## Propagule survival data
+
+rops <- read.csv("PropaguleData/dispersal_propagule_data.csv")
+
+props$dateFormatted <- as.Date(props$date, format = "%d/%m/%Y")
+
+props$propID <- as.factor(paste(props$nestID, props$Propagule, sep = "_"))
+
+props <- ddply(props, "propID", transform, dateFirstRec = min(dateFormatted)) # calculating max and min
+
+
+props$DiffDays <- difftime(props$dateFormatted, props$dateFirstRec, units = 'days')
+
+props$DiffDays <- as.numeric(props$DiffDays)
+props$Dead_bin<- ifelse(props$AliveOrDeadOrEnd == "Dead", 1, 0)
+
+
+msurv <- with(props, Surv(DiffDays, Dead_bin ==1, type = "right"))
+survivalMean <- as.data.frame(mean(msurv[,1])) # don't use mean without the [,1] by itself, wrong!
+
+
+prop.survfit <- survfit(Surv(DiffDays, AliveOrDeadOrEnd =="Dead", type = "right") ~ 1, data = props)
+

@@ -70,7 +70,7 @@ library(GGally)
 
 ggsurv(prop.survfit, plot.cens = FALSE)
 
-# this is the best graph
+
 ## Info here http://www.sthda.com/english/wiki/survminer-r-package-survival-data-analysis-and-visualization
 library(survminer)
 ggsurvplot(prop.survfit,color = "#2E9FDF", break.time.by = 5, xlab = "Days")

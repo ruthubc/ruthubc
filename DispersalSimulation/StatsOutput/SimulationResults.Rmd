@@ -1,0 +1,42 @@
+
+---
+title: "Dispersal Simulation Results"
+author: "Ruth Sharpe"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+	
+```
+
+Size of populations when a dispersal takes place
+--------------------
+
+
+
+```{r DispersersSizeGraph, fig.height=10, fig.width=18, fig.cap="Figure 1: Size of populations when at least one individual disperses.", warning = FALSE}
+
+p3 + ggtitle("")
+
+```
+  
+The size of population when a dispersal takes place decreases as competition
+becomes more contest-like and less scramble-like.
+
+
+Percentage of adults dispersing
+--------------------
+
+
+
+```{r PercentageAdsDispersing, fig.height=10, fig.width=18, fig.cap="Figure 1: Size of populations when at least one individual disperses.", warning = FALSE}
+
+p7 + ggtitle("")
+
+```
+  
+Obviously the percentage of a population that disperses increases as the size
+that an individiual has to be decreases. Counterintuitively the percentage of a
+colony dispersing increases as as the competition coefficent increases.

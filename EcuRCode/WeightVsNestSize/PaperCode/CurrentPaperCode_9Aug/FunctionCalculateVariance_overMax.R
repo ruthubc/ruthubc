@@ -98,7 +98,7 @@ calRelVariance <- function(data, inputVar) {
 	
 	spidersBootAve <- mutate(spidersBootAve, relativeVar =sd_data/sd_Max)
 	
-	print (max(spidersBootAve$relativeVar) )
+	#print (max(spidersBootAve$relativeVar) )
 	
 	if(max(spidersBootAve$relativeVar) >= 1) { warning("something went wrong - real variance more than calculated max variance") }
 	
