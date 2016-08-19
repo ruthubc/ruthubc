@@ -3,20 +3,31 @@
 title: "Dispersal Simulation Results"
 author: "Ruth Sharpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  word_document:
+    reference_docx: StyleReference.docx
 
 ---
 
 ```{r include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=18, fig.width=22)
 	
 ```
+Note: Each simulation was ran for 500 generations or until the metapopulation went extinct. 
+Number of generations removed from start of each simulation is `r numGensRmv`. 
+Missing points in the graphs below are due to those populations not surviving more than `r numGensRmv` generation.  
 
-Size of populations when a dispersal takes place
+
+Individual Behaviour
+====================
+
+
+Size of populations when a dispersal takes place i.e when do individuals disperse?
 --------------------
 
 
 
-```{r DispersersSizeGraph, fig.height=10, fig.width=18, fig.cap="Figure 1: Size of populations when at least one individual disperses.", warning = FALSE}
+```{r DispersersSizeGraph, fig.cap="Figure 1: Size of populations when at least one individual disperses.", warning = FALSE}
 
 p3 + ggtitle("")
 
@@ -26,12 +37,12 @@ The size of population when a dispersal takes place decreases as competition
 becomes more contest-like and less scramble-like.
 
 
-Percentage of adults dispersing
+Percentage of adults dispersing i.e. who disperses?
 --------------------
 
 
 
-```{r PercentageAdsDispersing, fig.height=10, fig.width=18, fig.cap="Figure 1: Size of populations when at least one individual disperses.", warning = FALSE}
+```{r PercentageAdsDispersing, fig.cap="Figure 2: Percentage of adults that disperse from a colony when a disperal event takes place", warning = FALSE}
 
 p7 + ggtitle("")
 
@@ -40,3 +51,57 @@ p7 + ggtitle("")
 Obviously the percentage of a population that disperses increases as the size
 that an individiual has to be decreases. Counterintuitively the percentage of a
 colony dispersing increases as as the competition coefficent increases.
+
+
+Population behaviour
+====================
+
+
+Average population survival
+--------------------
+
+```{r PopulationSurvivalGraph, fig.cap="Figure 3: Average population survival. All genearations included.", warning = FALSE}
+
+p2 + ggtitle("")
+
+```
+
+Appears to be a step function. Mid-range adult disperal size have the highest survival. If the dispersal limit
+is high, this causes too few individuals disperse so colonies die as
+they get too large. If the limit is low then all individuals disperse from the
+nest so the original nest goes extinct.
+
+Average population size
+--------------------
+
+```{r PopulationSizeGraph,  fig.cap="Figure 4: Overall average size of the populations", warning = FALSE}
+
+p5 + ggtitle("")
+
+```
+Note the very low numbers. This is because this number includes all the newly dispersed nests which contain single females.
+
+Percentage of populations that go extinct without dispersing
+--------------------
+
+```{r ExtinctionWithoutDispersalGraph,  fig.cap="Figure 5: Percentage of populations that go extinct without dispersing - all generations included", warning = FALSE}
+
+p13 + ggtitle("")
+
+```
+Obviously when adult dispersal size is above 1 this means that no adults can disperse. Therefore all colonies go extinct without dispersing. There is an interaction between adult dispersal size, 
+competition measure and environmental variation that determines how often colonies go extinct without producing dispersers. 
+
+Metapulation behaviour
+====================
+
+
+Metapopulation age
+--------------------
+
+```{r MetapopulationAgeGraph, fig.cap="Figure 6: Average maximium age of metapopulation age. The simulation ran for 500 generations", warning = FALSE}
+
+p1 + ggtitle("")
+
+```
+This appears to be a step function. Either a metapopulation survives to 500 generations or it goes extinct quite early.
