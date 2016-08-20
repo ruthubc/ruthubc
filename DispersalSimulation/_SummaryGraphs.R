@@ -14,7 +14,7 @@ num_graphs <- 18 #aka length of doc
 
 gr_ht <- num_graphs * 650
 
-#png("DisperalSimulationOutput/DispersalJuly2016.png", width = 1600, height = gr_ht, units = "px")
+png("DisperalSimulationOutput/DispersalJuly2016.png", width = 1600, height = gr_ht, units = "px")
 
 
 
@@ -152,7 +152,7 @@ p2a <- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.fac
 # Colony size at dispersal
 
 p3 <- ggplot(dis_ply, aes(x = Comp_meas, y = col_size_disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Average size of dispersing colonies") + geom_line() + mytheme + ylab("Number of adults") + 
+		myFacet +  ggtitle("Log 10 Average size of dispersing colonies") + geom_line() + mytheme + ylab("Log 10 Number of adults") + 
 		scale_colour_discrete(legendLabel) + xlab(xlabel)
 		#geom_errorbar(aes(ymin=col_size_disp.mean-col_size_disp.SE, ymax=col_size_disp.mean + col_size_disp.SE), width = 0.1)  + scale_colour_manual(values=c("blue", "red"))
 
@@ -169,7 +169,7 @@ p4a <- ggplot(dis_ply, aes(x = Comp_meas, y = anyDisp.mean, colour = as.factor(a
 
 # average colony size
 p5 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeB4Disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Average colony size (measured before dispersal)") + geom_line() + mytheme  + ylab("Number of adults") + 
+		myFacet +  ggtitle("Log 10 Average colony size (measured before dispersal)") + geom_line() + mytheme  + ylab("Log 10 Number of adults") + 
 		scale_colour_discrete(legendLabel) + xlab(xlabel) 
 		#geom_errorbar(aes(ymin=colSizeB4Disp.mean-colSizeB4Disp.SE, ymax=colSizeB4Disp.mean + colSizeB4Disp.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red"))
 
@@ -185,8 +185,8 @@ p7 <- ggplot(dis_ply, aes(x = Comp_meas, y = pcntDisp.mean, colour = as.factor(a
 
 # colony size at death
 
-p8 <- ggplot(subset(dis_ply, ad_dsp_fd != 0.2), aes(x = Comp_meas, y = colSizeDeath_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Average size of colony when it dies - all gens, not inc dslm 0.2") + geom_line() + ylab("Number of adults") + 
+p8 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeDeath_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet +  ggtitle("Log 10 Average size of colony when it dies") + geom_line() + ylab("Log 10 Number of adults") + 
 		scale_colour_discrete(legendLabel) + xlab(xlabel) + mytheme
 		 #+ geom_errorbar(aes(ymin=colSizeDeath.mean-colSizeDeath.SE, ymax=colSizeDeath.mean + colSizeDeath.SE), width = 0.1) # + scale_colour_manual(values=c("blue", "red")) 
 
@@ -204,7 +204,7 @@ p10 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPopSize, colour = as.factor(ad
 
 # Average frequence of disperal per nest
 p11 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanDispFreq, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Average disperal frequency per population (colony)") + geom_line() + mytheme
+		myFacet +  ggtitle("Average disperal frequency per population (colony) - wrong! Cal in summary table code wrong on cluster") + geom_line() + mytheme
 
 # Average percentage of populations that disperse
 p12 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerColsDisp, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
@@ -213,7 +213,8 @@ p12 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerColsDisp, colour = as.facto
 
 #Perc cols die without dispersing
 p13 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerDieNoDsp, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Average percentage of colonies that die without dispersing of total num cols die") + geom_line() + mytheme + scale_colour_discrete(legendLabel) + xlab(xlabel) 
+		myFacet +  ggtitle("Average percentage of colonies that die without dispersing of total num cols die") + geom_line() + mytheme + scale_colour_discrete(legendLabel) + 
+		xlab(xlabel) + ylab("Percentage")
 
 #Overall varience in population size
 p14 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPopSizeVar, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
@@ -229,7 +230,7 @@ p14b <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPopSizeVarNoSig, colour = as.
 
 
 
-#grid.arrange(p1, p2, p2a,  p3, p4, p4a, p5, p7, p8, p9, p10, p11, p13, p14, p14a, p14b,  ncol=1)
+grid.arrange(p1, p2, p2a,  p3, p4, p4a, p5, p7, p8, p9, p10, p11, p13, p14, p14a, p14b,  ncol=1)
 
-#dev.off()
+dev.off()
 

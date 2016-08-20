@@ -32,7 +32,7 @@ DispersalFun <- function(inputFile){
 			tot_num_disp = sum(dispersers),
 			max_col_age = max(colony_age),
 			num_times_disp = length(dispersers[dispersers > 0]),
-			disp_freq = ifelse(num_times_disp > 0, (tot_num_disp/max_col_age), NA),
+			disp_freq = ifelse(num_times_disp > 0, (num_times_disp/max_col_age), NA),
 			col_died = length(colAlive[colAlive == "dead"]),  # 0 = no 1 = yes
 			size_at_death = ifelse(col_died == 1, log10_num_adsB4_dispersal[colAlive == "dead"], NA)
 	
