@@ -14,7 +14,7 @@ num_graphs <- 18 #aka length of doc
 
 gr_ht <- num_graphs * 650
 
-png("DisperalSimulationOutput/DispersalJuly2016.png", width = 1600, height = gr_ht, units = "px")
+#png("DisperalSimulationOutput/DispersalJuly2016.png", width = 1600, height = gr_ht, units = "px")
 
 
 
@@ -114,7 +114,11 @@ dis_ply$NOffAndVar <- paste("NoOff =", dis_ply$max_no_off, "Var =", dis_ply$inpu
 
 dis_ply$VarWords <- paste("Envirn Variation = " , dis_ply$input_var)
 
-dis_ply$OffWords <- paste("Max Offspring = " , dis_ply$max_no_off)
+dis_ply$OffWords <- as.factor(paste("Max Offspring = " , dis_ply$max_no_off))
+
+dis_ply$OffWords <- factor(dis_ply$OffWords, levels = c("Max Offspring =  4", "Max Offspring =  6" , "Max Offspring =  8" , "Max Offspring =  10" ))
+
+levels(dis_ply$OffWords)
 
 
 myFacet <- facet_grid(OffWords~VarWords)
@@ -152,7 +156,7 @@ p2a <- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.fac
 # Colony size at dispersal
 
 p3 <- ggplot(dis_ply, aes(x = Comp_meas, y = col_size_disp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Log 10 Average size of dispersing colonies") + geom_line() + mytheme + ylab("Log 10 Number of adults") + 
+		myFacet +  ggtitle("Log 10 Average size of dispersing colonies") + geom_line() + mytheme + ylab("Population size (Log number of adults)") + 
 		scale_colour_discrete(legendLabel) + xlab(xlabel)
 		#geom_errorbar(aes(ymin=col_size_disp.mean-col_size_disp.SE, ymax=col_size_disp.mean + col_size_disp.SE), width = 0.1)  + scale_colour_manual(values=c("blue", "red"))
 
@@ -179,7 +183,7 @@ p5 <- ggplot(dis_ply, aes(x = Comp_meas, y = colSizeB4Disp.mean, colour = as.fac
 # percentage of individuals dispersal
 
 p7 <- ggplot(dis_ply, aes(x = Comp_meas, y = pcntDisp.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Average percentage of adults dispersing from colony") + geom_line() + ylab("Percentage") + 
+		myFacet +  ggtitle("Average percentage of adults dispersing from colony") + geom_line() + ylab("Percentage of adults that disperse from a population") + 
 		scale_colour_discrete(legendLabel) + xlab(xlabel) + 
 		mytheme# + geom_errorbar(aes(ymin=pcntDisp.mean-pcntDisp.SE, ymax=pcntDisp.mean + pcntDisp.SE), width = 0.1) #+ scale_colour_manual(values=c("blue", "red"))
 
@@ -230,7 +234,7 @@ p14b <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPopSizeVarNoSig, colour = as.
 
 
 
-grid.arrange(p1, p2, p2a,  p3, p4, p4a, p5, p7, p8, p9, p10, p11, p13, p14, p14a, p14b,  ncol=1)
+#grid.arrange(p1, p2, p2a,  p3, p4, p4a, p5, p7, p8, p9, p10, p11, p13, p14, p14a, p14b,  ncol=1)
 
-dev.off()
+#dev.off()
 

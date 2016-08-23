@@ -29,8 +29,12 @@ p3 + ggtitle("")
 
 ```
 *Figure 2: Size of populations when at least one individual disperses*  
-The size of population when a dispersal takes place decreases as competition
-becomes more contest-like and less scramble-like.
+  
+- The size of population when a dispersal takes place decreases as the intraspecific competition measure increases i.e.
+competition becomes more contest-like.  
+- In addition there appears to be an interaction effect between min adults size for dispersal to take place and the number of offspring an adult has. 
+Only when the number of offspring an adult has does the minimum adult dispersal size affect the size the colonies when dispersal takes place. 
+This is reflected in the dispersing colonies being larger as the minimum adult dispersal size increases.
 
 
 Percentage of adults dispersing i.e. who disperses?
@@ -45,9 +49,9 @@ p7 + ggtitle("")
 ```
 *Figure 3: Percentage of adults that disperse from a colony when a disperal event takes place*  
   
-Obviously the percentage of a population that disperses increases as the size
-that an individiual has to be decreases. Counterintuitively the percentage of a
-colony dispersing increases as as the competition coefficent increases.
+- Obviously the percentage of a population that disperses at each dispersal event increases as the minimum
+adult disperal size decreases.  
+- Also the percentage of a colony dispersing increases as as the competition coefficent increases.
 
 
 Population behaviour
@@ -62,7 +66,7 @@ Average population survival
 p2 + ggtitle("")
 
 ```
-*Figure 4: Average population survival. All genearations included*   
+*Figure 4: Average population survival. All genearations included*
 Appears to be a step function. Mid-range adult disperal size have the highest survival. If the dispersal limit
 is high, this causes too few individuals disperse so colonies die as
 they get too large. If the limit is low then all individuals disperse from the
@@ -88,8 +92,11 @@ p13 + ggtitle("")
 
 ```
 *Figure 6: Percentage of populations that go extinct without dispersing - all generations included*  
-Obviously when adult dispersal size is above 1 this means that no adults can disperse. Therefore all colonies go extinct without dispersing. There is an interaction between adult dispersal size, 
-competition measure and environmental variation that determines how often colonies go extinct without producing dispersers. 
+  
+- Obviously when adult dispersal size is above 1 this means that no adults can disperse. As the minimum adult dispersal size increases so does the number of colonies going extinct without dispersal
+- As the number of offspring an adult has increases, so does the the number of colonies that go extinct without dispersing.
+- The competition value is also important, the lower the competition values i.e. the more scramble like the competition, the more colonies die without dispersing.
+
 
 Metapulation behaviour
 ====================
