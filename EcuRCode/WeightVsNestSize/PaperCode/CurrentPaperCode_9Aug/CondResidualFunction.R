@@ -15,7 +15,7 @@ condition_residuals <- function(TheData, bodyLenVar) {
 	inputData<- subset(inputData, !is.na(logWt) )
 	inputData<- subset(inputData, !is.na(variable) )
 	
-	model <- lm(logWt ~ variable, inputData )
+	model <- lm(logWt ~ variable + Instar, inputData )
 	
 	inputData$condResiduals <- resid(model)  # putting the residuales into the dable
 	

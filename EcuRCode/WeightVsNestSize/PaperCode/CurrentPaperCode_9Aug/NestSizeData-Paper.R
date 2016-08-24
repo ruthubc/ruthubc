@@ -76,7 +76,7 @@ nestsToTestSigCond <- rbind(nestsSigOnlyCond, OrgNests)
 
 ############## Propagule survival data
 
-rops <- read.csv("PropaguleData/dispersal_propagule_data.csv")
+props <- read.csv("PropaguleData/dispersal_propagule_data.csv")
 
 props$dateFormatted <- as.Date(props$date, format = "%d/%m/%Y")
 

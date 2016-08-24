@@ -60,12 +60,17 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 			p <- p + stat_smooth(method = "lm", formula = y~x, se = FALSE)
 			
 		} else {
-			
-			Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit
-			
-			Vis_fit <- subset(Vis_fit, Instar == current.Instar)
-			
-			p <- p + geom_line(data = Vis_fit, aes(x = (10^logCtFm), y= visregFit))
+
+			cat("Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead")
+			p <- tryCatch(
+					{
+						Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
+						Vis_fit <- subset(Vis_fit, Instar == current.Instar)
+						p <- p +  geom_line(data = Vis_fit, aes(x = (10^logCtFm), y= visregFit))
+					},
+					error=function(cond) {
+						return(p + stat_smooth(method = "lm", formula = y~x, se = FALSE))
+					})
 			
 			
 		}

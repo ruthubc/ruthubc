@@ -20,16 +20,18 @@ knitr::opts_chunk$set(echo = FALSE, comment = "", cache.lazy = TRUE)
 AIC Values of all possible models with instar always included
 ====================
 
-```{r kable, results='asis',  echo = FALSE}
+note: InstarNumber is a numeric value denoting age
+
+```{r kable, results='asis',  echo = FALSE, warnings = FALSE, message = FALSE}
 
 myData <- spidersMul
 
 
 outcome    <- c("condResiduals")
-predictors <- c("logCtFm", "logCtFm:Instar", "I(logCtFm^2)", "I(logCtFm^2):Instar")
+predictors <- c("logCtFm", "logCtFm:InstarNumber", "InstarSex:InstarNumber", "InstarSex:logCtFm")
 dataset    <- myData
 
-modTable <- allModelsAIC(outcome, predictors, dataset)
+modTable <- allModelsAICWithSex(outcome, predictors, dataset)
 
 
 row.names(modTable) <- NULL # removing row names
@@ -53,7 +55,7 @@ Graph with lowest AIC model superimposed
 
 ```{r, fig.height=7, fig.width=13}
 
-FullModel <- lmer(condResiduals ~ logCtFm + Instar + logCtFm:Instar +
+FullModel <- lmer(condResiduals ~ logCtFm + InstarNumber + InstarSex + logCtFm:InstarSex +
 				(1|NestID), data = myData, REML = FALSE)
 
 
@@ -66,16 +68,16 @@ InstarGridGraph(myData, "condResiduals", "Condition", "n", "", FullModel)
 \pagebreak
 
 
-Statistics using model without squared values as the full model (Lowest AIC Model)
+Statistics using model with lowest AIC
 ====================
 
 
 ```{r Stats,  results='asis', echo = FALSE, comment = "", }
 
-FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = myData, REML = FALSE)
+########### Continune from here!
 
 
-TestInteraction  <- c("Testing Interaction Term", lmer(condResiduals~  logCtFm + Instar + (1|NestID)  , data = myData, REML = FALSE))
+TestInteraction  <- c("Testing Interaction Term nest size * sex", lmer(condResiduals~  logCtFm + Instar + (1|NestID)  , data = myData, REML = FALSE))
 TestInstar <- c( "Testing Instar Term", lmer(condResiduals~  logCtFm +  (1|NestID)  , data = myData, REML = FALSE))
 TestNestSize <- c("Testing Nest Size", lmer(condResiduals ~  Instar +  (1|NestID)  , data = myData, REML = FALSE))
 
