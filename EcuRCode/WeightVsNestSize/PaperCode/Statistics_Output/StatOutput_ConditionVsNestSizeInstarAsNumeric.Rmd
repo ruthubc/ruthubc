@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = FALSE, comment = "", cache.lazy = TRUE)
 AIC Values of all possible models with instar always included
 ====================
 
-note: InstarNumber is a numeric value denoting age
+note: InstarNumber is numeric
 
 ```{r kable, results='asis',  echo = FALSE, warnings = FALSE, message = FALSE}
 
@@ -46,7 +46,7 @@ pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 
 	
 ```
 
-
+\pagebreak
 
 
 Graph with lowest AIC model superimposed
@@ -65,7 +65,7 @@ InstarGridGraph(myData, "condResiduals", "Condition", "n", "", FullModel)
 
 ```
 
-\pagebreak
+
 
 
 Statistics using model with lowest AIC
@@ -76,56 +76,17 @@ Statistics using model with lowest AIC
 
 ########### Continune from here!
 
+FullModel <- lmer(condResiduals ~ logCtFm + InstarNumber + InstarSex + logCtFm:InstarSex +
+				(1|NestID), data = myData, REML = FALSE)
 
-TestInteraction  <- c("Testing Interaction Term nest size * sex", lmer(condResiduals~  logCtFm + Instar + (1|NestID)  , data = myData, REML = FALSE))
-TestInstar <- c( "Testing Instar Term", lmer(condResiduals~  logCtFm +  (1|NestID)  , data = myData, REML = FALSE))
-TestNestSize <- c("Testing Nest Size", lmer(condResiduals ~  Instar +  (1|NestID)  , data = myData, REML = FALSE))
+TestInteraction  <- c("Testing Interaction Term nest size * sex", lmer(condResiduals ~ logCtFm + InstarNumber + InstarSex  + (1|NestID), data = myData, REML = FALSE))
+TestInstar <- c( "Testing Instar Number", lmer(condResiduals ~ logCtFm + InstarSex + logCtFm:InstarSex + (1|NestID), data = myData, REML = FALSE))
+TestSex <- c("Testing Instar Sex", lmer(condResiduals ~ logCtFm + InstarNumber  +  (1|NestID), data = myData, REML = FALSE))
+TestNestSize <- c("Testing Nest Size", lmer(condResiduals ~  InstarNumber + InstarSex  + (1|NestID) , data = myData, REML = FALSE))
 
 
-RedModels <- list(TestNestSize, TestInstar, TestInteraction)
+RedModels <- list(TestInteraction, TestInstar, TestSex, TestNestSize)
 
 MRAnovaFun(FullModel, RedModels)
 
 ```
-\pagebreak
-
-Testing Individual Instars
-====================
-###As the interaction is significant testing instar individually
-
-
-
-```{r IndInstars,  results='asis', echo = FALSE, comment = "", tab.cap = NULL, message = FALSE}
-
-
-LMERS_fun <- function(myData) { # function to test individual instars 	
-    lmFull <- lmer(condResiduals ~  logCtFm + (1|NestID), data = myData)
-    lmRed <- lmer(condResiduals ~  + (1|NestID), data = myData)
-    return(list(lmFull, lmRed))
-	
-    }
-
-
-instarLMER <- dlply(myData, .(Instar),        
-		function(x) LMERS_fun(x))
-
-
-results <- lapply(instarLMER, FUN = function(x) anova(x[[1]], x[[2]], refit
-= TRUE))
-
-cat("note: pops up saying 'refitting model(s) with ML (instead of REML)'", "but if make anova refit = FALSE results don't make sense", sep = '\n')
-
-kable(results$Adult, caption = "Adult")
-
-kable(results$Sub2, caption = "Sub2")
-
-kable(results$Sub1, caption = "Sub1")
-
-kable(results$Juv4, caption = "Juv4")
-
-kable(results$AdMale, caption = "AdMale")
-
-kable(results$SubMale, caption = "SubMale")
-	
-```
-

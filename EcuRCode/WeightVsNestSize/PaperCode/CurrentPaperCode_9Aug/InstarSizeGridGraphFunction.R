@@ -7,8 +7,69 @@
 #		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 #
 
+MyPlots <- function(data, var, num_rows, model, minNstSz, same_y_axis, column_index) { # function to make the graphs
+	current.Instar <- as.character(unique(data$Instar)) # get the Name of the current subset	
+	
+	data$variable <- data[,column_index]
+	
+	if (num_rows > 300) {  # summarise data instead of plotting individual points
+		#24th August changed from dataSummary
+		data <- ddply(data, .(NestID, CountFemales), summarise,
+				mean = mean(variable, na.rm = TRUE)) 
+	}else{
+		print("not summarize")
+	}
+	
+	
+	print("same_y_axis value: ")
+	print(same_y_axis)
+	if (same_y_axis != "n") {
+		print("output same y axis")
+		minVarValue <- min(data$variable)
+		maxVarValue <- max(data$varible)
+		p <- ggplot(data, aes(x = CountFemales , y = variable)) + scale_y_continuous(limits = c(minVarValue, maxVarValue))
+		
+	} else {
+		print("different axis")
+		p <- ggplot(data, aes(x = CountFemales , y = variable))		
+		
+	}
+		
+	
+	p <- p + geom_point() + ggtitle(current.Instar) + 				
+			scale_x_log10(limits = c(minNstSz, 6000 )) + theme_classic(base_size=15) + 
+			theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+			theme(panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1)) +
+			theme(panel.margin= unit(0.0, "lines")) + theme(plot.title = element_text(size=15))
+	
+	
+	if (typeof(model) == "character") {
+		
+		p <- p + stat_smooth(method = "lm", formula = y~x, se = FALSE)
+		
+	} else {
+		
+		cat("Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead")
+		p <- tryCatch(
+				{
+					Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
+					Vis_fit <- subset(Vis_fit, Instar == current.Instar)
+					p <- p +  geom_line(data = Vis_fit, aes(x = (10^logCtFm), y= visregFit))
+				},
+				error=function(cond) {
+					return(p + stat_smooth(method = "lm", formula = y~x, se = FALSE))
+				})
+		
+		
+	}
+	
+	
+	return(p)  
+}
+	
 
-InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName = "", model ) {	
+
+InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName = "", model, same_y_axis = "n" ) {	
 	
 	# whether or not to export the data
 	if (export == "y") {
@@ -27,61 +88,11 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	
 	minNstSz <- min(spiderData$CountFemales)
 	
-	
 
-	
-	MyPlots <- function(data, var, num_rows, model, minNstSz) { # function to make the graphs
-		current.Instar <- as.character(unique(data$Instar)) # get the Name of the current subset
-		
-		
-		
-		data$variable <- data[,column_index]
-		
-		if (num_rows > 300) {
-			dataSummary<- ddply(data, .(NestID, CountFemales), summarise,
-					mean = mean(variable, na.rm = TRUE))
-			p <- ggplot(dataSummary, aes(x = CountFemales , y = mean))	
-			
-		} else {
-			#dataSummary <- data
-			p <- ggplot(data, aes(x = CountFemales , y = variable))		
-		}
-		
-		
-		p <- p + geom_point() + ggtitle(current.Instar) + 				
-				scale_x_log10(limits = c(minNstSz, 6000 )) + theme_classic(base_size=15) + 
-				theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
-				theme(panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1)) +
-				theme(panel.margin= unit(0.0, "lines")) + theme(plot.title = element_text(size=15))
-		
-		
-		if (typeof(model) == "character") {
-			
-			p <- p + stat_smooth(method = "lm", formula = y~x, se = FALSE)
-			
-		} else {
-
-			cat("Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead")
-			p <- tryCatch(
-					{
-						Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
-						Vis_fit <- subset(Vis_fit, Instar == current.Instar)
-						p <- p +  geom_line(data = Vis_fit, aes(x = (10^logCtFm), y= visregFit))
-					},
-					error=function(cond) {
-						return(p + stat_smooth(method = "lm", formula = y~x, se = FALSE))
-					})
-			
-			
-		}
-				
-		
-		return(p)  
-	}
 	
 	# this creates a list of plots
 	my.plots <- dlply(spiderData, .(Instar),        
-			function(x) MyPlots(x, variable, no_rows, model, minNstSz))
+			function(x) MyPlots(x, variable, no_rows, model, minNstSz, same_y_axis, column_index))
 	
 	define_region <- function(row, col){
 		viewport(layout.pos.row = row, layout.pos.col = col)
