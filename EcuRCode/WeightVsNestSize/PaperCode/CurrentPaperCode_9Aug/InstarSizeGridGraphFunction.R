@@ -7,31 +7,26 @@
 #		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 #
 
-MyPlots <- function(data, var, num_rows, model, minNstSz, same_y_axis, column_index) { # function to make the graphs
+MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue) { # function to make the graphs
 	current.Instar <- as.character(unique(data$Instar)) # get the Name of the current subset	
 	
-	data$variable <- data[,column_index]
 	
 	if (num_rows > 300) {  # summarise data instead of plotting individual points
 		#24th August changed from dataSummary
-		data <- ddply(data, .(NestID, CountFemales), summarise,
-				mean = mean(variable, na.rm = TRUE)) 
+		dataSummary<- ddply(data, .(NestID, CountFemales), summarise,
+		mean = mean(variable, na.rm = TRUE))
+		p <- ggplot(dataSummary, aes(x = CountFemales , y = mean))	
 	}else{
-		print("not summarize")
+		p <- ggplot(data, aes(x = CountFemales , y = variable)) 
 	}
 	
-	
-	print("same_y_axis value: ")
-	print(same_y_axis)
+
 	if (same_y_axis != "n") {
-		print("output same y axis")
-		minVarValue <- min(data$variable)
-		maxVarValue <- max(data$varible)
-		p <- ggplot(data, aes(x = CountFemales , y = variable)) + scale_y_continuous(limits = c(minVarValue, maxVarValue))
+
+		p <- p + scale_y_continuous(limits = c(minVarValue, maxVarValue))
 		
 	} else {
-		print("different axis")
-		p <- ggplot(data, aes(x = CountFemales , y = variable))		
+		p
 		
 	}
 		
@@ -49,7 +44,7 @@ MyPlots <- function(data, var, num_rows, model, minNstSz, same_y_axis, column_in
 		
 	} else {
 		
-		cat("Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead")
+		
 		p <- tryCatch(
 				{
 					Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
@@ -70,7 +65,7 @@ MyPlots <- function(data, var, num_rows, model, minNstSz, same_y_axis, column_in
 
 
 InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName = "", model, same_y_axis = "n" ) {	
-	
+	cat("Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead")
 	# whether or not to export the data
 	if (export == "y") {
 		outputpath <- paste("RuthEcuador2013/NestSize/Graphs/", fileName, ".pdf", sep = "")
@@ -88,11 +83,18 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	
 	minNstSz <- min(spiderData$CountFemales)
 	
+	spiderData$variable <- spiderData[,column_index]
+	
+	minVarValue <- min(spiderData$variable, na.rm = TRUE)
+	maxVarValue <- max(spiderData$variable, na.rm = TRUE)
+	
+	
+	
 
 	
 	# this creates a list of plots
 	my.plots <- dlply(spiderData, .(Instar),        
-			function(x) MyPlots(x, variable, no_rows, model, minNstSz, same_y_axis, column_index))
+			function(x) MyPlots(x, no_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue))
 	
 	define_region <- function(row, col){
 		viewport(layout.pos.row = row, layout.pos.col = col)
@@ -147,4 +149,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 
 
 #Testing
-#InstarGridGraph(spidersMul, "logLeg", "testing wiht visreg", "n", "_testGraph2",  "n")
+
+#InstarGridGraph(spidersMul, "logLeg", "testing wiht visreg", "n", "_testGraph2",  "NoModel", same_y_axis = "n")
+
+
