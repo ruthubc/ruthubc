@@ -1,6 +1,6 @@
 
 ---
-title: "Weight Vs Nest Size Results"
+title: "Weight Vs Colony Size Results"
 author: "Ruth Sharpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
@@ -10,11 +10,11 @@ knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 	
 ```
 
-Leg Vs. Nest Size
+Leg Vs. Colony Size
 --------------------
 
 ```{r LegNS, results='asis',  echo = FALSE}
-##### Leg length vs nest size
+##### Leg length vs colony size
 
 
 FullModel <- lmer(logLeg ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
@@ -23,8 +23,9 @@ NSModel <- lmer(logLeg ~  Instar + (1|NestID)  , data = spidersMul, REML = FALSE
 NSResults <- outputResultsWord(FullModel, NSModel)
 	
 ```
-The model with the lowest AIC included nest size, instar and instar x nest size interaction. Using this as the full model we found that
-leg length increases as nest size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
+
+The model with the lowest AIC included colony size, instar and instar x colony size interaction. Using this as the full model we found that
+leg length increases as colony size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`).
 
@@ -37,7 +38,8 @@ InstarModel <- lmer(logLeg ~  logCtFm + (1|NestID)  , data = spidersMul, REML = 
 InstarResults <- outputResultsWord(FullModel, InstarModel)
 	
 ```
-Leg length is significantly correlated with instar, but that is not surprising (lmer; $\chi$^2^~`r InstarResults[[1]]`
+
+Leg length was significantly correlated with instar, but that is not surprising (lmer; $\chi$^2^~`r InstarResults[[1]]`
 ,`r InstarResults[[2]]`~= `r InstarResults[[3]]`, p = `r InstarResults[[4]]`
 `r InstarResults[[5]]`).
 
@@ -49,8 +51,9 @@ InstarModel <- lmer(logLeg ~  logCtFm + Instar +  (1|NestID)  , data = spidersMu
 Results <- outputResultsWord(FullModel, InstarModel)
 	
 ```
-There is a significant interaction between instar and nest size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
-`r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`).
+There was a significant interaction between instar and colony size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
+`r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`). 
+As the effect of colony size on spider size was absent in the youngest instars (Table 1); it was first detectable in subadult males and females.
 
 
 
@@ -90,19 +93,20 @@ SubMaleRes <- outputResultsWord(FullModel, RedModel)
 ```
 
 Testing each instar separately, the only juvenile stage 4 and subadult stage 1
-spiders did not show a significant decrease in leg length with nest size (table
+spiders did not show a significant decrease in leg length with colony size (table
 1). 
 
 | Instar   |      $\chi$^2^        |  p value                                | 
 |----------|---------------------|--------------------------------------| 
-|Adult  |  `r (AdultRes[[3]])` |`r AdultRes[[4]]` `r AdultRes[[5]]`  | 
-| Sub2 | `r (Sub2Res[[3]])` |   `r Sub2Res[[4]]` `r Sub2Res[[5]]`  | 
-| Sub1 | `r (Sub1Res[[3]])` |   `r Sub1Res[[4]]` `r Sub1Res[[5]]`  | 
 |Juv4 | `r (Juv4Res[[3]])` |   `r Juv4Res[[4]]` `r Juv4Res[[5]]`  | 
-|Adult Male | `r (AdMaleRes[[3]])` |   `r AdMaleRes[[4]]` `r AdMaleRes[[5]]`  | 
+| Sub1 | `r (Sub1Res[[3]])` |   `r Sub1Res[[4]]` `r Sub1Res[[5]]`  | 
+| Sub2 | `r (Sub2Res[[3]])` |   `r Sub2Res[[4]]` `r Sub2Res[[5]]`  | 
+|Adult  |  `r (AdultRes[[3]])` |`r AdultRes[[4]]` `r AdultRes[[5]]`  |  
 |Sub Male| `r (SubMaleRes[[3]])` |   `r SubMaleRes[[4]]` `r SubMaleRes[[5]]`  | 
+|Adult Male | `r (AdMaleRes[[3]])` |   `r AdMaleRes[[4]]` `r AdMaleRes[[5]]`  | 
 
-Table 1: Statistical results of leg length against nest size for each
+
+Table 1: Statistical results of leg length against colony size for each
 instar tested individually
 
 ```{r LegGraph, fig.height=7, fig.width=13}
@@ -116,20 +120,20 @@ InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", F
 
 ```
   
-Figure 1: Leg length against nest size. The overlaid model
+(@) Figure:  Leg length against colony size. The overlaid model
 is `r as.character(FullModel@call[2])`. Overall leg length decreases with
-nest size (p = `r NSResults[[4]]` `r NSResults[[5]]`) and there is a
-significant interaction with instar(p = `r InstarResults[[4]]`
+colony size (p = `r NSResults[[4]]` `r NSResults[[5]]`) and there was a
+significant interaction with instar (p = `r InstarResults[[4]]`
 `r InstarResults[[5]]`).
 
 
-Condition Vs. Nest Size
+Condition Vs. Colony Size
 --------------------
 
 
 
 ```{r CondNS, results='asis',  echo = FALSE}
-##### Leg length vs nest size
+##### Leg length vs colony size
 
 
 FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
@@ -138,8 +142,8 @@ NSModel <- lmer(condResiduals ~  Instar + (1|NestID)  , data = spidersMul, REML 
 NSResults <- outputResultsWord(FullModel, NSModel)
 	
 ```
-Again the model with the lowest AIC included nest size, instar and instar x nest size interaction.
-Condition decreases as nest size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
+Again the model with the lowest AIC included colony size, instar and instar x colony size interaction.
+Condition decreases as colony size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`).
 
@@ -152,7 +156,7 @@ InstarModel <- lmer(condResiduals ~  logCtFm + (1|NestID)  , data = spidersMul, 
 InstarResults <- outputResultsWord(FullModel, InstarModel)
 	
 ```
-Condition is significantly correlated with instar (lmer; $\chi$^2^~`r InstarResults[[1]]`
+Condition was significantly correlated with instar (lmer; $\chi$^2^~`r InstarResults[[1]]`
 ,`r InstarResults[[2]]`~= `r InstarResults[[3]]`, p = `r InstarResults[[4]]`
 `r InstarResults[[5]]`).
 
@@ -169,9 +173,9 @@ AdultResults <- outputResultsWord(FullModel, RedModel)
 		
 	
 ```
-Again there is a significant interaction between instar and nest size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
+Again there was a significant interaction between instar and colony size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
 `r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`). When performing ad-hoc tests on the instars individually we find that only adult 
-condition decreases with nest size (lmer; $\chi$^2^~`r AdultResults[[1]]`,`r AdultResults[[2]]`~ =
+condition decreases with colony size (lmer; $\chi$^2^~`r AdultResults[[1]]`,`r AdultResults[[2]]`~ =
 `r AdultResults[[3]]`, p = `r AdultResults[[4]]` `r AdultResults[[5]]`).
 
 
@@ -182,25 +186,25 @@ FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +
 
 
 
-InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", FullModel)
+InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", FullModel, "y")
 
 ```
-
-  Figure 2: Individual condition against nest size. The overlaid model is
-`r as.character(FullModel@call[2])`. Overall leg length decreases with nest size
-(p = `r NSResults[[4]]` `r NSResults[[5]]`) and there is a significant
+  
+(@)  Figure : Individual condition against colony size. The overlaid model is
+`r as.character(FullModel@call[2])`. Overall leg length decreases with colony size
+(p = `r NSResults[[4]]` `r NSResults[[5]]`) and there was a significant
 interaction with instar(p = `r InstarResults[[4]]` `r InstarResults[[5]]`).
 
 
 
-Within Nest Variance Vs. Nest Size
+Within Colony Variance Vs. colony size
 --------------------
 
+### Condition Variance
+
 ```{r CondVar, results='asis',  echo = FALSE}
-##### Leg length vs nest size
 
-
-FullModel <- lmer(relativeVar ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = condVar, REML = FALSE)
+FullModel <- lmer(relativeVar ~  logCtFm + Instar +  (1|NestID)  , data = condVar, REML = FALSE)
 Model <- lmer(relativeVar ~  logCtFm + (1|NestID)  , data = condVar, REML = FALSE)
 
 IntResults <- outputResultsWord(FullModel, Model)
@@ -210,32 +214,80 @@ Model <- lmer(relativeVar ~  Instar + (1|NestID)  , data = condVar, REML = FALSE
 NSResults <- outputResultsWord(FullModel, Model)
 	
 ```
-### Condition Variance
-The model with the lowest AIC value only included nest size and instar as explantory factors.
+
+The model with the lowest AIC value only included colony size and instar as explanatory factors.
 Instar was significant (lmer; $\chi$^2^~`r Results[[1]]`
 ,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
-`r IntResults[[5]]`), however nest size was not (lmer; $\chi$^2^~`r NSResults[[1]]`
+`r IntResults[[5]]`), however colony size was not (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`).
 
 
-```{r, fig.height=4, fig.width=5, echo = FALSE}
+```{r ConditionVarGraph, fig.height=7, fig.width=13}
+
+
+InstarGridGraph(condVar, "relativeVar", "Variance in Condition", "n", "", FullModel, "y")
+
+```
+  
+(@)  Figure : Variance in condition against colony size
+
+
+```{r instarCondVarGraph, fig.height=4, fig.width=7, echo = FALSE}
 ggplot(data = condVar, aes(x = Instar, y = relativeVar, fill = InstarSex)) +
 	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
 
 ```
-  
-Figure 3. Condition variance within nests by instar. I am not sure yet whether
+   
+(@) Figure :Condition variance within colonies by instar. I am not sure yet whether
 this is a real results and/or intereseting to the story
 
-Variance in leg length was not significant for any factors.
 
 
-Original Nest Vs Propagule
+
+### Leg Length Variance
+
+
+```{r LegLenVar, results='asis',  echo = FALSE}
+##### Leg length vs colony size
+
+
+FullModel <- lmer(relativeVar ~  logCtFm + Instar +  (1|NestID)  , data = legVar, REML = FALSE)
+Model <- lmer(relativeVar ~  logCtFm + (1|NestID)  , data = legVar, REML = FALSE)
+
+IntResults <- outputResultsWord(FullModel, Model)
+
+Model <- lmer(relativeVar ~  Instar + (1|NestID)  , data = legVar, REML = FALSE)
+
+NSResults <- outputResultsWord(FullModel, Model)
+	
+```
+
+
+The model with the lowest AIC value only included colony size and instar as explantory factors.
+Instar was not significant (lmer; $\chi$^2^~`r Results[[1]]`
+,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
+`r IntResults[[5]]`), neither was colony size (lmer; $\chi$^2^~`r NSResults[[1]]`
+,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
+`r NSResults[[5]]`).
+
+
+```{r instarLegVarGraph, fig.height=4, fig.width=7, echo = FALSE}
+ggplot(data = legVar, aes(x = Instar, y = relativeVar, fill = InstarSex)) +
+	labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_boxplot() + mytheme
+
+```
+   
+(@) Figure :Leg length variance within colonies by instar. I am not sure yet whether
+this is a real results and/or intereseting to the story
+
+
+
+Original Colony Vs Propagule
 --------------------
 
 ```{r LegSing, results='asis',  echo = FALSE}
-##### Leg length vs nest size
+##### Leg length vs colony size
 
 
 FullModel <- lmer(logLeg ~  type  +  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
@@ -245,14 +297,14 @@ NSResults <- outputResultsWord(FullModel, NSModel)
 	
 ```
   
-Leg length is larger in propagules compared to the source nest (lmer;
+Leg length was larger in propagules compared to the source colony (lmer;
 $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~= `r NSResults[[3]]`, p =
 `r NSResults[[4]]` `r NSResults[[5]]`).
 
 
 
 ```{r CondSing, results='asis',  echo = FALSE}
-##### Leg length vs nest size
+##### Leg length vs colony size
 
 
 FullModel <- lmer(condResiduals ~  type  +  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
@@ -262,7 +314,7 @@ NSResults <- outputResultsWord(FullModel, NSModel)
 	
 ```
 
-Individuals in propagules have greater conditions compared to those in the
+Individuals in propagules have better condition compared to those in the
 original nests (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
 `r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`).
 
@@ -282,7 +334,7 @@ grid.arrange(p1, p2, ncol = 2)
 
 ```
   
-Figure 4: Condition and leg length of adult females in propagues and their
+(@) Figure: Condition and leg length of adult females in propagues and their
 source nest
 
 
@@ -292,7 +344,7 @@ Propagule survival
 We found that nests with single females spiders had a very low survival rate
 (figure 5).
 
-```{r PropaguleSurvivalGraph, fig.height=3, fig.width=4}
+```{r PropaguleSurvivalGraph, fig.height=4, fig.width=4}
 
 ggsurvplot(prop.survfit,color = "#2E9FDF", break.time.by = 5, 
 		xlab = "Days until propagule death", ylab = "Propagule survival probability",  censor = FALSE)
@@ -302,5 +354,5 @@ nOriginalNests <- nlevels(props$nestID)
 
 ```
   
-Figure 5: The survival function of `r nProps` propagules from `r nOriginalNests`
+(@) Figure:  The survival function of `r nProps` propagules from `r nOriginalNests`
 source nests.

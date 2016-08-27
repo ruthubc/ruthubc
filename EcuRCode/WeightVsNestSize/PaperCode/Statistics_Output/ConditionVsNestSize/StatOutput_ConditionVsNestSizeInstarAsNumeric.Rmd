@@ -1,9 +1,12 @@
 
 
 ---
-title: "Individual Condition vs Nest Size"
+title: "Individual Condition vs Nest Size with sex and instar as numeric value"
 author: "Ruth Sharpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    toc: true
 geometry: margin=1.5cm
 header-includes:
     - \usepackage{caption}
@@ -12,10 +15,10 @@ header-includes:
 \captionsetup[table]{labelformat=empty}
 
 ```{r include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = "", cache.lazy = TRUE)
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 	
 ```
-
+\pagebreak
 
 AIC Values of all possible models with instar always included
 ====================
@@ -28,7 +31,7 @@ myData <- spidersMul
 
 
 outcome    <- c("condResiduals")
-predictors <- c("logCtFm", "logCtFm:InstarNumber", "InstarSex:InstarNumber", "InstarSex:logCtFm")
+predictors <- c("logCtFm", "logCtFm:InstarNumber:InstarSex", "logCtFm:InstarNumber", "InstarSex:InstarNumber", "InstarSex:logCtFm")
 dataset    <- myData
 
 modTable <- allModelsAICWithSex(outcome, predictors, dataset)
@@ -46,7 +49,6 @@ pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 
 	
 ```
 
-\pagebreak
 
 
 Graph with lowest AIC model superimposed

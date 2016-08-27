@@ -123,7 +123,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	# adding text
 	grid.text('Females', vp=define_region(1,2), gp=gpar(fontsize=18))#x=1.1, y=0.1)# adds text to the plot
 	grid.text('  Males', vp=define_region(4,2), gp=gpar(fontsize=18))
-	grid.text('Nest Size (Number of Adult Females)', vp=define_region(5,3:4), x=0.5, y=1, gp=gpar(fontsize=15))
+	grid.text('Colony Size (Number of Adult Females)', vp=define_region(5,3:4), x=0.5, y=1, gp=gpar(fontsize=15))
 	grid.text(yaxisLabel, vp=define_region(2:3,1), rot = 90, just = "top", x=0.8, y=0.5, gp=gpar(fontsize=15))
 
 	## Arrows on graph
