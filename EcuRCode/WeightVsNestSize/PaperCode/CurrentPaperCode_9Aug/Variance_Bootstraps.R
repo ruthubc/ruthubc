@@ -148,7 +148,11 @@ spidersBootAve <- ddply(mySpiders, .(NestID, Instar, CountFemales, logCtFm, Inst
 		sd_data = sd(condResiduals)
 )
 
-output<- subset(spidersBootAve, !is.na(sd_data))
+output <- subset(spidersBootAve, !is.na(sd_data))
+
+output <- subset(output, type == "multiple")
+
+output <- subset(output, N > 2)
 
 
-write.csv(output, file = "spidersAverage.csv")
+write.csv(output, file = "spidersAverageMul.csv")

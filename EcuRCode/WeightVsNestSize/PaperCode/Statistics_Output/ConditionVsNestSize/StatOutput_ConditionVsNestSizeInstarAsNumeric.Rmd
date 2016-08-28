@@ -18,7 +18,6 @@ header-includes:
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 	
 ```
-\pagebreak
 
 AIC Values of all possible models with instar always included
 ====================
@@ -35,6 +34,10 @@ predictors <- c("logCtFm", "logCtFm:InstarNumber:InstarSex", "logCtFm:InstarNumb
 dataset    <- myData
 
 modTable <- allModelsAICWithSex(outcome, predictors, dataset)
+
+lowestAICMod <- as.character(modTable$model[1])
+formula    <- as.formula(lowestAICMod)
+FullModel    <- lmer(formula, data = dataset, REML = FALSE)
 
 
 row.names(modTable) <- NULL # removing row names
@@ -57,17 +60,14 @@ Graph with lowest AIC model superimposed
 
 ```{r, fig.height=7, fig.width=13}
 
-FullModel <- lmer(condResiduals ~ logCtFm + InstarNumber + InstarSex + logCtFm:InstarSex +
-				(1|NestID), data = myData, REML = FALSE)
-
 
 cat("Model:", as.character(FullModel@call[2]), sep = '\n')
 
-InstarGridGraph(myData, "condResiduals", "Condition", "n", "", FullModel)
+InstarGridGraph(myData, "condResiduals", "Condition", "n", "", FullModel, "y")
 
 ```
 
-
+\pagebreak
 
 
 Statistics using model with lowest AIC

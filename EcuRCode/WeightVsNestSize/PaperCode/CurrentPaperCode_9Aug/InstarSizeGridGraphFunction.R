@@ -13,8 +13,8 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	
 	if (num_rows > 300) {  # summarise data instead of plotting individual points
 		#24th August changed from dataSummary
-		dataSummary<- ddply(data, .(NestID, CountFemales), summarise,
-		mean = mean(variable, na.rm = TRUE))
+		dataSummary<- ddply(data, .(NestID, CountFemales), summarise, mean = mean(variable, na.rm = TRUE))
+
 		p <- ggplot(dataSummary, aes(x = CountFemales , y = mean))	
 	}else{
 		p <- ggplot(data, aes(x = CountFemales , y = variable)) 
@@ -85,10 +85,20 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	
 	spiderData$variable <- spiderData[,column_index]
 	
-	minVarValue <- min(spiderData$variable, na.rm = TRUE)
-	maxVarValue <- max(spiderData$variable, na.rm = TRUE)
+	if (no_rows > 300) {
+	
+		dataSum<- ddply(spiderData, .(NestID, CountFemales, Instar), summarise, mean = mean(variable, na.rm = TRUE))
+		
+		minVarValue <- min(dataSum$mean, na.rm = TRUE)
+		maxVarValue <- max(dataSum$mean, na.rm = TRUE)
+	}else{
+		
+		minVarValue <- min(spiderData$variable, na.rm = TRUE)
+		maxVarValue <- max(spiderData$variable, na.rm = TRUE)
+	}
 	
 	
+
 	
 
 	
