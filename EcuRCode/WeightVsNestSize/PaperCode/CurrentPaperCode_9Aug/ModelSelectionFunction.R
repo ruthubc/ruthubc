@@ -60,7 +60,7 @@ allModelsAIC <- function(outcome, predictors, dataset) {
 	
 }
 
-allModelsAICWithSex <- function(outcome, predictors, dataset) {
+allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
 	
 	list.of.models <- lapply(seq_along((predictors)), function(n) {
 				
@@ -79,7 +79,14 @@ allModelsAICWithSex <- function(outcome, predictors, dataset) {
 	list.of.fits <- lapply(vector.of.models, function(x) {
 				
 				formula    <- as.formula(x)
-				fit        <- lmer(formula, data = dataset, REML = FALSE)
+				
+				if (weights == "n") {
+					fit  <- lmer(formula, data = dataset, REML = FALSE)
+				} else {
+					fit  <- lmer(formula, data = dataset, weights = N, REML = FALSE)
+					
+				}
+				
 				result.AIC <- extractAIC(fit)
 				
 				data.frame(num.predictors = result.AIC[1],

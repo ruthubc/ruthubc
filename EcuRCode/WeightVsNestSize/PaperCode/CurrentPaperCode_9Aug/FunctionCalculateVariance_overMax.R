@@ -30,15 +30,7 @@ calMaxVarFun <- function(mean, sampSize, min, max){
 		calTot<- sum(list)
 		totDiff <- (data_tot - calTot)
 		numToInput <- totDiff + min
-#		print("calTot")
-#		print(calTot)
-#		print("totDiff")
-#		print(totDiff)
-#		print("numToInput")
-#		print(numToInput)
-#		print("list")
-#		print(list)
-		
+
 	}
 	#print(mean(list))
 	return(list)

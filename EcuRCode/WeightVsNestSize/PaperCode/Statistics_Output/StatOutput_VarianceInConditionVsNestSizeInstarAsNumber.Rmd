@@ -1,0 +1,89 @@
+
+
+---
+title: "Variance in Condition vs Nest Size Instar As Number"
+author: "Ruth Sharpe"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+geometry: margin=1cm
+
+---
+
+AIC Values of all possible models with instar included
+------------------
+
+
+```{r kable, results='asis',  echo = FALSE}
+#pander options http://rapporter.github.io/pander/#general-options
+myData <- condVar
+
+
+outcome    <- c("relativeVar")
+predictors <- c("logCtFm", "logCtFm:InstarNumber:InstarSex", "logCtFm:InstarNumber", "InstarSex:InstarNumber", "InstarSex:logCtFm")
+dataset    <- myData
+
+modTable <- allModelsAICWithSex(outcome, predictors, dataset, "y")
+
+row.names(modTable) <- NULL # removing row names
+
+panderOptions('table.split.table', Inf)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('keep.line.breaks', TRUE)
+
+
+pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 2))
+
+lowestAICMod <- as.character(modTable$model[1])
+
+formula    <- as.formula(lowestAICMod)
+FullModel       <- lmer(formula, data = dataset, weights = N, REML = FALSE)
+
+	
+```
+
+
+
+Graph
+------------------
+ 
+note: blue line just lm model
+```{r, fig.height=8, fig.width=12, echo = FALSE}
+
+
+InstarGridGraph(myData, "relativeVar", "Variance in Condition", "n", "", FullModel)
+
+```
+
+
+Statistics using model with the almost lowest AIC as full model
+====================
+
+
+```{r Stats,  results='asis', echo = FALSE , comment = "", message = FALSE, warning = FALSE}
+
+FullModel <- lmer(relativeVar ~ InstarSex:InstarNumber + InstarNumber + InstarSex + logCtFm + 
+		(1 | NestID), weights = N, data = myData, REML = FALSE)
+
+
+TestInstarNumber <- c( "Testing Instar Number", lmer(relativeVar~ logCtFm + InstarSex +  (1|NestID), weights = N,  data = myData, REML = FALSE))
+TestInstarSex <- c("Testing Sex", lmer(relativeVar~ logCtFm + InstarNumber +  (1|NestID), weights = N,  data = myData, REML = FALSE))
+TestNS <- c("Testing NestSize", lmer(relativeVar~ InstarNumber + InstarSex + InstarNumber:InstarSex + (1|NestID), weights = N,  data = myData, REML = FALSE))
+
+
+RedModels <- list(TestInstarNumber, TestInstarSex, TestNS)
+
+MRAnovaFun(FullModel, RedModels)
+
+cat("Note: See next page for graph")
+
+```
+
+
+Graph of condition variance against instar
+====================
+
+```{r, fig.height=6, fig.width=8, echo = FALSE}
+ggplot(data = condVar, aes(x = as.factor(InstarNumber), y = relativeVar, fill = InstarSex)) +
+	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
+
+```

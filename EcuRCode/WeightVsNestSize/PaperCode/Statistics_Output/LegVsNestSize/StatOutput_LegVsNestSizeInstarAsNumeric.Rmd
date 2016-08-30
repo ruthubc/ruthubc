@@ -31,10 +31,7 @@ predictors <- c("logCtFm", "logCtFm:InstarNumber:InstarSex", "logCtFm:InstarNumb
 dataset    <- spidersMul
 
 modTable <- allModelsAICWithSex(outcome, predictors, dataset)
-lowestAICMod <- as.character(modTable$model[1])
 
-formula    <- as.formula(lowestAICMod)
-FullModel       <- lmer(formula, data = dataset, REML = FALSE)
 
 
 row.names(modTable) <- NULL # removing row names
@@ -46,6 +43,12 @@ panderOptions('keep.line.breaks', TRUE)
 
 
 pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 2))
+
+## outputting lowest AIC model
+lowestAICMod <- as.character(modTable$model[1])
+
+formula    <- as.formula(lowestAICMod)
+FullModel       <- lmer(formula, data = dataset, REML = FALSE)
 	
 ```
 
