@@ -55,4 +55,16 @@ mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), pa
 		panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 
+# Francisco's insect biomass data
+Biomass <- read.csv("RuthSync/EggManipulation/FranciscoData_insectBiomass.csv")
+Biomass <- subset(Biomass, AdFemales > 0)  # removing the nests with no females
+Biomass <- subset(Biomass, Treatment == "Control")
+Biomass <- subset(Biomass, OverallID != 5) # removing an outlier that must be a mistake
+Biomass$log10AdFm <- log10(Biomass$AdFemales)
+
+Biomass$BiomsPerAdFm <- Biomass$Tl_insect_biomass/Biomass$AdFemales
+Biomass$log10_BiomsPerAdFm <- log10((Biomass$BiomsPerAdFm*100000)+1)
+
+
+
 print("data imported")

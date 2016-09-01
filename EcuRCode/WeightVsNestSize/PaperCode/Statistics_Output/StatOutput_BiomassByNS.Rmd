@@ -1,0 +1,49 @@
+
+
+---
+title: "Biomass by Nest Size"
+author: "Ruth Sharpe"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    toc: true
+geometry: margin=1.5cm
+header-includes:
+    - \usepackage{caption}
+---
+
+\captionsetup[table]{labelformat=empty}
+
+```{r dataImport,  include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+
+
+```
+
+
+
+Biomass per capita calculated as insect biomass over total number of adult females
+====================
+
+```{r stats}
+
+FullModel <- lmer(log10_BiomsPerAdFm ~ log10AdFm + (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
+RedModel <- lmer(log10_BiomsPerAdFm ~ (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
+anova(FullModel)
+anova(RedModel, FullModel)
+
+```
+
+
+
+```{r Graph, fig.height=7, fig.width=10}
+
+plot <- ggplot(data = Biomass, aes(x = log10AdFm, y = log10_BiomsPerAdFm)) + geom_point()
+plot <- plot + xlab("Nest size - number of adult females") + ylab("Prey biomass per adult female") + mytheme
+
+Vis_fit <- (visreg(model, "log10AdFm", plot = FALSE))$fit						
+plot <- plot +  geom_line(data = Vis_fit, aes(x = log10AdFm, y= visregFit))
+plot
+
+```
+
