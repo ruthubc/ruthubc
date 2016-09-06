@@ -27,8 +27,8 @@ Biomass per capita calculated as insect biomass over total number of adult femal
 
 ```{r stats}
 
-FullModel <- lmer(log10_BiomsPerAdFm ~ log10AdFm + (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
-RedModel <- lmer(log10_BiomsPerAdFm ~ (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
+FullModel <- lmer(BiomsPerAdFm ~ log10AdFm + (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
+RedModel <- lmer(BiomsPerAdFm ~ (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
 anova(FullModel)
 anova(RedModel, FullModel)
 
@@ -36,12 +36,12 @@ anova(RedModel, FullModel)
 
 
 
-```{r Graph, fig.height=7, fig.width=10}
+```{r GraphBiomass, fig.height=7, fig.width=8}
 
-plot <- ggplot(data = Biomass, aes(x = log10AdFm, y = log10_BiomsPerAdFm)) + geom_point()
+plot <- ggplot(data = Biomass, aes(x = log10AdFm, y = BiomsPerAdFm)) + geom_point()
 plot <- plot + xlab("Nest size - number of adult females") + ylab("Prey biomass per adult female") + mytheme
 
-Vis_fit <- (visreg(model, "log10AdFm", plot = FALSE))$fit						
+Vis_fit <- (visreg(FullModel, "log10AdFm", plot = FALSE))$fit						
 plot <- plot +  geom_line(data = Vis_fit, aes(x = log10AdFm, y= visregFit))
 plot
 

@@ -308,6 +308,38 @@ ggplot(data = legVar, aes(x = Instar, y = relativeVar, fill = InstarSex)) +
 (@) Figure :Leg length variance within colonies by instar. I am not sure yet whether
 this is a real results and/or intereseting to the story
 
+Biomass per capita vs colony size
+====================
+
+```{r Biomass, results='asis',  echo = FALSE}
+##### Biomass per capita vs colony size
+
+
+FullModel <- lmer(BiomsPerAdFm ~ log10AdFm + (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
+RedModel <- lmer(BiomsPerAdFm ~ (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
+
+Results <- outputResultsWord(FullModel, RedModel)
+	
+```
+Again the model with the lowest AIC included colony size, instar and instar x colony size interaction.
+Condition decreases as colony size increases (lmer; $\chi$^2^~`r Results[[1]]`
+,`r Results[[2]]`~= `r Results[[3]]`, p = `r Results[[4]]`
+`r Results[[5]]`).
+
+```{r GraphBiomass, fig.height=4, fig.width=6}
+
+plot <- ggplot(data = Biomass, aes(x = log10AdFm, y = BiomsPerAdFm)) + geom_point()
+plot <- plot + xlab("Nest size - number of adult females") + ylab("Prey biomass per adult female") + mytheme
+
+Vis_fit <- (visreg(FullModel, "log10AdFm", plot = FALSE))$fit						
+plot <- plot +  geom_line(data = Vis_fit, aes(x = log10AdFm, y= visregFit))
+plot
+
+```
+  
+(@)  Figure : Variance in condition against colony size
+
+
 
 
 Original Colony Vs Propagule
@@ -371,7 +403,7 @@ Propagule survival
 We found that nests with single females spiders had a very low survival rate
 (figure 5).
 
-```{r PropaguleSurvivalGraph, fig.height=4, fig.width=4}
+```{r PropaguleSurvivalGraph, fig.height=4, fig.width=7}
 
 ggsurvplot(prop.survfit,color = "#2E9FDF", break.time.by = 5, 
 		xlab = "Days until propagule death", ylab = "Propagule survival probability",  censor = FALSE)

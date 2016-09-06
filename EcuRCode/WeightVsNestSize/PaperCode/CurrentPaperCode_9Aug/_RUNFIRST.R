@@ -7,7 +7,7 @@ library(lmerTest)
 library(plyr)
 library(dplyr)
 require(reshape)
-library(SciencesPo)
+#library(SciencesPo)
 library(stringr)
 library(qdap)
 library(tidyr)
@@ -31,6 +31,7 @@ comp_name <- Sys.info()["nodename"]
 
 if (comp_name == "DELL-1545") {
 	print("You are using your home computer")
+	setwd("C:/Work/Dropbox/")
 	path <- "C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
 	
 }else{
@@ -62,8 +63,10 @@ Biomass <- subset(Biomass, Treatment == "Control")
 Biomass <- subset(Biomass, OverallID != 5) # removing an outlier that must be a mistake
 Biomass$log10AdFm <- log10(Biomass$AdFemales)
 
-Biomass$BiomsPerAdFm <- Biomass$Tl_insect_biomass/Biomass$AdFemales
-Biomass$log10_BiomsPerAdFm <- log10((Biomass$BiomsPerAdFm*100000)+1)
+Biomass$biomass_mg <- Biomass$Tl_insect_biomass *1000
+Biomass$Lg10_biomass <- log10(Biomass$biomass_mg+1)
+
+Biomass$BiomsPerAdFm <- Biomass$Lg10_biomass/Biomass$log10AdFm
 
 
 

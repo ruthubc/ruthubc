@@ -4,18 +4,19 @@
 
 
 
-bootVar <- read.csv("RuthSync/BootStrapVarianceForCluster/combined5Sept_13Missing.csv")
+#### Condition Variance by nest size
+
+spidersVar <- condition_residuals(spiders, "logLeg","n")
+
+condVar <- calRelVariance(spidersVar, "condResiduals")
+
+##Checking normality
+ggplot(condVar, aes(x = relativeVar)) + geom_histogram() + xlim(0, 1) # seems normal enough
+
+
+
 
 ########### Checking AIC of all models ##########
-
-ggplot(data = bootVar, aes(x = bootSD_cond)) + geom_histogram()
-#meanCond <- mean(bootVar$bootSD_cond)
-#bootVar$bootSD_trans <- log10(bootVar$bootSD_cond/(meanCond)+0.00001)
-bootVar$bootSD_trans <- bootVar$bootSD_cond^(1/3)
-
-
-
-ggplot(data = bootVar, aes(x = bootSD_trans)) + geom_histogram()
 
 
 outcome    <- c("relativeVar")
