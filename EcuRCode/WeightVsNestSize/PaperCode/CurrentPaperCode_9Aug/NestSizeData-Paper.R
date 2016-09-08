@@ -39,11 +39,13 @@ spiders$logHead <- log10(spiders$HeadLength.mm*1000)
 ############ Inserting Spider Number #########
 
 
-instarNum <- c(Juv4 = 4, Sub1 = 5, Sub2 = 6, Adult = 7, SubMale = 5, AdMale = 6)
-spiders$InstarNumber <- instarNum[spiders$Instar]
+Instar <- c("Juv4", "Sub1", "Sub2", "Adult", "SubMale", "AdMale")
+InstarNumber <- c(4, 5, 6,  7,  5,  6)
+InstarSex <- c("F", "F", "F", "F", "M", "M")
+InstarLookUp <- data.frame(Instar, InstarNumber, InstarSex)
 
-instarSex<- c(Juv4 = "F", Sub1 = "F", Sub2 = "F", Adult = "F", SubMale = "M", AdMale = "M")
-spiders$InstarSex <- instarSex[spiders$Instar]
+spiders <- merge(spiders, InstarLookUp, by = "Instar")
+
 
 spiders <- condition_residuals(spiders, "logLeg")
 

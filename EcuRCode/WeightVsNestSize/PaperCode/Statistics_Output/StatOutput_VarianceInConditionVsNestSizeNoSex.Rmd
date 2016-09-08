@@ -1,7 +1,7 @@
 
 
 ---
-title: "Variance in Condition vs Nest Size Instar As Number"
+title: "Variance in Condition vs Nest Size. No instar sex and instar as factor
 author: "Ruth Sharpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 geometry: margin=1cm
@@ -11,8 +11,8 @@ geometry: margin=1cm
 ```{r dataImport,  include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 
-minN <- 0
-myData <- subset(condVar, N > minN)
+minN <- 3
+myData <- subset(condVar, N > minN & Instar != "SubMale")
 totSpis <- sum(myData$N)
 myData$lmrWgts <- myData$N/ totSpis
 sum(myData$lmrWgts)
@@ -24,17 +24,20 @@ sum(myData$lmrWgts)
 
 AIC Values of all possible models with instar included and sample size as weight
 ------------------
-Rows removed with `r minN` or fewer data points  data points
+Rows removed with `r minN` or fewer data points and no sub males as only two
+data point left
 
 ```{r kable, results='asis',  echo = FALSE}
 #pander options http://rapporter.github.io/pander/#general-options
 
 
 outcome    <- c("relativeVar")
-predictors <- c("logCtFm", "logCtFm:InstarNumber:InstarSex", "logCtFm:InstarNumber", "InstarSex:InstarNumber", "InstarSex:logCtFm")
+predictors <- c("logCtFm", "logCtFm:Instar")
 dataset    <- myData
 
-modTable <- allModelsAICWithSex(outcome, predictors, dataset, "y") # weights included if "y"
+# error with lmer when weights are divided by total and lmer has no interaction term
+modTable <- allModelsAIC(outcome, predictors, dataset, "y") # weights included if "y"
+
 
 row.names(modTable) <- NULL # removing row names
 

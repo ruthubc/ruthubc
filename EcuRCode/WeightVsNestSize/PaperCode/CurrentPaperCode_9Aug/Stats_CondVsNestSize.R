@@ -30,6 +30,30 @@ condSqOnlyLm <- lmer(condResiduals ~  I(logCtFm^2) + Instar +
 				(1|NestID), data = spiConRes, REML = FALSE)
 
 
+### Instar as numeric
+FullModel <- lmer(condResiduals ~ logCtFm*InstarNumber*InstarSex +
+				(1|NestID), data = spidersMul, REML = FALSE)
+
+
+FullModel  <- lmer(condResiduals  ~  logCtFm:InstarNumber + InstarSex:logCtFm + InstarNumber + InstarSex +  (1|NestID), 
+		data = spidersMul, REML = FALSE)
+
+FullModel  <- lmer(condResiduals  ~ logCtFm +  logCtFm:InstarNumber + InstarSex:logCtFm + InstarNumber + InstarSex +  (1|NestID), 
+		data = spidersMul, REML = FALSE)
+
+FullModel  <- lmer(condResiduals  ~ logCtFm + InstarNumber/InstarSex +  (1|NestID), 
+		data = spidersMul, REML = FALSE)
+#summary(FullModel)
+anova(FullModel)
+extractAIC(FullModel)
+
+
+
+RedModel  <- lmer(condResiduals  ~ logCtFm + InstarNumber +  (1|NestID), 
+		data = spidersMul, REML = FALSE)
+
+anova(RedModel, FullModel)
+
 
 #######################
 

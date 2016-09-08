@@ -2,7 +2,7 @@
 # 
 ###############################################################################
 
-
+####### Boovar
 
 bootVar <- read.csv("RuthSync/BootStrapVarianceForCluster/combined5Sept_13Missing.csv")
 
@@ -24,17 +24,42 @@ dataset    <- condVar
 
 varianceCondAllMods <- allModelsAIC(outcome, predictors, dataset)
 
+myData <- subset(condVar, N >3)
+ggplot(data = myData, aes(N, fill = Instar)) + geom_histogram()
+ggplot(data = myData, aes(relativeVar, fill = Instar)) + geom_histogram()
+
+require(car)
+# from http://ase.tufts.edu/gsc/gradresources/guidetomixedmodelsinr/mixed%20model%20guide.html
+
+qqp(myData$relativeVar, "norm")
 
 
-
+########## Relative variance over max
 ############ Graph grid by nest size
+
+ggplot(condVar, aes(N, relativeVar)) + geom_point() + geom_smooth(se = FALSE)
+ggplot(condVar, aes(logCtFm, N)) + geom_point() + geom_smooth(se = FALSE)
+
+totSpis <- sum(condVar$N)
+condVar$lmrWgts <- condVar$N/ totSpis
+sum(condVar$lmrWgts)
 
 
 condVarianceOverall <- lmer(relativeVar ~  logCtFm + Instar + logCtFm:Instar + 
-				(1|NestID), weights = N, data = condVar , REML = FALSE)
+				(1|NestID), data = myData, weights = lmrWgts , REML = FALSE)
+
+#print(VarCorr(condVarianceOverall),comp=c("Variance","Std.Dev."))
+extractAIC(condVarianceOverall)
+anova(condVarianceOverall)
 
 condVarianceNoInt <- lmer(relativeVar ~  logCtFm + Instar +
 				(1|NestID), weights = N, data = condVar , REML = FALSE)
+
+anova(condVarianceNoInt)
+
+model <- lmer(relativeVar ~  logCtFm  + Instar + (1|NestID), data = myData, weights = lmrWgts , REML = FALSE)
+extractAIC(model)
+
 
 visgTest <- visreg(condVarianceNoInt, "logCtFm", by = "Instar")
 visreg(condVarianceOverall, "logCtFm", by = "Instar")

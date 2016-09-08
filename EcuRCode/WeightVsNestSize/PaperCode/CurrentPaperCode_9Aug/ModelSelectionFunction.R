@@ -8,7 +8,7 @@
 ## Create vectors for outcome and predictors
 
 
-allModelsAIC <- function(outcome, predictors, dataset) {
+allModelsAIC <- function(outcome, predictors, dataset, weights = "n") {
 	
 	list.of.models <- lapply(seq_along((predictors)), function(n) {
 				
@@ -27,7 +27,13 @@ allModelsAIC <- function(outcome, predictors, dataset) {
 	list.of.fits <- lapply(vector.of.models, function(x) {
 				
 				formula    <- as.formula(x)
-				fit        <- lmer(formula, data = dataset, REML = FALSE)
+				
+				if (weights == "n") {
+					fit  <- lmer(formula, data = dataset, REML = FALSE)
+				} else {
+					fit  <- lmer(formula, data = dataset, weights = lmrWgts, REML = FALSE)
+					
+				}
 				result.AIC <- extractAIC(fit)
 				
 				data.frame(num.predictors = result.AIC[1],
@@ -43,11 +49,10 @@ allModelsAIC <- function(outcome, predictors, dataset) {
 	result <- orderBy(~ -modLen, result)
 	
 	result$dup <- duplicated(result[,c('num.predictors', 'AIC')])
-	
+	result <- result[(result$dup == "FALSE"), ]
 	result <- orderBy(~ AIC, result)	
 	
 	
-	result <- result[(result$dup == "FALSE"), ]
 	
 	lowestAIC <- min(result$AIC)
 	result$AIC_Diff <- result$AIC - lowestAIC
@@ -61,6 +66,8 @@ allModelsAIC <- function(outcome, predictors, dataset) {
 }
 
 allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
+	
+	if (weights != "n") {print("Using a standardized sample size as weight in model")}
 	
 	list.of.models <- lapply(seq_along((predictors)), function(n) {
 				
@@ -83,7 +90,7 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
 				if (weights == "n") {
 					fit  <- lmer(formula, data = dataset, REML = FALSE)
 				} else {
-					fit  <- lmer(formula, data = dataset, weights = N, REML = FALSE)
+					fit  <- lmer(formula, data = dataset, weights = lmrWgts, REML = FALSE)
 					
 				}
 				
@@ -103,15 +110,14 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
 	
 	result$dup <- duplicated(result[,c('num.predictors', 'AIC')])
 	
+	
+	#result <- result[(result$dup == "FALSE"), ]
+	
 	result <- orderBy(~ AIC, result)	
-	
-	
-	result <- result[(result$dup == "FALSE"), ]
-	
 	lowestAIC <- min(result$AIC)
 	result$AIC_Diff <- result$AIC - lowestAIC
 	
-	result <- result[, c('AIC_Diff', 'AIC', 'model', 'num.predictors')]
+	result <- result[, c('AIC_Diff', 'AIC', 'model', 'num.predictors', 'dup')]
 	
 	
 	return(result)
