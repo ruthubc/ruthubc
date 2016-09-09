@@ -84,3 +84,40 @@ instarLMER <- dlply(spiConRes, .(Instar),
 		function(x) LMERS_fun(x))
 
 
+########### Instar as numeric
+
+FullModel <- lmer(condResiduals ~ logCtFm*(InstarNumber/InstarSex) +
+				(1|NestID), data = spidersMul, REML = FALSE)
+
+plot(FullModel)
+a_test<-terms(FullModel)
+a_test <- attr(a_test,"term.labels")
+toString(a_test)
+
+
+formula(FullModel)
+a_test <- simulate(FullModel, nsim = 4)
+a_test <- predict(FullModel)
+fixef(FullModel)
+
+anova(FullModel)
+
+mod2 <- update(FullModel, .~. - logCtFm:InstarNumber:InstarSex)
+
+attr(terms(mod2),"term.labels")
+
+
+outcome    <- c("condResiduals")
+predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex")
+dataset    <- spidersMul
+
+modTable <- allModelsAICWithSex(outcome, predictors, dataset)
+# Great answer
+# http://stats.stackexchange.com/questions/187996/interaction-term-in-a-linear-mixed-effect-model-in-r
+
+
+library(lsmeans)
+lsmip(mod2, InstarNumber ~ logCtFm) # this should be a way to view the interaction
+
+# posthocTesting
+lsmeans(mod2, pairwise ~ InstarNumber : logCtFm)

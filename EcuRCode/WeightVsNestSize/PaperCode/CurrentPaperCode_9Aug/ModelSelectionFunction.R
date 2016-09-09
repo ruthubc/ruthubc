@@ -73,7 +73,7 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
 				
 				left.hand.side  <- outcome
 				right.hand.side <- apply(X = combn(predictors, n), MARGIN = 2, paste, collapse = " + ")
-				right.hand.side <- paste(right.hand.side, "+ InstarNumber + InstarSex +  (1|NestID)")
+				right.hand.side <- paste("logCtFm +",  right.hand.side, " + (1|NestID)")
 				
 				paste(left.hand.side, right.hand.side, sep = "  ~  ")
 			})
@@ -111,13 +111,13 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
 	result$dup <- duplicated(result[,c('num.predictors', 'AIC')])
 	
 	
-	#result <- result[(result$dup == "FALSE"), ]
+	result <- result[(result$dup == "FALSE"), ]
 	
 	result <- orderBy(~ AIC, result)	
 	lowestAIC <- min(result$AIC)
 	result$AIC_Diff <- result$AIC - lowestAIC
 	
-	result <- result[, c('AIC_Diff', 'AIC', 'model', 'num.predictors', 'dup')]
+	result <- result[, c('AIC_Diff', 'AIC', 'model', 'num.predictors')]
 	
 	
 	return(result)

@@ -26,17 +26,17 @@ note: InstarNumber is numeric
 
 ```{r kable, results='asis',  echo = FALSE, warnings = FALSE, message = FALSE}
 
-dataset <- spidersMul
+myData <- spidersMul
 
 
 outcome    <- c("condResiduals")
-predictors <- c("logCtFm", "logCtFm:InstarNumber:InstarSex", "logCtFm:InstarNumber", "InstarSex:InstarNumber", "InstarSex:logCtFm")
+predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex")
 
-modTable <- allModelsAICWithSex(outcome, predictors, dataset)
+modTable <- allModelsAICWithSex(outcome, predictors, myData)
 
 lowestAICMod <- as.character(modTable$model[1])
 formula    <- as.formula(lowestAICMod)
-FullModel    <- lmer(formula, data = dataset, REML = FALSE)
+FullModel    <- lmer(formula, data = myData, REML = FALSE)
 
 
 row.names(modTable) <- NULL # removing row names
@@ -53,7 +53,9 @@ pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 
 lowestAICMod <- as.character(modTable$model[1])
 
 formula    <- as.formula(lowestAICMod)
-FullModel       <- lmer(formula, data = dataset, REML = FALSE)
+FullModel       <- lmer(formula, data = myData, REML = FALSE)
+
+
 	
 ```
 
@@ -83,16 +85,12 @@ Statistics using model with lowest AIC
 
 ########### Continune from here!
 
-FullModel <- lmer(condResiduals ~ logCtFm + InstarNumber + InstarSex + logCtFm:InstarSex +
-				(1|NestID), data = myData, REML = FALSE)
 
-TestInteraction  <- c("Testing Interaction Term nest size * sex", lmer(condResiduals ~ logCtFm + InstarNumber + InstarSex  + (1|NestID), data = myData, REML = FALSE))
-TestInstar <- c( "Testing Instar Number", lmer(condResiduals ~ logCtFm + InstarSex + logCtFm:InstarSex + (1|NestID), data = myData, REML = FALSE))
-TestSex <- c("Testing Instar Sex", lmer(condResiduals ~ logCtFm + InstarNumber  +  (1|NestID), data = myData, REML = FALSE))
-TestNestSize <- c("Testing Nest Size", lmer(condResiduals ~  InstarNumber + InstarSex  + (1|NestID) , data = myData, REML = FALSE))
+TestInteraction  <- c("Testing Interaction Term nest size * instar", lmer(condResiduals ~ logCtFm + (1|NestID), data = myData, REML = FALSE))
+TestNestSize <- c("Testing Nest Size", lmer(condResiduals ~  (1|NestID) , data = myData, REML = FALSE))
 
 
-RedModels <- list(TestInteraction, TestInstar, TestSex, TestNestSize)
+RedModels <- list(TestInteraction, TestNestSize)
 
 MRAnovaFun(FullModel, RedModels)
 
