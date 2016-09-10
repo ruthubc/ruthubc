@@ -50,6 +50,7 @@ source(paste(path,"ModelSelectionFunction.R", sep = ""))
 source(paste(path, "Function_MDAnovaOutput.R", sep = ""))
 source(paste(path, "NestSizeData-Paper.R", sep = ""))
 source(paste(path, "Function_AnovaResultsOutputDocx.R", sep = ""))
+source(paste(path, "Function_ModelFitCheck.R", sep = ""))
 
 mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), panel.margin= unit(0.75, "lines"), axis.title.y = element_text(vjust=0),
 		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1), 

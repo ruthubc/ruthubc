@@ -59,6 +59,19 @@ FullModel       <- lmer(formula, data = myData, REML = FALSE)
 	
 ```
 
+\pagebreak
+
+Checking full model fit
+--------------------
+
+
+```{r ModelFit, fig.height=4, fig.width=4}
+
+model_Check(FullModel)
+
+
+
+```
 
 
 Graph with lowest AIC model superimposed
@@ -86,12 +99,46 @@ Statistics using model with lowest AIC
 ########### Continune from here!
 
 
-TestInteraction  <- c("Testing Interaction Term nest size * instar", lmer(condResiduals ~ logCtFm + (1|NestID), data = myData, REML = FALSE))
-TestNestSize <- c("Testing Nest Size", lmer(condResiduals ~  (1|NestID) , data = myData, REML = FALSE))
+TestInteraction  <- c("Testing Interaction Term nest size * instar", lmer(condResiduals ~ logCtFm +  (1|NestID), data = myData, REML = FALSE))
+TestNestSize <- c("Testing Nest Size plus nest size interactions", lmer(condResiduals ~  (1|NestID) , data = myData, REML = FALSE))
 
 
 RedModels <- list(TestInteraction, TestNestSize)
 
 MRAnovaFun(FullModel, RedModels)
 
+```
+
+Testing individual instar numbers
+--------------------
+
+```{r IndInstars,  results='asis', echo = FALSE, comment = "", tab.cap = NULL, message = FALSE, warning = FALSE, hold = TRUE}
+
+
+LMERS_fun <- function(myData) { # function to test individual instars 	
+    lmFull <- lmer(condResiduals ~  logCtFm + (1|NestID), data = myData)
+    lmRed <- lmer(condResiduals ~ (1|NestID), data = myData)
+    return(list(lmFull, lmRed))
+	
+    }
+
+
+instarLMER <- dlply(myData, .(InstarNumber),        
+		function(x) LMERS_fun(x))
+
+
+results <- lapply(instarLMER, FUN = function(x) anova(x[[1]], x[[2]], refit
+= TRUE))
+
+cat("note: pops up saying 'refitting model(s) with ML (instead of REML)'", "but if make anova refit = FALSE results don't make sense", sep = '\n')
+
+kable(results$'7', caption = "Adult - significat!")
+
+kable(results$'6', caption = "Sub2 and Adult Males")
+
+kable(results$'5', caption = "Sub1 and sub males")
+
+kable(results$'4', caption = "Juv4")
+
+	
 ```

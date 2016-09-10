@@ -54,10 +54,18 @@ FullModel       <- lmer(formula, data = dataset, weights = N, REML = FALSE)
 	
 ```
 
+Checking full model fit
+--------------------
 
+
+```{r ModelFit, fig.height=3, fig.width=3}
+
+model_Check(FullModel)
+
+```
 
 Graph
-------------------
+====================
  
 note: blue line just lm model
 ```{r, fig.height=8, fig.width=12, echo = FALSE}

@@ -52,6 +52,19 @@ FullModel       <- lmer(formula, data = dataset, REML = FALSE)
 	
 ```
 
+\pagebreak
+
+Checking full model fit
+--------------------
+
+
+```{r ModelFit, fig.height=4, fig.width=4}
+
+model_Check(FullModel)
+
+
+
+```123
 
 
 Graph with lowest AIC model superimposed
@@ -100,7 +113,7 @@ Testing Individual Instars
 ```{r IndInstars,  results='asis', echo = FALSE, comment = "", tab.cap = NULL, message = FALSE, warning = FALSE, hold = TRUE}
 
 
-LMERS_fun <- function(myData) { # function to test individual instars 	
+LMERS_fun <- function(dataset) { # function to test individual instars 	
     lmFull <- lmer(logLeg ~  logCtFm + (1|NestID), data = myData)
     lmRed <- lmer(logLeg ~  + (1|NestID), data = myData)
     return(list(lmFull, lmRed))
