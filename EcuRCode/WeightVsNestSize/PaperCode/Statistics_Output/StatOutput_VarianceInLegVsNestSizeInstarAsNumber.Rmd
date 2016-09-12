@@ -1,7 +1,7 @@
 
 
 ---
-title: "Variance in Condition vs Nest Size Instar As Number"
+title: "Variance in Leg vs Nest Size Instar As Number"
 author: "Ruth Sharpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 geometry: margin=1cm
@@ -12,7 +12,7 @@ geometry: margin=1cm
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 
 minN <- 2
-dataset <- subset(condVar, N > minN)
+dataset <- subset(legVar, N > minN)
 totSpis <- sum(dataset$N)
 dataset$lmrWgts <- dataset$N/ totSpis
 
@@ -73,7 +73,7 @@ note: blue line just lm model
 ```{r, fig.height=8, fig.width=12, echo = FALSE}
 
 
-InstarGridGraph(dataset, "relativeVar", "Variance in Condition", "n", "", FullModel, "y")
+InstarGridGraph(dataset, "relativeVar", "Variance in leg", "n", "", FullModel, "y")
 
 ```
 
@@ -98,11 +98,11 @@ MRAnovaFun(FullModel, RedModels)
 ```
 
 
-Graph of condition variance against instar
+Graph of leg variance against instar
 ====================
 
 ```{r, fig.height=6, fig.width=8, echo = FALSE}
 ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = relativeVar, fill = InstarSex)) +
-	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
+	labs(x = "Instar") + labs(y = "Variance in leg") + geom_boxplot() + mytheme
 
 ```

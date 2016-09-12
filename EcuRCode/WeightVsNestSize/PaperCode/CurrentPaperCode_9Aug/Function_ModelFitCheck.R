@@ -6,7 +6,7 @@
 
 model_Check <- function(model) {
 	
-	print(model@call[2])
+	print(as.character(model@call[2]))
 	
 	qqnorm(resid(model), main = "")
 	plot(fitted(model), resid(model), xlab = "Fitted", ylab = "Residuals")

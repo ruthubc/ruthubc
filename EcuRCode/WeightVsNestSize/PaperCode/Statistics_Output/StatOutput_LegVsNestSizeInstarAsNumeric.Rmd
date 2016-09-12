@@ -63,8 +63,7 @@ Checking full model fit
 model_Check(FullModel)
 
 
-
-```123
+```
 
 
 Graph with lowest AIC model superimposed
@@ -90,12 +89,12 @@ Note: There is no point testing instar number against leg length as it will vary
 
 ```{r Stats,  results='asis', echo = FALSE, comment = "", message = FALSE}
 
+#logLeg ~ logCtFm + InstarNumber + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + (1 | NestID)
 
-
-Test3WayInteraction <- c("Three way interaction", lmer(logLeg ~ logCtFm + logCtFm:InstarNumber + InstarSex:InstarNumber + InstarNumber + InstarSex +  (1|NestID)   + (1|NestID)  , data = dataset, REML = FALSE))
-TestInteraction2 <- c("Nest size x Instar Number", lmer(logLeg ~ logCtFm  + logCtFm:InstarNumber + InstarNumber + InstarSex +  (1|NestID), data = dataset, REML = FALSE))
-TestSex <- c("Spider Sex", lmer(logLeg ~ logCtFm + logCtFm:InstarNumber + InstarNumber  +  (1|NestID), data = dataset, REML = FALSE))
-TestNS <- c("NestSize", lmer(logLeg ~ InstarSex:InstarNumber + InstarNumber + InstarSex +  (1|NestID)  , data = dataset, REML = FALSE))
+Test3WayInteraction <- c("Three way interaction", update(FullModel, . ~ . - logCtFm:InstarNumber:InstarSex))
+TestInteraction2 <- c("Nest size x Instar Number", update(FullModel, . ~ . - logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex))
+TestSex <- c("Instar age", update(FullModel, . ~ . -InstarNumber - logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex))
+TestNS <- c("NestSize", update(FullModel, . ~ . - logCtFm - logCtFm:InstarNumber:InstarSex))
 
 RedModels <- list(Test3WayInteraction, TestInteraction2, TestSex, TestNS)
 
@@ -105,15 +104,17 @@ MRAnovaFun(FullModel, RedModels)
 \pagebreak
 
 Testing Individual Instars
-====================
-###As the interaction is significant testing instar individually
+--------------------
+
+
+###As the three way interaction is significant testing instar individually
 
 
 
 ```{r IndInstars,  results='asis', echo = FALSE, comment = "", tab.cap = NULL, message = FALSE, warning = FALSE, hold = TRUE}
 
 
-LMERS_fun <- function(dataset) { # function to test individual instars 	
+LMERS_fun <- function(myData) { # function to test individual instars 	
     lmFull <- lmer(logLeg ~  logCtFm + (1|NestID), data = myData)
     lmRed <- lmer(logLeg ~  + (1|NestID), data = myData)
     return(list(lmFull, lmRed))
@@ -128,26 +129,23 @@ instarLMER <- dlply(dataset, .(Instar),
 results <- lapply(instarLMER, FUN = function(x) anova(x[[1]], x[[2]], refit
 = TRUE))
 
+sig <- lapply(results, FUN = function(x) ifelse(x[,8][2] <= 0.05, " * SIGNIFICANT *", "not significant"))
+
+
+
 cat("note: pops up saying 'refitting model(s) with ML (instead of REML)'", "but if make anova refit = FALSE results don't make sense", sep = '\n')
 
-kable(results$Adult, caption = "Adult")
+kable(results$Adult, caption = paste("Adult", sig$Adult))
 
-kable(results$Sub2, caption = "Sub2")
+kable(results$Sub2, caption = paste("Sub2", sig$Sub2))
 
-kable(results$Sub1, caption = "Sub1")
+kable(results$Sub1, caption = paste("Sub1", sig$Sub1))
 
-kable(results$Juv4, caption = "Juv4")
+kable(results$Juv4, caption = paste("Juv4", sig$Juv4))
 
-```
+kable(results$AdMale, caption = paste("AdMale", sig$AdMale))
 
-\pagebreak
-
-
-```{r IndInstars2,  results='asis', echo = FALSE, comment = "", tab.cap = NULL, message = FALSE, warning = FALSE, hold = TRUE}
-
-kable(results$AdMale, caption = "AdMale")
-
-kable(results$SubMale, caption = "SubMale")
+kable(results$SubMale, caption = paste("SubMale", sig$SubMale))
 	
 ```
 

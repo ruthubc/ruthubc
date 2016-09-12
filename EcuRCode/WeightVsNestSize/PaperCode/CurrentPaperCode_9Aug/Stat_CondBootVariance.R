@@ -15,6 +15,13 @@ spidersBootAve <- ddply(mySpiders, .(NestID, Instar, CountFemales, logCtFm, minC
 		sd_data = sd(condResiduals)
 )
 
+spidersBootAveLeg <- ddply(mySpiders, .(NestID, Instar, CountFemales, logCtFm, minCond, maxCond, InstarNumber, InstarSex, type), summarise,
+		N = length(logLeg),
+		mean = mean(logLeg),
+		sd_data = sd(logLeg)
+)
+
+
 
 spidersBootAve <- subset(spidersBootAve, N == 2 & type == 'multiple')
 nrow(spidersBootAve)

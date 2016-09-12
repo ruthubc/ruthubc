@@ -26,17 +26,17 @@ note: InstarNumber is numeric
 
 ```{r kable, results='asis',  echo = FALSE, warnings = FALSE, message = FALSE}
 
-myData <- spidersMul
+dataset <- spidersMul
 
 
 outcome    <- c("condResiduals")
 predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex")
 
-modTable <- allModelsAICWithSex(outcome, predictors, myData)
+modTable <- allModelsAICWithSex(outcome, predictors, dataset)
 
 lowestAICMod <- as.character(modTable$model[1])
 formula    <- as.formula(lowestAICMod)
-FullModel    <- lmer(formula, data = myData, REML = FALSE)
+FullModel    <- lmer(formula, data = dataset, REML = FALSE)
 
 
 row.names(modTable) <- NULL # removing row names
@@ -53,7 +53,7 @@ pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 
 lowestAICMod <- as.character(modTable$model[1])
 
 formula    <- as.formula(lowestAICMod)
-FullModel       <- lmer(formula, data = myData, REML = FALSE)
+FullModel       <- lmer(formula, data = dataset, REML = FALSE)
 
 
 	
@@ -83,7 +83,7 @@ Graph with lowest AIC model superimposed
 
 cat("Model:", as.character(FullModel@call[2]), sep = '\n')
 
-InstarGridGraph(myData, "condResiduals", "Condition", "n", "", FullModel, "y")
+InstarGridGraph(dataset, "condResiduals", "Condition", "n", "", FullModel, "y")
 
 ```
 
@@ -99,8 +99,8 @@ Statistics using model with lowest AIC
 ########### Continune from here!
 
 
-TestInteraction  <- c("Testing Interaction Term nest size * instar", lmer(condResiduals ~ logCtFm +  (1|NestID), data = myData, REML = FALSE))
-TestNestSize <- c("Testing Nest Size plus nest size interactions", lmer(condResiduals ~  (1|NestID) , data = myData, REML = FALSE))
+TestInteraction  <- c("Testing Interaction Term nest size * instar", lmer(condResiduals ~ logCtFm +  (1|NestID), data = dataset, REML = FALSE))
+TestNestSize <- c("Testing Nest Size plus nest size interactions", lmer(condResiduals ~  (1|NestID) , data = dataset, REML = FALSE))
 
 
 RedModels <- list(TestInteraction, TestNestSize)
@@ -115,30 +115,39 @@ Testing individual instar numbers
 ```{r IndInstars,  results='asis', echo = FALSE, comment = "", tab.cap = NULL, message = FALSE, warning = FALSE, hold = TRUE}
 
 
-LMERS_fun <- function(myData) { # function to test individual instars 	
-    lmFull <- lmer(condResiduals ~  logCtFm + (1|NestID), data = myData)
-    lmRed <- lmer(condResiduals ~ (1|NestID), data = myData)
+LMERS_fun <- function(dataset) { # function to test individual instars 	
+    lmFull <- lmer(condResiduals ~  logCtFm + (1|NestID), data = dataset)
+    lmRed <- lmer(condResiduals ~ (1|NestID), data = dataset)
     return(list(lmFull, lmRed))
 	
     }
 
 
-instarLMER <- dlply(myData, .(InstarNumber),        
+instarLMER <- dlply(dataset, .(InstarNumber),        
 		function(x) LMERS_fun(x))
 
 
 results <- lapply(instarLMER, FUN = function(x) anova(x[[1]], x[[2]], refit
 = TRUE))
 
+sig <- lapply(results, FUN = function(x) ifelse(x[,8][2] <= 0.05, " * SIGNIFICANT *", "not significant"))
+
 cat("note: pops up saying 'refitting model(s) with ML (instead of REML)'", "but if make anova refit = FALSE results don't make sense", sep = '\n')
 
-kable(results$'7', caption = "Adult - significat!")
+kable(results$'7', caption = paste("Adult - age 7", sig$'7'))
 
-kable(results$'6', caption = "Sub2 and Adult Males")
+kable(results$'6', caption = paste("Sub2 and Adult Males - age 6", sig$'6'))
 
-kable(results$'5', caption = "Sub1 and sub males")
+kable(results$'5', caption = paste("Sub1 and sub males- age 5", sig$'5'))
 
-kable(results$'4', caption = "Juv4")
+kable(results$'4', caption = paste("Juv4 - age 4", sig$'4'))
 
 	
 ```
+
+Graph of condition variance against instar
+====================
+
+```{r, fig.height=6, fig.width=8, echo = FALSE}
+ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = condResiduals, fill = InstarSex)) +
+	labs(x = "Instar") + labs(y = "Condition") + geom_boxplot() + mytheme
