@@ -7,7 +7,7 @@
 #		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 #
 
-MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue) { # function to make the graphs
+MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue, predictDF) { # function to make the graphs
 	current.Instar <- as.character(unique(data$Instar)) # get the Name of the current subset	
 	
 	
@@ -47,9 +47,10 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 		
 		p <- tryCatch(
 				{
-					Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
-					Vis_fit <- subset(Vis_fit, Instar == current.Instar)
-					p <- p +  geom_line(data = Vis_fit, aes(x = (10^logCtFm), y= visregFit))
+					#Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
+					#Vis_fit <- subset(Vis_fit, Instar == current.Instar)
+					fit <- subset(predictDF, Instar == current.Instar)
+					p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd))
 				},
 				error=function(cond) {
 					return(p + stat_smooth(method = "lm", formula = y~x, se = FALSE))
@@ -85,6 +86,17 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	
 	spiderData$variable <- spiderData[,column_index]
 	
+	### Making table to plot the results of the lmer model
+	
+	predictDF <- expand.grid(logCtFm = seq(min(dataset$logCtFm), max(dataset$logCtFm), by = 0.1), 
+			InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.3EX03"))
+	
+	predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
+	
+	predictDF$lmrPrd <- predict(model, predictDF)
+	
+	
+	
 	if (no_rows > 300) {
 	
 		dataSum<- ddply(spiderData, .(NestID, CountFemales, Instar), summarise, mean = mean(variable, na.rm = TRUE))
@@ -104,7 +116,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	
 	# this creates a list of plots
 	my.plots <- dlply(spiderData, .(Instar),        
-			function(x) MyPlots(x, no_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue))
+			function(x) MyPlots(x, no_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue, predictDF))
 	
 	define_region <- function(row, col){
 		viewport(layout.pos.row = row, layout.pos.col = col)

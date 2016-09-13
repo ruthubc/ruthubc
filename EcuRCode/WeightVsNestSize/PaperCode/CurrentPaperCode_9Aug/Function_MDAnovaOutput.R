@@ -8,12 +8,12 @@ MRAnovaFun<- function(FullModel, RedModels) {  # RedModels Is A List
 #cat("Anova of full model alone",  paste("-Model:", FullModFormula),  sep = '\n\r')
 anv1 <- anova(FullModel)
 #print(kable(anv1, format = 'latex'))
-FullModFormula <- as.character(FullModel@call[2])
+FullModFormula <- sub("I(InstarNumber^2)", "InstarNoSqrd", as.character(FullModel@call[2]))
 
 cat("Full Model:", FullModFormula)
 stargazer(anv1, summary = FALSE, title = "Anova of full model alone", header = FALSE)
 
-cat("\\par", "Testing Individual Variables by preforming an Anova of full vs reduced model)","",  sep = "\n\r")
+cat("\\par", "Testing Individual Variables by preforming an Anova of full vs reduced model","",  sep = "\n\r")
 
 numTests <- length(RedModels)
 
@@ -24,7 +24,12 @@ for (i in seq(1:numTests)) {
 	RedLM <- RedModels[[i]][[2]]
 	
 	RedModFormula <- sub("~", "=", as.character(RedLM@call[2]))
+	RedModFormula <- gsub("[[:punct:]]", " ", RedModFormula)
+	
 
+	
+	
+	
 	anv2 <- anova(FullModel, RedLM)
 	
 	pValue <- round(anv2[[8L]][2], digits = 3)

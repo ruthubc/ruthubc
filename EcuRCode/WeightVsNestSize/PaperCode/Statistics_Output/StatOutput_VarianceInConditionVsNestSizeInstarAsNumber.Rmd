@@ -3,7 +3,7 @@
 ---
 title: "Variance in Condition vs Nest Size Instar As Number"
 author: "Ruth Sharpe"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "Run on `r format(Sys.time(), '%d %B, %Y')`"
 geometry: margin=1cm
 
 ---
@@ -86,11 +86,10 @@ Statistics using model with the almost lowest AIC as full model
 
 # relativeVar  ~  logCtFm + logCtFm:InstarNumber  + (1|NestID)
 
-TestInteraction <- c("Testing the interaction", lmer(relativeVar ~ logCtFm + (1|NestID), data = dataset, REML = FALSE, weight = lmrWgts))
-TestNS <- c("Testing NestSize", lmer(relativeVar ~ (1|NestID), data = dataset, REML = FALSE, weight = lmrWgts))
+TestNS <- c("Testing NestSize",  update(FullModel, .~. -logCtFm - logCtFm:InstarNumber))
 
 
-RedModels <- list(TestInteraction, TestNS)
+RedModels <- list(TestNS)
 
 MRAnovaFun(FullModel, RedModels)
 
@@ -102,6 +101,8 @@ Graph of condition variance against instar
 ====================
 
 ```{r, fig.height=6, fig.width=8, echo = FALSE}
+
+
 ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = relativeVar, fill = InstarSex)) +
 	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
 

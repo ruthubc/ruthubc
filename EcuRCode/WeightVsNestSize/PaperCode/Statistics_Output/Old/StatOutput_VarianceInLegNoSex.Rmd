@@ -3,7 +3,7 @@
 ---
 title: "Variance in Leg vs Nest Size"
 author: "Ruth Sharpe"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "Run on `r format(Sys.time(), '%d %B, %Y')`"
 
 ---
 
@@ -13,12 +13,12 @@ AIC Values of all possible models with instar included
 
 ```{r kable, results='asis',  echo = FALSE}
 #pander options http://rapporter.github.io/pander/#general-options
-myData <- legVar
+
 
 
 outcome    <- c("relativeVar")
 predictors <- c("logCtFm", "logCtFm:Instar", "I(logCtFm^2)", "I(logCtFm^2):Instar")
-dataset    <- myData
+dataset    <- legVar
 
 modTable <- allModelsAIC(outcome, predictors, dataset)
 
@@ -42,9 +42,9 @@ Graph with lowest AIC model superimposed
  
 
 ```{r, fig.height=8, fig.width=12, echo = FALSE}
-FullModel <- lmer(relativeVar~ logCtFm + Instar + (1|NestID), data = myData, REML = FALSE)
+FullModel <- lmer(relativeVar~ logCtFm + Instar + (1|NestID), data = dataset, REML = FALSE)
 
-InstarGridGraph(myData, "relativeVar", "Variance in leg length", "n", "", FullModel)
+InstarGridGraph(dataset, "relativeVar", "Variance in leg length", "n", "", FullModel, "y")
 
 ```
 
@@ -56,8 +56,8 @@ Statistics using model without squared values as the full model (Lowest AIC Mode
 ```{r Stats,  results='asis', echo = FALSE , comment = "", }
 
 
-TestInstar <- c( "Testing Instar Term", lmer(relativeVar~ logCtFm + (1|NestID), data = myData, REML = FALSE) , data = myData, REML = FALSE)
-TestNestSize <- c("Testing Nest Size", lmer(relativeVar~ Instar + (1|NestID), data = myData, REML = FALSE) , data = myData, REML = FALSE)
+TestInstar <- c( "Testing Instar Term", lmer(relativeVar~ logCtFm + (1|NestID), data = dataset, REML = FALSE) , data = dataset, REML = FALSE)
+TestNestSize <- c("Testing Nest Size", lmer(relativeVar~ Instar + (1|NestID), data = dataset, REML = FALSE) , data = dataset, REML = FALSE)
 
 
 RedModels <- list(TestInstar, TestNestSize)
