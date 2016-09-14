@@ -64,7 +64,7 @@ model_Check(FullModel)
 
 
 ```
-
+\pagebreak
 
 Graph with lowest AIC model superimposed
 ====================
@@ -72,6 +72,16 @@ Graph with lowest AIC model superimposed
 
 ```{r Graph, fig.height=7, fig.width=13}
 
+#a_predictDF <- expand.grid(logCtFm = seq(min(dataset$logCtFm), max(dataset$logCtFm), by = 0.1), 
+		#InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
+
+#predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
+
+a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
+
+#ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = InstarSex)) + geom_point()
+
+#newModel <- update(FullModel, .~. + InstarSex)
 
 cat("Model:", as.character(FullModel@call[2]), sep = '\n')
 
@@ -79,7 +89,7 @@ InstarGridGraph(dataset, "logLeg", "Leg Length - log transformed", "n", "", Full
 
 ```
 
-\pagebreak
+
 
 
 Statistics

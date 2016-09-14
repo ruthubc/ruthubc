@@ -74,8 +74,12 @@ model_Check(FullModel)
 ```
 
 
-Graph with lowest AIC model superimposed
+Graphs
 ====================
+
+
+By AIC with linear model superimposed
+--------------------
  
 
 ```{r, fig.height=7, fig.width=13}
@@ -84,6 +88,29 @@ Graph with lowest AIC model superimposed
 cat("Model:", as.character(FullModel@call[2]), sep = '\n')
 
 InstarGridGraph(dataset, "condResiduals", "Condition", "n", "", FullModel, "y")
+
+
+
+```
+
+Instar Age x nest size Interaction Graph
+--------------------
+ 
+
+```{r, fig.height=7, fig.width=13}
+
+#newMod <- update(FullModel,  . ~ . - logCtFm)
+cat("Model:", as.character(FullModel@call[2]), sep = '\n')
+
+a_predictDF <- expand.grid(logCtFm = seq(min(dataset$logCtFm), max(dataset$logCtFm), by = 0.1), 
+		InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
+
+
+a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
+
+ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(InstarNumber))) + geom_line(size = 1) + mytheme +
+		ylab("Predicted Condition") + xlab("Log Count Females") + scale_colour_discrete(name = "Instar Age")
+
 
 ```
 

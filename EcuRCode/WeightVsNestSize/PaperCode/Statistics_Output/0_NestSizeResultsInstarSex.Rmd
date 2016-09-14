@@ -16,10 +16,10 @@ Leg Vs. Colony Size
 ```{r LegNS, results='asis',  echo = FALSE}
 ##### Leg length vs colony size
 
-FullModel <- lmer(logLeg ~ logCtFm + logCtFm:InstarNumber:InstarSex + logCtFm:InstarNumber + 
-    			InstarSex:InstarNumber + InstarNumber + InstarSex + (1|NestID), data = spidersMul, REML = FALSE)
+FullModel <- lmer(logLeg ~ logCtFm + InstarNumber + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex +  
+    			(1 | NestID), data = spidersMul, REML = FALSE)
 
-NSModel <- lmer(logLeg ~ InstarSex:InstarNumber + InstarNumber + InstarSex + (1|NestID)  , data = spidersMul, REML = FALSE)
+NSModel <- update(FullModel, .~. - logCtFm -logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex)
 
 NSResults <- outputResultsWord(FullModel, NSModel)
 	
@@ -34,7 +34,7 @@ leg length increases as colony size increases (lmer; $\chi$^2^~`r NSResults[[1]]
 ```{r LegInstarNumber, results='asis',  echo = FALSE}
 ##### Leg length vs instar
 
-InstarModel <- lmer(logLeg ~ logCtFm  + InstarSex + (1|NestID) , data = spidersMul, REML = FALSE)
+InstarModel <- update(FullModel, .~. - InstarNumber -logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex)
 
 InstarResults <- outputResultsWord(FullModel, InstarModel)
 	
@@ -48,31 +48,22 @@ Leg length was significantly correlated with instar age, but that is not surpris
 ```{r LegInstarSex, results='asis',  echo = FALSE}
 ##### Leg length vs instar
 
-InstarSexModel <- lmer(logLeg ~ logCtFm  + logCtFm:InstarNumber + InstarNumber + (1|NestID), data = spidersMul, REML = FALSE)
+InstarSexModel <- update(FullModel, .~. - logCtFm:InstarNumber:InstarSex)
 
 InstarSexResults <- outputResultsWord(FullModel, InstarModel)
 	
 ```
 
-In addition, leg length was significantly correlated with instar sex, but (lmer; $\chi$^2^~`r InstarSexResults[[1]]`
+In addition, there was a significant interaction with instar sex, logCtFm x InstarNumber x InstarSex,  (lmer; $\chi$^2^~`r InstarSexResults[[1]]`
 ,`r InstarSexResults[[2]]`~= `r InstarSexResults[[3]]`, p = `r InstarSexResults[[4]]`
 `r InstarSexResults[[5]]`).
 
-```{r LegThreeWayInteraction, results='asis',  echo = FALSE}
-##### Leg length vs instar
-ThreeIntModel <- lmer(logLeg ~ logCtFm  + logCtFm:InstarNumber + 
-    			InstarSex:InstarNumber + InstarNumber + InstarSex +  (1|NestID)  , data = spidersMul, REML = FALSE)
-
-Results <- outputResultsWord(FullModel, ThreeIntModel)
-	
-```
-The three way interaction was not significant (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
-`r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`). 
 
 
 ```{r LegNSInstarNumInt, results='asis',  echo = FALSE}
 ##### Leg length vs instar
-NSInsIntModel <- lmer(logLeg ~ logCtFm + InstarSex +  (1|NestID)  , data = spidersMul, REML = FALSE)
+NSInsIntModel <- update(FullModel, .~. - logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex )
+
 
 Results <- outputResultsWord(FullModel, NSInsIntModel)
 	
@@ -158,62 +149,48 @@ Condition Vs. Colony Size
 --------------------
 
 
-
 ```{r CondNS, results='asis',  echo = FALSE}
 ##### Leg length vs colony size
 
 
-FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
-NSModel <- lmer(condResiduals ~  Instar + (1|NestID)  , data = spidersMul, REML = FALSE)
+FullModel <- lmer(condResiduals ~  logCtFm + logCtFm:InstarNumber  +  (1|NestID), data = spidersMul, REML = FALSE)
+NSModel <- update(FullModel, ~ . - logCtFm - logCtFm:InstarNumber)
+
 
 NSResults <- outputResultsWord(FullModel, NSModel)
 	
 ```
-Again the model with the lowest AIC included colony size, instar and instar x colony size interaction.
-Condition decreases as colony size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
+The model with the lowest AIC included colony size and instar x colony size interaction.
+Nest size combined with the nest size x instar interaction was significant (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`).
 
 
-```{r ConditionInstar, results='asis',  echo = FALSE}
-##### Leg length vs instar
-FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
-InstarModel <- lmer(condResiduals ~  logCtFm + (1|NestID)  , data = spidersMul, REML = FALSE)
-
-InstarResults <- outputResultsWord(FullModel, InstarModel)
-	
-```
-Condition was significantly correlated with instar (lmer; $\chi$^2^~`r InstarResults[[1]]`
-,`r InstarResults[[2]]`~= `r InstarResults[[3]]`, p = `r InstarResults[[4]]`
-`r InstarResults[[5]]`).
-
 ```{r ConditionInteraction, results='asis',  echo = FALSE}
 ##### Leg length vs instar
-FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  +  (1|NestID)  , data = spidersMul, REML = FALSE)
-InstarModel <- lmer(condResiduals ~  logCtFm + Instar +  (1|NestID)  , data = spidersMul, REML = FALSE)
 
+InstarModel <- update(FullModel, ~ . - logCtFm)
 Results <- outputResultsWord(FullModel, InstarModel)
 
-FullModel <- lmer(condResiduals ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "Adult"))
+FullModelAds <- lmer(condResiduals ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "Adult"))
 RedModel <- lmer(condResiduals ~  (1|NestID)  , data = subset(spidersMul, Instar == "Adult"))
-AdultResults <- outputResultsWord(FullModel, RedModel)
+AdultResults <- outputResultsWord(FullModelAds, RedModel)
 		
 	
 ```
-Again there was a significant interaction between instar and colony size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
-`r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`). When performing ad-hoc tests on the instars individually we find that only adult 
+There was a significant interaction between instar and colony size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
+`r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`), with condition appearing to decrease faster with nest size as the instars 
+increase in age (figure???).
+
+However, when performing ad-hoc tests on the instars individually we find that only adult 
 condition decreases with colony size (lmer; $\chi$^2^~`r AdultResults[[1]]`,`r AdultResults[[2]]`~ =
 `r AdultResults[[3]]`, p = `r AdultResults[[4]]` `r AdultResults[[5]]`).
 
 
 ```{r ConditionGraph, fig.height=7, fig.width=13}
 
-FullModel <- lmer(condResiduals ~  logCtFm + Instar + logCtFm:Instar  + 
-				(1|NestID)  , data = spidersMul, REML = FALSE)
-
-
-
 InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", FullModel, "y")
+
 
 ```
   
@@ -224,8 +201,115 @@ interaction with instar(p = `r InstarResults[[4]]` `r InstarResults[[5]]`).
 
 
 
+```{r InstarConditionGraph, fig.height=7, fig.width=13}
+
+a_predictDF <- expand.grid(logCtFm = seq(min(spidersMul$logCtFm), max(spidersMul$logCtFm), by = 0.1), 
+		InstarNumber = c(4, 5, 6, 7), NestID = c("44.4EX12"))
+
+
+a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
+
+ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(InstarNumber))) + geom_line(size = 1) + mytheme +
+		ylab("Predicted Condition") + xlab("Log Count Females") + scale_colour_discrete(name = "Instar Age")
+
+```
+  
+(@)  Figure : The results of the linear model showing individual condition of each instar age against nest size. However only adults had a significant effect.
+
+
+
 Within Colony Variance Vs. colony size
 --------------------
+
+### Leg Length Variance
+
+
+```{r LegLenVarNS, results='asis',  echo = FALSE}
+##### Leg length vs colony size
+
+minN <- 2
+legVarUpdate <- subset(legVar, N > minN)
+totSpis <- sum(legVarUpdate$N)
+legVarUpdate$lmrWgts <- legVarUpdate$N/ totSpis
+
+
+
+FullModel <- lmer(relativeVar ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2) + (1|NestID), weights = lmrWgts,
+    	data = legVarUpdate, REML = FALSE)
+
+
+NSModel <- update(FullModel, . ~ . - (logCtFm + logCtFm:InstarNumber))
+
+NSResults <- outputResultsWord(FullModel, NSModel)	
+```
+Rows removed with `r minN` or fewer data points.
+
+The model with the lowest AIC value was logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + instar age squared.
+
+Nest size (and nest size x instar age interaction) was significant (lmer; $\chi$^2^~`r NSResults[[1]]`
+,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
+`r NSResults[[5]]`)
+
+
+```{r LegLenVarInstarNumber, results='asis',  echo = FALSE}
+##### Leg length vs colony size
+
+InstModel <- update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2)))
+
+InstResults <- outputResultsWord(FullModel, InstModel)	
+```
+
+Tested together all the instar age terms, including the square of the instar age, were significant(lmer; $\chi$^2^~`r Results[[1]]`
+,`r InstResults[[2]]`~= `r InstResults[[3]]`, p = `r InstResults[[4]]`
+`r InstResults[[5]]`).
+
+```{r LegLenVarInstarSex, results='asis',  echo = FALSE}
+##### Leg length vs colony size
+
+InstSexModel <- update(FullModel, . ~ . - (InstarNumber:InstarSex))
+
+InstSexResults <- outputResultsWord(FullModel, InstSexModel)	
+```
+
+However, even though it was included in the lowest AIC model the instar age x instar sex interaction was not significant (lmer; $\chi$^2^~`r InstSexResults [[1]]`
+,`r InstSexResults [[2]]`~= `r InstSexResults [[3]]`, p = `r InstSexResults [[4]]`
+`r InstSexResults [[5]]`). Doing adhoc tests on each instar age, none were significant.
+
+```{r legVarUpdateGraph, fig.height=7, fig.width=13}
+
+
+InstarGridGraph(legVarUpdate, "relativeVar", "Variance in leg length", "n", "", FullModel, "y")
+
+```
+  
+(@)  Figure : Variance in leg length against colony size
+
+
+
+```{r LegVarByInstarGraph, fig.height=6, fig.width=7, echo = FALSE}
+
+ggplot(data = legVarUpdate, aes(x = InstarNumber, y = relativeVar, group = Instar, fill = InstarSex)) +
+	labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_boxplot() + mytheme
+
+
+#InstarModel
+InstarOnlyModel <- lmer(relativeVar ~InstarNumber + I(InstarNumber^2) + (1|NestID), weights = lmrWgts,
+    	data = legVarUpdate, REML = FALSE)
+#anova(InstarOnlyModel)
+
+a_predictDF <- expand.grid(InstarNumber = c(4, 5, 6, 7),  NestID = c("44.4EX12"))
+
+
+a_predictDF$lmrPrd <- predict(InstarOnlyModel, a_predictDF)
+
+
+ggplot(data = a_predictDF, aes(x = InstarNumber, y = lmrPrd)) +
+		labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_point() + mytheme
+
+```
+   
+(@) Figure :Leg length variance within colonies by instar is a humped function
+
 
 ### Condition Variance
 
@@ -272,41 +356,7 @@ this is a real results and/or intereseting to the story
 
 
 
-### Leg Length Variance
 
-
-```{r LegLenVar, results='asis',  echo = FALSE}
-##### Leg length vs colony size
-
-
-FullModel <- lmer(relativeVar ~  logCtFm + Instar +  (1|NestID)  , data = legVar, REML = FALSE)
-Model <- lmer(relativeVar ~  logCtFm + (1|NestID)  , data = legVar, REML = FALSE)
-
-IntResults <- outputResultsWord(FullModel, Model)
-
-Model <- lmer(relativeVar ~  Instar + (1|NestID)  , data = legVar, REML = FALSE)
-
-NSResults <- outputResultsWord(FullModel, Model)
-	
-```
-
-
-The model with the lowest AIC value only included colony size and instar as explantory factors.
-Instar was not significant (lmer; $\chi$^2^~`r Results[[1]]`
-,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
-`r IntResults[[5]]`), neither was colony size (lmer; $\chi$^2^~`r NSResults[[1]]`
-,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
-`r NSResults[[5]]`).
-
-
-```{r instarLegVarGraph, fig.height=4, fig.width=7, echo = FALSE}
-ggplot(data = legVar, aes(x = Instar, y = relativeVar, fill = InstarSex)) +
-	labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_boxplot() + mytheme
-
-```
-   
-(@) Figure :Leg length variance within colonies by instar. I am not sure yet whether
-this is a real results and/or intereseting to the story
 
 Biomass per capita vs colony size
 ====================
