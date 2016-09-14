@@ -288,8 +288,8 @@ InstarGridGraph(legVarUpdate, "relativeVar", "Variance in leg length", "n", "", 
 
 ```{r LegVarByInstarGraph, fig.height=6, fig.width=7, echo = FALSE}
 
-ggplot(data = legVarUpdate, aes(x = InstarNumber, y = relativeVar, group = Instar, fill = InstarSex)) +
-	labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_boxplot() + mytheme
+#plot <- ggplot(data = legVarUpdate, aes(x = InstarNumber, y = relativeVar, group = Instar, fill = InstarSex)) +
+#	labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_boxplot() + mytheme
 
 
 #InstarModel
@@ -297,18 +297,27 @@ InstarOnlyModel <- lmer(relativeVar ~InstarNumber + I(InstarNumber^2) + (1|NestI
     	data = legVarUpdate, REML = FALSE)
 #anova(InstarOnlyModel)
 
-a_predictDF <- expand.grid(InstarNumber = c(4, 5, 6, 7),  NestID = c("44.4EX12"))
+a_predictDF <- expand.grid(InstarNumber = seq(4, 7, by = 0.1),  NestID = c("44.4EX12"))
 
 
 a_predictDF$lmrPrd <- predict(InstarOnlyModel, a_predictDF)
 
 
-ggplot(data = a_predictDF, aes(x = InstarNumber, y = lmrPrd)) +
-		labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_point() + mytheme
+
+
+plot <- ggplot(data = a_predictDF, aes(x = InstarNumber, y = lmrPrd)) + 
+		labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_line() + mytheme
+
+plot <- plot + geom_boxplot(data = legVarUpdate, aes(x = InstarNumber, y = relativeVar, group = Instar, fill = InstarSex)) + 
+		scale_x_continuous(breaks=c(3,4,5,6,7, 8))
+
+plot + geom_line(data = a_predictDF, aes(y= lmrPrd), size = 0.5)
+
 
 ```
    
-(@) Figure :Leg length variance within colonies by instar is a humped function
+(@) Figure :Leg length variance within colonies by instar. Overlaid is the
+linear model.
 
 
 ### Condition Variance

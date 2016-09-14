@@ -88,7 +88,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	
 	### Making table to plot the results of the lmer model
 	
-	predictDF <- expand.grid(logCtFm = seq(min(dataset$logCtFm), max(dataset$logCtFm), by = 0.1), 
+	predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
 			InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
 	
 	predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
