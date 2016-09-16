@@ -286,7 +286,7 @@ InstarGridGraph(legVarUpdate, "relativeVar", "Variance in leg length", "n", "", 
 
 
 
-```{r LegVarByInstarGraph, fig.height=6, fig.width=7, echo = FALSE}
+```{r LegVarByInstarGraph, fig.height=4, fig.width=5, echo = FALSE}
 
 #plot <- ggplot(data = legVarUpdate, aes(x = InstarNumber, y = relativeVar, group = Instar, fill = InstarSex)) +
 #	labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_boxplot() + mytheme
@@ -301,10 +301,6 @@ a_predictDF <- expand.grid(InstarNumber = seq(4, 7, by = 0.1),  NestID = c("44.4
 
 
 a_predictDF$lmrPrd <- predict(InstarOnlyModel, a_predictDF)
-
-
-
-
 plot <- ggplot(data = a_predictDF, aes(x = InstarNumber, y = lmrPrd)) + 
 		labs(x = "Instar") + labs(y = "Variance in Leg Length") + geom_line() + mytheme
 
@@ -322,47 +318,94 @@ linear model.
 
 ### Condition Variance
 
-```{r CondVar, results='asis',  echo = FALSE}
+```{r CondVarNS, results='asis',  echo = FALSE}
 
-FullModel <- lmer(relativeVar ~  logCtFm + Instar +  (1|NestID)  , data = condVar, REML = FALSE)
-Model <- lmer(relativeVar ~  logCtFm + (1|NestID)  , data = condVar, REML = FALSE)
+minN <- 2
+condVarUpdate <- subset(condVar, N > minN)
+totSpis <- sum(condVarUpdate$N)
+condVarUpdate$lmrWgts <- condVarUpdate$N/ totSpis
 
-IntResults <- outputResultsWord(FullModel, Model)
 
-Model <- lmer(relativeVar ~  Instar + (1|NestID)  , data = condVar, REML = FALSE)
+FullModel <- lmer(relativeVar ~ logCtFm + InstarNumber + InstarNumber:InstarSex + I(InstarNumber^2) + 
+				I(InstarNumber^2):InstarSex + (1|NestID), weights = lmrWgts, data = condVarUpdate, REML = FALSE)
 
-NSResults <- outputResultsWord(FullModel, Model)
+RedModNS <- update(FullModel, .~. - logCtFm)
+
+
+NSResults <- outputResultsWord(FullModel, RedModNS)
 	
 ```
+The model with the lowest AIC included InstarAge, InstarAge, InstarSex, InstarAge squared and instar age squared x instar sex.
 
-The model with the lowest AIC value only included colony size and instar as explanatory factors.
-Instar was significant (lmer; $\chi$^2^~`r Results[[1]]`
-,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
-`r IntResults[[5]]`), however colony size was not (lmer; $\chi$^2^~`r NSResults[[1]]`
+
+Colony size was not significant (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`).
+
+
+```{r CondVarInstar, results='asis',  echo = FALSE}
+
+
+
+RedModInt <- update(FullModel, .~. - (InstarNumber + I(InstarNumber^2) + InstarNumber:InstarSex + InstarSex:I(InstarNumber^2)))
+
+IntResults <- outputResultsWord(FullModel, RedModInt)
+	
+```
+Instar age was significant (lmer; $\chi$^2^~`r Results[[1]]`
+,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
+`r IntResults[[5]]`).
+
+
+```{r CondVarInstarSexInteraction, results='asis',  echo = FALSE}
+
+
+
+RedModIntSex <- update(FullModel, .~. -  (InstarNumber:InstarSex + InstarSex:I(InstarNumber^2)))
+#formula(RedModIntSex)
+
+IntSexResults <- outputResultsWord(FullModel, RedModIntSex)
+	
+```
+The instar age x sex interaction was also significant (lmer; $\chi$^2^~`r Results[[1]]`
+,`r IntSexResults[[2]]`~= `r IntSexResults[[3]]`, p = `r IntSexResults[[4]]`
+`r IntSexResults[[5]]`), 
 
 
 ```{r ConditionVarGraph, fig.height=7, fig.width=13}
 
 
-InstarGridGraph(condVar, "relativeVar", "Variance in Condition", "n", "", FullModel, "y")
+InstarGridGraph(condVarUpdate, "relativeVar", "Variance in Condition", "n", "", FullModel, "y")
 
 ```
   
 (@)  Figure : Variance in condition against colony size
 
 
-```{r instarCondVarGraph, fig.height=4, fig.width=7, echo = FALSE}
-ggplot(data = condVar, aes(x = Instar, y = relativeVar, fill = InstarSex)) +
-	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
+```{r instarCondVarGraph, fig.height=4, fig.width=5, echo = FALSE}
 
+		
+InstarOnlyModel <- lmer(relativeVar ~InstarNumber + I(InstarNumber^2) + (1|NestID), weights = lmrWgts, data = condVarUpdate, REML = FALSE)
+
+		
+a_predictDF <- expand.grid(InstarNumber = seq(4, 7, by = 0.1),  NestID = c("44.4EX12"))
+		
+		
+a_predictDF$lmrPrd <- predict(InstarOnlyModel, a_predictDF)
+		
+		
+		
+plot <- ggplot(data = a_predictDF, aes(x = InstarNumber, y = lmrPrd)) + 
+		labs(x = "Instar") + labs(y = "Variance in Condition") + geom_line() + mytheme
+		
+plot <- plot + geom_boxplot(data = condVarUpdate, aes(x = InstarNumber, y = relativeVar, group = Instar, fill = InstarSex)) + 
+		scale_x_continuous(breaks=c(3,4,5,6,7, 8))
+plot + geom_line(data = a_predictDF, aes(y= lmrPrd), size = 0.5)
+		
 ```
-   
-(@) Figure :Condition variance within colonies by instar. I am not sure yet whether
-this is a real results and/or intereseting to the story
 
-
+(@) Figure :Condition Length variance within colonies by instar. Overlaid is the
+linear model.
 
 
 
@@ -375,13 +418,15 @@ Biomass per capita vs colony size
 
 
 FullModel <- lmer(BiomsPerAdFm ~ log10AdFm + (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
-RedModel <- lmer(BiomsPerAdFm ~ (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
+RedModel <- update(FullModel, ~. - log10AdFm)
+#formula(RedModel)
 
 Results <- outputResultsWord(FullModel, RedModel)
 	
 ```
-Again the model with the lowest AIC included colony size, instar and instar x colony size interaction.
-Condition decreases as colony size increases (lmer; $\chi$^2^~`r Results[[1]]`
+Date and colony ID were used as random factors in the model.
+
+Within the range of nests measured, biomass per capita increases as nest size increased (lmer; $\chi$^2^~`r Results[[1]]`
 ,`r Results[[2]]`~= `r Results[[3]]`, p = `r Results[[4]]`
 `r Results[[5]]`).
 
@@ -396,13 +441,14 @@ plot
 
 ```
   
-(@)  Figure : Variance in condition against colony size
+(@)  Figure : Prey biomass per capita was significant p = `r Results[[4]]`
+`r Results[[5]]`). Model overlaid.
 
 
 
 
 Original Colony Vs Propagule
---------------------
+============
 
 ```{r LegSing, results='asis',  echo = FALSE}
 ##### Leg length vs colony size

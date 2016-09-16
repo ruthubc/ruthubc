@@ -23,7 +23,7 @@ dataset$lmrWgts <- dataset$N/ totSpis
 ```
 
 AIC Values of all possible models with instar included and sample size as weight
-------------------
+=====================
 Rows removed with `r minN` or fewer data points 
 
 ```{r kable, results='asis',  echo = FALSE}
