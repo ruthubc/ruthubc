@@ -143,7 +143,7 @@ p1 <- ggplot(dis_ply, aes(x = Comp_meas, y = PopAge.Mean, colour = as.factor(ad_
 ### Not sure whether better to graph all generations??? Prob not. 
 # Average colony age at death for all colonies
 
-p2<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
+p2<- ggplot(dis_ply, aes(x = Comp_meas, y = (survival_all.mean), colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
 		myFacet  +  ggtitle("Average colony survival") + geom_line() + mytheme + ylim(0, 500)+ ylab("Survival") + scale_colour_discrete(legendLabel) + xlab(xlabel)
 		#geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
 		 #+ scale_colour_manual(values=c("blue", "red"))
@@ -151,6 +151,11 @@ p2<- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.facto
 p2a <- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
 		myFacet  +  ggtitle("Average colony Survival compressed y axis") + geom_line() + mytheme + ylim(0, 75) + ylab("Survival") + 
 		scale_colour_discrete(legendLabel) + xlab(xlabel)
+
+p2b<- ggplot(dis_ply, aes(x = Comp_meas, y = log10(survival_all.mean), colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet  +  ggtitle("Log Average colony survival") + geom_line() + mytheme + ylab("Survival") + scale_colour_discrete(legendLabel) + xlab(xlabel)
+#geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
+#+ scale_colour_manual(values=c("blue", "red"))
 
 
 # Colony size at dispersal
