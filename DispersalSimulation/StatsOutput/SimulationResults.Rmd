@@ -63,7 +63,7 @@ Average population survival
 
 ```{r PopulationSurvivalGraph, warning = FALSE}
 
-p2 + ggtitle("")
+p2b + ggtitle("")
 
 ```
 *Figure 4: Average population survival. All genearations included*
