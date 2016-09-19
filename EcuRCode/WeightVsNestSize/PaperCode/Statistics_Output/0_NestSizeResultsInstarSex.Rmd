@@ -9,6 +9,8 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 	
 ```
+note:
+All models had to include nest size and instar number.
 
 Leg Vs. Colony Size
 --------------------
@@ -21,14 +23,18 @@ FullModel <- lmer(logLeg ~ logCtFm + InstarNumber + logCtFm:InstarNumber + logCt
 
 NSModel <- update(FullModel, .~. - logCtFm -logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex)
 
+
 NSResults <- outputResultsWord(FullModel, NSModel)
+
 	
 ```
 
-The model with the lowest AIC was (`r as.character(FullModel@call[2])`). Using this as the full model we found that
-leg length increases as colony size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
-,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
-`r NSResults[[5]]`).
+The model with the lowest AIC included nest size x instar age and the
+three-way interaction nest size x instar age x instar sex.   Using this as the
+full model and all the terms that include nest size removed from the reduced
+model, we found that leg length increases as colony size increases (lmer;
+$\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p =
+`r NSResults[[4]]` `r NSResults[[5]]`).
 
 
 ```{r LegInstarNumber, results='asis',  echo = FALSE}

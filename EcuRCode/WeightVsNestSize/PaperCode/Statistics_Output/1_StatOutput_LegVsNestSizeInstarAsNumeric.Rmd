@@ -77,7 +77,7 @@ Graph with lowest AIC model superimposed
 
 #predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
 
-a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
+#a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
 
 #ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = InstarSex)) + geom_point()
 
