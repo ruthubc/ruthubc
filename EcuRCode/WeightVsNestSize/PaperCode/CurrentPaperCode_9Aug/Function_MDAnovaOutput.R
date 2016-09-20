@@ -23,8 +23,8 @@ for (i in seq(1:numTests)) {
 
 	RedLM <- RedModels[[i]][[2]]
 	
-	RedModFormula <- sub("~", "=", as.character(RedLM@call[2]))
-	RedModFormula <- gsub("[[:punct:]]", " ", RedModFormula)
+	RedModFormula <- docxFmula(RedLM)
+
 	
 
 	

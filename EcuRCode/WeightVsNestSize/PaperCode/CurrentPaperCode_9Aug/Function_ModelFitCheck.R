@@ -6,7 +6,8 @@
 
 model_Check <- function(model) {
 	
-	print(as.character(model@call[2]))
+
+	cat(docxFmula(model))
 	
 	qqnorm(resid(model), main = "")
 	plot(fitted(model), resid(model), xlab = "Fitted", ylab = "Residuals")

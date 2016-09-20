@@ -5,14 +5,14 @@ author: "Ruth Sharpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
-```{r include = FALSE}
+```{r docSettings, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 	
 ```
 note:
 All models had to include nest size and instar number.
 
-Leg Vs. Colony Size
+Leg Vs. Nest Size
 --------------------
 
 ```{r LegNS, results='asis',  echo = FALSE}
@@ -28,13 +28,12 @@ NSResults <- outputResultsWord(FullModel, NSModel)
 
 	
 ```
-
-The model with the lowest AIC included nest size x instar age and the
-three-way interaction nest size x instar age x instar sex.   Using this as the
-full model and all the terms that include nest size removed from the reduced
-model, we found that leg length increases as colony size increases (lmer;
-$\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p =
-`r NSResults[[4]]` `r NSResults[[5]]`).
+The model with the lowest AIC had nest size x instar age and the
+three-way interaction nest size x instar age x instar sex as fixed effects.
+Using this as the full model and all the terms that include nest size removed
+as the reduced model, we found that leg length increases as colony size
+increases (lmer; $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~=
+`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`, figure 1).
 
 
 ```{r LegInstarNumber, results='asis',  echo = FALSE}
@@ -60,24 +59,15 @@ InstarSexResults <- outputResultsWord(FullModel, InstarModel)
 	
 ```
 
-In addition, there was a significant interaction with instar sex, logCtFm x InstarNumber x InstarSex,  (lmer; $\chi$^2^~`r InstarSexResults[[1]]`
-,`r InstarSexResults[[2]]`~= `r InstarSexResults[[3]]`, p = `r InstarSexResults[[4]]`
-`r InstarSexResults[[5]]`).
+In addition, the interaction nest size x instar age x instar sex was
+significant, (lmer; $\chi$^2^~`r InstarSexResults[[1]]`
+,`r InstarSexResults[[2]]`~= `r InstarSexResults[[3]]`, p =
+`r InstarSexResults[[4]]` `r InstarSexResults[[5]]`), with male leg size
+changing faster with nest size compared to females.
 
-
-
-```{r LegNSInstarNumInt, results='asis',  echo = FALSE}
-##### Leg length vs instar
-NSInsIntModel <- update(FullModel, .~. - logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex )
-
-
-Results <- outputResultsWord(FullModel, NSInsIntModel)
-	
-```
-However the instar age x nest size interaction was significant (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
-`r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`). 
-
-As the effect of colony size on spider size was absent in the youngest instars (Table 1); it was first detectable in subadult males and females.
+In addition the effect of colony size on spider size was not significant in the
+youngest instars (Table 1); it was first detectable in subadult males and
+females.
 
 
 
@@ -186,7 +176,7 @@ AdultResults <- outputResultsWord(FullModelAds, RedModel)
 ```
 There was a significant interaction between instar and colony size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
 `r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`), with condition appearing to decrease faster with nest size as the instars 
-increase in age (figure???).
+increase in age (figure 3).
 
 However, when performing ad-hoc tests on the instars individually we find that only adult 
 condition decreases with colony size (lmer; $\chi$^2^~`r AdultResults[[1]]`,`r AdultResults[[2]]`~ =
@@ -250,11 +240,12 @@ NSResults <- outputResultsWord(FullModel, NSModel)
 ```
 Rows removed with `r minN` or fewer data points.
 
-The model with the lowest AIC value was logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + instar age squared.
+The model with the lowest AIC value had instar age  x instar sex, 
+nest size x instar age and the square of instar age as fixed effects
 
-Nest size (and nest size x instar age interaction) was significant (lmer; $\chi$^2^~`r NSResults[[1]]`
-,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
-`r NSResults[[5]]`)
+Nest size combined with the nest size x instar age interaction was significant
+(lmer; $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p
+= `r NSResults[[4]]` `r NSResults[[5]]`)
 
 
 ```{r LegLenVarInstarNumber, results='asis',  echo = FALSE}
@@ -265,9 +256,11 @@ InstModel <- update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex +
 InstResults <- outputResultsWord(FullModel, InstModel)	
 ```
 
-Tested together all the instar age terms, including the square of the instar age, were significant(lmer; $\chi$^2^~`r Results[[1]]`
-,`r InstResults[[2]]`~= `r InstResults[[3]]`, p = `r InstResults[[4]]`
-`r InstResults[[5]]`).
+Tested together all the instar age terms, including the square of the instar
+age, were significant (lmer; $\chi$^2^~`r Results[[1]]` ,`r InstResults[[2]]`~=
+`r InstResults[[3]]`, p = `r InstResults[[4]]` `r InstResults[[5]]`, figure 5)
+with the variance in leg length within nests being a curved function, peaking at
+subadult instars.
 
 ```{r LegLenVarInstarSex, results='asis',  echo = FALSE}
 ##### Leg length vs colony size
@@ -277,9 +270,12 @@ InstSexModel <- update(FullModel, . ~ . - (InstarNumber:InstarSex))
 InstSexResults <- outputResultsWord(FullModel, InstSexModel)	
 ```
 
-However, even though it was included in the lowest AIC model the instar age x instar sex interaction was not significant (lmer; $\chi$^2^~`r InstSexResults [[1]]`
-,`r InstSexResults [[2]]`~= `r InstSexResults [[3]]`, p = `r InstSexResults [[4]]`
-`r InstSexResults [[5]]`). Doing adhoc tests on each instar age, none were significant.
+However, even though it was included in the lowest AIC model, the instar age x
+instar sex interaction was not significant (lmer;
+$\chi$^2^~`r InstSexResults [[1]]` ,`r InstSexResults [[2]]`~=
+`r InstSexResults [[3]]`, p = `r InstSexResults [[4]]`
+`r InstSexResults [[5]]`). Doing adhoc tests on each instar age individually
+against nest size we found that none were significant (figure 4).
 
 ```{r legVarUpdateGraph, fig.height=7, fig.width=13}
 
@@ -341,13 +337,12 @@ RedModNS <- update(FullModel, .~. - logCtFm)
 NSResults <- outputResultsWord(FullModel, RedModNS)
 	
 ```
-The model with the lowest AIC included InstarAge, InstarAge, InstarSex, InstarAge squared and instar age squared x instar sex.
+The model with the lowest AIC included instar age, instar sex, instar age squared and the interaction instar age squared x instar sex.
 
 
 Colony size was not significant (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
-`r NSResults[[5]]`).
-
+`r NSResults[[5]]`),
 
 ```{r CondVarInstar, results='asis',  echo = FALSE}
 
@@ -358,13 +353,12 @@ RedModInt <- update(FullModel, .~. - (InstarNumber + I(InstarNumber^2) + InstarN
 IntResults <- outputResultsWord(FullModel, RedModInt)
 	
 ```
-Instar age was significant (lmer; $\chi$^2^~`r Results[[1]]`
+but instar age was significant (lmer; $\chi$^2^~`r Results[[1]]`
 ,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
 `r IntResults[[5]]`).
 
 
 ```{r CondVarInstarSexInteraction, results='asis',  echo = FALSE}
-
 
 
 RedModIntSex <- update(FullModel, .~. -  (InstarNumber:InstarSex + InstarSex:I(InstarNumber^2)))
@@ -373,9 +367,9 @@ RedModIntSex <- update(FullModel, .~. -  (InstarNumber:InstarSex + InstarSex:I(I
 IntSexResults <- outputResultsWord(FullModel, RedModIntSex)
 	
 ```
-The instar age x sex interaction was also significant (lmer; $\chi$^2^~`r Results[[1]]`
+In addition, the instar age x sex interaction was also significant (lmer; $\chi$^2^~`r Results[[1]]`
 ,`r IntSexResults[[2]]`~= `r IntSexResults[[3]]`, p = `r IntSexResults[[4]]`
-`r IntSexResults[[5]]`), 
+`r IntSexResults[[5]]`), with the variance in condition within nests being larger for males compared to females (figure 7)
 
 
 ```{r ConditionVarGraph, fig.height=7, fig.width=13}
@@ -484,9 +478,9 @@ NSResults <- outputResultsWord(FullModel, NSModel)
 	
 ```
 
-Individuals in propagules have better condition compared to those in the
-original nests (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
-`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`).
+as was condition (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
+`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`), with those in
+propagules having a greater condition compared to those in the source nest.
 
 ```{r SingGraphs, fig.height=6, fig.width=12}
 

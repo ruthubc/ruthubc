@@ -156,6 +156,10 @@ kable(results$Juv4, caption = paste("Juv4", sig$Juv4))
 kable(results$AdMale, caption = paste("AdMale", sig$AdMale))
 
 kable(results$SubMale, caption = paste("SubMale", sig$SubMale))
+
+ggplot(subset(dataset, InstarNumber == 6 | InstarNumber == 5), aes(x = logCtFm, y = logLeg, colour = InstarSex )) + 
+		geom_point() + geom_smooth(method = "lm", se = FALSE) + facet_wrap(~InstarNumber, scales = "free") +
+		mytheme
 	
 ```
 
