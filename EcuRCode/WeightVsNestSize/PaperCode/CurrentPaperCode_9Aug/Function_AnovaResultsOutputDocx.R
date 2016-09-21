@@ -32,6 +32,7 @@ outputResultsWord <- function(FullModel, RedModel) {
 
 	#print(paste("FullModel:", docxFmula(FullModel)))
 	#print(paste("RedModel:", docxFmula(RedModel)))
+	
 
 	
 	textOutput <- paste("chisqr", lowDF, highDF, "=" , ChiSqr, ", p =",
@@ -52,6 +53,21 @@ docxFmula <- function(model) {
 	txForm <- gsub("IInstarNumber2", "sqr(InstarAge)", txForm)
 	txForm <- gsub("OrigNest", "(1|OrigNst)", txForm)
 	txForm <- gsub("Nest", "(1|Nest)", txForm)
+	txForm <- gsub("InstarNumber", "InstarAge", txForm)
+	txForm <- paste(txForm[2], txForm[3], sep = (" = "))
+	return(txForm)
+	
+	
+}
+
+docxFmulaNoRan <- function(model) {
+	
+	txForm <- formula(model)
+	txForm <- gsub("[]^ _()`|]", "",  txForm)
+	txForm <- gsub("1", "",  txForm)
+	txForm <- gsub("[+]", " + ",  txForm)
+	txForm <- sub("NestID", "Nest", txForm)
+	txForm <- gsub("IInstarNumber2", "sqr(InstarAge)", txForm)
 	txForm <- gsub("InstarNumber", "InstarAge", txForm)
 	txForm <- paste(txForm[2], txForm[3], sep = (" = "))
 	return(txForm)

@@ -7,6 +7,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 
 ```{r docSettings, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+modelList <- c()
 	
 ```
 note:
@@ -26,6 +27,8 @@ NSModel <- update(FullModel, .~. - logCtFm -logCtFm:InstarNumber - logCtFm:Insta
 
 NSResults <- outputResultsWord(FullModel, NSModel)
 
+modelList <- c(modelList, docxFmula(FullModel))
+
 	
 ```
 The model with the lowest AIC had nest size x instar age and the
@@ -42,6 +45,7 @@ increases (lmer; $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~=
 InstarModel <- update(FullModel, .~. - InstarNumber -logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex)
 
 InstarResults <- outputResultsWord(FullModel, InstarModel)
+
 	
 ```
 
@@ -152,8 +156,9 @@ Condition Vs. Colony Size
 FullModel <- lmer(condResiduals ~  logCtFm + logCtFm:InstarNumber  +  (1|NestID), data = spidersMul, REML = FALSE)
 NSModel <- update(FullModel, ~ . - logCtFm - logCtFm:InstarNumber)
 
-
 NSResults <- outputResultsWord(FullModel, NSModel)
+
+modelList <- c(modelList, docxFmula(FullModel))
 	
 ```
 The model with the lowest AIC included colony size and instar x colony size interaction.
@@ -233,6 +238,7 @@ legVarUpdate$lmrWgts <- legVarUpdate$N/ totSpis
 FullModel <- lmer(relativeVar ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2) + (1|NestID), weights = lmrWgts,
     	data = legVarUpdate, REML = FALSE)
 
+modelList <- c(modelList, docxFmula(FullModel))
 
 NSModel <- update(FullModel, . ~ . - (logCtFm + logCtFm:InstarNumber))
 
@@ -331,6 +337,8 @@ condVarUpdate$lmrWgts <- condVarUpdate$N/ totSpis
 FullModel <- lmer(relativeVar ~ logCtFm + InstarNumber + InstarNumber:InstarSex + I(InstarNumber^2) + 
 				I(InstarNumber^2):InstarSex + (1|NestID), weights = lmrWgts, data = condVarUpdate, REML = FALSE)
 
+modelList <- c(modelList, docxFmula(FullModel))
+
 RedModNS <- update(FullModel, .~. - logCtFm)
 
 
@@ -422,6 +430,8 @@ RedModel <- update(FullModel, ~. - log10AdFm)
 #formula(RedModel)
 
 Results <- outputResultsWord(FullModel, RedModel)
+
+modelList <- c(modelList, docxFmula(FullModel))
 	
 ```
 Date and colony ID were used as random factors in the model.
@@ -458,6 +468,8 @@ FullModel <- lmer(logLeg ~  type  +  (1|NestID) + (1|OrigNest) , data = nestsToT
 NSModel <- lmer(logLeg ~   (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
 
 NSResults <- outputResultsWord(FullModel, NSModel)
+
+modelList <- c(modelList, docxFmula(FullModel))
 	
 ```
   
@@ -475,6 +487,8 @@ FullModel <- lmer(condResiduals ~  type  +  (1|NestID) + (1|OrigNest) , data = n
 NSModel <- lmer(condResiduals ~  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
 
 NSResults <- outputResultsWord(FullModel, NSModel)
+
+modelList <- c(modelList, docxFmula(FullModel))
 	
 ```
 
@@ -520,3 +534,15 @@ nOriginalNests <- nlevels(props$nestID)
   
 (@) Figure:  The survival function of `r nProps` propagules from `r nOriginalNests`
 source nests.
+
+List of full models used
+-----------------------
+
+
+```{r ModelTableForLA, results = 'asis'}
+
+modelDF <- as.data.frame(modelList)
+kable(modelDF, format = 'markdown')
+
+
+```

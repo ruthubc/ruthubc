@@ -4,15 +4,10 @@
 title: "Biomass by Nest Size"
 author: "Ruth Sharpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output:
-  pdf_document:
-    toc: true
 geometry: margin=1.5cm
-header-includes:
-    - \usepackage{caption}
+
 ---
 
-\captionsetup[table]{labelformat=empty}
 
 ```{r dataImport,  include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
@@ -25,21 +20,45 @@ knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 Biomass per capita calculated as insect biomass over total number of adult females
 ====================
 
-```{r stats}
+Checking AICs of two models
+-------------------
+
+```{r AICs}
 
 Model <- lmer(BiomsPerAdFm ~ log10AdFm + (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
-anova(Model)
+
+
+cat("Biomass per adult female =  nest size + (1|ColonyID) + (1|Date)")
+cat("AIC:", AIC(Model))
+
+cat("__________")
+# instar squared model
 ModelSqr <- lmer(BiomsPerAdFm ~ log10AdFm + I(log10AdFm^2) +  (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
-anova(ModelSqr)
-
-cat("Model without square value has the lowest AIC")
-
-RedModel <- lmer(BiomsPerAdFm ~ (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
-anova(RedModel, Model)
+cat("Biomass per adult female =  nest size + nest size squared +  (1|ColonyID) + (1|Date)")
+cat("AIC:", AIC(ModelSqr))
 
 ```
 
-\pagebreak
+Testing full against reduced model
+-------
+
+Model without square value has the lowest AIC
+
+```{r stats,  results='asis'}
+
+RedModel <- lmer(BiomsPerAdFm ~ (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
+
+anv1 <- anova(Model, RedModel)
+
+myTitle <- anvTitle(anv1, "Lowest AIC model Against Reduced Model")
+
+myNote <- "Full: log10AdFm + (1 | ColonyID) + (1 | Date) vs. Reduced: (1 | ColonyID) + (1 | Date)"
+
+stargazer(anv1, summary = FALSE, title = myTitle, header = FALSE, notes = myNote)
+
+```
+
+
 
 Checking full model fit
 --------------------
@@ -47,7 +66,7 @@ Checking full model fit
 
 ```{r ModelFit, fig.height=3, fig.width=3}
 
-model_Check(FullModel)
+model_Check(Model)
 
 ```
 

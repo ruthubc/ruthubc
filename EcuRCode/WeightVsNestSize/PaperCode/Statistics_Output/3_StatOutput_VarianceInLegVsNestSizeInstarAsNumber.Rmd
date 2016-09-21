@@ -89,6 +89,7 @@ ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = relativeVar, fill = 
 	labs(x = "Instar") + labs(y = "Variance in leg") + geom_boxplot() + mytheme
 
 ```
+\pagebreak
 
 Statistics using model with the almost lowest AIC as full model
 ====================
@@ -98,15 +99,18 @@ Statistics using model with the almost lowest AIC as full model
 
 
 TestNS <- c("Testing NestSize",  update(FullModel, .~. -logCtFm - logCtFm:InstarNumber))
+InstModel <- c("Testing Instar age", update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2))))
 
 
-RedModels <- list(TestNS)
+RedModels <- list(TestNS, InstModel)
 
 MRAnovaFun(FullModel, RedModels)
 
 #stargazer(anova(FullModel), summary = FALSE, title = "Anova of full model alone", header = FALSE)
 
 ```
+
+
 
 Testing individual instar numbers
 --------------------

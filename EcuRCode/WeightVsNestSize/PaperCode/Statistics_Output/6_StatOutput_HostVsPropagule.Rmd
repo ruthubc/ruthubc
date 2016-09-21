@@ -1,0 +1,80 @@
+
+
+---
+title: "Host Vs Propagule"
+author: "Ruth Sharpe"
+date: "Run on `r format(Sys.time(), '%d %B, %Y')`"
+geometry: margin=1.5cm
+
+---
+
+
+```{r include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", cache.lazy = TRUE)
+	
+```
+
+Stats Tests
+==========
+
+Condition
+--------------
+
+
+```{r CondSing, results='asis',  echo = FALSE}
+##### Leg length vs colony size
+
+
+FullModel <- lmer(condResiduals ~  type  +  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
+RedModel <- lmer(condResiduals ~  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
+
+anv1 <- anova(FullModel, RedModel)
+
+myTitle <- anvTitle(anv1, "Full Against Reduced Model")
+myNotes <- "Full: cond =  NestType + (1|Nest) + (1|OrigNest) vs. Reduced: cond = (1|Nest) + (1|OrigNest)"
+
+stargazer(anv1, summary = FALSE, title = myTitle, header = FALSE, notes = myNotes)
+	
+```
+
+Leg Length
+--------------
+
+
+```{r LegSing, results='asis',  echo = FALSE}
+##### Leg length vs colony size
+
+FullModel <- lmer(logLeg ~  type  +  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
+RedModel <- lmer(logLeg ~   (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
+
+
+anv1 <- anova(FullModel, RedModel)
+
+myTitle <- anvTitle(anv1, "Full Against Reduced Model")
+myNotes <- "Full: Leg =  NestType + (1|Nest) + (1|OrigNest) vs. Reduced: Leg = (1|Nest) + (1|OrigNest)"
+
+stargazer(anv1, summary = FALSE, title = myTitle, header = FALSE, notes = myNotes)
+	
+```
+
+Graph
+========
+```{r SingGraphs, fig.height=6, fig.width=12}
+
+p1 <- ggplot(nestsToTestSigCond, aes(x=type, y=condResiduals)) + geom_boxplot() + 
+		ylab("Individual Condition") + mytheme+ theme(axis.title.x = element_blank()) +
+		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single"))
+
+p2 <- ggplot(nestsToTestSig, aes(x=type, y=logLeg)) + geom_boxplot()  +
+		mytheme +  theme(axis.title.x = element_blank()) +
+		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single"))
+
+
+grid.arrange(p1, p2, ncol = 2)
+
+
+```
+
+
+
+

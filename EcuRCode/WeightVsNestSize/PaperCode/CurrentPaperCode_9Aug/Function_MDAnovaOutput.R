@@ -57,5 +57,30 @@ for (i in seq(1:numTests)) {
 
 }
 
+anvTitle <- function(input_anova, text) {
+	
+	pValue <- round(input_anova[[8L]][2], digits = 3)
+	
+	if (pValue <= 0.001) {
+		stars <- " p < 0.001 SIGNIFICANT *** "
+	}else if (pValue <= 0.01) {
+		stars <- "p < 0.01 SIGNIFICANT ** "
+		
+	}else if (pValue <= 0.05) {
+		stars <- "p < 0.05 SIGNIFICANT * "
+		
+	}else{
+		stars <-"NOT significant"
+	}
+	
+	
+	output <- paste(text , stars)
+	
+	
+	
+	
+	
+}
+
 
 
