@@ -135,8 +135,8 @@ mytheme <- theme_bw(base_size=30)  + theme(plot.title = element_text(vjust=2), p
 dis_ply$PopAge.SE <- ifelse(dis_ply$PopAge.SE == 0, NA, dis_ply$PopAge.SE)  # making all zero se's into NA's
 
 # Population Age
-p1 <- ggplot(dis_ply, aes(x = Comp_meas, y = PopAge.Mean, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet  +  ggtitle("Max Metapopulation Age") + geom_line() + mytheme + ylab("Age") + scale_colour_discrete(legendLabel) + xlab(xlabel)
+p1 <- ggplot(dis_ply, aes(x = Comp_meas, y = log10(PopAge.Mean), colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
+		myFacet  +  ggtitle("Max Metapopulation Age") + geom_line() + mytheme + ylab("Log mean age") + scale_colour_discrete(legendLabel) + xlab(xlabel)
 
 		#geom_errorbar(aes(ymin=PopAge.Mean-PopAge.SE, ymax=PopAge.Mean + PopAge.SE), width = 0.1) + # + scale_colour_manual(values=c("blue", "red"))
  
@@ -153,7 +153,7 @@ p2a <- ggplot(dis_ply, aes(x = Comp_meas, y = survival_all.mean, colour = as.fac
 		scale_colour_discrete(legendLabel) + xlab(xlabel)
 
 p2b<- ggplot(dis_ply, aes(x = Comp_meas, y = log10(survival_all.mean), colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet  +  ggtitle("Log Average colony survival") + geom_line() + mytheme + ylab("Survival") + scale_colour_discrete(legendLabel) + xlab(xlabel)
+		myFacet  +  ggtitle("Log Average colony survival") + geom_line() + mytheme + ylab("Log Survival") + scale_colour_discrete(legendLabel) + xlab(xlabel)
 #geom_errorbar(aes(ymin=survival_all.mean-survival_all.SE, ymax=survival_all.mean + survival_all.SE), width = 0.1) + 
 #+ scale_colour_manual(values=c("blue", "red"))
 
@@ -221,7 +221,7 @@ p12 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerColsDisp, colour = as.facto
 
 
 #Perc cols die without dispersing
-p13 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerDieNoDsp, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
+p13 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerDieNoDsp), colour = as.factor(ad_dsp_fd)) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
 		myFacet +  ggtitle("Average percentage of colonies that die without dispersing of total num cols die") + geom_line() + mytheme + scale_colour_discrete(legendLabel) + 
 		xlab(xlabel) + ylab("Percentage")
 
