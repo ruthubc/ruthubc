@@ -127,7 +127,7 @@ LMERS_fun <- function(instarData) { # function to test individual instars
     }
 
 
-instarLM <- dlply(dataset, .(InstarNumber),        
+instarLM <- dlply(dataset, .(Instar),        
 		function(x) LMERS_fun(x))
 
 
