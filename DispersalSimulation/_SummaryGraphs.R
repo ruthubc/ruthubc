@@ -221,7 +221,7 @@ p12 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerColsDisp, colour = as.facto
 
 
 #Perc cols die without dispersing
-p13 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerDieNoDsp), colour = as.factor(ad_dsp_fd)) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
+p13 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerDieNoDsp, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
 		myFacet +  ggtitle("Average percentage of colonies that die without dispersing of total num cols die") + geom_line() + mytheme + scale_colour_discrete(legendLabel) + 
 		xlab(xlabel) + ylab("Percentage")
 

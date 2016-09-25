@@ -76,11 +76,11 @@ Graph of biomass against nest size
 
 ```{r GraphBiomass, fig.height=4, fig.width=5.5}
 
-plot <- ggplot(data = Biomass, aes(x = log10AdFm, y = BiomsPerAdFm)) + geom_point()
-plot <- plot + xlab("Nest size - number of adult females") + ylab("Prey biomass per adult female") + mytheme
+plot <- ggplot(data = Biomass, aes(x = 10^log10AdFm, y = BiomsPerAdFm)) + geom_point()
+plot <- plot + xlab("Nest size - log 10 number of adult females") + ylab("Prey biomass per adult female") + mytheme
 
 Vis_fit <- (visreg(Model, "log10AdFm", plot = FALSE))$fit						
-plot <- plot +  geom_line(data = Vis_fit, aes(x = log10AdFm, y= visregFit))
+plot <- plot +  geom_line(data = Vis_fit, aes(x = 10^log10AdFm, y= visregFit)) + scale_x_log10(breaks = c(5, 10, 20, 40, 60, 100, 200, 300))
 plot
 
 ```

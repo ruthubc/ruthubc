@@ -10,7 +10,7 @@ output:
 ---
 
 ```{r include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=18, fig.width=22)
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=18, fig.width=25)
 	
 ```
 

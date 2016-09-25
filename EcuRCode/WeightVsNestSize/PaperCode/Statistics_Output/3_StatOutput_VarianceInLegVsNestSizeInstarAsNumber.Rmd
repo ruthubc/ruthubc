@@ -127,7 +127,7 @@ LMERS_fun <- function(instarData) { # function to test individual instars
     }
 
 
-instarLM <- dlply(dataset, .(Instar),        
+instarLM <- dlply(dataset, .(InstarNumber),        
 		function(x) LMERS_fun(x))
 
 
@@ -146,5 +146,39 @@ kable(results$'5', caption = paste("Sub1 and sub males- age 5", sig$'5'))
 
 kable(results$'4', caption = paste("Juv4 - age 4", sig$'4'))
 
+#kable(results$Adult, caption = paste("Adult", sig$Adult))
+
+#kable(results$Sub2, caption = paste("Sub2", sig$Sub2))
+
+#kable(results$Sub1, caption = paste("Sub1", sig$Sub1))
+
+#kable(results$Juv4, caption = paste("Juv4", sig$Juv4))
+
+#kable(results$AdMale, caption = paste("AdMale", sig$AdMale))
+
+
 	
 ```
+
+Instar Age x nest size Interaction Graph
+==================
+ 
+
+```{r, fig.height=7, fig.width=13}
+
+#newMod <- update(FullModel,  . ~ . - logCtFm)
+cat("Model:", as.character(FullModel@call[2]), sep = '\n')
+
+a_predictDF <- expand.grid(logCtFm = seq(min(dataset$logCtFm), max(dataset$logCtFm), by = 0.1), 
+		InstarNumber = c(4, 5, 6, 7), InstarSex = c("F"), NestID = c("44.4EX12"))
+
+
+a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
+
+ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(InstarNumber))) + geom_line(size = 1) + mytheme +
+		ylab("Predicted Variance Females only") + xlab("Log Count Females") + scale_colour_discrete(name = "Instar Age")
+
+
+```
+
+\pagebreak
