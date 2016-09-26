@@ -86,10 +86,12 @@ Statistics using model with the almost lowest AIC as full model
 
 # relativeVar  ~  logCtFm + logCtFm:InstarNumber  + (1|NestID)
 
+
+
 TestNS <- c("Testing NestSize",  update(FullModel, .~. -logCtFm - logCtFm:InstarNumber))
+InstModel <- c("Testing Instar age", update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2))))
 
-
-RedModels <- list(TestNS)
+RedModels <- list(TestNS, InstModel)
 
 MRAnovaFun(FullModel, RedModels)
 
