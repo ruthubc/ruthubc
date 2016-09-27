@@ -102,6 +102,8 @@ dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, C
 	
 )
 
+dis_ply <- subset(dis_ply, Comp_meas != 0.5)
+
 dis_ply$KAndAdDisLmt <- paste("K =", dis_ply$meanK, "AdDisFdLm =", dis_ply$ad_dsp_fd)
 
 dis_ply$KAndVar <- paste("K =", dis_ply$meanK, "Var =", dis_ply$input_var)
