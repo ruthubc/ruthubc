@@ -22,7 +22,7 @@ gr_ht <- num_graphs * 650
 setwd("C:/Work/ownCloud/")
 folder <- "DisperalSimulationOutput/"
 
-dis_aves <- read.csv(paste(folder, "SummaryCombine26July2016.csv", sep = ""))
+dis_aves <- read.csv(paste(folder, "DispersalSummary27Sept_DataJulyCombine.csv", sep = ""))
 
 
 
@@ -215,7 +215,7 @@ p10 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPopSize, colour = as.factor(ad
 
 # Average frequence of disperal per nest
 p11 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanDispFreq, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
-		myFacet +  ggtitle("Average disperal frequency per population (colony) - wrong! Cal in summary table code wrong on cluster") + geom_line() + mytheme
+		myFacet +  ggtitle("Average disperal frequency per population") + geom_line() + mytheme
 
 # Average percentage of populations that disperse
 p12 <- ggplot(dis_ply, aes(x = Comp_meas, y = MeanPerColsDisp, colour = as.factor(ad_dsp_fd))) + geom_point(size = 5, position = position_jitter(w = 0.03, h = 0.0)) + 
