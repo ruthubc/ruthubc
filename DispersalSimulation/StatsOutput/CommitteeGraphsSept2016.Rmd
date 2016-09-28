@@ -51,12 +51,11 @@ dispersal frequency
 ==============
 
 ```{r freqDisp}
-p11
 
 df_FD <- subset(dis_ply, input_var ==0)
 
 ggplot(data = df_FD, aes(x = Comp_meas , y = MeanDispFreq, colour = as.factor(ad_dsp_fd))) + geom_point(size = 9) + geom_line(size = 2) + mytheme +
-		ylab("Log Size of dispersing population") + scale_colour_discrete("Dispersal\nSize") + xlab("Competition Measure") + facet_grid(~max_no_off) +
+		ylab("Mean dispersal Frequency per colony") + scale_colour_discrete("Dispersal\nSize") + xlab("Competition Measure") + facet_grid(~max_no_off) +
 		ggtitle("Number of offspring")
 ```
 
@@ -105,7 +104,7 @@ df_END <- subset(dis_ply, input_var == 0.1 & Comp_meas != 0.5 & ad_dsp_fd == 0.8
 
 ggplot(df_END, aes(x = Comp_meas, y = MeanPerDieNoDsp, colour = as.factor(max_no_off))) + geom_point(size = 10) + 
 		geom_line(size = 4) + mytheme +  ylab("Mean Percentage of populations") + 
-		xlab("Competition") + scale_colour_discrete("Number\noffspring") 
+		xlab("Competition")
 
 ```
 
@@ -115,11 +114,12 @@ Metapopulation
 ```{r metapop}
 
 
-df_MT <- subset(dis_ply, input_var == 0.1)
+df_MT <- subset(dis_ply, input_var == 0.1 & ad_dsp_fd != 0.2 & ad_dsp_fd != 0.8)
 
 
-ggplot(df_MT, aes(x = Comp_meas, y = log10(PopAge.Mean), colour = as.factor(ad_dsp_fd))) + geom_point(size = 9) + 
-		facet_grid(~max_no_off)  +  ggtitle("") + geom_line(size = 2) + mytheme + ylab("Log max metapopulation age")
+ggplot(df_MT, aes(x = max_no_off, y = log10(PopAge.Mean), colour = as.factor(Comp_meas))) + geom_point(size = 9) + 
+		facet_grid(~ad_dsp_fd)  +  ggtitle("Dispersal Size") + geom_line(size = 2, position = position_jitter(w = 0, h = 0.15)) + mytheme + ylab("Log max metapopulation age") + 
+		scale_colour_discrete("Comp") + xlab("Offspring Number")
 
 
 df_MT2 <- subset(dis_ply, max_no_off == 8)
