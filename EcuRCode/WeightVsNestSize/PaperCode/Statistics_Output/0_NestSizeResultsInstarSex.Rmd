@@ -13,7 +13,7 @@ modelList <- c()
 note:
 All models had to include nest size and instar number.
 
-Leg Vs. Nest Size
+Leg Vs. Colony Size
 --------------------
 
 ```{r LegNS, results='asis',  echo = FALSE}
@@ -31,12 +31,12 @@ modelList <- c(modelList, docxFmula(FullModel))
 
 	
 ```
-The model with the lowest AIC had nest size x instar age and the
+The model with the lowest AIC had colony size x instar age and the
 three-way interaction nest size x instar age x instar sex as fixed effects.
 Using this as the full model and all the terms that include nest size removed
-as the reduced model, we found that leg length increases as colony size
+as the reduced model in the likelihood ratio test, we found that leg length increases as colony size
 increases (lmer; $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~=
-`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`, figure 1).
+`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`, figure 1), but this effect was only detectable in the older instars (Table 1). 
 
 
 ```{r LegInstarNumber, results='asis',  echo = FALSE}
@@ -49,7 +49,7 @@ InstarResults <- outputResultsWord(FullModel, InstarModel)
 	
 ```
 
-Leg length was significantly correlated with instar age, but that is not surprising due to their different physiology (lmer; $\chi$^2^~`r InstarResults[[1]]`
+Not surprisingly, leg length was significantly correlated with instar age (lmer; $\chi$^2^~`r InstarResults[[1]]`
 ,`r InstarResults[[2]]`~= `r InstarResults[[3]]`, p = `r InstarResults[[4]]`
 `r InstarResults[[5]]`).
 
@@ -63,15 +63,11 @@ InstarSexResults <- outputResultsWord(FullModel, InstarModel)
 	
 ```
 
-In addition, the interaction nest size x instar age x instar sex was
+In addition, the interaction colony size x instar age x instar sex was
 significant, (lmer; $\chi$^2^~`r InstarSexResults[[1]]`
 ,`r InstarSexResults[[2]]`~= `r InstarSexResults[[3]]`, p =
 `r InstarSexResults[[4]]` `r InstarSexResults[[5]]`), with male leg size
-changing faster with nest size compared to females.
-
-In addition the effect of colony size on spider size was not significant in the
-youngest instars (Table 1); it was first detectable in subadult males and
-females.
+changing faster with colony size compared to females (figure 1).
 
 
 
@@ -117,9 +113,9 @@ spiders did not show a significant decrease in leg length with colony size (tabl
 | Instar   |      $\chi$^2^        |  p value                                | 
 |----------|---------------------|--------------------------------------| 
 |Juv4 | `r (Juv4Res[[3]])` |   `r Juv4Res[[4]]` `r Juv4Res[[5]]`  | 
-| Sub1 | `r (Sub1Res[[3]])` |   `r Sub1Res[[4]]` `r Sub1Res[[5]]`  | 
-| Sub2 | `r (Sub2Res[[3]])` |   `r Sub2Res[[4]]` `r Sub2Res[[5]]`  | 
-|Adult  |  `r (AdultRes[[3]])` |`r AdultRes[[4]]` `r AdultRes[[5]]`  |  
+| Sub1 Female| `r (Sub1Res[[3]])` |   `r Sub1Res[[4]]` `r Sub1Res[[5]]`  | 
+| Sub2 Female| `r (Sub2Res[[3]])` |   `r Sub2Res[[4]]` `r Sub2Res[[5]]`  | 
+|Adult Female |  `r (AdultRes[[3]])` |`r AdultRes[[4]]` `r AdultRes[[5]]`  |  
 |Sub Male| `r (SubMaleRes[[3]])` |   `r SubMaleRes[[4]]` `r SubMaleRes[[5]]`  | 
 |Adult Male | `r (AdMaleRes[[3]])` |   `r AdMaleRes[[4]]` `r AdMaleRes[[5]]`  | 
 
@@ -139,8 +135,8 @@ InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", F
 ```
   
 (@) Figure:  Leg length against colony size. The overlaid model
-is `r as.character(FullModel@call[2])`. Overall leg length decreases with
-colony size (p = `r NSResults[[4]]` `r NSResults[[5]]`) and there was a
+is `r as.character(FullModel@call[2])`. Overall leg length increased with
+colony size (p = `r NSResults[[4]]` `r NSResults[[5]]`), but only for the older instars (there was a
 significant interaction with instar (p = `r InstarResults[[4]]`
 `r InstarResults[[5]]`).
 
@@ -161,8 +157,8 @@ NSResults <- outputResultsWord(FullModel, NSModel)
 modelList <- c(modelList, docxFmula(FullModel))
 	
 ```
-The model with the lowest AIC included colony size and instar x colony size interaction.
-Nest size combined with the nest size x instar interaction was significant (lmer; $\chi$^2^~`r NSResults[[1]]`
+The model with the lowest AIC included colony size and instar x colony size interaction, but not instar sex.
+Colony size combined with the nest size x instar interaction was significant (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`).
 
