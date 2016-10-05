@@ -12,6 +12,7 @@ geometry: margin=1cm
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 
 minN <- 2
+condVar$meanCond <- condVar$mean
 dataset <- subset(condVar, N > minN)
 totSpis <- sum(dataset$N)
 dataset$lmrWgts <- dataset$N/ totSpis

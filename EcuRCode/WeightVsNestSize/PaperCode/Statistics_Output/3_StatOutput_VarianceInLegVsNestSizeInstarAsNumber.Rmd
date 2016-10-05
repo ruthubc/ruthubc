@@ -11,6 +11,7 @@ geometry: margin=1cm
 ```{r dataImport,  include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 
+legVar$meanLeg <- legVar$mean
 minN <- 2
 dataset <- subset(legVar, N > minN)
 totSpis <- sum(dataset$N)
@@ -78,6 +79,8 @@ note: blue line just lm model
 
 
 InstarGridGraph(dataset, "relativeVar", "Variance in leg", "n", "", FullModel, "y")
+
+
 
 ```
 

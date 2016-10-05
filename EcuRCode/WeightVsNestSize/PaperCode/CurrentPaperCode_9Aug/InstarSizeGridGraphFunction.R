@@ -69,6 +69,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	cat("Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead")
 	# whether or not to export the data
 	if (export == "y") {
+		setwd("C:/Work/Dropbox/")
 		outputpath <- paste("RuthEcuador2013/NestSize/Graphs/", fileName, ".pdf", sep = "")
 		print(outputpath)
 		pdf(outputpath, height=8, width=13)
