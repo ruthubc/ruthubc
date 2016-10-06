@@ -146,7 +146,7 @@ Condition Vs. Colony Size
 
 
 ```{r CondNS, results='asis',  echo = FALSE}
-##### Leg length vs colony size
+##### conditionh vs colony size
 
 
 FullModel <- lmer(condResiduals ~  logCtFm + logCtFm:InstarNumber  +  (1|NestID), data = spidersMul, REML = FALSE)
@@ -157,27 +157,31 @@ NSResults <- outputResultsWord(FullModel, NSModel)
 modelList <- c(modelList, docxFmula(FullModel))
 	
 ```
-The model with the lowest AIC included colony size and instar x colony size interaction, but not instar sex.
-Colony size combined with the nest size x instar interaction was significant (lmer; $\chi$^2^~`r NSResults[[1]]`
-,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
-`r NSResults[[5]]`).
+The model with the lowest AIC included instar age x colony size interaction, but did not include instar sex. Colony size was significant (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~ =
+`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`) 
+
 
 
 ```{r ConditionInteraction, results='asis',  echo = FALSE}
 ##### Leg length vs instar
 
-InstarModel <- update(FullModel, ~ . - logCtFm)
-Results <- outputResultsWord(FullModel, InstarModel)
 
-FullModelAds <- lmer(condResiduals ~  logCtFm +  (1|NestID)  , data = subset(spidersMul, Instar == "Adult"))
-RedModel <- lmer(condResiduals ~  (1|NestID)  , data = subset(spidersMul, Instar == "Adult"))
-AdultResults <- outputResultsWord(FullModelAds, RedModel)
+IntModel <- update(FullModel, . ~ . - logCtFm )
+IntResults <- outputResultsWord(FullModel, IntModel)
 		
 	
 ```
-There was a significant interaction between instar and colony size (lmer; $\chi$^2^~`r Results[[1]]`,`r Results[[2]]`~ =
-`r Results[[3]]`, p = `r Results[[4]]` `r Results[[5]]`), with condition appearing to decrease faster with nest size as the instars 
+and there was a significant interaction between instar and colony size (lmer; $\chi$^2^~`r IntResults[[1]]`,`r IntResults[[2]]`~ =
+`r IntResults[[3]]`, p = `r IntResults[[4]]` `r IntResults[[5]]`), with condition appearing to decrease faster with nest size as the instars 
 increase in age (figure 3).
+
+```{r ConditionAdultOnly, results='asis',  echo = FALSE}
+
+#FullModelAdOnly <- lmer(condResiduals ~  logCtFm + logCtFm:InstarNumber  +  (1|NestID), data = subest(spidersMul, REML = FALSE)
+IntResults <- outputResultsWord(FullModel, IntModel)
+		
+	
+```
 
 However, when performing ad-hoc tests on the instars individually we find that only adult 
 condition decreases with colony size (lmer; $\chi$^2^~`r AdultResults[[1]]`,`r AdultResults[[2]]`~ =
