@@ -177,8 +177,9 @@ increase in age (figure 3).
 
 ```{r ConditionAdultOnly, results='asis',  echo = FALSE}
 
-#FullModelAdOnly <- lmer(condResiduals ~  logCtFm + logCtFm:InstarNumber  +  (1|NestID), data = subest(spidersMul, REML = FALSE)
-IntResults <- outputResultsWord(FullModel, IntModel)
+FullModelAdOnly <- lmer(condResiduals ~  logCtFm +  (1|NestID), data = subset(spidersMul, Instar == "Adult"), REML = FALSE)
+RedModAd <- update(FullModelAdOnly, .~. - logCtFm)
+AdultResults <- outputResultsWord(FullModelAdOnly, RedModAd)
 		
 	
 ```
@@ -196,7 +197,7 @@ InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", Fu
 ```
   
 (@)  Figure : Individual condition against colony size. The overlaid model is
-`r as.character(FullModel@call[2])`. Overall leg length decreases with colony size
+`r as.character(FullModel@call[2])`. Overall condition decreases with colony size
 (p = `r NSResults[[4]]` `r NSResults[[5]]`) and there was a significant
 interaction with instar(p = `r InstarResults[[4]]` `r InstarResults[[5]]`).
 
@@ -215,7 +216,7 @@ ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(Insta
 
 ```
   
-(@)  Figure : The results of the linear model showing individual condition of each instar age against nest size. However only adults had a significant effect.
+(@)  Figure : The results of the linear model showing individual condition of each instar age against colony size with both sexes combined as instar sex was insignificant. However only adults had a significant effect.
 
 
 
@@ -263,7 +264,7 @@ InstResults <- outputResultsWord(FullModel, InstModel)
 ```
 
 Tested together all the instar age terms, including the square of the instar
-age, were significant (lmer; $\chi$^2^~`r Results[[1]]` ,`r InstResults[[2]]`~=
+age, were significant (lmer; $\chi$^2^~`r InstResults[[1]]` ,`r InstResults[[2]]`~=
 `r InstResults[[3]]`, p = `r InstResults[[4]]` `r InstResults[[5]]`, figure 5)
 with the variance in leg length within nests being a curved function, peaking at
 subadult instars.
@@ -321,7 +322,7 @@ plot + geom_line(data = a_predictDF, aes(y= lmrPrd), size = 0.5)
 ```
    
 (@) Figure :Leg length variance within colonies by instar. Overlaid is the
-linear model.
+linear model with a significat quadratic instar term.
 
 
 ### Condition Variance
@@ -361,8 +362,7 @@ RedModInt <- update(FullModel, .~. - (InstarNumber + I(InstarNumber^2) + InstarN
 IntResults <- outputResultsWord(FullModel, RedModInt)
 	
 ```
-but instar age was significant (lmer; $\chi$^2^~`r Results[[1]]`
-,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
+but instar age was significant (lmer; $\chi$^2^~`r IntResults[[1]]` ,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
 `r IntResults[[5]]`).
 
 
@@ -375,7 +375,7 @@ RedModIntSex <- update(FullModel, .~. -  (InstarNumber:InstarSex + InstarSex:I(I
 IntSexResults <- outputResultsWord(FullModel, RedModIntSex)
 	
 ```
-In addition, the instar age x sex interaction was also significant (lmer; $\chi$^2^~`r Results[[1]]`
+In addition, the instar age x sex interaction was also significant (lmer; $\chi$^2^~`r IntSexResults[[1]]`
 ,`r IntSexResults[[2]]`~= `r IntSexResults[[3]]`, p = `r IntSexResults[[4]]`
 `r IntSexResults[[5]]`), with the variance in condition within nests being larger for males compared to females (figure 7)
 
@@ -413,46 +413,9 @@ plot + geom_line(data = a_predictDF, aes(y= lmrPrd), size = 0.5)
 ```
 
 (@) Figure :Condition Length variance within colonies by instar. Overlaid is the
-linear model.
+linear model with a significant quadratic term.
 
 
-
-
-Biomass per capita vs colony size
-====================
-
-```{r Biomass, results='asis',  echo = FALSE}
-##### Biomass per capita vs colony size
-
-
-FullModel <- lmer(BiomsPerAdFm ~ log10AdFm + (1|ColonyID) + (1|Date), data = Biomass, REML = FALSE)
-RedModel <- update(FullModel, ~. - log10AdFm)
-#formula(RedModel)
-
-Results <- outputResultsWord(FullModel, RedModel)
-
-modelList <- c(modelList, docxFmula(FullModel))
-	
-```
-Date and colony ID were used as random factors in the model.
-
-Within the range of nests measured, biomass per capita increases as nest size increased (lmer; $\chi$^2^~`r Results[[1]]`
-,`r Results[[2]]`~= `r Results[[3]]`, p = `r Results[[4]]`
-`r Results[[5]]`).
-
-```{r GraphBiomass, fig.height=4, fig.width=6}
-
-plot <- ggplot(data = Biomass, aes(x = 10^log10AdFm, y = BiomsPerAdFm)) + geom_point()
-plot <- plot + xlab("Nest size - number of adult females") + ylab("Prey biomass per adult female") + mytheme
-
-Vis_fit <- (visreg(FullModel, "log10AdFm", plot = FALSE))$fit						
-plot <- plot +  geom_line(data = Vis_fit, aes(x = 10^log10AdFm, y= visregFit)) + scale_x_log10(breaks = c(5, 10, 20, 40, 60, 100, 200, 300))
-plot
-
-```
-  
-(@)  Figure : Prey biomass per capita was significant p = `r Results[[4]]`
-`r Results[[5]]`). Model overlaid.
 
 
 
@@ -494,7 +457,7 @@ modelList <- c(modelList, docxFmula(FullModel))
 
 as was condition (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
 `r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`), with those in
-propagules having a greater condition compared to those in the source nest.
+propagules having a greater condition compared to those in the source colony.
 
 ```{r SingGraphs, fig.height=6, fig.width=12}
 
@@ -513,13 +476,13 @@ grid.arrange(p1, p2, ncol = 2)
 ```
   
 (@) Figure: Condition and leg length of adult females in propagues and their
-source nest
+source colony
 
 
 Propagule survival
 --------------------
 
-We found that nests with single females spiders had a very low survival rate
+We found that colony with single female spiders had a very low survival rate
 (figure 5).
 
 ```{r PropaguleSurvivalGraph, fig.height=4, fig.width=7}
@@ -533,7 +496,7 @@ nOriginalNests <- nlevels(props$nestID)
 ```
   
 (@) Figure:  The survival function of `r nProps` propagules from `r nOriginalNests`
-source nests.
+source colonies.
 
 List of full models used
 -----------------------
