@@ -139,9 +139,9 @@ bootstrapVariance(20, 10, 0, 100, 14)
 
 mySpiders <- subset(spiders, !is.na(condResiduals))
 
-mySpiders <- ddply(mySpiders, "Instar", transform, maxCond = max(condResiduals), minCond = min(condResiduals)) # calculating max and min
+mySpiders <- ddply(mySpiders, "Instar", transform, maxVar= max(condResiduals), minVar = min(condResiduals)) # calculating max and min
 
-spidersBootAve <- ddply(mySpiders, .(NestID, Instar, CountFemales, logCtFm, InstarNumber, InstarSex, type, maxCond, minCond), summarise,
+spidersBootAve <- ddply(mySpiders, .(NestID, Instar, CountFemales, logCtFm, InstarNumber, InstarSex, type, maxVar, minVar), summarise,
 		N = length(condResiduals),
 		mean_data = mean(condResiduals),
 		sum_data = sum(condResiduals),
@@ -156,3 +156,26 @@ output <- subset(output, N > 2)
 
 
 write.csv(output, file = "spidersAverageMul.csv")
+
+
+######## Leg Variance
+
+mySpiders <- subset(spiders, !is.na(logLeg))
+
+mySpiders <- ddply(mySpiders, "Instar", transform, maxVar= max(logLeg), minVar = min(logLeg)) # calculating max and min
+
+spidersBootAve <- ddply(mySpiders, .(NestID, Instar, CountFemales, logCtFm, InstarNumber, InstarSex, type, maxVar, minVar), summarise,
+		N = length(logLeg),
+		mean_data = mean(logLeg),
+		sum_data = sum(logLeg),
+		sd_data = sd(logLeg)
+)
+
+output <- subset(spidersBootAve, !is.na(sd_data))
+
+output <- subset(output, type == "multiple")
+
+output <- subset(output, N > 2)
+
+
+write.csv(output, file = "spidersAverageMul_leg.csv")

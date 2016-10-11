@@ -49,7 +49,11 @@ spiders <- merge(spiders, InstarLookUp, by = "Instar")
 
 spiders <- condition_residuals(spiders, "logLeg")
 
+#spiders$condResiduals <- (spiders$condResiduals + 10) # to make all the residuals positive.
+
 condVar <- calRelVariance(spiders, "condResiduals")
+
+
 
 legVar <- calRelVariance(spiders, "logLeg")
 

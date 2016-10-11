@@ -10,17 +10,22 @@ from scipy.stats import cumfreq
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import savefig
+import os
+import time
 
-pd.options.mode.chained_assignment = None  # default='warn'
+os.chdir('C:/Work/Dropbox/')
+#os.chdir('G:/Dropbox/')
 
 
-numBoots = 500
-numBins = 10
+fileOutputName = "bootSampCondPython.csv"
 
-spiders = pd.read_csv('G:/Dropbox/BootAve.csv')
-spiders['bootSD_cond'] = 1000.00000 # puts this as the default boot sd in the file
+numBoots = 1000
+numBins = 100
+spiders = pd.read_csv('spidersAverageMul.csv')
+spiders['bootSD_var'] = 1000.00000 # puts this as the default boot sd in the file
+spiders['num_boots'] = 0.00
 numRows = len(spiders)
-numRows = 1
+time_lim = 200
 
 def randomSDFun (totalAim, maxValuePos, minValuePos, sampleN): # returns standard dev of random sample
     
@@ -39,58 +44,83 @@ def randomSDFun (totalAim, maxValuePos, minValuePos, sampleN): # returns standar
 
 for rowNum in range(numRows): # getting the necessary varibles from the data file
     print "\nRun Number", rowNum+1, "/", numRows
-    #http://www.pythonforbeginners.com/concatenation/string-concatenation-and-formatting-in-python
+
+    graphTitle = str(spiders.NestID[rowNum]) + str(spiders.Instar[rowNum])
     print spiders.NestID[rowNum], spiders.Instar[rowNum]
     
     data_mean =  spiders.mean_data[rowNum]
     N = spiders.N[rowNum]
     sum_data =  spiders.sum_data[rowNum]
     sd_data = spiders.sd_data[rowNum]
-    min_Cond = spiders.minCond[rowNum]
-    max_Cond = spiders.maxCond[rowNum]
+    min_var = spiders.minVar[rowNum]
+    max_var = spiders.maxVar[rowNum]
     
     # getting the random sample
     sd_list = []
     
-    while len(sd_list) < numBoots:
-        sdOutput = randomSDFun(sum_data, max_Cond, min_Cond, N)
+    
+    start_time = time.time()
+    loop_time = 0
+    while len(sd_list) < numBoots and loop_time < time_lim:
+        sdOutput = randomSDFun(sum_data, max_var, min_var, N)
         sd_list.append(sdOutput)
+        loop_time = time.time() - start_time
         
-    minList=  min(sd_list)
-    maxList=  max(sd_list)
+        
+    print("--- %s seconds ---" % (time.time() - start_time))
+    
+    if len(sd_list) == numBoots:
+                
+        minList=  min(sd_list)
+        maxList=  max(sd_list)
 
-    cumFreq = cumfreq(sd_list, numBins, defaultreallimits=(minList, maxList))
-    lowerLimit = cumFreq[1]
-    countValues =  cumFreq[0]
-    freq_interval = cumFreq[2]
-    upperLimit = lowerLimit + (freq_interval*numBins)
-    xaxis = np.arange(lowerLimit, upperLimit, freq_interval)
-    
-    print "cumfreq length", len(countValues)
-    print "length xaxis", len(xaxis)
-    
-    plot_title = 
-    
-    plt.plot(xaxis, cumFreq[0])
-   # plt.annotate("some text")
-    plt.title("title")
-    #plt.show()
-    plt.savefig("G:/Dropbox/fig.png")
-    
-    result = (sd_data -minList) / freq_interval
-    myIndex = int(round(result)) -1
+        cumFreq = cumfreq(sd_list, numBins, defaultreallimits=(minList, maxList))
+        lowerLimit = cumFreq[1]
+        countValues =  cumFreq[0]
+        freq_interval = cumFreq[2]
+        upperLimit = lowerLimit + (freq_interval*numBins)
+        xaxis = np.arange(lowerLimit, (upperLimit), freq_interval)
+        
+        if len(xaxis) > numBins:
+            print "xaxis too long, length:", len(xaxis)
+            del_index = numBins
+            xaxis = np.delete(xaxis, del_index)
+        
+        
 
-    if myIndex < 0:
-        output = 0.00
+        result = (sd_data -minList) / freq_interval
+        myIndex = int(round(result)) -1
+
+        if myIndex < 0:
+            output = 0.00
+        else:
+            myLength = len(sd_list)
+            output = countValues[myIndex] / myLength 
+
+            print "sample variance:", output
+            spiders.bootSD_var[rowNum] = output
+            spiders.num_boots[rowNum] = numBoots
+    
+        
+            plt.figure() 
+    
+            plt.plot(xaxis, cumFreq[0]) 
+            plt.plot((sd_data, sd_data), (0, numBoots), 'r-') # vertical line of the measured SD from the data
+ 
+            plot_title = graphTitle + " N=" + str(N) + " Boot Var calc =" + str(output)
+    
+            plt.title(plot_title)   
+            graphFileName = graphTitle + ".png"
+    
+            plt.savefig(graphFileName)
+            plt.close()
+            
     else:
-        myLength = len(sd_list)
-        output = countValues[myIndex] / myLength 
-
-    print "sample variance:", output
-    spiders.bootSD_cond[rowNum] = output
+        print "did not run in time"
+        
     
 
-spiders.to_csv("G:/Dropbox/bootSampCondPython.csv")
+spiders.to_csv(fileOutputName)
 
 print "Finished - file exported"
 
