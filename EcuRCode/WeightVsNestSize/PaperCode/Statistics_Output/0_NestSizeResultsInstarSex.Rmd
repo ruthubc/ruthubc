@@ -7,11 +7,11 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 
 ```{r docSettings, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
-modelList <- c()
+modelList <-  list(test = c(), fullModel = c())
+no_nest <- nlevels(spidersMul$NestID)
 	
 ```
-note:
-All models had to include nest size and instar number.
+
 
 Leg Vs. Colony Size
 --------------------
@@ -27,7 +27,8 @@ NSModel <- update(FullModel, .~. - logCtFm -logCtFm:InstarNumber - logCtFm:Insta
 
 NSResults <- outputResultsWord(FullModel, NSModel)
 
-modelList <- c(modelList, docxFmula(FullModel))
+modelList$test <- c(modelList$test, "Leg length")
+modelList$fullModel <- c(modelList$fullModel, docxFmula(FullModel))
 
 	
 ```
@@ -35,8 +36,8 @@ The model with the lowest AIC had colony size x instar age and the
 three-way interaction nest size x instar age x instar sex as fixed effects.
 Using this as the full model and all the terms that include nest size removed
 as the reduced model in the likelihood ratio test, we found that leg length increases as colony size
-increases (lmer; $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~=
-`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`, figure 1), but this effect was only detectable in the older instars (Table 1). 
+increases (lmer; $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`, figure 1), 
+but this effect was only detectable in the older instars (Table 1). 
 
 
 ```{r LegInstarNumber, results='asis',  echo = FALSE}
@@ -45,7 +46,6 @@ increases (lmer; $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~=
 InstarModel <- update(FullModel, .~. - InstarNumber -logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex)
 
 InstarResults <- outputResultsWord(FullModel, InstarModel)
-
 	
 ```
 
@@ -134,11 +134,10 @@ InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", F
 
 ```
   
-(@) Figure:  Leg length against colony size. The overlaid model
-is `r as.character(FullModel@call[2])`. Overall leg length increased with
+(@) Figure:  Leg length against colony size. Overall leg length increased with
 colony size (p = `r NSResults[[4]]` `r NSResults[[5]]`), but only for the older instars (there was a
 significant interaction with instar (p = `r InstarResults[[4]]`
-`r InstarResults[[5]]`).
+`r InstarResults[[5]]`). N = `r no_nest` nests.
 
 
 Condition Vs. Colony Size
@@ -154,7 +153,9 @@ NSModel <- update(FullModel, ~ . - logCtFm - logCtFm:InstarNumber)
 
 NSResults <- outputResultsWord(FullModel, NSModel)
 
-modelList <- c(modelList, docxFmula(FullModel))
+modelList$test <- c(modelList$test, "Condition")
+modelList$fullModel <- c(modelList$fullModel, docxFmula(FullModel))
+
 	
 ```
 The model with the lowest AIC included instar age x colony size interaction, but did not include instar sex. Colony size was significant (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~ =
@@ -196,10 +197,9 @@ InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", Fu
 
 ```
   
-(@)  Figure : Individual condition against colony size. The overlaid model is
-`r as.character(FullModel@call[2])`. Overall condition decreases with colony size
+(@)  Figure : Individual condition against colony size. Overall condition decreases with colony size
 (p = `r NSResults[[4]]` `r NSResults[[5]]`) and there was a significant
-interaction with instar(p = `r InstarResults[[4]]` `r InstarResults[[5]]`).
+interaction with instar(p = `r InstarResults[[4]]` `r InstarResults[[5]]`). 
 
 
 
@@ -216,7 +216,8 @@ ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(Insta
 
 ```
   
-(@)  Figure : The results of the linear model showing individual condition of each instar age against colony size with both sexes combined as instar sex was insignificant. However only adults had a significant effect.
+(@)  Figure : The results of the linear model showing individual condition of each instar age against colony size with both sexes combined as instar sex was insignificant. 
+However only adults had a significant effect.  N = `r no_nest` nests.
 
 
 
@@ -239,20 +240,22 @@ legVarUpdate$lmrWgts <- legVarUpdate$N/ totSpis
 FullModel <- lmer(relativeVar ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2) + (1|NestID), weights = lmrWgts,
     	data = legVarUpdate, REML = FALSE)
 
-modelList <- c(modelList, docxFmula(FullModel))
+modelList$test <- c(modelList$test, "Leg variance")
+modelList$fullModel <- c(modelList$fullModel, docxFmula(FullModel))
+
 
 NSModel <- update(FullModel, . ~ . - (logCtFm + logCtFm:InstarNumber))
 
 NSResults <- outputResultsWord(FullModel, NSModel)	
 ```
-Rows removed with `r minN` or fewer data points.
+Note: Rows removed with `r minN` or fewer data points.
 
 The model with the lowest AIC value had instar age  x instar sex, 
-nest size x instar age and the square of instar age as fixed effects
+nest size x instar age and the square of instar age as fixed effects.
 
 Nest size combined with the nest size x instar age interaction was significant
 (lmer; $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p
-= `r NSResults[[4]]` `r NSResults[[5]]`)
+= `r NSResults[[4]]``r NSResults[[5]]`).
 
 
 ```{r LegLenVarInstarNumber, results='asis',  echo = FALSE}
@@ -265,9 +268,9 @@ InstResults <- outputResultsWord(FullModel, InstModel)
 
 Tested together all the instar age terms, including the square of the instar
 age, were significant (lmer; $\chi$^2^~`r InstResults[[1]]` ,`r InstResults[[2]]`~=
-`r InstResults[[3]]`, p = `r InstResults[[4]]` `r InstResults[[5]]`, figure 5)
+`r InstResults[[3]]`, p = `r InstResults[[4]]` `r InstResults[[5]]`) 
 with the variance in leg length within nests being a curved function, peaking at
-subadult instars.
+subadult instars (figure 5).
 
 ```{r LegLenVarInstarSex, results='asis',  echo = FALSE}
 ##### Leg length vs colony size
@@ -284,14 +287,14 @@ $\chi$^2^~`r InstSexResults [[1]]` ,`r InstSexResults [[2]]`~=
 `r InstSexResults [[5]]`). Doing adhoc tests on each instar age individually
 against nest size we found that none were significant (figure 4).
 
-```{r legVarUpdateGraph, fig.height=7, fig.width=13}
+```{r legVarGraph, fig.height=7, fig.width=13}
 
 
 InstarGridGraph(legVarUpdate, "relativeVar", "Variance in leg length", "n", "", FullModel, "y")
 
 ```
   
-(@)  Figure : Variance in leg length against colony size
+(@)  Figure : Variance in leg length against colony size. N = `r no_nest` nests.
 
 
 
@@ -320,7 +323,7 @@ plot + geom_line(data = a_predictDF, aes(y= lmrPrd), size = 0.5)
 
 
 ```
-   
+
 (@) Figure :Leg length variance within colonies by instar. Overlaid is the
 linear model with a significat quadratic instar term.
 
@@ -338,7 +341,9 @@ condVarUpdate$lmrWgts <- condVarUpdate$N/ totSpis
 FullModel <- lmer(relativeVar ~ logCtFm + InstarNumber + InstarNumber:InstarSex + I(InstarNumber^2) + 
 				I(InstarNumber^2):InstarSex + (1|NestID), weights = lmrWgts, data = condVarUpdate, REML = FALSE)
 
-modelList <- c(modelList, docxFmula(FullModel))
+modelList$test <- c(modelList$test, "Condition variance")
+modelList$fullModel <- c(modelList$fullModel, docxFmula(FullModel))
+
 
 RedModNS <- update(FullModel, .~. - logCtFm)
 
@@ -387,7 +392,7 @@ InstarGridGraph(condVarUpdate, "relativeVar", "Variance in Condition", "n", "", 
 
 ```
   
-(@)  Figure : Variance in condition against colony size
+(@)  Figure : Variance in condition against colony size, n = `r no_nest` nests.
 
 
 ```{r instarCondVarGraph, fig.height=4, fig.width=5, echo = FALSE}
@@ -432,7 +437,9 @@ NSModel <- lmer(logLeg ~   (1|NestID) + (1|OrigNest) , data = nestsToTestSig, RE
 
 NSResults <- outputResultsWord(FullModel, NSModel)
 
-modelList <- c(modelList, docxFmula(FullModel))
+modelList$test <- c(modelList$test, "Single nest leg")
+modelList$fullModel <- c(modelList$fullModel, docxFmula(FullModel))
+
 	
 ```
   
@@ -451,7 +458,8 @@ NSModel <- lmer(condResiduals ~  (1|NestID) + (1|OrigNest) , data = nestsToTestS
 
 NSResults <- outputResultsWord(FullModel, NSModel)
 
-modelList <- c(modelList, docxFmula(FullModel))
+modelList$test <- c(modelList$test, "Single nest condition")
+modelList$fullModel <- c(modelList$fullModel, docxFmula(FullModel))
 	
 ```
 
