@@ -91,6 +91,7 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
 					fit  <- lmer(formula, data = dataset, REML = FALSE)
 				} else {
 					fit  <- lmer(formula, data = dataset, weights = lmrWgts, REML = FALSE)
+					#fit  <- lmer(formula, data = dataset, weights = N, REML = FALSE)
 					
 				}
 				

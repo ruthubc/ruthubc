@@ -1,0 +1,113 @@
+
+
+---
+title: "Variance in Condition vs Nest Size Instar As Number"
+author: "Ruth Sharpe"
+date: "Run on `r format(Sys.time(), '%d %B, %Y')`"
+geometry: margin=1cm
+
+---
+
+```{r dataImport,  include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+
+dataset <- read.csv("C:/Work/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
+totSpis <- sum(condVar$N)
+dataset$lmrWgts <- dataset$N/ totSpis
+
+
+ggplot(data = dataset, aes(x = myIndex)) + geom_histogram()
+## myIndex is very normal, bootSD var is NOT
+ggplot(data = dataset, aes(x = bootSD_var)) + geom_histogram()
+
+
+
+```
+
+AIC Values of all possible models with instar included and sample size as weight
+=====================
+Rows removed with 2 or fewer data points 
+
+```{r kable, results='asis',  echo = FALSE}
+#pander options http://rapporter.github.io/pander/#general-options
+
+
+
+
+outcome    <- c("myIndex")
+predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex", 
+		"I(InstarNumber^2)", "I(InstarNumber^2):InstarSex","logCtFm:I(InstarNumber^2)", "logCtFm:I(InstarNumber^2):InstarSex")
+
+modTable <- allModelsAICWithSex(outcome, predictors, dataset, "y") # weights included if "y"
+
+row.names(modTable) <- NULL # removing row names
+
+panderOptions('table.split.table', Inf)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('keep.line.breaks', TRUE)
+
+
+pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 2))
+
+lowestAICMod <- as.character(modTable$model[1])
+
+formula    <- as.formula(lowestAICMod)
+FullModel       <- lmer(formula, data = dataset, weights = lmrWgts, REML = FALSE)
+	
+```
+
+Checking full model fit
+--------------------
+
+
+```{r ModelFit, fig.height=3, fig.width=3}
+
+model_Check(FullModel)
+
+```
+\pagebreak
+
+Graph
+====================
+ 
+note: blue line just lm model
+```{r, fig.height=8, fig.width=12, echo = FALSE}
+
+
+InstarGridGraph(dataset, "myIndex", "Variance in Condition", "n", "", FullModel, "y")
+
+```
+
+
+Statistics using model with the almost lowest AIC as full model
+====================
+
+
+```{r Stats,  results='asis', echo = FALSE , comment = "", message = FALSE, warning = FALSE}
+
+# relativeVar  ~  logCtFm + logCtFm:InstarNumber  + (1|NestID)
+
+
+
+TestNS <- c("Testing NestSize",  update(FullModel, .~. -logCtFm - logCtFm:InstarNumber))
+InstModel <- c("Testing Instar age", update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2))))
+
+RedModels <- list(TestNS, InstModel)
+
+MRAnovaFun(FullModel, RedModels)
+
+
+```
+
+
+Graph of condition variance against instar
+====================
+
+```{r, fig.height=6, fig.width=8, echo = FALSE}
+
+
+ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = myIndex, fill = InstarSex)) +
+	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
+
+```
