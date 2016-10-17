@@ -12,7 +12,8 @@ geometry: margin=1cm
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 
 dataset <- read.csv("C:/Work/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
-totSpis <- sum(condVar$N)
+dataset <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
+totSpis <- sum(dataset$N)
 dataset$lmrWgts <- dataset$N/ totSpis
 
 
@@ -20,6 +21,9 @@ ggplot(data = dataset, aes(x = myIndex)) + geom_histogram()
 ## myIndex is very normal, bootSD var is NOT
 ggplot(data = dataset, aes(x = bootSD_var)) + geom_histogram()
 
+dataset$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
+
+ggplot(data = dataset, aes(x = bootVarTrans)) + geom_histogram()
 
 
 ```

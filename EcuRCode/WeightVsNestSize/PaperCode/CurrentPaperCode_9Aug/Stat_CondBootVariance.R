@@ -36,8 +36,19 @@ numbins <- 10000
 
 addAmt <- (1/numbins)
 
+condBootVar <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
+totSpis<- sum(condBootVar$N)
+condBootVar$lmrWgts <- condBootVar$N/totSpis
 
-condBootVar <- read.csv("RuthSync/BootStrapVarianceForCluster/combined5Sept_Num13Missing.csv")
+
+
+## myIndex is very normal, bootSD var is NOT
+ggplot(data = dataset, aes(x = bootSD_var)) + geom_histogram()
+
+condBootVar$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
+
+ggplot(data = dataset, aes(x = bootVarTrans)) + geom_histogram()
+
 
 ##Checking normality
 ggplot(condBootVar, aes(x = bootSD_cond)) + geom_histogram()
@@ -62,15 +73,21 @@ ggplot(condBootVar, aes(bootSD_cond_trans, sd_data)) + geom_point()
 ggplot(condBootVar, aes(N, bootSD_cond_trans)) + geom_point()
 
 
-InstarGridGraph(subset(condBootVar, type = "multiple"), "bootSD_cond_trans", "condition variance", "n", "", "", "n")
+InstarGridGraph(condBootVar, "bootVarTrans", "condition variance", "n", "", "", "n")
 
 model <- lmer(bootSD_cond_trans ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber +  (1|NestID), data = BootVar)
 anova(model)
 
 library('nlme')
-model_nml <- lme(bootSD_cond_trans ~ logCtFm + InstarSex:InstarNumber+ InstarNumber:logCtFm + InstarSex:logCtFm + InstarSex:logCtFm:InstarNumber, 
-		random = ~1|NestID, weights = ~I(1/N), data = condBootVar)
+model_nml <- lme(bootVarTrans ~ logCtFm + InstarSex:InstarNumber+ InstarNumber:logCtFm + InstarSex:logCtFm + InstarSex:logCtFm:InstarNumber, 
+		random = ~1|NestID, weights = ~I(1/lmrWgts), data = condBootVar)
 AIC(model_nml)
+summary(model_nml)
+
+library(effects)
+plot(allEffects(model_nml))
+
+
 model_nml2 <- lme(bootSD_cond_trans ~ logCtFm + InstarNumber:InstarSex, 
 		random = ~1|NestID, weights = ~I(1/N), data = condBootVar)
 AIC(model_nml2)
