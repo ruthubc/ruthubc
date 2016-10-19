@@ -8,7 +8,7 @@
 ## Create vectors for outcome and predictors
 
 
-allModelsAIC <- function(outcome, predictors, dataset, weights = "n") {
+allModelsAIC <- function(outcome, predictors, dataset, weights = "n", nnLnr = "n") {
 	
 	list.of.models <- lapply(seq_along((predictors)), function(n) {
 				
@@ -28,8 +28,14 @@ allModelsAIC <- function(outcome, predictors, dataset, weights = "n") {
 				
 				formula    <- as.formula(x)
 				
-				if (weights == "n") {
+				if (nnLnr != "n"){
+					print("nmle test")
+					fit <- lme(formula, random = ~1|NestID, weights = ~I(1/lmrWgts), data = dataset, method = "ML")
+				}
+					else if(weights == "n") {
+					
 					fit  <- lmer(formula, data = dataset, REML = FALSE)
+					
 				} else {
 					fit  <- lmer(formula, data = dataset, weights = lmrWgts, REML = FALSE)
 					
@@ -65,7 +71,7 @@ allModelsAIC <- function(outcome, predictors, dataset, weights = "n") {
 	
 }
 
-allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
+allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n", nnLnr = "n") {
 	
 	if (weights != "n") {print("Using a standardized sample size as weight in model")}
 	
@@ -73,7 +79,7 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
 				
 				left.hand.side  <- outcome
 				right.hand.side <- apply(X = combn(predictors, n), MARGIN = 2, paste, collapse = " + ")
-				right.hand.side <- paste("logCtFm +",  right.hand.side, " + (1|NestID)")
+				right.hand.side <- paste("logCtFm +",  right.hand.side)
 				
 				paste(left.hand.side, right.hand.side, sep = "  ~  ")
 			})
@@ -87,14 +93,18 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n") {
 				
 				formula    <- as.formula(x)
 				
-				if (weights == "n") {
-					fit  <- lmer(formula, data = dataset, REML = FALSE)
+				if (nnLnr != "n"){
+					print("nmle test")
+					fit <- lme(formula, random = ~1|NestID, weights = ~I(1/lmrWgts), data = dataset, method = "ML")
+				}
+				else if(weights == "n") {
+					
+					fit  <- lmer(formula  + (1|NestID), data = dataset, REML = FALSE)
+					
 				} else {
-					fit  <- lmer(formula, data = dataset, weights = lmrWgts, REML = FALSE)
-					#fit  <- lmer(formula, data = dataset, weights = N, REML = FALSE)
+					fit  <- lmer(formula + (1|NestID), data = dataset, weights = lmrWgts, REML = FALSE)
 					
 				}
-				
 				result.AIC <- extractAIC(fit)
 				
 				data.frame(num.predictors = result.AIC[1],

@@ -37,6 +37,7 @@ numbins <- 10000
 addAmt <- (1/numbins)
 
 condBootVar <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
+condBootVar <- read.csv("C:/Work/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
 totSpis<- sum(condBootVar$N)
 condBootVar$lmrWgts <- condBootVar$N/totSpis
 
@@ -80,19 +81,41 @@ anova(model)
 
 library('nlme')
 model_nml <- lme(bootVarTrans ~ logCtFm + InstarSex:InstarNumber+ InstarNumber:logCtFm + InstarSex:logCtFm + InstarSex:logCtFm:InstarNumber, 
-		random = ~1|NestID, weights = ~I(1/lmrWgts), data = condBootVar)
+		random = ~1|NestID, weights = ~I(1/lmrWgts), data = condBootVar, method = "ML")
+
+model_nml
+plot(model_nml)
+
 AIC(model_nml)
 summary(model_nml)
+anova(model_nml)
 
 library(effects)
 plot(allEffects(model_nml))
 
+model_nmlRED  <- lme(bootVarTrans ~  InstarSex:InstarNumber + InstarSex:logCtFm:InstarNumber, 
+		random = ~1|NestID, weights = ~I(1/lmrWgts), data = condBootVar, method = "ML")
 
-model_nml2 <- lme(bootSD_cond_trans ~ logCtFm + InstarNumber:InstarSex, 
+
+anova(model_nml, model_nmlRED)
+
+outcome    <- c("bootVarTrans")
+
+
+predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex", 
+		"I(InstarNumber^2)", "I(InstarNumber^2):InstarSex","logCtFm:I(InstarNumber^2)", "logCtFm:I(InstarNumber^2):InstarSex")
+
+
+modTable <- allModelsAICWithSex(outcome, predictors, condBootVar, weights = "n", nnLnr = "y")
+
+
+
+
+model_nml2 <- lme(bootVarTrans ~ logCtFm + InstarNumber:InstarSex, 
 		random = ~1|NestID, weights = ~I(1/N), data = condBootVar)
 AIC(model_nml2)
 
-
+anova(model_nml, model_nml2)
 
 model_nmlRed <- lme(bootSD_cond_trans ~ InstarSex:InstarNumber, random = ~1|NestID, weights = ~I(1/N), data = condBootVar)
 AIC(model_nmlRed)
