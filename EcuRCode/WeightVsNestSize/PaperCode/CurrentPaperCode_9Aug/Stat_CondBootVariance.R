@@ -3,7 +3,7 @@
 # Author: user
 ###############################################################################
 
-########## Outputting the data to python
+########## Outputting the data to python  #
 
 mySpiders <- subset(spiders, !is.na(condResiduals))
 
@@ -41,28 +41,29 @@ totSpis<- sum(condBootVar$N)
 condBootVar$lmrWgts <- condBootVar$N/totSpis
 
 
-
+dataset <- condBootVar
 ## myIndex is very normal, bootSD var is NOT
 ggplot(data = dataset, aes(x = bootSD_var)) + geom_histogram()
 
 condBootVar$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
+condBootVar$bootSD_cond_trans <- asin(sqrt(dataset$bootSD_var))
 
-ggplot(data = dataset, aes(x = bootVarTrans)) + geom_histogram()
+ggplot(data = condBootVar, aes(x = bootVarTrans)) + geom_histogram()
 
 
 ##Checking normality
 ggplot(condBootVar, aes(x = bootSD_cond)) + geom_histogram()
 
-condBootVar$bootSD_cond_trans <- (condBootVar$bootSD_cond + addAmt)^ (1/3) # does not make it normal, but it does make it better.
+condBootVar$bootSD_cond_trans <- asin(((condBootVar$bootSD_var + 0)^ (1/2)) ^(1/2)) # does not make it normal, but it does make it better.
 
 nrow(condBootVar) - sum(is.finite(condBootVar$bootSD_cond_trans)) # checking the transformation worked for all numbers
 
 ggplot(condBootVar, aes(x = bootSD_cond_trans)) + geom_histogram()
 
-condBootVar$bootSD_cond_trans <- 1/(condBootVar$bootSD_cond + addAmt)
-condBootVar$bootSD_cond_trans <- asin(sqrt(condBootVar$bootSD_cond+addAmt))
-condBootVar$bootSD_cond_trans <- 1/(asin(sqrt(condBootVar$bootSD_cond+addAmt)))
-condBootVar$bootSD_cond_trans <- log10(condBootVar$bootSD_cond + addAmt)
+condBootVar$bootSD_cond_trans <- 1/(condBootVar$bootSD_var+1)
+condBootVar$bootSD_cond_trans <- asin(sqrt(condBootVar$bootSD_var))
+condBootVar$bootSD_cond_trans <- sqrt(condBootVar$bootSD_var+addAmt)
+condBootVar$bootSD_cond_trans <- log(condBootVar$bootSD_var + 1)
 
 nrow(condBootVar) - sum(is.finite(condBootVar$bootSD_cond_trans)) # checking the transformation worked for all numbers
 
@@ -122,9 +123,11 @@ allModels <- allModelsAICWithSex("bootSD_cond_trans", modPred, BootVar)
 
 
 
-glmerMod <- glmer(bootSD_cond_trans ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber+ 
+glmerMod <- glmer(bootVarTrans+ 1 ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber+ 
 				InstarNumber:logCtFm + InstarSex:logCtFm +  InstarSex:InstarNumber:logCtFm + 
-				(1|NestID), weights = N,  data = condBootVar, family = gaussian(link = "log"))
+				(1|NestID), data = condBootVar, family = Gamma)
+
+
 anova(glmerMod)
 summary(glmerMod)
 AIC(glmerMod)
@@ -140,6 +143,8 @@ qqp(condBootVar$bootSD_cond_trans, "norm")
 
 # lnorm means lognormal
 qqp(condBootVar$bootSD_cond_trans, "lnorm")
+
+qqp(condBootVar$bootSD_cond_trans, "gamma")
 
 # qqp requires estimates of the parameters of the negative binomial, Poisson
 # and gamma distributions. You can generate estimates using the fitdistr
