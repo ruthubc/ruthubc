@@ -11,19 +11,21 @@ geometry: margin=1cm
 ```{r dataImport,  include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 
-dataset <- read.csv("C:/Work/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
-dataset <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
-totSpis <- sum(dataset$N)
-dataset$lmrWgts <- dataset$N/ totSpis
+#dataset <- read.csv("C:/Work/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
+#dataset <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
+#totSpis <- sum(dataset$N)
+#dataset$lmrWgts <- dataset$N/ totSpis
 
 
-ggplot(data = dataset, aes(x = myIndex)) + geom_histogram()
+#ggplot(data = dataset, aes(x = myIndex)) + geom_histogram()
 ## myIndex is very normal, bootSD var is NOT
-ggplot(data = dataset, aes(x = bootSD_var)) + geom_histogram()
+#ggplot(data = dataset, aes(x = bootSD_var)) + geom_histogram()
 
-dataset$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
+#dataset$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
 
-ggplot(data = dataset, aes(x = bootVarTrans)) + geom_histogram()
+#ggplot(data = dataset, aes(x = bootVarTrans)) + geom_histogram()
+
+dataset <- condBootVar
 
 
 ```
@@ -38,11 +40,11 @@ Rows removed with 2 or fewer data points
 
 
 
-outcome    <- c("myIndex")
+outcome    <- c("bootVarTrans")
 predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex", 
 		"I(InstarNumber^2)", "I(InstarNumber^2):InstarSex","logCtFm:I(InstarNumber^2)", "logCtFm:I(InstarNumber^2):InstarSex")
 
-modTable <- allModelsAICWithSex(outcome, predictors, dataset, "y") # weights included if "y"
+modTable <- allModelsAICWithSex(outcome, predictors, dataset, weights = "n", nnLnr = "y")
 
 row.names(modTable) <- NULL # removing row names
 
@@ -57,10 +59,10 @@ pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 
 lowestAICMod <- as.character(modTable$model[1])
 
 formula    <- as.formula(lowestAICMod)
-FullModel       <- lmer(formula, data = dataset, weights = lmrWgts, REML = FALSE)
+FullModel  <- lme(formula, random = ~1|NestID, weights = ~I(1/lmrWgts), data = dataset,  method = "ML")
 	
 ```
-
+h
 Checking full model fit
 --------------------
 
@@ -79,7 +81,7 @@ note: blue line just lm model
 ```{r, fig.height=8, fig.width=12, echo = FALSE}
 
 
-InstarGridGraph(dataset, "myIndex", "Variance in Condition", "n", "", FullModel, "y")
+#InstarGridGraph(dataset, "myIndex", "Variance in Condition", "n", "", FullModel, "y")
 
 ```
 
@@ -92,14 +94,14 @@ Statistics using model with the almost lowest AIC as full model
 
 # relativeVar  ~  logCtFm + logCtFm:InstarNumber  + (1|NestID)
 
+anova(FullModel)
 
+#TestNS <- c("Testing NestSize",  update(FullModel, .~. -logCtFm - logCtFm:InstarNumber))
+#InstModel <- c("Testing Instar age", update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2))))
 
-TestNS <- c("Testing NestSize",  update(FullModel, .~. -logCtFm - logCtFm:InstarNumber))
-InstModel <- c("Testing Instar age", update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2))))
+#RedModels <- list(TestNS, InstModel)
 
-RedModels <- list(TestNS, InstModel)
-
-MRAnovaFun(FullModel, RedModels)
+#MRAnovaFun(FullModel, RedModels)
 
 
 ```
