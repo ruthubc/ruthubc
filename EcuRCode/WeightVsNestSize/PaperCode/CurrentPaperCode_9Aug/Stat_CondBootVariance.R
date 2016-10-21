@@ -69,6 +69,7 @@ condBootVar$bootSD_cond_trans <- log(condBootVar$bootSD_var + 1)
 nrow(condBootVar) - sum(is.finite(condBootVar$bootSD_cond_trans)) # checking the transformation worked for all numbers
 
 ggplot(condBootVar, aes(bootSD_cond_trans)) + geom_histogram(bins = 60)
+ggplot(condBootVar, aes(bootSD_cond_trans)) + geom_density()
 
 ggplot(condBootVar, aes(bootSD_cond_trans, sd_data)) + geom_point()
 
@@ -121,7 +122,7 @@ anova(model_nml, model_nml2)
 model_nmlRed <- lme(bootSD_cond_trans ~ InstarSex:InstarNumber, random = ~1|NestID, weights = ~I(1/N), data = condBootVar)
 AIC(model_nmlRed)
 
-anova.lme(model_nml)
+Anova.lme(model_nml)
 summary(model_nml)$tTable
 
 anova.lme(model_nmlRed)
@@ -160,12 +161,16 @@ library("blmeco")
 dispersion_glmer(glmerMod) # should be between 0.75 and 1.4
 
 require(car)
+require(MASS)
 # from http://ase.tufts.edu/gsc/gradresources/guidetomixedmodelsinr/mixed%20model%20guide.html
 
-qqp(condBootVar$bootSD_cond_trans, "norm")
+ggplot(condBootVar, aes(bootSD_cond_trans)) + geom_histogram(bins = 60)
 
+qqp(condBootVar$bootSD_cond_trans, "norm")
+qqp(condBootVar$bootSD_var, "norm")
 # lnorm means lognormal
 qqp(condBootVar$bootSD_cond_trans, "lnorm")
+qqp(condBootVar$bootSD_var, "lnorm")
 
 qqp(condBootVar$bootSD_cond_trans, "gamma")
 
@@ -177,13 +182,29 @@ qqp(condBootVar$bootSD_cond_trans, "gamma")
 poisson <- fitdistr(condBootVar$bootSD_cond_trans, "Poisson")
 qqp(condBootVar$bootSD_cond_trans, "pois", poisson$estimate)
 
-nbinom <- fitdistr(condBootVar$bootSD_cond_trans, "Inverse Gaussian")
+nbinom <- fitdistr(condBootVar$bootSD_cond_trans +1, "Inverse Gaussian")
 qqp(condBootVar$bootSD_cond_trans, "nbinom", size = nbinom$estimate[[1]], mu = nbinom$estimate[[2]])
 
 
-gamma <- fitdistr(condBootVar$bootSD_cond_trans, "gamma")
+gamma <- fitdistr(condBootVar$bootSD_cond_trans+1, "gamma")
 qqp(condBootVar$bootSD_cond_trans, "gamma", shape = gamma$estimate[[1]], rate = gamma$estimate[[2]])
 
+gamma <- fitdistr(condBootVar$bootSD_var+1, "gamma")
+qqp(condBootVar$bootSD_var, "gamma", shape = gamma$estimate[[1]], rate = gamma$estimate[[2]])
 
 
 
+mean(condBootVar$bootSD_var)*100
+
+PQLMod <- glmmPQL((bootSD_cond_trans+1)*100 ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber, ~1|NestID, family = gaussian(link = "log") ,
+				 data = condBootVar, weights = lmrWgts, niter = 10)
+
+summary(PQLMod)
+Anova(PQLMod)
+
+
+overdisp_fun(PQLMod)
+
+plot(fitted(PQLMod), residuals(PQLMod), xlab = "Fitted Values", ylab = "Residuals")
+abline(h = 0, lty = 2)
+lines(smooth.spline(fitted(PQLMod), residuals(PQLMod)))
