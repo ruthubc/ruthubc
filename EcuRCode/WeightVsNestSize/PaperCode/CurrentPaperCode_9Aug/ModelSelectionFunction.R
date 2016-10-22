@@ -94,8 +94,10 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n", nnL
 				formula    <- as.formula(x)
 				
 				if (nnLnr != "n"){
-					print("nmle test")
+					print("nlr test test")
 					fit <- lme(formula, random = ~1|NestID, weights = ~I(1/lmrWgts), data = dataset, method = "ML")
+					fit  <- glmmPQL((bootSD_cond_trans+1)*100 ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber, ~1|NestID, family = gaussian(link = "log") ,
+							data = condBootVar, weights = lmrWgts, niter = 10)
 				}
 				else if(weights == "n") {
 					

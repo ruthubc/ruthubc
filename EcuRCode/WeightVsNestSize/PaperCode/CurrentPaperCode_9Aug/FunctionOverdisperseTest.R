@@ -21,16 +21,22 @@ overdisp_fun <- function(model) {
 	pval <- pchisq(Pearson.chisq, df = rdf, lower.tail = FALSE)
 	c(chisq = Pearson.chisq, ratio = prat, rdf = rdf, p = pval)
 }
+library(MASS)
 
-
-
+summary(model)
 overdisp_fun(PQLMod)
 length(fixef(model))
+ranef(model)
+model.frame(model)
 
 model <- PQLMod
 Anova(model)
 
+dim(condVar)
+
 a_output <- VarCorr(model)
+getVarCov(model)
+an_model <- vcov(model) # fixed effect variance covariance matrix
 
 model.df <- sum(sapply(VarCorr(model), vpars)) + length(fixef(model))
 

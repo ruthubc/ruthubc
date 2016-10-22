@@ -198,10 +198,54 @@ mean(condBootVar$bootSD_var)*100
 
 PQLMod <- glmmPQL((bootSD_cond_trans+1)*100 ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber, ~1|NestID, family = gaussian(link = "log") ,
 				 data = condBootVar, weights = lmrWgts, niter = 10)
-
-summary(PQLMod)
+		 
+PQLMod2 <- glmmPQL((bootSD_cond_trans+1)*100 ~ InstarSex + InstarNumber + InstarSex:InstarNumber, ~1|NestID, family = gaussian(link = "log") ,
+				 data = condBootVar, weights = lmrWgts, niter = 10)
+		 
+anova.lme(PQLMod)
 Anova(PQLMod)
 
+		 
+		 
+waldtest(PQLMod, PQLMod2)
+
+library(lmtest)
+		 
+summary(PQLMod)
+Anova(PQLMod)
+conif()
+require(car)
+require(MASS)
+waldtest(PQLMod)
+AIC(PQLMod)
+
+library(bbmle)
+#https://cran.r-project.org/web/packages/bbmle/vignettes/quasi.pdf
+
+#dispersion parameter
+#That quantity is the square root of the penalized residual sum of
+#squares divided by n, the number of observations, evaluated as:
+
+dfun <- function(object) {
+	with(object,sum((weights * residuals^2)[weights > 0])/df.residual)
+}
+
+n <- length(model$residuals)
+
+return(  sqrt( sum(c(modelglmer@resid, modelglmer@u) ^2) / n ) )
+
+dfun(PQLMod)
+
+rp <- residuals(model, type = "pearson")
+Pearson.chisq <- sum(rp^2)
+
+model@u
+
+qAIC(PQLMod, dispersion = Pearson.chisq)
+
+library(aod)
+summary(PQLMod)
+wald.test(PQLMod)
 
 overdisp_fun(PQLMod)
 
