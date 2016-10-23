@@ -95,9 +95,11 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n", nnL
 				
 				if (nnLnr != "n"){
 					print("nlr test test")
-					fit <- lme(formula, random = ~1|NestID, weights = ~I(1/lmrWgts), data = dataset, method = "ML")
-					fit  <- glmmPQL((bootSD_cond_trans+1)*100 ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber, ~1|NestID, family = gaussian(link = "log") ,
-							data = condBootVar, weights = lmrWgts, niter = 10)
+					
+					formula <- update(formula, .~. +  (1|NestID))
+					print(formula)
+
+					try(fit <-  glmer(formula, family = gaussian(link = "log"), data = dataset, weights = lmrWgts, nAGQ = 10))
 				}
 				else if(weights == "n") {
 					
@@ -107,7 +109,9 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n", nnL
 					fit  <- lmer(formula + (1|NestID), data = dataset, weights = lmrWgts, REML = FALSE)
 					
 				}
-				result.AIC <- extractAIC(fit)
+				
+				result.AIC <- c(NA, NA)
+				try(result.AIC <- extractAIC(fit))
 				
 				data.frame(num.predictors = result.AIC[1],
 						AIC            = result.AIC[2],

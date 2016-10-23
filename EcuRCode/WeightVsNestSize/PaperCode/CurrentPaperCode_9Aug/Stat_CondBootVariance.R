@@ -3,6 +3,37 @@
 # Author: user
 ###############################################################################
 
+######## Final
+
+condBootVar$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
+condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100
+condBootVar$bootVarTrans <- condBootVar$bootVarTrans +0.0000001
+
+
+glmerMod <- glmer(bootVarTrans ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber +   (1|NestID), family = gaussian(link = "log") ,
+		data = condBootVar, weights = lmrWgts, nAGQ = 10)
+
+summary(glmerMod)
+
+glmerMod2 <- glmer((bootSD_cond_trans+1)*100 ~ InstarSex + InstarNumber + logCtFm +   (1|NestID), family = gaussian(link = "log") ,
+		data = condBootVar, weights = lmrWgts)
+
+plot(fitted(glmerMod), residuals(glmerMod), xlab = "Fitted Values", ylab = "Residuals")
+abline(h = 0, lty = 2)
+lines(smooth.spline(fitted(glmerMod), residuals(glmerMod)))
+
+
+outcome    <- c("bootVarTrans")
+predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex", 
+		"I(InstarNumber^2)", "I(InstarNumber^2):InstarSex","logCtFm:I(InstarNumber^2)", "logCtFm:I(InstarNumber^2):InstarSex")
+
+modTable <- allModelsAICWithSex(outcome, predictors, condBootVar, weights = "n", nnLnr = "y")
+
+
+update(as.formula(bootVarTrans ~ InstarSex + InstarNumber + logCtFm), .~. + (1|NestID))
+
+
+
 ########## Outputting the data to python  #
 
 mySpiders <- subset(spiders, !is.na(condResiduals))
@@ -47,6 +78,14 @@ dataset <- condBootVar
 ggplot(data = dataset, aes(x = bootSD_var)) + geom_histogram()
 
 condBootVar$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
+condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1
+condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100
+
+
+
+
+
+
 condBootVar$bootSD_cond_trans <- asin(sqrt(dataset$bootSD_var))
 
 ggplot(data = condBootVar, aes(x = bootVarTrans)) + geom_histogram()
@@ -196,19 +235,44 @@ qqp(condBootVar$bootSD_var, "gamma", shape = gamma$estimate[[1]], rate = gamma$e
 
 mean(condBootVar$bootSD_var)*100
 
+glmerMod <- glmer((bootSD_cond_trans+1) ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber +   (1|NestID), family = gaussian(link = "log") ,
+		data = condBootVar, weights = lmrWgts)
+
+glmerMod2 <- glmer((bootSD_cond_trans+1)*100 ~ InstarSex + InstarNumber + logCtFm +   (1|NestID), family = gaussian(link = "log") ,
+		data = condBootVar, weights = lmrWgts)
+
+plot(fitted(glmerMod), residuals(glmerMod), xlab = "Fitted Values", ylab = "Residuals")
+abline(h = 0, lty = 2)
+lines(smooth.spline(fitted(glmerMod), residuals(glmerMod)))
+
+summary(glmerMod)
+Anova(glmerMod)
+anova(glmerMod, glmerMod2)
+AIC(glmerMod2)
+
 PQLMod <- glmmPQL((bootSD_cond_trans+1)*100 ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber, ~1|NestID, family = gaussian(link = "log") ,
 				 data = condBootVar, weights = lmrWgts, niter = 10)
 		 
 PQLMod2 <- glmmPQL((bootSD_cond_trans+1)*100 ~ InstarSex + InstarNumber + InstarSex:InstarNumber, ~1|NestID, family = gaussian(link = "log") ,
 				 data = condBootVar, weights = lmrWgts, niter = 10)
-		 
+	
+summary(PQLMod)$dispersion
+dfbeta(PQLMod, intercept = TRUE)    	 
 anova.lme(PQLMod)
-Anova(PQLMod)
+Anova(PQLMod, type = c("II"), test.statistic = "Wald")
+logLik(PQLMod)
+df(PQLMod)
 
-		 
-		 
-waldtest(PQLMod, PQLMod2)
+(-2*(logLik(PQLMod2)-logLik(PQLMod)))
 
+PQLMod$dispersion
+
+c_hat(PQLMod,  method = "pearson")
+
+hat(PQLMod$varFix)
+		 
+
+library(AICcmodavg)
 library(lmtest)
 		 
 summary(PQLMod)
@@ -241,7 +305,7 @@ Pearson.chisq <- sum(rp^2)
 
 model@u
 
-qAIC(PQLMod, dispersion = Pearson.chisq)
+qAIC(PQLMod, dispersion = -0.4)
 
 library(aod)
 summary(PQLMod)
@@ -252,3 +316,11 @@ overdisp_fun(PQLMod)
 plot(fitted(PQLMod), residuals(PQLMod), xlab = "Fitted Values", ylab = "Residuals")
 abline(h = 0, lty = 2)
 lines(smooth.spline(fitted(PQLMod), residuals(PQLMod)))
+
+
+
+outcome    <- c("bootVarTrans")
+predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex", 
+		"I(InstarNumber^2)", "I(InstarNumber^2):InstarSex","logCtFm:I(InstarNumber^2)", "logCtFm:I(InstarNumber^2):InstarSex")
+
+modTable <- allModelsAICWithSex(outcome, predictors, dataset, weights = "n", nnLnr = "y")
