@@ -11,34 +11,24 @@ geometry: margin=1cm
 ```{r dataImport,  include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 
-#dataset <- read.csv("C:/Work/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
-#dataset <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
-#totSpis <- sum(dataset$N)
-#dataset$lmrWgts <- dataset$N/ totSpis
-
-
-#ggplot(data = dataset, aes(x = myIndex)) + geom_histogram()
-## myIndex is very normal, bootSD var is NOT
-#ggplot(data = dataset, aes(x = bootSD_var)) + geom_histogram()
-
-#dataset$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
-
-#ggplot(data = dataset, aes(x = bootVarTrans)) + geom_histogram()
+totSpis<- sum(condBootVar$N)
+condBootVar$lmrWgts <- condBootVar$N/totSpis
+condBootVar$bootVarTrans <- asin(sqrt(condBootVar$bootSD_var))
+condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100 # Making variance a percentage
+condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1 # have to add a small amount or glmer "can't find starting values"
 
 dataset <- condBootVar
+library(car)
 
 
 ```
 
-AIC Values of all possible models with instar included and sample size as weight
+AIC Values of all possible models with instar included and sample size as weight and glmer
 =====================
 Rows removed with 2 or fewer data points 
 
 ```{r kable, results='asis',  echo = FALSE}
 #pander options http://rapporter.github.io/pander/#general-options
-
-
-
 
 outcome    <- c("bootVarTrans")
 predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex", 
@@ -59,17 +49,49 @@ pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 
 lowestAICMod <- as.character(modTable$model[1])
 
 formula    <- as.formula(lowestAICMod)
-FullModel  <- lme(formula, random = ~1|NestID, weights = ~I(1/lmrWgts), data = dataset,  method = "ML")
+formula <- update(formula, .~. + (1|NestID))
+formula <- update(formula, .~. - logCtFm:I(InstarNumber^2))
+formula
+FullModel  <- glmer(formula , weights = lmrWgts, data = dataset,  nAGQ = 20, family = gaussian(link = "log"), control=glmerControl(optimizer="nlminb",
+				optCtrl=list(maxfun=2e7)))
+
+?getME
+getME(FullModel, "theta")
+sigma(FullModel) # residual degrees of freedom
+getME(FullModel, "offset")
+length(fixef(FullModel))
+getME()
+
+summary(FullModel)
+
+
+
+FullModel <- glmmPQL(formula, ~1|NestID, family = gaussian(link = "log") ,
+		data = condBootVar, weights = lmrWgts, niter = 10)
+Anova(FullModel)
+
+a_output <- fitted(FullModel)
+a_output <- residuals(FullModel)
+
+plot(fitted(FullModel), residuals(FullModel), xlab = "Fitted Values", ylab = "Residuals")
+abline(h = 0, lty = 2)
+lines(smooth.spline(fitted(FullModel), residuals(FullModel)))
+
+summary(PQLMod)
+
+
+# fix checkConv https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html
 	
 ```
-h
+note: Argument 'method' is deprecated. Use the nAGQ argument to specify Laplace (nAGQ=1) or adaptive Gauss-Hermite quadrature (nAGQ>1)
+
 Checking full model fit
 --------------------
 
 
 ```{r ModelFit, fig.height=3, fig.width=3}
 
-model_Check(FullModel)
+#model_Check(FullModel)
 
 ```
 \pagebreak
@@ -94,7 +116,7 @@ Statistics using model with the almost lowest AIC as full model
 
 # relativeVar  ~  logCtFm + logCtFm:InstarNumber  + (1|NestID)
 
-anova(FullModel)
+summary(FullModel)
 
 #TestNS <- c("Testing NestSize",  update(FullModel, .~. -logCtFm - logCtFm:InstarNumber))
 #InstModel <- c("Testing Instar age", update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2))))
@@ -113,7 +135,7 @@ Graph of condition variance against instar
 ```{r, fig.height=6, fig.width=8, echo = FALSE}
 
 
-ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = myIndex, fill = InstarSex)) +
-	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
+#ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = myIndex, fill = InstarSex)) +
+	#labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
 
 ```

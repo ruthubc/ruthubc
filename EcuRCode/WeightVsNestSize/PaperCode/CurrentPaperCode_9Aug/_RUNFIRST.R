@@ -57,17 +57,21 @@ mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2), pa
 
 
 # Francisco's insect biomass data
-Biomass <- read.csv("RuthSync/EggManipulation/FranciscoData_insectBiomass.csv")
-Biomass <- subset(Biomass, AdFemales > 0)  # removing the nests with no females
-Biomass <- subset(Biomass, Treatment == "Control")
-Biomass <- subset(Biomass, OverallID != 5) # removing an outlier that must be a mistake
-Biomass$log10AdFm <- log10(Biomass$AdFemales)
+#Biomass <- read.csv("RuthSync/EggManipulation/FranciscoData_insectBiomass.csv")
+#Biomass <- subset(Biomass, AdFemales > 0)  # removing the nests with no females
+#Biomass <- subset(Biomass, Treatment == "Control")
+#Biomass <- subset(Biomass, OverallID != 5) # removing an outlier that must be a mistake
+#Biomass$log10AdFm <- log10(Biomass$AdFemales)
 
-Biomass$biomass_mg <- Biomass$Tl_insect_biomass *1000
-Biomass$Lg10_biomass <- log10(Biomass$biomass_mg+1)
+#Biomass$biomass_mg <- Biomass$Tl_insect_biomass *1000
+#Biomass$Lg10_biomass <- log10(Biomass$biomass_mg+1)
 
-Biomass$BiomsPerAdFm <- Biomass$Lg10_biomass/Biomass$log10AdFm
+#Biomass$BiomsPerAdFm <- Biomass$Lg10_biomass/Biomass$log10AdFm
 
+# Condition variance
+condBootVar <- read.csv("RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
+totSpis<- sum(condBootVar$N)
+condBootVar$lmrWgts <- condBootVar$N/totSpis
 
 
 print("data imported")

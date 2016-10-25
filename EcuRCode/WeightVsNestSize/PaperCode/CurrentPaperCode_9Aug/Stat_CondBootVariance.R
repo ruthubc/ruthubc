@@ -5,13 +5,18 @@
 
 ######## Final
 
-condBootVar$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
+
+totSpis<- sum(condBootVar$N)
+condBootVar$lmrWgts <- condBootVar$N/totSpis
+condBootVar$bootVarTrans <- asin(sqrt(condBootVar$bootSD_var))
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans +0.0000001
 
 
 glmerMod <- glmer(bootVarTrans ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber +   (1|NestID), family = gaussian(link = "log") ,
 		data = condBootVar, weights = lmrWgts, nAGQ = 10)
+
+anova(glmerMod)
 
 summary(glmerMod)
 
@@ -26,6 +31,8 @@ lines(smooth.spline(fitted(glmerMod), residuals(glmerMod)))
 outcome    <- c("bootVarTrans")
 predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex", 
 		"I(InstarNumber^2)", "I(InstarNumber^2):InstarSex","logCtFm:I(InstarNumber^2)", "logCtFm:I(InstarNumber^2):InstarSex")
+
+predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex")
 
 modTable <- allModelsAICWithSex(outcome, predictors, condBootVar, weights = "n", nnLnr = "y")
 

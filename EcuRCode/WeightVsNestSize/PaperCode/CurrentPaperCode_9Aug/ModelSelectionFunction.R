@@ -130,8 +130,10 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n", nnL
 	
 	result <- result[(result$dup == "FALSE"), ]
 	
+	result$AIC <- ifelse(result$AIC == "-Inf", NA, result$AIC)
+	
 	result <- orderBy(~ AIC, result)	
-	lowestAIC <- min(result$AIC)
+	lowestAIC <- min(result$AIC, na.rm = TRUE)
 	result$AIC_Diff <- result$AIC - lowestAIC
 	
 	result <- result[, c('AIC_Diff', 'AIC', 'model', 'num.predictors')]
