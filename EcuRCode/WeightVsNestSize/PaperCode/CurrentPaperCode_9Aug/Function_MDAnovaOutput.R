@@ -24,12 +24,6 @@ for (i in seq(1:numTests)) {
 	RedLM <- RedModels[[i]][[2]]
 	
 	RedModFormula <- docxFmula(RedLM)
-
-	
-
-	
-	
-	
 	anv2 <- anova(FullModel, RedLM)
 	
 	pValue <- round(anv2[[8L]][2], digits = 3)

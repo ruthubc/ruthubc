@@ -18,7 +18,9 @@ condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100 # Making variance a per
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1 # have to add a small amount or glmer "can't find starting values"
 
 dataset <- condBootVar
+library(texreg)
 library(car)
+library(formula.tools)
 
 
 ```
@@ -30,54 +32,36 @@ Rows removed with 2 or fewer data points
 ```{r kable, results='asis',  echo = FALSE}
 #pander options http://rapporter.github.io/pander/#general-options
 
-outcome    <- c("bootVarTrans")
-predictors <- c("InstarNumber", "InstarNumber:InstarSex", "logCtFm:InstarNumber", "logCtFm:InstarNumber:InstarSex", 
-		"I(InstarNumber^2)", "I(InstarNumber^2):InstarSex","logCtFm:I(InstarNumber^2)", "logCtFm:I(InstarNumber^2):InstarSex")
-
-modTable <- allModelsAICWithSex(outcome, predictors, dataset, weights = "n", nnLnr = "y")
-
-row.names(modTable) <- NULL # removing row names
-
-panderOptions('table.split.table', Inf)
-panderOptions('round', 2)
-panderOptions('keep.trailing.zeros', TRUE)
-panderOptions('keep.line.breaks', TRUE)
-
-
-pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 2))
-
-lowestAICMod <- as.character(modTable$model[1])
-
-formula    <- as.formula(lowestAICMod)
-formula <- update(formula, .~. + (1|NestID))
-formula <- update(formula, .~. - logCtFm:I(InstarNumber^2))
-formula
-FullModel  <- glmer(formula , weights = lmrWgts, data = dataset,  nAGQ = 20, family = gaussian(link = "log"), control=glmerControl(optimizer="nlminb",
-				optCtrl=list(maxfun=2e7)))
-
-?getME
-getME(FullModel, "theta")
-sigma(FullModel) # residual degrees of freedom
-getME(FullModel, "offset")
-length(fixef(FullModel))
-getME()
-
-summary(FullModel)
 
 
 
-FullModel <- glmmPQL(formula, ~1|NestID, family = gaussian(link = "log") ,
-		data = condBootVar, weights = lmrWgts, niter = 10)
-Anova(FullModel)
+myFormula <- bootVarTrans ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
+		I(InstarNumber^2) + I(InstarNumber^2):InstarSex + logCtFm:I(InstarNumber^2) + logCtFm:I(InstarNumber^2):InstarSex
 
-a_output <- fitted(FullModel)
-a_output <- residuals(FullModel)
+pVal <- 1
+while(pVal > 0.01){
+	
+	modelOutput <- runGLMMPQR(myFormula)
+	myFormula <- reduceFormula(myFormula, modelOutput[[2]])
+	pVal <- modelOutput[[3]]
+	
+	
+}
 
-plot(fitted(FullModel), residuals(FullModel), xlab = "Fitted Values", ylab = "Residuals")
-abline(h = 0, lty = 2)
-lines(smooth.spline(fitted(FullModel), residuals(FullModel)))
+print("still want to have Instar Number")
 
-summary(PQLMod)
+
+
+#modelOutput <- runGLMMPQR(update(myFormula, .~. + InstarNumber + logCtFm))
+
+
+
+finalModel <- modelOutput[[1]]
+
+#summary(finalModel)
+
+
+
 
 
 # fix checkConv https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html
@@ -85,13 +69,17 @@ summary(PQLMod)
 ```
 note: Argument 'method' is deprecated. Use the nAGQ argument to specify Laplace (nAGQ=1) or adaptive Gauss-Hermite quadrature (nAGQ>1)
 
-Checking full model fit
+Checking final model fit
 --------------------
 
 
 ```{r ModelFit, fig.height=3, fig.width=3}
 
-#model_Check(FullModel)
+plot(fitted(finalModel), residuals(finalModel), xlab = "Fitted Values", ylab = "Residuals")
+abline(h = 0, lty = 2)
+lines(smooth.spline(fitted(finalModel), residuals(finalModel)))
+stdres(finalModel, "response")
+
 
 ```
 \pagebreak
@@ -103,30 +91,12 @@ note: blue line just lm model
 ```{r, fig.height=8, fig.width=12, echo = FALSE}
 
 
-#InstarGridGraph(dataset, "myIndex", "Variance in Condition", "n", "", FullModel, "y")
-
-```
-
-
-Statistics using model with the almost lowest AIC as full model
-====================
-
-
-```{r Stats,  results='asis', echo = FALSE , comment = "", message = FALSE, warning = FALSE}
-
-# relativeVar  ~  logCtFm + logCtFm:InstarNumber  + (1|NestID)
-
-summary(FullModel)
-
-#TestNS <- c("Testing NestSize",  update(FullModel, .~. -logCtFm - logCtFm:InstarNumber))
-#InstModel <- c("Testing Instar age", update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2))))
-
-#RedModels <- list(TestNS, InstModel)
-
-#MRAnovaFun(FullModel, RedModels)
+InstarGridGraph(dataset, "bootVarTrans", "Variance in Condition", "n", "", finalModel, "y")
 
 
 ```
+
+
 
 
 Graph of condition variance against instar
@@ -135,7 +105,7 @@ Graph of condition variance against instar
 ```{r, fig.height=6, fig.width=8, echo = FALSE}
 
 
-#ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = myIndex, fill = InstarSex)) +
-	#labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
+ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = myIndex, fill = InstarSex)) +
+	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
 
 ```

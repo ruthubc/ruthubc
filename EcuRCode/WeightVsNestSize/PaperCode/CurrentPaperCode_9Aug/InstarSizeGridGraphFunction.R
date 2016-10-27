@@ -65,7 +65,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	
 
 
-InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName = "", model, same_y_axis = "n" ) {	
+InstarGridGraph <- function(spiderData, variable, yaxisLabel, export ="n",  fileName = "", model = "noModel", same_y_axis = "n" ) {	
 	cat("Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead")
 	# whether or not to export the data
 	if (export == "y") {
@@ -89,12 +89,22 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export,  fileName 
 	
 	### Making table to plot the results of the lmer model
 	
-	predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
-			InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
+	if (typeof(model) == "character") {
+		predictDF <- ""
+		print("no model selected")
+		
+	} else {
 	
-	predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
 	
-	predictDF$lmrPrd <- predict(model, predictDF)
+	
+		#predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
+			#InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
+	
+		#predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
+		predictDF <- spiderData
+	
+		predictDF$lmrPrd <- predict(model, predictDF, type = "response")
+	}
 	
 	
 	
