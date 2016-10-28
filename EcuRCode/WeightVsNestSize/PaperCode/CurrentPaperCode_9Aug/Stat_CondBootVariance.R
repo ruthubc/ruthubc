@@ -12,6 +12,8 @@ condBootVar$bootVarTrans <- asin(sqrt(condBootVar$bootSD_var))
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans +0.0000001
 
+descdist(condBootVar$bootSD_var, discrete = FALSE)
+descdist(condBootVar$bootVarTrans, discrete = FALSE)
 
 glmerMod <- glmer(bootVarTrans ~ InstarSex + InstarNumber + logCtFm + InstarSex:InstarNumber +   (1|NestID), family = gaussian(link = "log") ,
 		data = condBootVar, weights = lmrWgts, nAGQ = 10)
@@ -76,15 +78,13 @@ addAmt <- (1/numbins)
 
 condBootVar <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
 condBootVar <- read.csv("C:/Work/Dropbox/RuthEcuador2013/NestSize/bootSampCondPython_cond_combined.csv")
-totSpis<- sum(condBootVar$N)
-condBootVar$lmrWgts <- condBootVar$N/totSpis
 
 
 dataset <- condBootVar
 ## myIndex is very normal, bootSD var is NOT
 ggplot(data = dataset, aes(x = bootSD_var)) + geom_histogram()
 
-condBootVar$bootVarTrans <- asin(sqrt(dataset$bootSD_var))
+condBootVar$bootVarTrans <- asin(sqrt(condBootVar$bootSD_var))
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100
 

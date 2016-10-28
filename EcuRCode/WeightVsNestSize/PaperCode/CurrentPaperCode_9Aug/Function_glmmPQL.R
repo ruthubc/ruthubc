@@ -8,8 +8,9 @@
 runGLMMPQR <- function(input_formula){
 	
 	
+	
 	outputModel<- glmmPQL(input_formula, ~1|NestID, family = gaussian(link = "log") ,
-			data = condBootVar, weights = lmrWgts, niter = 10)
+			data = myDataSet, weights = lmrWgts, niter = 10)
 	
 
 	results <- Anova(outputModel)
