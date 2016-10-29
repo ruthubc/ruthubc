@@ -88,6 +88,8 @@ ggplot(aes(SD_trans_beta_ladder), data = legBootVar) + geom_density()
 
 descdist(legBootVar$SD_trans_beta_ladder, discrete = FALSE)
 
+################## Final stat version as of 28th Friday Oct 2016 #########
+#although maybe use beta transformation thing
 
 legBootVar$bootVarTrans <- asin(sqrt(legBootVar$bootSD_var))
 legBootVar$bootVarTrans <- legBootVar$bootVarTrans +1
@@ -97,44 +99,35 @@ legBootVar$bootVarTrans <- legBootVar$bootVarTrans*100
 myFormula <- bootVarTrans~ logCtFm +  I(logCtFm^2) + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
 		I(InstarNumber^2) + I(InstarNumber^2):InstarSex + logCtFm:I(InstarNumber^2) + logCtFm:I(InstarNumber^2):InstarSex
 
+
+
 outputModel<- glmmPQL(myFormula, ~1|NestID, family = gaussian(link = "log") ,
 		data = legBootVar, weights = lmrWgts, niter = 20)
-Anova(outputModel)
-
-outputModel <- update(outputModel, .~. - logCtFm:InstarNumber)
-
-Anova(outputModel)
-
-outputModel <- update(outputModel, .~. - logCtFm:InstarNumber:InstarSex )
-
-Anova(outputModel)
 
 
-outputModel <-update(outputModel, .~. - logCtFm:I(InstarNumber^2):InstarSex )
-Anova(outputModel)
-
-outputModel <-update(outputModel, .~. - logCtFm )
-Anova(outputModel)
+runThing <- runGLMMPQR(myFormula, legBootVar)
 
 
-
-Anova(update(outputModel, .~. - logCtFm:I(InstarNumber^2)))
-
-Anova(update(outputModel, .~. - logCtFm:I(InstarNumber^2):InstarSex))
-
-
-plot(outputModel)
-
-myDataSet <- legBootVar
+myFormula <- bootVarTrans~ logCtFm +  I(logCtFm^2) + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
+		I(InstarNumber^2) + I(InstarNumber^2):InstarSex + logCtFm:I(InstarNumber^2) + logCtFm:I(InstarNumber^2):InstarSex + I(logCtFm^2):InstarNumber +
+		I(logCtFm^2):InstarNumber:InstarSex + I(logCtFm^2):I(InstarNumber^2) +  I(logCtFm^2):I(InstarNumber^2):InstarSex
 
 pVal <- 1
-while(pVal > 0.01){
+rhsFormula <- "something"
+while(pVal > 0.01 & rhsFormula != "1"){
 	
-	modelOutput <- runGLMMPQR(myFormula)
+	modelOutput <- runGLMMPQR(myFormula, legBootVar)
 	myFormula <- reduceFormula(myFormula, modelOutput[[2]])
+	
+	rhsFormula <- rhs(simplify.formula(myFormula))
+	cat("\n\n\rformula:", as.character(simplify.formula(myFormula)))
+	
+	if(rhsFormula == "1"){
+		cat("\n\rNo terms were significant")
+	}
+	
 	pVal <- modelOutput[[3]]
-	
-	
 }
 
-
+library(MuMIn)
+simplify.formula(myFormula)

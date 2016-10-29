@@ -19,9 +19,11 @@ library(xtable)
 library(pander)
 library(gridExtra)
 library(survival)
-library(muhaz)
+#library(muhaz)
 library(ggplot2)
 library(survminer)
+library(stargazer)
+library(formula.tools)
 
 
 

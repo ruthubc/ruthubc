@@ -5,16 +5,24 @@
 
 
 
-runGLMMPQR <- function(input_formula){
+runGLMMPQR <- function(input_formula, myDataSet, forPDF = "n"){
 	
-	
-	
+	DataSetGLMMRPQRFn <<- myDataSet # have to do this otherwise data not found
+
 	outputModel<- glmmPQL(input_formula, ~1|NestID, family = gaussian(link = "log") ,
-			data = myDataSet, weights = lmrWgts, niter = 10)
+			data = DataSetGLMMRPQRFn, weights = lmrWgts, niter = 10)	
 	
 
 	results <- Anova(outputModel)
-	stargazer(results,  summary = FALSE, title = "Anova of full model alone", header = FALSE)
+	
+	if (forPDF == "n") {
+		
+		print(Anova(outputModel))
+		
+	} else {
+		stargazer(results,  summary = FALSE, title = "Anova of full model alone", header = FALSE)
+	}
+	
 	
 	results$names<-rownames(results)
 	
@@ -24,16 +32,18 @@ runGLMMPQR <- function(input_formula){
 	
 	cat(paste("term with highest p value, ", max(results$`Pr(>Chisq)`), "is:", highTerm))
 	
+	
 	return(list(outputModel, highTerm, max(results$`Pr(>Chisq)`)))
+
 }
 
-reduceFormula <- function(oldFunction, varToRemove){
-	
+reduceFormula <- function(oldFormula, varToRemove){
+	 # make sure you have formula.tools package loaded
 
-	
-	newFormula <- as.formula(paste(as.character(oldFunction), "-", varToRemove))
+	newFormula <- as.formula(paste(as.character(oldFormula), "-", varToRemove))
 	return(newFormula)
 	
 	
 	
 }
+
