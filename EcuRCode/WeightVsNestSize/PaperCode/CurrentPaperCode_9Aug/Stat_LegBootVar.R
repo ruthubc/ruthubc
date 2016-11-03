@@ -114,6 +114,8 @@ myFormula <- bootVarTrans~ logCtFm +  I(logCtFm^2) + InstarNumber + InstarNumber
 
 pVal <- 1
 rhsFormula <- "something"
+
+sink("LegBootVar.txt")
 while(pVal > 0.01 & rhsFormula != "1"){
 	
 	modelOutput <- runGLMMPQR(myFormula, legBootVar)
@@ -129,5 +131,6 @@ while(pVal > 0.01 & rhsFormula != "1"){
 	pVal <- modelOutput[[3]]
 }
 
+sink()
 library(MuMIn)
 simplify.formula(myFormula)
