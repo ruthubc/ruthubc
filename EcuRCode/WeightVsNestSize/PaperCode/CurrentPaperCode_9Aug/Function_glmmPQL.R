@@ -3,6 +3,30 @@
 # Author: Ruth
 ###############################################################################
 
+addStars_anova <- function(input_anova){
+	
+	# Extract the p-values
+	pvals <- input_anova$`Pr(>Chisq)`
+	
+# Use the symnum function to produce the symbols
+	sigSymbols <- symnum(pvals, na = FALSE, 
+        	cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+        	symbols = c("***", "**", "*", ".", " "), legend = FALSE)
+	
+	stars <- as.matrix(unclass(sigSymbols))
+	
+	binded <- cbind(a_anova, stars)
+	binded$p_value <- paste(as.character(round(binded$`Pr(>Chisq)`, 3)), as.character(binded$stars))
+	
+	binded <- subset(binded, select = -c(`Pr(>Chisq)`, stars) )
+	
+	binded$Chisq <- round(binded$Chisq, 3)
+	
+	return(binded)
+	
+	
+}
+
 
 
 runGLMMPQR <- function(input_formula, myDataSet, forPDF = "n"){
@@ -20,7 +44,8 @@ runGLMMPQR <- function(input_formula, myDataSet, forPDF = "n"){
 		print(Anova(outputModel))
 		
 	} else {
-		stargazer(results,  summary = FALSE, title = "Anova of full model alone", header = FALSE)
+		results_stars <- addStars_anova(results)
+		stargazer(results_stars,  summary = FALSE, title = "Anova of full model alone", header = FALSE)
 	}
 	
 	

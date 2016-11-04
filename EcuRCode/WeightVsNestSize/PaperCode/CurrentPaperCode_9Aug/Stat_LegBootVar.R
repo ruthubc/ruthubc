@@ -92,8 +92,9 @@ descdist(legBootVar$SD_trans_beta_ladder, discrete = FALSE)
 #although maybe use beta transformation thing
 
 legBootVar$bootVarTrans <- asin(sqrt(legBootVar$bootSD_var))
-legBootVar$bootVarTrans <- legBootVar$bootVarTrans +1
 legBootVar$bootVarTrans <- legBootVar$bootVarTrans*100
+legBootVar$bootVarTrans <- legBootVar$bootVarTrans +1
+
 
 
 myFormula <- bootVarTrans~ logCtFm +  I(logCtFm^2) + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
@@ -107,6 +108,8 @@ outputModel<- glmmPQL(myFormula, ~1|NestID, family = gaussian(link = "log") ,
 
 runThing <- runGLMMPQR(myFormula, legBootVar)
 
+legBootVar_two <- subset(legBootVar, Instar != "Adult" & bootVarTrans < 160)
+
 
 myFormula <- bootVarTrans~ logCtFm +  I(logCtFm^2) + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
 		I(InstarNumber^2) + I(InstarNumber^2):InstarSex + logCtFm:I(InstarNumber^2) + logCtFm:I(InstarNumber^2):InstarSex + I(logCtFm^2):InstarNumber +
@@ -115,7 +118,7 @@ myFormula <- bootVarTrans~ logCtFm +  I(logCtFm^2) + InstarNumber + InstarNumber
 pVal <- 1
 rhsFormula <- "something"
 
-sink("LegBootVar.txt")
+sink("LegBootVar_home.txt")
 while(pVal > 0.01 & rhsFormula != "1"){
 	
 	modelOutput <- runGLMMPQR(myFormula, legBootVar)
@@ -132,5 +135,44 @@ while(pVal > 0.01 & rhsFormula != "1"){
 }
 
 sink()
-library(MuMIn)
-simplify.formula(myFormula)
+closeAllConnections()
+SigFormula <- bootVarTrans ~ InstarNumber + logCtFm:InstarNumber + logCtFm:I(InstarNumber^2) + I(logCtFm^2):InstarNumber + I(logCtFm^2):I(InstarNumber^2)
+SigFormula
+
+a_runThing <- runGLMMPQR(SigFormula, legBootVar)
+
+plot(a_runThing[[1]])
+addStars_anova(Anova(a_runThing[[1]]))
+stargazer(Anova(a_runThing[[1]]))
+a_anova <- Anova(a_runThing[[1]])
+a_aov <- aov(a_runThing[[1]])
+attr(a_anova, "heading")
+
+# Extract the p-values
+pvals <- a_anova$`Pr(>Chisq)`
+
+# Use the symnum function to produce the symbols
+sigSymbols <- symnum(pvals, na = FALSE, 
+        cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+        symbols = c("***", "**", "*", ".", " "), legend = FALSE)
+
+as.data.frame(sigSymbols)
+a_thing <- c(sigSymbols, recursive = FALSE)
+a_thing <- print(sigSymbols)
+stars <- as.matrix(unclass(sigSymbols))
+
+ap <- cbind(a_anova, stars)
+
+InstarGridGraph(legBootVar, "bootVarTrans", "leg boot var", "n", "", a_runThing[[1]], "y")
+
+methods(summary)
+methods(class = "aov")
+methods("[[")    # uses C-internal dispatching
+methods("$")
+methods("$<-")   # replacement function
+methods("+")     # binary operator
+methods("Math")  
+methods(class = "Matrix")# nothing
+showMethods(class = "Matrix")# everything
+methods(Anova)
+methods(plot)
