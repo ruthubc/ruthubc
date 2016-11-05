@@ -176,3 +176,14 @@ methods(class = "Matrix")# nothing
 showMethods(class = "Matrix")# everything
 methods(Anova)
 methods(plot)
+methods(class = "glmmPQL")
+showMethods(class = "glmmPQL")
+
+testModel <- modelOutput[[1]]
+aov(testModel)
+deviance(testModel)
+summary(testModel)$deviance
+a_output <- dredge(testModel)
+QAIC(testModel, chat = 1)
+
+results_stars <- addStars_anova(Anova(testModel))

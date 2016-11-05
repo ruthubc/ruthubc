@@ -1,15 +1,18 @@
 
 
+
 ---
 title: "Variance in Condition vs Nest Size Instar As Number"
 author: "Ruth Sharpe"
-date: "Run on `r format(Sys.time(), '%d %B, %Y')`"
+date: "Run on `r format(Sys.time(), '%d %B, %Y')` at `r Sys.time()`"
 geometry: margin=1cm
-
+header-includes:
+    - \usepackage{float}
 ---
 
 ```{r dataImport,  include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+options(xtable.comment = FALSE, xtable.table.placement="H")
 
 totSpis<- sum(condBootVar$N)
 condBootVar$lmrWgts <- condBootVar$N/totSpis
@@ -41,7 +44,7 @@ myFormula <- bootVarTrans ~ logCtFm + InstarNumber + InstarNumber:InstarSex + lo
 pVal <- 1
 while(pVal > 0.01){
 	
-	modelOutput <- runGLMMPQR(myFormula)
+	modelOutput <- runGLMMPQR(myFormula, dataset, "y" )
 	myFormula <- reduceFormula(myFormula, modelOutput[[2]])
 	pVal <- modelOutput[[3]]
 	
@@ -75,10 +78,10 @@ Checking final model fit
 
 ```{r ModelFit, fig.height=3, fig.width=3}
 
-plot(fitted(finalModel), residuals(finalModel), xlab = "Fitted Values", ylab = "Residuals")
-abline(h = 0, lty = 2)
-lines(smooth.spline(fitted(finalModel), residuals(finalModel)))
-stdres(finalModel, "response")
+#plot(fitted(finalModel), residuals(finalModel), xlab = "Fitted Values", ylab = "Residuals")
+#abline(h = 0, lty = 2)
+#lines(smooth.spline(fitted(finalModel), residuals(finalModel)))
+#stdres(finalModel, "response")
 
 
 ```

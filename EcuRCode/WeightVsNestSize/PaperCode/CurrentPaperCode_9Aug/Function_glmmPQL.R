@@ -15,7 +15,7 @@ addStars_anova <- function(input_anova){
 	
 	stars <- as.matrix(unclass(sigSymbols))
 	
-	binded <- cbind(a_anova, stars)
+	binded <- cbind(input_anova, stars)
 	binded$p_value <- paste(as.character(round(binded$`Pr(>Chisq)`, 3)), as.character(binded$stars))
 	
 	binded <- subset(binded, select = -c(`Pr(>Chisq)`, stars) )
@@ -45,7 +45,10 @@ runGLMMPQR <- function(input_formula, myDataSet, forPDF = "n"){
 		
 	} else {
 		results_stars <- addStars_anova(results)
-		stargazer(results_stars,  summary = FALSE, title = "Anova of full model alone", header = FALSE)
+		print(xtable(results_stars,  summary = FALSE, title = "Anova of full model alone", latex.environments = "left", align = 'llll'))
+		#x <- gsub("cccc", "lccc", x)
+		#print("text")
+		#x
 	}
 	
 	
@@ -55,7 +58,7 @@ runGLMMPQR <- function(input_formula, myDataSet, forPDF = "n"){
 	
 	highTerm <- results[which(results$`Pr(>Chisq)` == max(results$`Pr(>Chisq)`)), ]$names # gets the variable with the highest pvalue
 	
-	cat(paste("term with highest p value, ", max(results$`Pr(>Chisq)`), "is:", highTerm))
+	print(paste("term with highest p value, ", max(results$`Pr(>Chisq)`), "is:", highTerm))
 	
 	
 	return(list(outputModel, highTerm, max(results$`Pr(>Chisq)`)))
