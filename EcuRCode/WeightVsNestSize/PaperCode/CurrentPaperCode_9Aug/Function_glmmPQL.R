@@ -16,15 +16,43 @@ addStars_anova <- function(input_anova){
 	stars <- as.matrix(unclass(sigSymbols))
 	
 	binded <- cbind(input_anova, stars)
-	binded$p_value <- paste(as.character(round(binded$`Pr(>Chisq)`, 3)), as.character(binded$stars))
+	binded$stars <- ifelse(binded$`Pr(>Chisq)`== max(binded$`Pr(>Chisq)`) & binded$`Pr(>Chisq)` > 0.05 , " RMVD", as.character(binded$stars))
 	
-	binded <- subset(binded, select = -c(`Pr(>Chisq)`, stars) )
+	binded$p_value <- paste(sprintf("%.3f", round(binded$`Pr(>Chisq)`,3)), binded$stars, sep="")
 	
+	binded <- subset(binded, select = -c(`Pr(>Chisq)`, stars))
 	binded$Chisq <- round(binded$Chisq, 3)
+	
 	
 	return(binded)
 	
 	
+}
+
+addStarsOnly_anova <- function(input_model){
+	
+	input_anova <- Anova(input_model)
+	# Extract the p-values
+	pvals <- input_anova$`Pr(>Chisq)`
+	
+# Use the symnum function to produce the symbols
+	sigSymbols <- symnum(pvals, na = FALSE, 
+			cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+			symbols = c("***", "**", "*", ".", " "),
+					legend = FALSE)
+	
+	stars <- as.matrix(unclass(sigSymbols))
+	
+	input_anova$parameters<-rownames(varBootCondAnova)
+	
+	binded <- cbind(input_anova, stars)
+	
+	binded$Chisq <- sprintf("%.3f", round(binded$Chisq,3))
+	
+	binded$pValue <- ifelse(input_anova$`Pr(>Chisq)` <0.001, "< 0.001", paste("=", sprintf("%.3f", round(binded$`Pr(>Chisq)`,3)) ))
+	
+	
+	return(binded)
 }
 
 
@@ -58,7 +86,7 @@ runGLMMPQR <- function(input_formula, myDataSet, forPDF = "n"){
 	
 	highTerm <- results[which(results$`Pr(>Chisq)` == max(results$`Pr(>Chisq)`)), ]$names # gets the variable with the highest pvalue
 	
-	print(paste("term with highest p value, ", max(results$`Pr(>Chisq)`), "is:", highTerm))
+	print(paste("term with highest p value is:", highTerm))
 	
 	
 	return(list(outputModel, highTerm, max(results$`Pr(>Chisq)`)))

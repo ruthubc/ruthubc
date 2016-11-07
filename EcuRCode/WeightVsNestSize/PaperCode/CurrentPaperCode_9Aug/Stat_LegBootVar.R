@@ -175,9 +175,14 @@ methods("Math")
 methods(class = "Matrix")# nothing
 showMethods(class = "Matrix")# everything
 methods(Anova)
+methods(class = "Anova")
+methods(Anova)
+showMethods(class = "Anova")
 methods(plot)
 methods(class = "glmmPQL")
 showMethods(class = "glmmPQL")
+
+fitted(varBootCondAnova)
 
 testModel <- modelOutput[[1]]
 aov(testModel)

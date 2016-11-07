@@ -24,17 +24,17 @@ dataset <- condBootVar
 library(texreg)
 library(car)
 library(formula.tools)
+library(MuMIn)
 
 
 ```
 
-AIC Values of all possible models with instar included and sample size as weight and glmer
+glmmPRQ model - not able to get AIC value
 =====================
 Rows removed with 2 or fewer data points 
 
-```{r kable, results='asis',  echo = FALSE}
+```{r kable, results='asis',  echo = FALSE, warning = FALSE, message = FALSE, comment = FALSE}
 #pander options http://rapporter.github.io/pander/#general-options
-
 
 
 
@@ -51,26 +51,15 @@ while(pVal > 0.01){
 	
 }
 
-print("still want to have Instar Number")
 
-
-
-#modelOutput <- runGLMMPQR(update(myFormula, .~. + InstarNumber + logCtFm))
+cat("\nFinal Model is: ", as.character(simplify.formula(myFormula)))
 
 
 
 finalModel <- modelOutput[[1]]
-
-#summary(finalModel)
-
-
-
-
-
 # fix checkConv https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html
 	
 ```
-note: Argument 'method' is deprecated. Use the nAGQ argument to specify Laplace (nAGQ=1) or adaptive Gauss-Hermite quadrature (nAGQ>1)
 
 Checking final model fit
 --------------------

@@ -330,65 +330,48 @@ linear model with a significat quadratic instar term.
 
 ### Condition Variance
 
-```{r CondVarNS, results='asis',  echo = FALSE}
+```{r CondVar, results='asis',  echo = FALSE, message = FALSE, warning = FALSE}
 
-minN <- 2
-condVarUpdate <- subset(condVar, N > minN)
-totSpis <- sum(condVarUpdate$N)
-condVarUpdate$lmrWgts <- condVarUpdate$N/ totSpis
+# formatting the data
+totSpis<- sum(condBootVar$N)
+condBootVar$lmrWgts <- condBootVar$N/totSpis
+condBootVar$bootVarTrans <- asin(sqrt(condBootVar$bootSD_var))
+condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100 # Making variance a percentage
+condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1 # have to add a small amount or glmer "can't find starting values"
 
-
-FullModel <- lmer(relativeVar ~ logCtFm + InstarNumber + InstarNumber:InstarSex + I(InstarNumber^2) + 
-				I(InstarNumber^2):InstarSex + (1|NestID), weights = lmrWgts, data = condVarUpdate, REML = FALSE)
-
-modelList$test <- c(modelList$test, "Condition variance")
-modelList$fullModel <- c(modelList$fullModel, docxFmula(FullModel))
-
-
-RedModNS <- update(FullModel, .~. - logCtFm)
+# running the model
+condBootFormula <-  bootVarTrans ~ logCtFm + InstarNumber:InstarSex + InstarSex:I(InstarNumber^2)
+varBootCondMod <- glmmPQL(condBootFormula, ~1|NestID, family = gaussian(link = "log"), data = condBootVar, weights = lmrWgts, niter = 10)		
+varBootCondAnova <- addStarsOnly_anova(varBootCondMod)
 
 
-NSResults <- outputResultsWord(FullModel, RedModNS)
+# seperating the results for easier printing below
+NSCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "logCtFm"),]
+InstarSexCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarNumber:InstarSex"),]
+InstarSexSqrCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarSex:I(InstarNumber^2)"),]
+
 	
 ```
-The model with the lowest AIC included instar age, instar sex, instar age squared and the interaction instar age squared x instar sex.
+Only colony size, instar age by sex interacion and instar age squared by sex
+were significant.
 
 
-Colony size was not significant (lmer; $\chi$^2^~`r NSResults[[1]]`
-,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
-`r NSResults[[5]]`),
+Colony size was significant (glmmPQR; $\chi$^2^~`r NSCondRes$Df`~ =
+`r NSCondRes$Chisq`, p `r NSCondRes$pValue` `r NSCondRes$stars`),
 
-```{r CondVarInstar, results='asis',  echo = FALSE}
+as was instar age crossed with sex (glmmPQR; $\chi$^2^~`r InstarSexCondRes$Df`~
+= `r InstarSexCondRes$Chisq`, p `r InstarSexCondRes$pValue`
+`r InstarSexCondRes$stars`) 
 
-
-
-RedModInt <- update(FullModel, .~. - (InstarNumber + I(InstarNumber^2) + InstarNumber:InstarSex + InstarSex:I(InstarNumber^2)))
-
-IntResults <- outputResultsWord(FullModel, RedModInt)
-	
-```
-but instar age was significant (lmer; $\chi$^2^~`r IntResults[[1]]` ,`r IntResults[[2]]`~= `r IntResults[[3]]`, p = `r IntResults[[4]]`
-`r IntResults[[5]]`).
-
-
-```{r CondVarInstarSexInteraction, results='asis',  echo = FALSE}
-
-
-RedModIntSex <- update(FullModel, .~. -  (InstarNumber:InstarSex + InstarSex:I(InstarNumber^2)))
-#formula(RedModIntSex)
-
-IntSexResults <- outputResultsWord(FullModel, RedModIntSex)
-	
-```
-In addition, the instar age x sex interaction was also significant (lmer; $\chi$^2^~`r IntSexResults[[1]]`
-,`r IntSexResults[[2]]`~= `r IntSexResults[[3]]`, p = `r IntSexResults[[4]]`
-`r IntSexResults[[5]]`), with the variance in condition within nests being larger for males compared to females (figure 7)
+and instar age squared crossed with sex (glmmPQR;
+$\chi$^2^~`r InstarSexSqrCondRes$Df`~ = `r InstarSexSqrCondRes$Chisq`, p
+`r InstarSexSqrCondRes$pValue` `r InstarSexSqrCondRes$stars`).
 
 
 ```{r ConditionVarGraph, fig.height=7, fig.width=13}
 
 
-InstarGridGraph(condVarUpdate, "relativeVar", "Variance in Condition", "n", "", FullModel, "y")
+InstarGridGraph(condBootVar, "bootVarTrans", "Variance in Condition", "n", "", varBootCondMod, "y")
 
 ```
   
@@ -398,22 +381,22 @@ InstarGridGraph(condVarUpdate, "relativeVar", "Variance in Condition", "n", "", 
 ```{r instarCondVarGraph, fig.height=4, fig.width=5, echo = FALSE}
 
 		
-InstarOnlyModel <- lmer(relativeVar ~InstarNumber + I(InstarNumber^2) + (1|NestID), weights = lmrWgts, data = condVarUpdate, REML = FALSE)
+#InstarOnlyModel <- lmer(relativeVar ~InstarNumber + I(InstarNumber^2) + (1|NestID), weights = lmrWgts, data = condVarUpdate, REML = FALSE)
 
 		
-a_predictDF <- expand.grid(InstarNumber = seq(4, 7, by = 0.1),  NestID = c("44.4EX12"))
+#a_predictDF <- expand.grid(InstarNumber = seq(4, 7, by = 0.1),  NestID = c("44.4EX12"))
 		
 		
-a_predictDF$lmrPrd <- predict(InstarOnlyModel, a_predictDF)
+#a_predictDF$lmrPrd <- predict(InstarOnlyModel, a_predictDF)
 		
 		
 		
-plot <- ggplot(data = a_predictDF, aes(x = InstarNumber, y = lmrPrd)) + 
-		labs(x = "Instar") + labs(y = "Variance in Condition") + geom_line() + mytheme
+#plot <- ggplot(data = a_predictDF, aes(x = InstarNumber, y = lmrPrd)) + 
+		#labs(x = "Instar") + labs(y = "Variance in Condition") + geom_line() + mytheme
 		
-plot <- plot + geom_boxplot(data = condVarUpdate, aes(x = InstarNumber, y = relativeVar, group = Instar, fill = InstarSex)) + 
+plot <- plot + geom_boxplot(data = condBootVar, aes(x = InstarNumber, y = bootVarTrans, group = Instar, fill = InstarSex)) + 
 		scale_x_continuous(breaks=c(3,4,5,6,7, 8))
-plot + geom_line(data = a_predictDF, aes(y= lmrPrd), size = 0.5)
+#plot + geom_line(data = a_predictDF, aes(y= lmrPrd), size = 0.5)
 		
 ```
 
