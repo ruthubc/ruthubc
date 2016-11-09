@@ -69,7 +69,7 @@ runGLMMPQR <- function(input_formula, myDataSet, forPDF = "n"){
 	
 	if (forPDF == "n") {
 		
-		print(Anova(outputModel))
+		print(summary(outputModel))
 		
 	} else {
 		results_stars <- addStars_anova(results)
