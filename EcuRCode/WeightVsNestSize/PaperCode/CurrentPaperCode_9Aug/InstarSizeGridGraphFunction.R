@@ -38,7 +38,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 			theme(panel.margin= unit(0.0, "lines")) + theme(plot.title = element_text(size=15))
 	
 	
-	if (typeof(model) == "character") {
+	if (typeof(model) == "character") { # no model specified
 		
 		p <- p + stat_smooth(method = "lm", formula = y~x, se = FALSE)
 		
@@ -87,23 +87,26 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export ="n",  file
 	
 	spiderData$variable <- spiderData[,column_index]
 	
-	### Making table to plot the results of the lmer model
+	### Making table to plot the results of the model
 	
 	if (typeof(model) == "character") {
 		predictDF <- ""
 		print("no model selected")
 		
-	} else {
-	
-	
-	
-		#predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
-			#InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
-	
-		#predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
+	} else if(class(model)[1] == "glmmPQL") {
+		
+		#print("glmmpql")
+		
 		predictDF <- spiderData
-	
+		
 		predictDF$lmrPrd <- predict(model, predictDF, type = "response")
+		
+	}else{
+		predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
+		InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
+		
+		predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
+		
 	}
 	
 	

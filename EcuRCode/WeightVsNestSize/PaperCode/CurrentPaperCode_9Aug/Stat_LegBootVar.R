@@ -195,3 +195,20 @@ a_output <- dredge(testModel)
 QAIC(testModel, chat = 1)
 
 results_stars <- addStars_anova(Anova(testModel))
+
+
+obj <- varBootCondMod
+obj <- FullModel
+
+
+typeof(obj)
+modelClass <- class(obj)[1]
+modelClass[1]
+
+sapply(obj, class)
+sapply(obj, attributes)
+attributes(obj)
+names(obj)
+
+model <- varBootCondMod
+model <- FullModel
