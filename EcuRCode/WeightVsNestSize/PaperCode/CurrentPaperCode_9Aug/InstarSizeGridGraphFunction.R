@@ -89,25 +89,41 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export ="n",  file
 	
 	### Making table to plot the results of the model
 	
-	if (typeof(model) == "character") {
-		predictDF <- ""
-		print("no model selected")
-		
-	} else if(class(model)[1] == "glmmPQL") {
-		
-		#print("glmmpql")
-		
-		predictDF <- spiderData
-		
-		predictDF$lmrPrd <- predict(model, predictDF, type = "response")
-		
-	}else{
-		predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
-		InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
-		
-		predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
-		
-	}
+	
+	
+	p <- tryCatch(
+			{
+				if (typeof(model) == "character") {
+					predictDF <- ""
+					print("no model selected")
+					
+				} else if(class(model)[1] == "glmmPQL") {
+					
+					print("glmmpql")
+					
+					predictDF <- spiderData
+					
+					predictDF$lmrPrd <- predict(model, predictDF, type = "response")
+					
+				}else{
+					print("lmer")
+					predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
+							InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
+					
+					predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
+					
+					predictDF$lmrPrd <- predict(model, predictDF)
+					
+				}			
+				
+				
+				
+			},
+			error=function(cond) {
+				predictDF <- ""
+			})
+	
+
 	
 	
 	

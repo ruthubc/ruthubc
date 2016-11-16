@@ -45,7 +45,7 @@ outputResultsWord <- function(FullModel, RedModel) {
 
 docxFmula <- function(model) {
 	
-	txForm <- formula(model)
+	txForm <- as.character(formula(model))
 	txForm <- gsub("[]^ _()`|]", "",  txForm)
 	txForm <- gsub("1", "",  txForm)
 	txForm <- gsub("[+]", " + ",  txForm)
@@ -54,7 +54,8 @@ docxFmula <- function(model) {
 	txForm <- gsub("OrigNest", "(1|OrigNst)", txForm)
 	txForm <- gsub("Nest", "(1|Nest)", txForm)
 	txForm <- gsub("InstarNumber", "InstarAge", txForm)
-	txForm <- paste(txForm[2], txForm[3], sep = (" = "))
+	txForm <- gsub("bootVarTrans", "Variance", txForm)
+	txForm <- gsub("~", "=", txForm)
 	return(txForm)
 	
 	
@@ -69,8 +70,12 @@ docxFmulaNoRan <- function(model) {
 	txForm <- sub("NestID", "Nest", txForm)
 	txForm <- gsub("IInstarNumber2", "sqr(InstarAge)", txForm)
 	txForm <- gsub("InstarNumber", "InstarAge", txForm)
-	txForm <- paste(txForm[2], txForm[3], sep = (" = "))
+	txForm <- gsub("~", "=", txForm)
 	return(txForm)
 	
 	
 }
+
+
+
+

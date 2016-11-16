@@ -43,7 +43,7 @@ addStarsOnly_anova <- function(input_model){
 	
 	stars <- as.matrix(unclass(sigSymbols))
 	
-	input_anova$parameters<-rownames(varBootCondAnova)
+	input_anova$parameters<-rownames(input_anova)
 	
 	binded <- cbind(input_anova, stars)
 	

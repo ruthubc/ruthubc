@@ -103,11 +103,21 @@ myFormula <- bootVarTrans~ logCtFm +  I(logCtFm^2) + InstarNumber + InstarNumber
 myFormula <- bootVarTrans~ logCtFm  + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
 		I(InstarNumber^2) + I(InstarNumber^2):InstarSex + logCtFm:I(InstarNumber^2) + logCtFm:I(InstarNumber^2):InstarSex
 
+
+myFormula <- bootVarTrans~ logCtFm  + InstarNumber + logCtFm:InstarNumber + 
+		I(InstarNumber^2) + logCtFm:I(InstarNumber^2) + logCtFm:I(InstarNumber^2):InstarSex
+
+
+myFormula <- bootVarTrans~ logCtFm  + InstarNumber + I(InstarNumber^2)
+
+myFormula <- bootVarTrans~  InstarNumber + I(InstarNumber^2)
+
+
 outputModel<- glmmPQL(myFormula, ~1|NestID, family = gaussian(link = "log") ,
 		data = legBootVar, weights = lmrWgts, niter = 20)
 
 summary(outputModel)
-
+Anova(outputModel)
 
 runThing <- runGLMMPQR(myFormula, legBootVar)
 
