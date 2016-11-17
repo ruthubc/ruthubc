@@ -32,10 +32,10 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 		
 	
 	p <- p + geom_point() + ggtitle(current.Instar) + 				
-			scale_x_log10(limits = c(minNstSz, 6000 )) + theme_classic(base_size=15) + 
+			scale_x_log10(limits = c(minNstSz, 6000 )) + theme_classic(base_size=20) + 
 			theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
 			theme(panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1)) +
-			theme(panel.margin= unit(0.0, "lines")) + theme(plot.title = element_text(size=15))
+			theme(panel.margin= unit(0.0, "lines")) + theme(plot.title = element_text(size=20))
 	
 	
 	if (typeof(model) == "character") { # no model specified
@@ -175,8 +175,8 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export ="n",  file
 	# adding text
 	grid.text('Females', vp=define_region(1,2), gp=gpar(fontsize=18))#x=1.1, y=0.1)# adds text to the plot
 	grid.text('  Males', vp=define_region(4,2), gp=gpar(fontsize=18))
-	grid.text('Colony Size (Number of Adult Females)', vp=define_region(5,3:4), x=0.5, y=1, gp=gpar(fontsize=15))
-	grid.text(yaxisLabel, vp=define_region(2:3,1), rot = 90, just = "top", x=0.8, y=0.5, gp=gpar(fontsize=15))
+	grid.text('Colony Size (Number of Adult Females)', vp=define_region(5,3:4), x=0.5, y=1, gp=gpar(fontsize=18))
+	grid.text(yaxisLabel, vp=define_region(2:3,1), rot = 90, just = "top", x=0.8, y=0.5, gp=gpar(fontsize=18))
 
 	## Arrows on graph
 	arrow_gp <- gpar(fill = TRUE, lwd = 3)

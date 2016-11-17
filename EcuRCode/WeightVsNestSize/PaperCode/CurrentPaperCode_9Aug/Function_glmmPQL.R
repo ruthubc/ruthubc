@@ -20,7 +20,7 @@ addStars_anova <- function(input_anova){
 	
 	binded$p_value <- paste(sprintf("%.3f", round(binded$`Pr(>Chisq)`,3)), binded$stars, sep="")
 	
-	binded <- subset(binded, select = -c(`Pr(>Chisq)`, stars))
+	binded <- subset(binded, select = -c(`Pr(>Chisq)`, as.character(stars)))
 	binded$Chisq <- round(binded$Chisq, 3)
 	
 	
@@ -37,8 +37,8 @@ addStarsOnly_anova <- function(input_model){
 	
 # Use the symnum function to produce the symbols
 	sigSymbols <- symnum(pvals, na = FALSE, 
-			cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
-			symbols = c("***", "**", "*", ".", " "),
+			cutpoints = c(0, 0.001, 0.01, 0.05, 0.1), 
+			symbols = c("*** ", "** ", "* ", " "),
 					legend = FALSE)
 	
 	stars <- as.matrix(unclass(sigSymbols))
@@ -50,7 +50,7 @@ addStarsOnly_anova <- function(input_model){
 	binded$Chisq <- sprintf("%.3f", round(binded$Chisq,3))
 	
 	binded$pValue <- ifelse(input_anova$`Pr(>Chisq)` <0.001, "< 0.001", paste("=", sprintf("%.3f", round(binded$`Pr(>Chisq)`,3)) ))
-	
+	binded$stars <- as.character(binded$stars)
 	
 	return(binded)
 }

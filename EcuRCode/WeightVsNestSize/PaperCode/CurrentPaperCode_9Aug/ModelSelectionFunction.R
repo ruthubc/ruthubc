@@ -94,7 +94,7 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n", nnL
 				formula    <- as.formula(x)
 				
 				if (nnLnr != "n"){
-					print("nlr test test")
+					print("glmer test test")
 					
 					formula <- update(formula, .~. +  (1|NestID))
 					print(formula)
@@ -102,11 +102,15 @@ allModelsAICWithSex <- function(outcome, predictors, dataset, weights = "n", nnL
 					try(fit <-  glmer(formula, family = gaussian(link = "log"), data = dataset, weights = lmrWgts, nAGQ = 10))
 				}
 				else if(weights == "n") {
+					#print("lmer without weights")
+					formula <- update(formula, .~. + (1|NestID))
 					
-					fit  <- lmer(formula  + (1|NestID), data = dataset, REML = FALSE)
+					fit  <- lmer(formula, data = dataset, REML = FALSE)
 					
 				} else {
-					fit  <- lmer(formula + (1|NestID), data = dataset, weights = lmrWgts, REML = FALSE)
+					#print("lmer with weights")
+					formula <- update(formula, .~. + (1|NestID))
+					fit  <- lmer(formula, data = dataset, weights = lmrWgts, REML = FALSE)
 					
 				}
 				

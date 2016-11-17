@@ -48,6 +48,14 @@ pander(modTable,  row.names = NULL, justify = 'left', split.cells = c(1, 2, 61, 
 lowestAICMod <- as.character(modTable$model[1])
 
 formula    <- as.formula(lowestAICMod)
+
+#cat("adding InstarNumber:InstarSex to the model, diff in AIC very small and sensible to have it in")
+
+#formula <- update(formula, .~. + InstarNumber:InstarSex + (1|NestID))
+
+
+formula <- update(formula, .~. + (1|NestID))
+
 FullModel       <- lmer(formula, data = dataset, REML = FALSE)
 	
 ```
@@ -66,22 +74,12 @@ model_Check(FullModel)
 ```
 \pagebreak
 
-Graph with lowest AIC model superimposed
+Graph with full model superimposed
 ====================
  
 
 ```{r Graph, fig.height=7, fig.width=13}
 
-#a_predictDF <- expand.grid(logCtFm = seq(min(dataset$logCtFm), max(dataset$logCtFm), by = 0.1), 
-		#InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
-
-#predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
-
-#a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
-
-#ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = InstarSex)) + geom_point()
-
-#newModel <- update(FullModel, .~. + InstarSex)
 
 cat("Model:", as.character(FullModel@call[2]), sep = '\n')
 
@@ -99,14 +97,15 @@ Note: There is no point testing instar number against leg length as it will vary
 
 ```{r Stats,  results='asis', echo = FALSE, comment = "", message = FALSE}
 
-#logLeg ~ logCtFm + InstarNumber + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + (1 | NestID)
+#logLeg ~ logCtFm + InstarNumber + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + InstarNumber:InstarSex (1 | NestID)
 
 Test3WayInteraction <- c("Three way interaction", update(FullModel, . ~ . - logCtFm:InstarNumber:InstarSex))
 TestInteraction2 <- c("Nest size x Instar Number", update(FullModel, . ~ . - logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex))
-TestSex <- c("Instar age", update(FullModel, . ~ . -InstarNumber - logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex))
-TestNS <- c("NestSize", update(FullModel, . ~ . - logCtFm - logCtFm:InstarNumber:InstarSex))
+#TestInteractionSex <- c("Instar Number x Instar Sex", update(FullModel, . ~ . - InstarNumber:InstarSex - logCtFm:InstarNumber:InstarSex))
+TestInstarAge <- c("Instar age", update(FullModel, . ~ . -InstarNumber - logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex - InstarNumber:InstarSex ))
+TestNS <- c("NestSize", update(FullModel, . ~ . - logCtFm - logCtFm:InstarNumber:InstarSex - logCtFm:InstarNumber))
 
-RedModels <- list(Test3WayInteraction, TestInteraction2, TestSex, TestNS)
+RedModels <- list(Test3WayInteraction, TestInteraction2, TestInstarAge, TestNS)
 
 MRAnovaFun(FullModel, RedModels)
 
