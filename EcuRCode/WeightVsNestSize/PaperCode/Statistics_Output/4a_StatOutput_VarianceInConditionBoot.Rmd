@@ -89,6 +89,40 @@ InstarGridGraph(dataset, "bootVarTrans", "Variance in Condition", "n", "", final
 ```
 
 
+Testing Individual Instars
+--------------------
+
+
+###As the three way interaction is significant testing instar individually
+
+
+
+```{r IndInstars,  results='asis', echo = FALSE, comment = "", tab.cap = NULL, message = FALSE, warning = FALSE, hold = TRUE}
+
+GLM_fun <- function(myData) { # function to test individual instars 	
+    glm <- glm(bootVarTrans ~ logCtFm, data = myData,  family = gaussian(link = log), weights = lmrWgts)
+    Anova(glm)
+	
+    }
+
+instarGLM <- dlply(dataset, .(Instar),        
+		function(x) GLM_fun(x))
+
+sig <- lapply(instarGLM, FUN = function(x) ifelse(x$`Pr(>Chisq)` <= 0.05, " * SIGNIFICANT *", "not significant"))
+
+
+kable(instarGLM$Adult, caption = paste("Adult", sig$Adult))
+
+kable(instarGLM$Sub2, caption = paste("Sub2", sig$Sub2))
+
+kable(instarGLM$Sub1, caption = paste("Sub1", sig$Sub1))
+
+kable(instarGLM$Juv4, caption = paste("Juv4", sig$Juv4))
+
+kable(instarGLM$AdMale, caption = paste("AdMale", sig$AdMale))
+
+kable(instarGLM$SubMale, caption = paste("SubMale", sig$SubMale))
+```
 
 
 Graph of condition variance against instar

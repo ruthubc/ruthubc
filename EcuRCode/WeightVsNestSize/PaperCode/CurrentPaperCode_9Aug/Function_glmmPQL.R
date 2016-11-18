@@ -20,8 +20,9 @@ addStars_anova <- function(input_anova){
 	
 	binded$p_value <- paste(sprintf("%.3f", round(binded$`Pr(>Chisq)`,3)), binded$stars, sep="")
 	
-	binded <- subset(binded, select = -c(`Pr(>Chisq)`, as.character(stars)))
+	binded <- subset(binded, select = -c(`Pr(>Chisq)`, stars))
 	binded$Chisq <- round(binded$Chisq, 3)
+	
 	
 	
 	return(binded)

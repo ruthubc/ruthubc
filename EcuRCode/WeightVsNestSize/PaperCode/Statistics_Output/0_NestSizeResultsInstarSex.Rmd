@@ -45,13 +45,13 @@ NSModel <- update(FullModelLeg , .~. - logCtFm -logCtFm:InstarNumber - logCtFm:I
 NSResults <- outputResultsWord(FullModelLeg , NSModel)	
 ```
 
-However leg length
+More notably leg length
 increases as colony size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`, figure 1), 
 
 ```{r LeglogCtFmByInstarNumber, results='asis',  echo = FALSE}
-##### Leg length vs logCtFm:InstarNumber interaction
+##### Leg length vs logCtFm by InstarNumber interaction
 Instar2IntModel <- update(FullModelLeg , .~. - logCtFm:InstarNumber - logCtFm:InstarNumber:InstarSex)
 Instar2IntResults <- outputResultsWord(FullModelLeg , Instar2IntModel)	
 ```
@@ -70,7 +70,7 @@ Instar3IntResults <- outputResultsWord(FullModelLeg , Instar3IntModel)
  and a significant three-way interaction between colony size, instar age and
 instar sex (lmer; $\chi$^2^~`r Instar3IntResults[[1]]`
 ,`r Instar3IntResults[[2]]`~= `r Instar3IntResults[[3]]`, p =
-`r Instar3IntResults[[4]]` `r Instar3IntResults[[5]]`), 
+`r Instar3IntResults[[4]]` `r Instar3IntResults[[5]]`). 
 
 
 ```{r LegIndInstar, results='asis',  echo = FALSE}
@@ -100,9 +100,9 @@ RedModel <- lmer(logLeg ~  (1|NestID)  , data = subset(spidersMul, Instar == "Su
 SubMaleRes <- outputResultsWord(FullModel, RedModel)	
 ```
 
-Performing post-hoc testing, we found that leg length increased with colony size
-in the older instars, but was not significant for younger instars (Table 1,
-figure 1).
+Performing post-hoc tests on each instar individually, we found that leg length
+increased with colony size in the older instars, but this tread was not
+significant for younger instars (Table 1, figure 1).
 
 
 | Instar   | Instar Age    | $\chi$^2^ |  p value| 
@@ -116,7 +116,8 @@ figure 1).
 
 
 *Table 1: Results of post-hoc analysis of leg length against colony size for
-each instar*
+each instar. Leg length increases as colony size increases, but when tested
+individually is significant only for the older instars.*
 
 
 
@@ -143,8 +144,8 @@ NSModel <- update(FullModel, ~ . - logCtFm - logCtFm:InstarNumber)
 NSResults <- outputResultsWord(FullModel, NSModel)
 
 ```
-The model with the lowest AIC included only one interaction term which was was instar age by colony size interaction and 
-did not include instar sex or instar age. Colony size was significant (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~ =
+The model with the lowest AIC included only one interaction term, instar age by colony size, and 
+did not include instar sex or instar age as fixed effects. Colony size was significant (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~ =
 `r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`) with condition decreasing as colony size increased (figure 2).
 
 ```{r ConditionInteraction, results='asis',  echo = FALSE}
@@ -152,11 +153,12 @@ did not include instar sex or instar age. Colony size was significant (lmer; $\c
 IntModel <- update(FullModel, . ~ . - logCtFm:InstarNumber)
 IntResults <- outputResultsWord(FullModel, IntModel)		
 ```
-However,
-there was a significant interaction between instar age
- and colony size (lmer; $\chi$^2^~`r IntResults[[1]]`,`r IntResults[[2]]`~ =
-`r IntResults[[3]]`, p = `r IntResults[[4]]` `r IntResults[[5]]`), with condition appearing to decrease faster with colony size as the instars 
-increase in age (figure 3).
+
+There was a significant interaction between instar age
+ and colony size (lmer; $\chi$^2^~`r IntResults[[1]]`, `r IntResults[[2]]`~ =
+`r IntResults[[3]]`, p = `r IntResults[[4]]` `r IntResults[[5]]`), with condition appearing to decrease at a faster rate 
+with colony size as the instar age 
+increases (figure 3).
 
 ```{r ConditionAdultOnly, results='asis',  echo = FALSE}
 # Only adult significant post-hoc
@@ -167,7 +169,7 @@ AdultResults <- outputResultsWord(FullModelAdOnly, RedModAd)
 
 However, when performing ad-hoc tests on the instars individually we found only
 adult condition decreased significantly with colony size (lmer;
-$\chi$^2^~`r AdultResults[[1]]`,`r AdultResults[[2]]`~ = `r AdultResults[[3]]`,
+$\chi$^2^~`r AdultResults[[1]]`, `r AdultResults[[2]]`~ = `r AdultResults[[3]]`,
 p = `r AdultResults[[4]]` `r AdultResults[[5]]`).
 
 ```{r ConditionInstarGridGraph, fig.height=9, fig.width=14}
@@ -179,13 +181,13 @@ decreases with colony size (p = `r NSResults[[4]]` `r NSResults[[5]]`) and there
 was a significant interaction with instar(p = `r InstarResults[[4]]`
 `r InstarResults[[5]]`)._
 
-```{r InstarConditionInteractionGraph, fig.height=2, fig.width=4, dpi=300}
+```{r InstarConditionInteractionGraph, fig.height=3.5, fig.width=5.5, dpi=300}
 #nest size by condition - instar interaction graph
 a_predictDF <- expand.grid(logCtFm = seq(min(spidersMul$logCtFm), max(spidersMul$logCtFm), by = 0.1), 
 		InstarNumber = c(4, 5, 6, 7), NestID = c("44.4EX12"))
 a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
-ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(InstarNumber))) + geom_line(size = 1) + mytheme +
-		ylab("Predicted Condition") + xlab("Log Count Females") + scale_colour_discrete(name = "Instar Age") + theme_bw(base_size=8)
+ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(InstarNumber))) + geom_line(size =0.5) +
+		ylab("Predicted Condition") + xlab("Log Count Females") + scale_colour_discrete(name = "Instar Age") + theme_bw(base_size=11) + mytheme
 
 
 
@@ -193,7 +195,8 @@ ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(Insta
 
 (@)  _Figure : The results of the linear model showing individual condition of
 each instar age against colony size with both sexes combined as instar sex was
-insignificant. However only adults had a significant effect, n = `r no_nest`
+insignificant. However, when testing each instar individually, only adult
+condition change with nest size had a significant effect (p = `r AdultResults[[4]]` `r AdultResults[[5]]`), n = `r no_nest`
 colonies._
 
 
@@ -203,8 +206,7 @@ Within Colony Variance Vs. colony size
 
 ### Leg Length Variance
 
-There was no significant pattern of within colony variance in leg length and
-colony size
+There was no significant effect of nest size on within colony variance in leg.
 
 
 ### Condition Variance
@@ -229,20 +231,22 @@ NSCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "logCtFm"),]
 InstarSexCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarNumber:InstarSex"),]
 InstarSexSqrCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarSex:I(InstarNumber^2)"),]
 ```
-
+However, there was significant variables for within-colony variance in condition against colony size.
 The final model included only colony size, the two-way interaction instar age by
 sex interacion and the two-way interaction instar age squared by instar sex.
 Colony size was significant (glmmPQR; $\chi$^2^~`r NSCondRes$Df`~ =
 `r NSCondRes$Chisq`, p `r NSCondRes$pValue` `r NSCondRes$stars`) as
-within-colony condition variance decreased with increasing colony size.
+within-colony condition variance decreased with increasing colony size (figure 4).
 
 The interaction instar age by sex was significant (glmmPQR;
 $\chi$^2^~`r InstarSexCondRes$Df`~ = `r InstarSexCondRes$Chisq`, p
-`r InstarSexCondRes$pValue` `r InstarSexCondRes$stars`, figure 5) as was instar
+`r InstarSexCondRes$pValue` `r InstarSexCondRes$stars`, figure 5), as was instar
 age squared crossed with sex (glmmPQR; $\chi$^2^~`r InstarSexSqrCondRes$Df`~ =
 `r InstarSexSqrCondRes$Chisq`, p `r InstarSexSqrCondRes$pValue`
-`r InstarSexSqrCondRes$stars`, figure 5), with the within-colony variance in
-condition peaking at intermediate instar ages and being larger for males.
+`r InstarSexSqrCondRes$stars`, figure 5). The within-colony variance in
+condition peaked at intermediate instar ages and being larger for males (figure 5).
+However, doing post-hoc analysis we found that none of the instars were
+significant when tested individually.
 
 ```{r ConditionVarianceInstarGridGraph, fig.height=9, fig.width=14}
 InstarGridGraph(condBootVar, "bootVarTrans", "Variance in Condition", "n", "", varBootCondMod, "y")
@@ -252,7 +256,7 @@ InstarGridGraph(condBootVar, "bootVarTrans", "Variance in Condition", "n", "", v
 superimposed, n = `r no_nest` colonies._
 
 
-```{r instarCondVarianceGraph, fig.height=3, fig.width=4.5, echo = FALSE, dpi=300}
+```{r instarCondVarianceGraph, fig.height=3.5, fig.width=5, echo = FALSE, dpi=300}
 # graph of condition vs instar
 condBootIntFormula <-  bootVarTrans ~ InstarNumber:InstarSex + InstarSex:I(InstarNumber^2)
 InstarOnlyModel <- glmmPQL(condBootIntFormula, ~1|NestID, family = gaussian(link = "log"), data = condBootVar, weights = lmrWgts, niter = 10)		
@@ -266,7 +270,7 @@ predictDF$lmrPrd <- predict(InstarOnlyModel, predictDF, type = "response")
 plot <- ggplot(data = predictDF, aes(x = InstarNumber, y= lmrPrd, colour = InstarSex)) + geom_line(size = 1) + 
 		scale_x_continuous(breaks=c(3,4,5,6,7, 8)) 
 plot + geom_boxplot(data = condBootVar, aes(x = InstarNumber, y = bootVarTrans, group = Instar, fill = InstarSex), outlier.shape = 20, color = "black") +
-		mytheme + xlab("Instar Age") + ylab("Variance in Condition") + theme_bw(base_size=10)	
+		xlab("Instar Age") + ylab("Variance in Condition") + theme_bw(base_size=10)	+ mytheme
 
 
 ```
@@ -288,37 +292,42 @@ NSModel <- lmer(logLeg ~   (1|NestID) + (1|OrigNest) , data = nestsToTestSig, RE
 NSResults <- outputResultsWord(FullModel, NSModel)
 ```
   
-Adult female leg length was larger in propagules compared to the source colony
-(lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~= `r NSResults[[3]]`, p =
-`r NSResults[[4]]` `r NSResults[[5]]`).
+Adult female leg length was larger in propagules compared to their source
+colony (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
+`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`), 
 
 ```{r CondSingle, results='asis',  echo = FALSE}
-##### condition vs colony type
+##### condition vs colony type3
+nestsToTestSig$OrigNest <- as.factor(nestsToTestSig$OrigNest)
 FullModel <- lmer(condResiduals ~  type  +  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
 modelList$test <- c(modelList$test, "Single nest condition")
 modelList$fullModel <- c(modelList$fullModel, docxFmula(FullModel))
 
 NSModel <- lmer(condResiduals ~  (1|NestID) + (1|OrigNest) , data = nestsToTestSig, REML = FALSE)
 NSResults <- outputResultsWord(FullModel, NSModel)	
+
+nprops <- nlevels(nestsToTestSig$NestID) - nlevels(nestsToTestSig$OrigNest)
 ```
-as was condition (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
+as was individual condition (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
 `r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`), with those in
-propagules having a greater condition compared to those in the source colony.
+propagules having longer legs and greater condition compared to those in the source colony.
 
 ```{r SingleGraphs, fig.height=7, fig.width=14}
 p1 <- ggplot(nestsToTestSigCond, aes(x=type, y=condResiduals)) + geom_boxplot() + xlab("Colony Type") +
-		ylab("Individual Condition") + mytheme+ theme(axis.title.x = element_blank()) + theme_bw(base_size=25) +
-		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single"))
+		ylab("Individual Condition") +  scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single")) +
+		theme_bw(base_size=25) + mytheme
 
 p2 <- ggplot(nestsToTestSig, aes(x=type, y=logLeg)) + geom_boxplot() + xlab("Colony Type") +
-		mytheme +  theme(axis.title.x = element_blank()) + ylab("Leg Length (log transformed)") + theme_bw(base_size=25) +
-		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single"))
+		ylab("Leg Length (log transformed)") + theme_bw(base_size=25) +
+		scale_x_discrete(breaks=c("multiple", "single"), labels=c("source: multiple", "propagules: single")) +
+		mytheme
 
 grid.arrange(p1, p2, ncol = 2)
 ```
   
-(@) _Figure: Condition and leg length of adult females in propagues and their
-source colony_
+(@) _Figure: Condition and leg length of adult females in propagues compared to
+adult females in their source colony. Both were significant, n source colonies
+= 2, n propagules = `r nprops`_
 
 
 Propagule survival
@@ -326,15 +335,16 @@ Propagule survival
 
 We found that colony with single female spiders had a very low survival rate,
 with there being only around a 15% chance that the single colony would survive
-to 50 days after establishment.  (figure 5).
+to 50 days after establishment.  (figure 7).
 
 ```{r PropaguleSurvivalGraph, fig.height=3, fig.width=5, dpi=300}
 
-p1 <- ggsurvplot(prop.survfit,color = "#2E9FDF", break.time.by = 5, 
-		xlab = "Days until propagule death", ylab = "Propagule survival probability",  censor = TRUE, 
+p1 <- ggsurvplot(prop.survfit, break.time.by = 5, 
+		xlab = "Days from propagule establishment", ylab = "Propagule survival probability",  censor = FALSE, 
 		font.tickslab = c(8),
 		font.x = c(10),
 		font.y = c(10))
+
 
 print(p1)
 
@@ -344,7 +354,8 @@ nOriginalNests <- nlevels(props$nestID)
 ```
   
 (@) _Figure:  The survival function of `r nProps` propagules from
-`r nOriginalNests` source colonies._
+`r nOriginalNests` source colonies. The grey shading is the 95% confidence
+interval._
 
 List of full models used
 -----------------------
