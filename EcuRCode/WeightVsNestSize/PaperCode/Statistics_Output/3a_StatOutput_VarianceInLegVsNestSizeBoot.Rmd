@@ -32,6 +32,9 @@ Rows removed with `r minN` or fewer data points
 ```{r kable, results='asis',  echo = FALSE}
 #pander options http://rapporter.github.io/pander/#general-options
 
+meanLegBootVar <- mean(legBootVar$bootSD_var)
+SELegBootVar  <- sd(legBootVar$bootSD_var)/sqrt(length(legBootVar$bootSD_var))
+
 
 
 myFormula <- bootVarTrans~ logCtFm  + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
