@@ -206,12 +206,24 @@ Within Colony Variance Vs. colony size
 
 ### Leg Length Variance
 
-There was no significant effect of nest size on within colony variance in leg.
+```{r LegVariacne, echo = FALSE}
+
+meanLegBootVar <- round(mean(legBootVar$bootSD_var),2)
+SELegBootVar  <- round(sd(legBootVar$bootSD_var)/sqrt(length(legBootVar$bootSD_var)), 2)
+
+```
+There was no significant effect of nest size on within colony variance in leg, but the average leg variance was
+`r meanLegBootVar` $\pm$ `r SELegBootVar`, which is small as the possible values the boot strap variance could take
+are between zero to one.
 
 
 ### Condition Variance
 
 ```{r CondVariance, results='asis',  echo = FALSE, message = FALSE, warning = FALSE}
+# mean and SD
+meanCondBootVar <- round(mean(condBootVar$bootSD_var), 2)
+SECondBootVar  <- round(sd(condBootVar$bootSD_var)/sqrt(length(legBootVar$bootSD_var)),2)
+
 # formatting the data
 totSpis<- sum(condBootVar$N)
 condBootVar$lmrWgts <- condBootVar$N/totSpis
@@ -231,9 +243,10 @@ NSCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "logCtFm"),]
 InstarSexCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarNumber:InstarSex"),]
 InstarSexSqrCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarSex:I(InstarNumber^2)"),]
 ```
-However, there was significant variables for within-colony variance in condition against colony size.
+The average within-colony condition variance was `r meanCondBootVar` $\pm$ `r SECondBootVar`, which again is low. 
+In addition, there were significant response variable for a model for within-colony variance in condition against colony size.
 The final model included only colony size, the two-way interaction instar age by
-sex interacion and the two-way interaction instar age squared by instar sex.
+sex interaction and the two-way interaction instar age squared by instar sex.
 Colony size was significant (glmmPQR; $\chi$^2^~`r NSCondRes$Df`~ =
 `r NSCondRes$Chisq`, p `r NSCondRes$pValue` `r NSCondRes$stars`) as
 within-colony condition variance decreased with increasing colony size (figure 4).
@@ -250,10 +263,11 @@ significant when tested individually.
 
 ```{r ConditionVarianceInstarGridGraph, fig.height=9, fig.width=14}
 InstarGridGraph(condBootVar, "bootVarTrans", "Variance in Condition", "n", "", varBootCondMod, "y")
+
 ```
   
-(@)  _Figure : Variance in condition against colony size with the linear model
-superimposed, n = `r no_nest` colonies._
+(@)  _Figure : Transformed bootstrap calculated variance in condition against colony size with the linear model
+superimposed , n = `r no_nest` colonies._
 
 
 ```{r instarCondVarianceGraph, fig.height=3.5, fig.width=5, echo = FALSE, dpi=300}

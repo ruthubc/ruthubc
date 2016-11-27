@@ -105,6 +105,13 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export ="n",  file
 					
 					predictDF$lmrPrd <- predict(model, predictDF, type = "response")
 					
+					#If want to plot untransformed boot variance values with model, put the untransformed variable into the function as the variable
+					#predictDF$lmrPrdBack <- (predictDF$lmrPrd-1)/100
+					#predictDF$lmrPrdBack <- sin(predictDF$lmrPrdBack^2)
+					#predictDF$lmrPrd <- predictDF$lmrPrdBack
+					
+    				
+					
 				}else{
 					print("lmer")
 					predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
