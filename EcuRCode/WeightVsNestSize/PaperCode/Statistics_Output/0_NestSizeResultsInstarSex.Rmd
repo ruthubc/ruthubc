@@ -30,7 +30,7 @@ InstarResults <- outputResultsWord(FullModelLeg, InstarModel)
 	
 ```
 
-The model with the the lowest AIC value included the two-way interaction 
+The model with the lowest AIC value included the two-way interaction 
 colony size by instar age and the
 three-way interaction colony size by instar age by instar sex as fixed effects,
 but did not include the instar age by instar sex interaction.
