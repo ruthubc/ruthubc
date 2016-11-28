@@ -9,7 +9,17 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 modelList <-  list(test = c(), fullModel = c())
 no_nest <- nlevels(spidersMul$NestID)
+
+table(spiders$Instar)
 	
+```
+
+Count of number of spiders
+-----
+```{r CountOfSpiders}
+
+xtable(table(spiders$Instar))
+
 ```
 
 

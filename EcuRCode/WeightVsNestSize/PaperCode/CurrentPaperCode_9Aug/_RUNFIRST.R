@@ -26,6 +26,9 @@ library(stargazer)
 library(formula.tools)
 library(MuMIn)
 library(car)
+library(texreg)
+
+
 
 
 
