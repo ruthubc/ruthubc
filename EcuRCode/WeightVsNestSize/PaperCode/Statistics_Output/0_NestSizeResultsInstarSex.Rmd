@@ -41,13 +41,13 @@ InstarResults <- outputResultsWord(FullModelLeg, InstarModel)
 ```
 
 The model with the lowest AIC value included the two-way interaction 
-colony size by instar age and the
+colony size by instar age and the 
 three-way interaction colony size by instar age by instar sex as fixed effects,
 but did not include the instar age by instar sex interaction.
-Using this as the full model we found, not surprisingly, that leg length was
-significantly correlated with instar age (lmer; $\chi$^2^~`r InstarResults[[1]]`
+After confirming, not surprisingly, that leg length was significantly correlated with instar age
+(lmer; $\chi$^2^~`r InstarResults[[1]]`
 ,`r InstarResults[[2]]`~= `r InstarResults[[3]]`, p = `r InstarResults[[4]]`
-`r InstarResults[[5]]`).
+`r InstarResults[[5]]`), we found that
 
 ```{r LegVsNestSize, results='asis',  echo = FALSE}
 ##### Leg length vs nest size
@@ -55,8 +55,8 @@ NSModel <- update(FullModelLeg , .~. - logCtFm -logCtFm:InstarNumber - logCtFm:I
 NSResults <- outputResultsWord(FullModelLeg , NSModel)	
 ```
 
-More notably leg length
-increases as colony size increases (lmer; $\chi$^2^~`r NSResults[[1]]`
+leg length increased increases as colony size increased 
+(lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
 `r NSResults[[5]]`, figure 1), 
 
@@ -110,9 +110,11 @@ RedModel <- lmer(logLeg ~  (1|NestID)  , data = subset(spidersMul, Instar == "Su
 SubMaleRes <- outputResultsWord(FullModel, RedModel)	
 ```
 
-Performing post-hoc tests on each instar individually, we found that leg length
-increased with colony size in the older instars, but this tread was not
-significant for younger instars (Table 1, figure 1).
+Performing tests on each instar individually, we found that leg length increased with colony size in the older instars, but not significantly so in the younger ones (Table 1, figure 1).
+
+*Table 1: Results of post-hoc analysis of leg length against colony size for
+each instar. Leg length increases as colony size increases, but when tested
+individually is significant only for the older instars.*
 
 
 | Instar   | Instar Age    | $\chi$^2^ |  p value| 
@@ -125,10 +127,6 @@ significant for younger instars (Table 1, figure 1).
 |Adult Male |6| `r (AdMaleRes[[3]])` |`r AdMaleRes[[4]]` `r AdMaleRes[[5]]` | 
 
 
-*Table 1: Results of post-hoc analysis of leg length against colony size for
-each instar. Leg length increases as colony size increases, but when tested
-individually is significant only for the older instars.*
-
 
 
 ```{r LegInstarGridGraph, fig.height=9, fig.width=14}
@@ -137,7 +135,7 @@ InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", F
   
 (@) _Figure:  Leg length against colony size. Overall leg length increased with_
 _colony size (p = `r NSResults[[4]]` `r NSResults[[5]]`), but only for the
-older instars (there was a significant interaction with instar (p =
+older instars (there was a significant interaction between colony size and instar(p =
 `r InstarResults[[4]]` `r InstarResults[[5]]`), n = `r no_nest` colonies._
 
 
@@ -154,7 +152,7 @@ NSModel <- update(FullModel, ~ . - logCtFm - logCtFm:InstarNumber)
 NSResults <- outputResultsWord(FullModel, NSModel)
 
 ```
-The model with the lowest AIC included only one interaction term, instar age by colony size, and 
+The model with the lowest AIC included only one interaction term, instar age by colony size, and it 
 did not include instar sex or instar age as fixed effects. Colony size was significant (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~ =
 `r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`) with condition decreasing as colony size increased (figure 2).
 
@@ -177,8 +175,8 @@ RedModAd <- update(FullModelAdOnly, .~. - logCtFm)
 AdultResults <- outputResultsWord(FullModelAdOnly, RedModAd)
 ```
 
-However, when performing ad-hoc tests on the instars individually we found only
-adult condition decreased significantly with colony size (lmer;
+However, when performing tests on the instars individually we found that only
+adult female condition decreased significantly with colony size (lmer;
 $\chi$^2^~`r AdultResults[[1]]`, `r AdultResults[[2]]`~ = `r AdultResults[[3]]`,
 p = `r AdultResults[[4]]` `r AdultResults[[5]]`).
 
@@ -187,8 +185,8 @@ InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", Fu
 ```
   
 (@)  _Figure : Individual condition against colony size. Overall condition
-decreases with colony size (p = `r NSResults[[4]]` `r NSResults[[5]]`) and there
-was a significant interaction with instar(p = `r InstarResults[[4]]`
+decreases with colony size (p = `r NSResults[[4]]` `r NSResults[[5]]`), with
+ a significant interaction with instar(p = `r InstarResults[[4]]`
 `r InstarResults[[5]]`)._
 
 ```{r InstarConditionInteractionGraph, fig.height=3.5, fig.width=5.5, dpi=300}
@@ -205,7 +203,7 @@ ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(Insta
 
 (@)  _Figure : The results of the linear model showing individual condition of
 each instar age against colony size with both sexes combined as instar sex was
-insignificant. However, when testing each instar individually, only adult
+insignificant. However, when testing each instar individually, only the adult female
 condition change with nest size had a significant effect (p = `r AdultResults[[4]]` `r AdultResults[[5]]`), n = `r no_nest`
 colonies._
 
@@ -253,8 +251,9 @@ NSCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "logCtFm"),]
 InstarSexCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarNumber:InstarSex"),]
 InstarSexSqrCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarSex:I(InstarNumber^2)"),]
 ```
+
+In contrast, there were significant effects of colony size on within-colony condition variance. 
 The average within-colony condition variance was `r meanCondBootVar` $\pm$ `r SECondBootVar`, which again is low. 
-In addition, there were significant response variable for a model for within-colony variance in condition against colony size.
 The final model included only colony size, the two-way interaction instar age by
 sex interaction and the two-way interaction instar age squared by instar sex.
 Colony size was significant (glmmPQR; $\chi$^2^~`r NSCondRes$Df`~ =
@@ -357,9 +356,9 @@ adult females in their source colony. Both were significant, n source colonies
 Propagule survival
 --------------------
 
-We found that colony with single female spiders had a very low survival rate,
+We found that colonies with single female spiders had a very low survival rate,
 with there being only around a 15% chance that the single colony would survive
-to 50 days after establishment.  (figure 7).
+to 50 days after establishment (figure 7).
 
 ```{r PropaguleSurvivalGraph, fig.height=3, fig.width=5, dpi=300}
 
