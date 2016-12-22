@@ -34,11 +34,12 @@ Nests<- ddply(spidersMul, .(NestID), summarise, # need to discount trials where 
 )
 
 
-ggplot(Nests, aes(x= NumAds)) + geom_histogram(colour = "white") + mytheme + xlab("Nest Size (# Adult Females)")
+ggplot(Nests, aes(x= NumAds)) + geom_histogram(colour = "white") + theme_bw() + mytheme + xlab("Nest Size (# Adult Females)") +
+		ylab("Number measured")
 
 ```
 
-_Histogram of the size of nests measured_
+(@) _Figure :Histogram of the size of nests measured_
 
 Leg length against colony size
 --------------------
@@ -60,11 +61,12 @@ InstarResults <- outputResultsWord(FullModelLeg, InstarModel)
 The model with the lowest AIC value included the two-way interaction 
 colony size by instar age and the 
 three-way interaction colony size by instar age by instar sex as fixed effects,
-but did not include the instar age by instar sex interaction (table x).
-After confirming, not surprisingly, that leg length was highly correlated with instar age
-(lmer; $\chi$^2^~`r InstarResults[[1]]`
-,`r InstarResults[[2]]`~= `r InstarResults[[3]]`, p = `r InstarResults[[4]]`
-`r InstarResults[[5]]`), we found that
+but did not include the instar age by instar sex interaction
+`r figNumLookup$Table_models[1]`. After confirming, not surprisingly, that
+leg length was highly correlated with instar age (lmer;
+$\chi$^2^~`r InstarResults[[1]]` ,`r InstarResults[[2]]`~=
+`r InstarResults[[3]]`, p = `r InstarResults[[4]]` `r InstarResults[[5]]`), we
+found that
 
 ```{r LegVsNestSize, results='asis',  echo = FALSE}
 ##### Leg length vs nest size
@@ -75,7 +77,7 @@ NSResults <- outputResultsWord(FullModelLeg , NSModel)
 leg length increased increases as colony size increased 
 (lmer; $\chi$^2^~`r NSResults[[1]]`
 ,`r NSResults[[2]]`~= `r NSResults[[3]]`, p = `r NSResults[[4]]`
-`r NSResults[[5]]`, figure 1), 
+`r NSResults[[5]]`, `r figNumLookup$Fig_LegLengthVsColonySize[1]`, 
 
 ```{r LeglogCtFmByInstarNumber, results='asis',  echo = FALSE}
 ##### Leg length vs logCtFm by InstarNumber interaction
@@ -127,7 +129,10 @@ RedModel <- lmer(logLeg ~  (1|NestID)  , data = subset(spidersMul, Instar == "Su
 SubMaleRes <- outputResultsWord(FullModel, RedModel)	
 ```
 
-Due to this significant interaction we preformed tests on each instar individually. We found that leg length increased with colony size in the older instars, but not significantly so in the younger ones (Table 1, figure 1).
+Due to this significant interaction we preformed tests on each instar individually. 
+We found that leg length increased with colony size in the older instars, 
+but not significantly so in the younger ones `r figNumLookup$Table_InstarLeg1[1]`,  
+`r figNumLookup$Fig_LegLengthVsColonySize[1]`.
 
 *Table 1: Results of individual analysis of leg length against colony size for
 each instar. Leg length increases as colony size increases, but when tested
@@ -169,8 +174,9 @@ NSResults <- outputResultsWord(FullModel, NSModel)
 
 ```
 The model with the lowest AIC value included only one interaction term, instar age by colony size and 
-did not include instar sex or instar age as fixed effects (table x). Colony size was significant (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~ =
-`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`) with individual condition decreasing as colony size increased (figure 2).
+did not include instar sex or instar age as fixed effects `r figNumLookup$Table_models` . Colony size was significant (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~ =
+`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`) 
+with individual condition decreasing as colony size increased `r figNumLookup$Fig_ConditionVsColSize`.
 
 ```{r ConditionInteraction, results='asis',  echo = FALSE}
 # condition vs logCtFm by instar number interaction
@@ -182,7 +188,7 @@ There was a significant interaction between instar age
  and colony size (lmer; $\chi$^2^~`r IntResults[[1]]`, `r IntResults[[2]]`~ =
 `r IntResults[[3]]`, p = `r IntResults[[4]]` `r IntResults[[5]]`), with condition appearing to decrease at a faster rate 
 with colony size as the instar age 
-increases (figure 3).
+increases `r figNumLookup$Fig_PredictedConditionByInstar`.
 
 ```{r ConditionAdultOnly, results='asis',  echo = FALSE}
 # Only adult significant post-hoc
@@ -267,20 +273,25 @@ InstarSexSqrCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "In
 
 The average within-colony condition variance was also small at `r meanCondBootVar` $\pm$ `r SECondBootVar`. However, there were
 significant fixed effects. The final model included only colony size, the two-way interaction instar age by
-sex interaction and the two-way interaction instar age squared by instar sex (figure x).
-Colony had a significat effect (glmmPQR; $\chi$^2^~`r NSCondRes$Df`~ =
-`r NSCondRes$Chisq`, p `r NSCondRes$pValue` `r NSCondRes$stars`) as
-within-colony condition variance decreased with increasing colony size (figure 4).
-Any interactions of instar age or sex with colony size was not significant.
+sex interaction and the two-way interaction instar age squared by instar sex
+`r figNumLookup$Table_models`.
+Colony had a significat effect (glmmPQR; 
+$\chi$^2^~`r NSCondRes$Df`~ =
+`r NSCondRes$Chisq`, p `r NSCondRes$pValue`
+`r NSCondRes$stars`) as within-colony condition variance decreased with
+increasing colony size `r figNumLookup$Fig_ConditionVarianceVsColSize[1]`. Any
+interactions of instar age or sex with colony size was not significant.
 
 
 The interaction instar age by sex was significant (glmmPQR;
 $\chi$^2^~`r InstarSexCondRes$Df`~ = `r InstarSexCondRes$Chisq`, p
-`r InstarSexCondRes$pValue` `r InstarSexCondRes$stars`, figure 5), as was instar
+`r InstarSexCondRes$pValue` `r InstarSexCondRes$stars`), as was instar
 age squared crossed with sex (glmmPQR; $\chi$^2^~`r InstarSexSqrCondRes$Df`~ =
 `r InstarSexSqrCondRes$Chisq`, p `r InstarSexSqrCondRes$pValue`
-`r InstarSexSqrCondRes$stars`, figure 5). The within-colony variance in
-condition peaked at intermediate instar ages and was higher for males (figure 5).
+`r InstarSexSqrCondRes$stars`,
+`r figNumLookup$Fig_ConditionVarianceVsColSize[1]`. Within-colony variance
+in condition peaked at intermediate instar ages and was higher for males 
+`r figNumLookup$Fig_CondVarByInstarBoxplot[1]`.
 
 
 ```{r ConditionVarianceInstarGridGraph, fig.height=9, fig.width=14}
@@ -347,7 +358,8 @@ nprops <- nlevels(nestsToTestSig$NestID) - nlevels(nestsToTestSig$OrigNest)
 
 and the individual condition of dispersers was higher 
 (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
-`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`, figure 6)
+`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`,
+`r figNumLookup$Fig_DispersalCondLeg[1]`
 
 ```{r SingleGraphs, fig.height=7, fig.width=14}
 p1 <- ggplot(nestsToTestSigCond, aes(x=type, y=condResiduals)) + geom_boxplot() + xlab("Colony Type") +
@@ -370,10 +382,9 @@ adult females in their natal colony. Both were significant, n source colonies
 Single female colony survival
 --------------------
 
-Estimating the survival function of single female nests using R's survival pacakge (reference), 
-we found that colonies with single female colonies had a very low survival rate,
+We found that colonies with single female colonies had a very low survival rate,
 with there being only around a 15% chance that a single colony would survive
-to 50 days after establishment (figure 7).
+to 50 days after establishment `r figNumLookup$Fig_progSurvival`.
 
 ```{r PropaguleSurvivalGraph, fig.height=3, fig.width=5, dpi=300}
 
@@ -398,7 +409,7 @@ interval._
 List of full models used
 -----------------------
 
-_Table x:  The full models used for each test. Varibles printed as (1|*****)
+_Table 2:  The full models used for each test. Varibles printed as (1|*****)
 indicate random factors._
 
 ```{r ModelTableForLA, results = 'asis'}
