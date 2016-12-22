@@ -17,10 +17,28 @@ table(spiders$Instar)
 Count of number of spiders
 -----
 ```{r CountOfSpiders}
-
-xtable(table(spiders$Instar))
+ 
+pander(table(spiders$Instar))
 
 ```
+_Count of the number of spiders weighed and measured_
+
+Histogram of nest sizes measured 
+-----
+```{r NestSizeHistogram}
+
+Nests<- ddply(spidersMul, .(NestID), summarise, # need to discount trials where no feeding obs and eve
+		NumAds = mean(CountFemales),
+		logCtFm = mean(logCtFm)
+
+)
+
+
+ggplot(Nests, aes(x= NumAds)) + geom_histogram(colour = "white") + mytheme + xlab("Nest Size (# Adult Females)")
+
+```
+
+_Histogram of the size of nests measured_
 
 Leg length against colony size
 --------------------
@@ -380,7 +398,8 @@ interval._
 List of full models used
 -----------------------
 
-_Table x:  The full models used._
+_Table x:  The full models used for each test. Varibles printed as (1|*****)
+indicate random factors._
 
 ```{r ModelTableForLA, results = 'asis'}
 
