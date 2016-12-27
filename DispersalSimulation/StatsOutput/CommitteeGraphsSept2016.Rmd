@@ -111,7 +111,7 @@ ggplot(df_END, aes(x = Comp_meas, y = MeanPerDieNoDsp, colour = as.factor(max_no
 Metapopulation
 =====
 
-```{r metapop}
+```{r metapop, }
 
 
 df_MT <- subset(dis_ply, input_var == 0.1 & ad_dsp_fd != 0.2 & ad_dsp_fd != 0.8)
