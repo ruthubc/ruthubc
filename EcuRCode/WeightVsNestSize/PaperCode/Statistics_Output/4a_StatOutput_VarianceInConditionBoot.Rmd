@@ -21,10 +21,7 @@ condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100 # Making variance a per
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1 # have to add a small amount or glmer "can't find starting values"
 
 dataset <- condBootVar
-library(texreg)
-library(car)
-library(formula.tools)
-library(MuMIn)
+
 
 
 ```
@@ -61,19 +58,6 @@ finalModel <- modelOutput[[1]]
 	
 ```
 
-Checking final model fit
---------------------
-
-
-```{r ModelFit, fig.height=3, fig.width=3}
-
-#plot(fitted(finalModel), residuals(finalModel), xlab = "Fitted Values", ylab = "Residuals")
-#abline(h = 0, lty = 2)
-#lines(smooth.spline(fitted(finalModel), residuals(finalModel)))
-#stdres(finalModel, "response")
-
-
-```
 \pagebreak
 
 Graph

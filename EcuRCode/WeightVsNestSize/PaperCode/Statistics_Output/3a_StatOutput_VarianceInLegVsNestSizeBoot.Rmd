@@ -5,13 +5,15 @@ title: "Variance in Leg vs Nest Size Instar As Number"
 author: "Ruth Sharpe"
 date: "Run on `r format(Sys.time(), '%d %B, %Y')`"
 geometry: margin=1cm
+header-includes:
+    - \usepackage{float}
 
 ---
 
 ```{r dataImport,  include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+options(xtable.comment = FALSE, xtable.table.placement="H")
 
-legBootVar <- read.csv("RuthEcuador2013/NestSize/bootSampCondPython_leg_combined.csv")
 totSpis<- sum(legBootVar$N)
 legBootVar$lmrWgts <- legBootVar$N/totSpis
 
@@ -27,25 +29,30 @@ dataset <- legBootVar
 
 AIC Values of all possible models with instar included and sample size as weight
 ------------------
-Rows removed with `r minN` or fewer data points 
 
-```{r kable, results='asis',  echo = FALSE}
+```{r meanSD, results='asis',  echo = FALSE}
 #pander options http://rapporter.github.io/pander/#general-options
 
 meanLegBootVar <- mean(legBootVar$bootSD_var)
 SELegBootVar  <- sd(legBootVar$bootSD_var)/sqrt(length(legBootVar$bootSD_var))
 
+```
 
+Mean of untransformed within-colony leg variance is `r meanLegBootVar` and
+standard error is `r SELegBootVar`.
+
+```{r glmmpqr, results = 'asis', echo = FALSE}
 
 myFormula <- bootVarTrans~ logCtFm  + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
 		I(InstarNumber^2) + I(InstarNumber^2):InstarSex + logCtFm:I(InstarNumber^2) + logCtFm:I(InstarNumber^2):InstarSex
 
-
+lenForm <- 10
 pVal <- 1
-while(pVal > 0.01){
+while(pVal > 0.01 & lenForm > 1){
 	
-	modelOutput <- runGLMMPQR(myFormula, dataset, "n" )
+	modelOutput <- runGLMMPQR(myFormula, dataset, "y" )
 	myFormula <- reduceFormula(myFormula, modelOutput[[2]])
+	lenForm <- length(attr(terms(myFormula), "term.labels"))
 	pVal <- modelOutput[[3]]
 	
 	
@@ -53,16 +60,7 @@ while(pVal > 0.01){
 	
 ```
 
-Checking full model fit
---------------------
 
-
-```{r ModelFit, fig.height=3, fig.width=3}
-
-model_Check(FullModel)
-
-```
-\pagebreak
 
 Graphs
 ====================
@@ -74,7 +72,7 @@ note: blue line just lm model
 ```{r, fig.height=8, fig.width=12, echo = FALSE}
 
 
-InstarGridGraph(dataset, "relativeVar", "Variance in leg", "n", "", FullModel, "y")
+InstarGridGraph(dataset, "bootVarTrans", "Variance in leg", "n", "", "", "y")
 
 
 
@@ -84,100 +82,13 @@ Graph of leg variance against instar
 --------
 
 ```{r legVarInstar, fig.height=6, fig.width=8, echo = FALSE}
-ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = relativeVar, fill = InstarSex)) +
+ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = bootVarTrans, fill = InstarSex)) +
 	labs(x = "Instar") + labs(y = "Variance in leg") + geom_boxplot() + mytheme
 
 ```
 \pagebreak
 
-Statistics using model with the almost lowest AIC as full model
-====================
-
-
-```{r Stats,  results='asis', echo = FALSE , comment = "", message = FALSE, warning = FALSE}
-
-
-TestNS <- c("Testing NestSize",  update(FullModel, .~. -logCtFm - logCtFm:InstarNumber))
-InstModel <- c("Testing Instar age", update(FullModel, . ~ . - ( InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + I(InstarNumber^2))))
-
-
-RedModels <- list(TestNS, InstModel)
-
-MRAnovaFun(FullModel, RedModels)
-
-#stargazer(anova(FullModel), summary = FALSE, title = "Anova of full model alone", header = FALSE)
-
-```
 
 
 
-Testing individual instar numbers
---------------------
 
-```{r IndInstars,  results='asis', echo = FALSE, comment = "", tab.cap = NULL, message = FALSE, warning = FALSE, hold = TRUE}
-
-
-LMERS_fun <- function(instarData) { # function to test individual instars 	
-	instarData$lmrWgts <- instarData$N/ sum(instarData$N)
-    lmFull <- lm(relativeVar ~  logCtFm, weights = lmrWgts, data = instarData)
-    lmRed <- lm(relativeVar ~ 1, weights = lmrWgts, data = instarData)
-    return(list(lmFull, lmRed))
-	
-    }
-
-
-instarLM <- dlply(dataset, .(InstarNumber),        
-		function(x) LMERS_fun(x))
-
-
-results <- lapply(instarLM, FUN = function(x) anova(x[[1]], x[[2]]))
-
-
-
-sig <- lapply(results, FUN = function(x) ifelse(x[,6][2] <= 0.05, " * SIGNIFICANT *", "not significant"))
-
-
-kable(results$'7', caption = paste("Adult - age 7", sig$'7'))
-
-kable(results$'6', caption = paste("Sub2 and Adult Males - age 6", sig$'6'))
-
-kable(results$'5', caption = paste("Sub1 and sub males- age 5", sig$'5'))
-
-kable(results$'4', caption = paste("Juv4 - age 4", sig$'4'))
-
-#kable(results$Adult, caption = paste("Adult", sig$Adult))
-
-#kable(results$Sub2, caption = paste("Sub2", sig$Sub2))
-
-#kable(results$Sub1, caption = paste("Sub1", sig$Sub1))
-
-#kable(results$Juv4, caption = paste("Juv4", sig$Juv4))
-
-#kable(results$AdMale, caption = paste("AdMale", sig$AdMale))
-
-
-	
-```
-
-Instar Age x nest size Interaction Graph
-==================
- 
-
-```{r, fig.height=7, fig.width=13}
-
-#newMod <- update(FullModel,  . ~ . - logCtFm)
-cat("Model:", as.character(FullModel@call[2]), sep = '\n')
-
-a_predictDF <- expand.grid(logCtFm = seq(min(dataset$logCtFm), max(dataset$logCtFm), by = 0.1), 
-		InstarNumber = c(4, 5, 6, 7), InstarSex = c("F"), NestID = c("44.4EX12"))
-
-
-a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
-
-ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(InstarNumber))) + geom_line(size = 1) + mytheme +
-		ylab("Predicted Variance Females only") + xlab("Log Count Females") + scale_colour_discrete(name = "Instar Age")
-
-
-```
-
-\pagebreak
