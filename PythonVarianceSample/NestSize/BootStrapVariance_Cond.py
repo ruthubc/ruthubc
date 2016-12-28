@@ -98,7 +98,7 @@ for rowNum in range(numRows): # getting the necessary varibles from the data fil
     start_time = time.time()
     loop_time = 0
     while len(sd_list) < numBoots and loop_time < time_lim:
-        sdOutput = randomSDFun(sum_data, max_var, min_var, N, time_lim)  
+         
         loop_time = time.time() - start_time       
         
         if sdOutput == "NA":
