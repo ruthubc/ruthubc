@@ -22,7 +22,7 @@ no_off <- 6
 #dis_sub <- subset(dis_ply, input_var == env1 | input_var == env2)
 #nrow(dis_sub)
 
-dis_sub <- subset(dis_sub, max_no_off == no_off & input_var == env1)
+dis_sub <- subset(dis_ply, max_no_off == no_off & input_var == env1)
 nrow(dis_sub)
 
 ```
@@ -45,8 +45,8 @@ ggplot(dis_sub, aes(x = Comp_meas, y = log10(PopAge.Mean), colour = as.factor(ad
 
 (@) _Figure :Metapopulation survival against competition type, where competition
 type ranges from 0 to 1, with 0 being full scramble competition and 1 is full
-contest competition. Environmental variance is `r env` and number of offspring
-set to `r no_off'. No generations removed_
+contest competition. Environmental variance is `r env1` and number of offspring
+set to `r no_off`. No generations removed_
 
 
 As competition changes from scramble to contest competition the metapopulation age increases, but this interacts with the body size needed to disperse,
@@ -80,8 +80,8 @@ ggplot(dis_sub, aes(x = Comp_meas, y = log10(survival_all.mean), colour = as.fac
 
 (@) _Figure :Population survival against competition type, where competition
 type ranges from 0 to 1, with 0 being full scramble competition and 1 is full
-contest competition. Environmental variance is `r env` and number of offspring
-set to `r no_off'. All generations included. Survival calculated from survival
+contest competition. Environmental variance is `r env1` and number of offspring
+set to `r no_off`. All generations included. Survival calculated from survival
 function_
 
 As competition increases the population survival time increases. 
@@ -94,8 +94,7 @@ Metapopulation survival against population survival
 
 ```{r MetSurvpopSurv, fig.height=12, fig.width=14}
 
-ggplot(dis_sub, aes(x = log10(survival_all.mean), y = log10(PopAge.Mean), colour = as.factor(ad_dsp_fd))) + 
-		geom_point(size = 5) + 	mytheme +
+ggplot(dis_sub, aes(x = log10(survival_all.mean), y = log10(PopAge.Mean), colour = as.factor(ad_dsp_fd)))  + 	mytheme +
 		geom_point(size = 5, position = position_jitter(w = 0, h = 0.05)) + 
 		geom_line(size = 2, position = position_jitter(w = 0, h = 0.01)) + 
 		ylab("Log metapopulation survival") + 
@@ -107,13 +106,30 @@ ggplot(dis_sub, aes(x = log10(survival_all.mean), y = log10(PopAge.Mean), colour
 
 ```
 
-(@) _Figure :Metapopulation against population survival. Environmental variance is `r env` and number of offspring
-set to `r no_off'. All generations included. Survival calculated from survival
+(@) _Figure :Metapopulation against population survival. Environmental variance is `r env1` and number of offspring
+set to `r no_off`. All generations included. Survival calculated from survival
 function_
 
 From this graph we can see that dispersal affects whether populations survival affects metapopulation survival. 
 When the size needed to disperse is 0.2 (i.e. low) then the metapopulation survives to 500 generations regardless of the
 survival of the populations. The higher the disperal size is, the more the population survival affects the metapopulation survival.
+
+
+Percentage of populations that go extinct without dispersing
+-----
+
+```{r popsExtNoDisp,  fig.height=12, fig.width=14}
+
+ggplot(dis_sub, aes(x = Comp_meas, y = MeanPerDieNoDsp, colour = as.factor(ad_dsp_fd))) + mytheme + 
+				scale_colour_discrete("Disperse limit") + xlab("Competition") + ylab("% of pops") +
+				geom_point(size = 5, position = position_jitter(w = 0, h = 0.05)) + 
+				geom_line(size = 2, position = position_jitter(w = 0, h = 0.01))
+
+
+```
+(@) _Figure :Percentage of colonies that go extinct without dispersing_
+
+
 
 Conclusion
 ---
@@ -147,6 +163,6 @@ ggplot(dis_subVar, aes(x = input_var, y = log10(PopAge.Mean), colour = as.factor
 ```
 
 (@) _Figure :Metapopulation survival environmental variance. Adult dispersal limit is set to `r set_ad_dsp_fd` and number of offspring
-set to `r no_off'. All generations included_
+set to `r no_off`. All generations included_
 
 Intermediate environmental variance increases metapopulation survival for some competition measures when dispersal is restricted.
