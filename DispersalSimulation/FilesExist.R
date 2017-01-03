@@ -29,5 +29,7 @@ fileExistsFn <- function(filesCreatedcsv){ 	#checking whether files exist and re
 		}
 		
 	}	
+	
+	print(paste("Number of files that exist:", length(filesThatExist)))
 	return (filesThatExist)
 }
