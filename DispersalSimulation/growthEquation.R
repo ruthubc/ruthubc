@@ -65,7 +65,7 @@ rGrowth <- function(fileName, min_pop_age, numGens){
 	
 	maxPopAge <- max(File$pop_age)
 	
-	if ((maxPopAge + 50) < min_popAge){ File <- subset(File, pop_age >= min_popAge) }	## DOESN"T WORK
+	if ((maxPopAge + 50) > min_popAge){ File <- subset(File, pop_age >= min_popAge) }	## DOESN"T WORK
 	
 	fileNum <- print (substr(theFileName, 0, 5))
 	
@@ -100,8 +100,9 @@ rGrowth <- function(fileName, min_pop_age, numGens){
 	ggplot(data = nnplus1, aes(x=num_adsB4_dispersal, y = growth)) + stat_smooth(se = FALSE)  + geom_point()
 	
 	
-	grwthRte <- nls(NPlus1 ~ EQNHERE , data = nnplus1, start = list(a=0.4, b=1.5, c=0.02), 
-			lower=list(a=0, b=0,c=0), algorithm= "port", trace = T)
+	grwthRte <- nls(growth ~ c + r * exp((1 +  a *num_adsB4_dispersal) * (1  - b * num_adsB4_dispersal)) , data = nnplus1, 
+			start = list(a=0.008, b=0.002, r=0.4, c = -0.2), 
+			algorithm= "port", trace = "T")
 
 
 	
