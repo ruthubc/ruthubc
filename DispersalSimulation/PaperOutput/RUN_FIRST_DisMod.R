@@ -18,7 +18,13 @@ if (comp_name == "DELL-1545") {
 	print("You are using your home computer")
 	setwd("C:/Work/ownCloud/")
 
+}else if (comp_name == "MACPC") {
+	print("You are using your mac PC")
+	setwd("C:/Users/Ruth/ownCloud")
 	
+	
+
+
 }else{
 	print("You are using your school computer")
 	setwd("G:/ownCloud")

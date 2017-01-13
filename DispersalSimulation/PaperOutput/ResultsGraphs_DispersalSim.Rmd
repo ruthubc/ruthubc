@@ -144,7 +144,8 @@ Metapopulation and population survival and environmental variance
 
 set_ad_dsp_fd <- 0.8
 
-dis_subVar <- subset(dis_ply, max_no_off == no_off & ad_dsp_fd == set_ad_dsp_fd)
+#dis_subVar <- subset(dis_ply, max_no_off == no_off & ad_dsp_fd == set_ad_dsp_fd)
+dis_subVar <- dis_sub <- subset(dis_ply, max_no_off == no_off)
 nrow(dis_subVar)
 
 ```
@@ -159,7 +160,7 @@ ggplot(dis_subVar, aes(x = input_var, y = log10(PopAge.Mean), colour = as.factor
 		geom_point(size = 5, position = position_jitter(w = 0, h = 0.05)) + 
 		geom_line(size = 2, position = position_jitter(w = 0, h = 0.01)) + mytheme + ylab("Log max metapopulation age") + 
 		scale_colour_discrete("Competition") + xlab("Environmental variation") +
-		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0))
+		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + facet_wrap(~ad_dsp_fd)
 ```
 
 (@) _Figure :Metapopulation survival environmental variance. Adult dispersal limit is set to `r set_ad_dsp_fd` and number of offspring
