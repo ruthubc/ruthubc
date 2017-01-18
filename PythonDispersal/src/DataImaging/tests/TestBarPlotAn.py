@@ -14,14 +14,14 @@ numBars = 7
 
 fig = plt.figure()
 
-position = np.arange(numBars) + .5 # number of bars
+pstion = np.arange(numBars) + .5 # number of bars
 
 #plt.tick_params(axis = 'x', colors = '#072b57')
 #plt.tick_params(axis = 'y', colors = '#072b57')
 
 speeds = [1, 2, 3, 4, 1, 2, 3]
 heights = [0, 0, 0, 0, 0, 0, 0]
-rects = plt.bar(position, heights, align = 'center', color = '#b8ff5c')
+rects = plt.bar(pstion, heights, align = 'center', color = '#b8ff5c')
 #plt.xticks(position, ('A', 'B', 'C', 'D', 'E', 'F'))
 
 #plt.xlabel('X Axis', color = '#072b57')
@@ -52,6 +52,7 @@ def animate(i):
 
 anim = animation.FuncAnimation(fig, animate, init_func=init,frames=200, interval=20, blit=True)
 
+plt.show()
 
-anim = animation.FuncAnimation(fig, animate, frames=5, interval=5)
-anim.save('MagicTriangle.gif', writer='imagemagick')
+#anim = animation.FuncAnimation(fig, animate, frames=5, interval=5)
+#anim.save('MagicTriangle.gif', writer='imagemagick')
