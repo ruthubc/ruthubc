@@ -1,0 +1,137 @@
+---
+title: "`r student`: Community Talk Feedback&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mark: `r mark` /10"
+output:
+  word_document:
+    reference_docx: FormatReferenceDoc.docx
+---
+
+
+```{r docSettings, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=3, fig.width=3)
+
+```
+
+Talk Date: `r title_date`
+===
+
+Project Title: : `r title`
+===
+
+##Student Survey Feedback
+
+
+###Project Goals
+
+```{r Goals}
+Goal_opt <- c("Good", "Too Ambitious", "Too Narrow", "Too Broad", "Unclear")
+		
+Goal_results <- c(data_table$Goals_Good[row_num], data_table$Goals_Ambitious[row_num], data_table$Goals_Narrow[row_num], 
+		data_table$Goals_Broad[row_num], data_table$Goals_Unclear[row_num])
+
+Goal_table <- data.frame(Goal_opt = as.factor(Goal_opt), Goal_results)
+
+ggplot(Goal_table, aes(x = Goal_opt, y = Goal_results, fill = Goal_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme
+
+		#scale_x_continuous(expand = c(0, 0))
+		
+```
+
+
+###Project Ecological Info
+
+```{r Impact}
+Impact_opt <- c("Explained", "Not Explained")
+		
+Impact_results <- c(data_table$Impact_Explained[row_num], data_table$Impact_Not[row_num])
+
+Impact_table <- data.frame(Impact_opt = as.factor(Impact_opt), Impact_results)
+
+ggplot(Impact_table, aes(x = Impact_opt, y = Impact_results, fill = Impact_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme
+		
+```
+
+
+
+###Amount of Information
+
+```{r Info}
+Info_opt <- c("Just right", "Too much", "Too little")
+		
+Info_results <- c(data_table$Info_Right[row_num], data_table$Info_Much[row_num], data_table$Info_Little[row_num])
+
+Info_table <- data.frame(Info_opt = as.factor(Info_opt), Info_results)
+
+ggplot(Info_table, aes(x = Info_opt, y = Info_results, fill = Info_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme
+		
+```
+
+
+###Potential Problems
+
+```{r Probs}
+Probs_opt <- c("Well prepared for", "Not considered enough", "Ignore")
+		
+Probs_results <- c(data_table$Probs_Prepared[row_num], data_table$Probs_Not[row_num], data_table$Probs_Ignored[row_num])
+
+Probs_table <- data.frame(Probs_opt = as.factor(Probs_opt), Probs_results)
+
+ggplot(Probs_table, aes(x = Probs_opt, y = Probs_results, fill = Probs_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme
+		
+```
+
+###Community Involvement and Impact
+
+```{r Comm}
+Comm_opt <- c("Clear", "Vague", "Not described")
+		
+Comm_results <- c(data_table$Com_Clear[row_num], data_table$Com_Vague[row_num], data_table$Com_Not[row_num])
+
+Comm_table <- data.frame(Comm_opt = as.factor(Comm_opt), Comm_results)
+
+ggplot(Comm_table, aes(x = Comm_opt, y = Comm_results, fill = Comm_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme
+		
+```
+
+
+###Presentation
+
+```{r Pres}
+Pres_opt <- c("Helpful visuals", "Distracting visuals", "Well organized","Disorganized")
+		
+Pres_results <- c(data_table$Pres_Help[row_num], data_table$Pres_Distract[row_num], data_table$Pres_Org[row_num], data_table$Pres_Dis[row_num])
+
+Pres_table <- data.frame(Pres_opt = as.factor(Pres_opt), Pres_results)
+
+ggplot(Pres_table, aes(x = Pres_opt, y = Pres_results, fill = Pres_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme
+		
+```
+
+##Comments from Ruth
+*comments
+
+*comment2
+
+##Comments from Rosie
+
+##Comments from students
+*comments
+
+*comment2

@@ -3,6 +3,10 @@
 title: "Dispersal Model Graphs"
 author: "Ruth Sharpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  word_document:
+    reference_docx: FormatReferenceDoc.docx
+
 ---
 
 ```{r docSettings, include = FALSE}

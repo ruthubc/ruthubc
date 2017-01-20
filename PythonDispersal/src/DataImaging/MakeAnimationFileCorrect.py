@@ -8,7 +8,7 @@ import pandas as pd
 import UpdateColSpace
 import numpy as np
 
-data = pd.read_csv("AnimationData.csv", sep = ',') # import data
+data = pd.read_csv("AnimationDataInput.csv", sep = ',') # import data
 
 print data.head(5)
 
@@ -28,6 +28,6 @@ UpdateColSpace.main(data)  ## updates the colony space
 
 print data.head(5)
 
-data.to_csv('AnimationData.csv', sep = ',', index = False)
+data.to_csv('AnimationDataOutput.csv', sep = ',', index = False)
 
 print 'File exported'
