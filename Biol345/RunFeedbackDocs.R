@@ -9,6 +9,13 @@ TalkDatesToProcess <- "17/01/2017"
 library(ggplot2)
 library(rmarkdown)
 
+readInput <- function()
+{ 
+	n <- readline(prompt="Warning: Above file already exists. Do you want to overwrite? y or n")
+	return(as.character(n))
+}
+
+
 mytheme <- theme_bw() + 
 		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), 
 				panel.border = element_blank(), legend.position="none")
@@ -31,7 +38,7 @@ for (i in 1:numberTalks){
 
 	student <- as.character(data_table$Name[row_num])	
 	talk_date <-  as.Date(data_table$Date[row_num], "%d/%m/%Y")
-	title_date <- as.character(format.Date(talk_date, format = "%d %b"))
+	title_date <- as.character(format.Date(talk_date, format = "%d %B"))
 	title <-  as.character(data_table$Title[row_num])
 	mark <- as.character(data_table$Mark[row_num])
 	
@@ -43,10 +50,37 @@ for (i in 1:numberTalks){
 	fileOutputPath <- paste("C:\\Users\\Ruth\\Dropbox\\RuthSync\\Biol345_2017\\TalkFeedback\\", fileOutputName,  sep = "")
 
 	print(fileOutputPath)
+	
+	
+	
+	if (file.exists(fileOutputPath) == "TRUE" ) {
+	
+		answer <- readInput()
+		
+	} else { answer <- "y"}
+	
+	
+	if (answer == "y") {
+		
 
 
-	rmarkdown::render(input= "C:\\Users\\Ruth\\EclipseWorkspace\\Biol345\\CommunityFeedbackDoc.Rmd", 
+	rmarkdown::render(input= "C:\\Users\\Ruth\\git\\ruthubc\\Biol345\\CommunityFeedbackDoc.Rmd", 
 			output_format = "word_document", 
 			output_file= fileOutputPath, encoding= "UTF-8", clean = TRUE, quiet = TRUE)
+	
+	print("File Output")
+	
+} else {
+	
+	print("file not overwritten")
+	
+}
+
 
 }
+
+
+
+
+
+

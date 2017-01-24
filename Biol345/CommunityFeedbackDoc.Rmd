@@ -7,17 +7,19 @@ output:
 
 
 ```{r docSettings, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=3, fig.width=3)
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=3, fig.width=5)
 
 ```
 
-Talk Date: `r title_date`
+`r title_date` 2017
 ===
 
-Project Title: : `r title`
+`r title`
 ===
 
-##Student Survey Feedback
+----------
+
+#_Student Survey Feedback_
 
 
 ###Project Goals
@@ -42,7 +44,7 @@ ggplot(Goal_table, aes(x = Goal_opt, y = Goal_results, fill = Goal_opt)) + geom_
 
 ###Project Ecological Info
 
-```{r Impact}
+```{r Impact, fig.height=3, fig.width=3}
 Impact_opt <- c("Explained", "Not Explained")
 		
 Impact_results <- c(data_table$Impact_Explained[row_num], data_table$Impact_Not[row_num])
@@ -60,7 +62,7 @@ ggplot(Impact_table, aes(x = Impact_opt, y = Impact_results, fill = Impact_opt))
 
 ###Amount of Information
 
-```{r Info}
+```{r Info, fig.height=3, fig.width=4}
 Info_opt <- c("Just right", "Too much", "Too little")
 		
 Info_results <- c(data_table$Info_Right[row_num], data_table$Info_Much[row_num], data_table$Info_Little[row_num])
@@ -77,7 +79,7 @@ ggplot(Info_table, aes(x = Info_opt, y = Info_results, fill = Info_opt)) + geom_
 
 ###Potential Problems
 
-```{r Probs}
+```{r Probs, fig.height=3, fig.width=4.5}
 Probs_opt <- c("Well prepared for", "Not considered enough", "Ignore")
 		
 Probs_results <- c(data_table$Probs_Prepared[row_num], data_table$Probs_Not[row_num], data_table$Probs_Ignored[row_num])
@@ -93,7 +95,7 @@ ggplot(Probs_table, aes(x = Probs_opt, y = Probs_results, fill = Probs_opt)) + g
 
 ###Community Involvement and Impact
 
-```{r Comm}
+```{r Comm, fig.height=3, fig.width=4}
 Comm_opt <- c("Clear", "Vague", "Not described")
 		
 Comm_results <- c(data_table$Com_Clear[row_num], data_table$Com_Vague[row_num], data_table$Com_Not[row_num])
