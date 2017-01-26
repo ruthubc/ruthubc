@@ -1,0 +1,147 @@
+---
+title: "`r student`: Draft Ignite Talk Feedback&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mark: `r mark` /10"
+output:
+  word_document:
+    reference_docx: FormatReferenceDoc.docx
+---
+
+
+```{r docSettings, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, fig.height=3, fig.width=5)
+
+```
+
+`r title_date` 2017
+===
+
+`r title`
+===
+
+----------
+
+#_Students' Talk Summary_
+ 
+
+#_Student Survey Feedback_
+
+###Did the talk flow logically and was the purpose of the talk achieved? 
+
+```{r Flow, fig.height=6, fig.width=6}
+Flow_opt <-c("Yes", "Reordering the sections\nwould help", "Struggled to understand\nrelevance of some sections", 
+"Too much information", "Didn't understand the\npurpose of the talk",
+"Too much jargon")
+		
+
+Flow_results <- c(data_table$Flow_yes[row_num], data_table$Flow_reorder[row_num], data_table$Flow_struuggled[row_num], 
+data_table$Flow_Overwhelming[row_num], data_table$Flow_noUnderstand[row_num], data_table$Flow_jargon[row_num])
+
+Flow_table <- data.frame(Flow_opt = as.factor(Flow_opt), Flow_results)
+
+ggplot(Flow_table, aes(x = Flow_opt, y =Flow_results, fill = Flow_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x = element_text(angle = 90, hjust = 1)) +
+		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
+
+		#scale_x_continuous(expand = c(0, 0))
+		
+```
+
+
+###Question: Did you understand the significance of the main research paper?
+
+```{r Paper, fig.height=4, fig.width=4}
+Paper_opt <- c("Yes", "Kinda", "No", "What research\npaper?")
+		
+Paper_results <- c(data_table$Paper_yes[row_num], data_table$Paper_Kinda[row_num], data_table$Paper_No[row_num],
+data_table$Paper_what[row_num])
+
+Paper_table <- data.frame(Paper_opt = as.factor(Paper_opt), Impact_results)
+
+ggplot(Paper_table, aes(x = Paper_opt, y = Paper_results, fill = Paper_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
+
+		
+```
+
+
+
+###How interesting and important did you find the topic?
+
+```{r Topic, fig.height=5, fig.width=6}
+Topic_opt <- c("Very", " Important, but\ninformation not new", "Informative, but the\nimportance wasn't clear", 
+"Not very important\nor informative")
+		
+Topic_results <- c(data_table$Topic_very[row_num], data_table$Topic_Important[row_num], data_table$Topic_Informative[row_num],
+data_table$Topic_not[row_num])
+
+Topic_table <- data.frame(Topic_opt = as.factor(Topic_opt), Topic_results)
+
+ggplot(Topic_table, aes(x = Topic_opt, y = Topic_results, fill = Topic_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
+		
+```
+
+
+###Was the narration synchronized with the slides?
+
+```{r Narration, fig.height=3, fig.width=4.5}
+Narration_opt <- c("Yes, nicely", "Yes, but rushed", "OK, except/nat the end", "Only at/nthe start")
+		
+Narration_results <- c(data_table$Talk_yes[row_num], data_table$Talk_rushed[row_num], data_table$Talk_OK[row_num],
+data_table$Talk_start[row_num])
+
+Narration_table <- data.frame(Narration_opt = as.factor(Narration_opt), Narration_results)
+
+ggplot(Narration_table, aes(x = Narration_opt, y = Narration_results, fill = Narration_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
+		
+```
+
+###Did you understand the point of each slide and/or image?
+
+```{r Slides, fig.height=3, fig.width=4}
+Slides_opt <- c("Clear", "Vague", "Not described")
+		
+Slides_results <- c(data_table$Slides_yes[row_num], data_table$Slides_most[row_num], data_table$Slides_some[row_num])
+
+Slides_table <- data.frame(Slides_opt = as.factor(Slides_opt), Slides_results)
+
+ggplot(Slides_table, aes(x = Slides_opt, y = Slides_results, fill = Slides_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme
+		
+```
+
+
+###Did you have time to read the information in each slide? 
+```{r SlideInfo}
+SlideInfo_opt <- c("Yes", "Most of them", "Only Some", "Irrelevant or\ndistracting")
+		
+SlideInfo_results <- c(data_table$Slide_Irrel[row_num], data_table$Info_yes[row_num], 
+data_table$Info_donotknow[row_num], data_table$Info_some[row_num])
+
+SlideInfo_table <- data.frame(SlideInfo_opt = as.factor(SlideInfo_opt), SlideInfo_results)
+
+ggplot(SlideInfo_table, aes(x = SlideInfo_opt, y = SlideInfo_results, fill = SlideInfo_opt)) + geom_bar(stat="identity") + 
+		xlab("") + ylab(ylabel) + theme_bw() + 
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
+		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
+		
+```
+
+##Comments from Ruth
+*Comments
+
+*Comm
+
+##Comments from Rosie
+
+#Comments from students
+
