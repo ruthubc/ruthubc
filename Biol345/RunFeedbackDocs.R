@@ -20,11 +20,10 @@ mytheme <- theme_bw() +
 		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), 
 				panel.border = element_blank(), legend.position="none")
 
-setwd("C:/Users/Ruth/Dropbox/RuthSync/Biol345_2017/TalkFeedback/")
+
 
 source("C:/Users/Ruth/git/ruthubc/Biol345/RunCommunityFeedback.R", echo=FALSE, encoding="Cp1252")
 source("C:/Users/Ruth/git/ruthubc/Biol345/RunIgniteFeedback.R", echo=FALSE, encoding="Cp1252")
-
 
 
 

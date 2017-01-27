@@ -2,9 +2,9 @@
 # 
 # Author: Ruth
 ###############################################################################
+setwd("C:/Users/Ruth/Dropbox/RuthSync/Biol345_2017/TalkFeedback/")
 
-
-data_table <- read.csv("IgniteFeedback.csv")
+data_table <- read.csv("IgniteFeedback.csv", stringsAsFactors = FALSE, allowEscapes = TRUE)
 
 data_table <- subset(data_table, Date == TalkDatesToProcess)
 

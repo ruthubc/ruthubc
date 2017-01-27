@@ -127,13 +127,18 @@ ggplot(Pres_table, aes(x = Pres_opt, y = Pres_results, fill = Pres_opt)) + geom_
 ```
 
 ##Comments from Ruth
-*comments
 
-*comment2
+```{r RuthComments, results='asis', echo=FALSE, tidy=FALSE}
+
+cat(data_table$RuthComments[row_num])
+```
+
 
 ##Comments from Rosie
 
 ##Comments from students
-*comments
 
-*comment2
+```{r StudentComments, results='asis', echo=FALSE, tidy=FALSE}
+cat(data_table$StudentComments[row_num])
+```
+

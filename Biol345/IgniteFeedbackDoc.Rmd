@@ -1,5 +1,5 @@
 ---
-title: "`r student`: Draft Ignite Talk Feedback&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mark: `r mark` /10"
+title: "`r student`: Draft Ignite Talk Feedback&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mark: `r mark` /10"
 output:
   word_document:
     reference_docx: FormatReferenceDoc.docx
@@ -21,12 +21,17 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, fig.height=3, fig.width=5)
 
 #_Students' Talk Summary_
  
+```{r StudentSummaries, results='asis', echo=FALSE, tidy=FALSE}
+
+cat(data_table$StudentSumm[row_num])
+```
+
 
 #_Student Survey Feedback_
 
 ###Did the talk flow logically and was the purpose of the talk achieved? 
 
-```{r Flow, fig.height=6, fig.width=6}
+```{r Flow, fig.height=5, fig.width=6}
 Flow_opt <-c("Yes", "Reordering the sections\nwould help", "Struggled to understand\nrelevance of some sections", 
 "Too much information", "Didn't understand the\npurpose of the talk",
 "Too much jargon")
@@ -49,13 +54,13 @@ ggplot(Flow_table, aes(x = Flow_opt, y =Flow_results, fill = Flow_opt)) + geom_b
 
 ###Question: Did you understand the significance of the main research paper?
 
-```{r Paper, fig.height=4, fig.width=4}
+```{r Paper, fig.height=4, fig.width=4.5}
 Paper_opt <- c("Yes", "Kinda", "No", "What research\npaper?")
 		
 Paper_results <- c(data_table$Paper_yes[row_num], data_table$Paper_Kinda[row_num], data_table$Paper_No[row_num],
 data_table$Paper_what[row_num])
 
-Paper_table <- data.frame(Paper_opt = as.factor(Paper_opt), Impact_results)
+Paper_table <- data.frame(Paper_opt = as.factor(Paper_opt), Paper_results)
 
 ggplot(Paper_table, aes(x = Paper_opt, y = Paper_results, fill = Paper_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
@@ -69,7 +74,7 @@ ggplot(Paper_table, aes(x = Paper_opt, y = Paper_results, fill = Paper_opt)) + g
 
 ###How interesting and important did you find the topic?
 
-```{r Topic, fig.height=5, fig.width=6}
+```{r Topic, fig.height=5, fig.width=5}
 Topic_opt <- c("Very", " Important, but\ninformation not new", "Informative, but the\nimportance wasn't clear", 
 "Not very important\nor informative")
 		
@@ -88,8 +93,8 @@ ggplot(Topic_table, aes(x = Topic_opt, y = Topic_results, fill = Topic_opt)) + g
 
 ###Was the narration synchronized with the slides?
 
-```{r Narration, fig.height=3, fig.width=4.5}
-Narration_opt <- c("Yes, nicely", "Yes, but rushed", "OK, except/nat the end", "Only at/nthe start")
+```{r Narration, fig.height=4, fig.width=4.5}
+Narration_opt <- c("Yes, nicely", "Yes, but rushed", "OK, except\nat the end", "Only at\nthe start")
 		
 Narration_results <- c(data_table$Talk_yes[row_num], data_table$Talk_rushed[row_num], data_table$Talk_OK[row_num],
 data_table$Talk_start[row_num])
@@ -121,7 +126,7 @@ ggplot(Slides_table, aes(x = Slides_opt, y = Slides_results, fill = Slides_opt))
 
 
 ###Did you have time to read the information in each slide? 
-```{r SlideInfo}
+```{r SlideInfo, fig.height=4, fig.width=4}
 SlideInfo_opt <- c("Yes", "Most of them", "Only Some", "Irrelevant or\ndistracting")
 		
 SlideInfo_results <- c(data_table$Slide_Irrel[row_num], data_table$Info_yes[row_num], 
@@ -137,11 +142,17 @@ ggplot(SlideInfo_table, aes(x = SlideInfo_opt, y = SlideInfo_results, fill = Sli
 ```
 
 ##Comments from Ruth
-*Comments
 
-*Comm
+```{r RuthComments, results='asis', echo=FALSE, tidy=FALSE}
+
+cat(data_table$RuthComments[row_num])
+```
+
 
 ##Comments from Rosie
 
-#Comments from students
+##Comments from students
 
+```{r StudentComments, results='asis', echo=FALSE, tidy=FALSE}
+cat(data_table$StudentComments[row_num])
+```
