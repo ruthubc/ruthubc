@@ -11,11 +11,9 @@ knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=3,
 
 ```
 
-`r title_date` 2017
+`r title_date` 2017 - `r title`
 ===
 
-`r title`
-===
 
 ----------
 

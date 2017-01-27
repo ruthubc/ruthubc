@@ -2,11 +2,22 @@
 # 
 # Author: Ruth
 ###############################################################################
-setwd("C:/Users/Ruth/Dropbox/RuthSync/Biol345_2017/TalkFeedback/")
+setwd(pathOutput)
 
-data_table <- read.csv("IgniteFeedback.csv", stringsAsFactors = FALSE, allowEscapes = TRUE)
+
+
+
+data_table <- read.csv("IgniteFeedback.csv", stringsAsFactors = FALSE)
+
 
 data_table <- subset(data_table, Date == TalkDatesToProcess)
+
+data_table$StudentSumm <- gsub("\\n", "\n", data_table$StudentSumm, fixed = TRUE)
+
+data_table$StudentComments <- gsub("\\n", "\n", data_table$StudentComments, fixed = TRUE)
+
+data_table$RuthComments <- gsub("\\n", "\n", data_table$RuthComments, fixed = TRUE)
+
 
 numberTalks <- nrow(data_table)
 
@@ -29,7 +40,7 @@ for (i in 1:numberTalks){
 	
 	fileOutputName<- paste("Ignite", file_title_date, file_student_name, ".docx",  sep = "")
 	
-	fileOutputPath <- paste("C:\\Users\\Ruth\\Dropbox\\RuthSync\\Biol345_2017\\TalkFeedback\\", fileOutputName,  sep = "")
+	fileOutputPath <- paste(pathOutput, fileOutputName,  sep = "")
 	
 	print(fileOutputPath)
 	
@@ -44,9 +55,9 @@ for (i in 1:numberTalks){
 	
 	if (answer == "y") {
 		
+		rmdPath <- paste(pathRMD, "ruthubc\\Biol345\\IgniteFeedbackDoc.Rmd", sep =  "")
 		
-		
-		rmarkdown::render(input= "C:\\Users\\Ruth\\git\\ruthubc\\Biol345\\IgniteFeedbackDoc.Rmd", 
+		rmarkdown::render(input= rmdPath, 
 				output_format = "word_document", 
 				output_file= fileOutputPath, encoding= "UTF-8", clean = TRUE, quiet = TRUE)
 		
