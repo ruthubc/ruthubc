@@ -57,6 +57,10 @@ dis_aves <- merge(dis_aves, CompLookUp, by = "Comp_slope") # making new comp var
 ## changing colony age at death to 500 for those populations that had no deaths
 dis_aves$ave_colAge_Death[is.na(dis_aves$ave_colAge_Death) & dis_aves$pop_age > numGensRmv] <- 500
 
+dis_aves$numIndsDispersing <- dis_aves$all_ave_num_disp * dis_aves$all_tot_num_cols
+
+dis_aves$numIndsDispersing <- ifelse(is.na(dis_aves$numIndsDispersing) == TRUE, 0,  dis_aves$numIndsDispersing)
+
 dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, Comp_meas, max_no_off), summarise, # need to discount trials where no feeding obs and eve
 		N_all = length(!is.na(fileNum)),
 		N = length(fileNum[which(!is.na(tot_num_cols))]),
@@ -85,11 +89,10 @@ dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, C
 		MeanPerColsDisp = mean(perc_cols_disp, na.rm = TRUE),
 		MeanPerDieNoDsp = mean(perc_die_no_disp, na.rm = TRUE),
 		MeanPopSizeVar = mean(var_pop_size, na.rm = TRUE),
-		MeanPopSizeVarNoSig = mean(var_pop_size_noSig, na.rm = TRUE)
-
-
-
-
+		MeanPopSizeVarNoSig = mean(var_pop_size_noSig, na.rm = TRUE),
+		TotNumDispersingAll = mean(numIndsDispersing, na.rm = TRUE)
 )
 
 
+
+dis_ply$dipBinary <- ifelse(dis_ply$TotNumDispersingAll > 0, "SomeDispersers", "NoDispersers")

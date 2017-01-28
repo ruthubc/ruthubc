@@ -10,15 +10,17 @@ output:
 ---
 
 ```{r docSettings, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=4, fig.width=5)
 
-mytheme <- theme_bw(base_size=25)  + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.margin= unit(0.75, "lines"),
-		plot.margin=unit(c(3,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1), legend.position="bottom", 
-		legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="black"), legend.text=element_text(size=15))
+mytheme <- theme_bw(base_size=10)  + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+    	panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 0.5), legend.position="bottom", 
+		legend.background = element_rect(fill="white", size=0.7, linetype="solid", colour ="black"), legend.text=element_text(size=6))
+
+pointSize <- 2
+lineSize <-0.5
 
 
 # constant variables
-
 env1<- 0.0
 #env2 <- 0.1
 no_off <- 6 
@@ -34,17 +36,26 @@ nrow(dis_sub)
 
 
 
-Metapopulation Age Until Extinction
----
-```{r metapop, fig.height=12, fig.width=14}
+
+### Metapopulation Age Until Extinction
+
+
+
+```{r metapop, , results = 'asis'}
 
 
 
 ggplot(dis_sub, aes(x = Comp_meas, y = log10(PopAge.Mean), colour = as.factor(ad_dsp_fd))) + 
-		geom_point(size = 5, position = position_jitter(w = 0, h = 0.05)) + 
-		geom_line(size = 2, position = position_jitter(w = 0, h = 0.01)) + mytheme + ylab("Log max metapopulation age") + 
+		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+		geom_line(size = lineSize, position = position_jitter(w = 0, h = 0.01)) + mytheme + ylab("Log max metapopulation age") + 
 		scale_colour_discrete("Size needed to disperse") + xlab("Competition measure") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0))
+
+
+#ggplot(dis_sub, aes(x = ad_dsp_fd, y = log10(PopAge.Mean), colour = as.factor(Comp_meas))) + 
+#		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+#		geom_line(size = lineSize, position = position_jitter(w = 0, h = 0.01)) + mytheme + ylab("Log max metapopulation age") + 
+#		scale_colour_discrete("Competition") + xlab("Dispersal size")
 
 ```
 
@@ -56,7 +67,9 @@ set to `r no_off`. No generations removed_
 
 As competition changes from scramble to contest competition the metapopulation
 age increases, but this interacts with the body size needed to disperse, unless
-the populations survive to 500 generations, in which cases obviously 
+the populations survive to 500 generations, in which cases obviously.
+
+**Both dipsersal and intraspecific compeition type affects metapopulation survival**
 
 
 #### Why dispersal increases metapopulation survival?
@@ -74,11 +87,11 @@ However if food is shared via contest competition then this is not the case.
 Population survival
 ---
 
-```{r popSurv, fig.height=12, fig.width=14}
+```{r popSurv}
 
 ggplot(dis_sub, aes(x = Comp_meas, y = log10(survival_all.mean), colour = as.factor(ad_dsp_fd))) + 
-		geom_point(size = 5, position = position_jitter(w = 0, h = 0.05)) + 
-		geom_line(size = 2, position = position_jitter(w = 0, h = 0.01)) + 
+		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+		geom_line(size = lineSize, position = position_jitter(w = 0, h = 0.01)) + 
 		mytheme + ylab("Log average population survival") + 
 		scale_colour_discrete("Size needed to disperse") + xlab("Competition measure") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) 
@@ -96,21 +109,23 @@ As competition increases the population survival time increases. But the size
 needed to disperse surprisingly does not have a massive effect on population
 survival esp compared to competition.
 
+**The main thing that affects population survival is compeition type, dispersal has little effect**
+
 
 Metapopulation survival against population survival
 ---
 
 
-```{r MetSurvpopSurv, fig.height=12, fig.width=14}
+```{r MetSurvpopSurv}
 
-ggplot(dis_sub, aes(x = log10(survival_all.mean), y = log10(PopAge.Mean), colour = as.factor(ad_dsp_fd)))  + 	mytheme +
-		geom_point(size = 5, position = position_jitter(w = 0, h = 0.05)) + 
-		geom_line(size = 2, position = position_jitter(w = 0, h = 0.01)) + 
+ggplot(dis_sub, aes(x = log10(survival_all.mean), y = log10(PopAge.Mean), colour = as.factor(ad_dsp_fd))) +
+		mytheme + geom_line(size = 1, lty = 3, position = position_jitter(w = 0, h = 0.01)) + 
+		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
 		ylab("Log metapopulation survival") + 
 		xlab("Log population survival") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) +
 		scale_x_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + 
-		scale_colour_discrete("Size needed to disperse") 
+		scale_colour_discrete("Size needed to disperse")
 
 
 ```
@@ -126,15 +141,31 @@ survival of the populations. The higher the disperal size is, the more the
 population survival affects the metapopulation survival.
 
 
+Metapopulation survival and dispersal
+---
+
+
+```{r MetSurvTotNumDispersers}
+
+ggplot(dis_sub, aes(x = dipBinary, y = log10(PopAge.Mean), colour = as.factor(Comp_meas))) +
+		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
+		xlab("") + scale_colour_discrete("Competition")
+
+
+```
+
+(@) _Figure :_
+
+
 Percentage of populations that go extinct without dispersing
 -----
 
-```{r popsExtNoDisp,  fig.height=12, fig.width=14}
+```{r popsExtNoDisp}
 
 ggplot(dis_sub, aes(x = Comp_meas, y = MeanPerDieNoDsp, colour = as.factor(ad_dsp_fd))) + mytheme + 
 				scale_colour_discrete("Disperse limit") + xlab("Competition") + ylab("% of pops") +
-				geom_point(size = 5, position = position_jitter(w = 0, h = 0.05)) + 
-				geom_line(size = 2, position = position_jitter(w = 0, h = 0.01))
+				geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+				geom_line(size = lineSize, position = position_jitter(w = 0, h = 0.01))
 
 
 ```
@@ -170,11 +201,11 @@ nrow(dis_subVar)
 
 Metapopulation Survival
 ---
-```{r metapopVar, fig.height=12, fig.width=15}
+```{r metapopVar}
 
 ggplot(dis_subVar, aes(x = input_var, y = log10(PopAge.Mean), colour = as.factor(Comp_meas))) + 
-		geom_point(size = 5, position = position_jitter(w = 0, h = 0.05)) + 
-		geom_line(size = 2, position = position_jitter(w = 0, h = 0.01)) + mytheme + ylab("Log max metapopulation age") + 
+		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+		geom_line(size = lineSize, position = position_jitter(w = 0, h = 0.01)) + mytheme + ylab("Log max metapopulation age") + 
 		scale_colour_discrete("Competition") + xlab("Environmental variation") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + facet_wrap(~ad_dsp_fd)
 ```
@@ -187,11 +218,11 @@ competition measures when dispersal is restricted.
 
 Population Survival
 ---
-```{r PopSurVar, fig.height=12, fig.width=15}
+```{r PopSurVar}
 
 ggplot(dis_subVar, aes(x = input_var, y = log10(survival_all.mean), colour = as.factor(Comp_meas))) + 
-		geom_point(size = 5, position = position_jitter(w = 0, h = 0.05)) + 
-		geom_line(size = 2, position = position_jitter(w = 0, h = 0.01)) + mytheme + ylab("Log max metapopulation age") + 
+		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+		geom_line(size = lineSize, position = position_jitter(w = 0, h = 0.01)) + mytheme + ylab("Population survival") + 
 		scale_colour_discrete("Competition") + xlab("Environmental variation") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + facet_wrap(~ad_dsp_fd)
 ```
@@ -199,17 +230,16 @@ ggplot(dis_subVar, aes(x = input_var, y = log10(survival_all.mean), colour = as.
 (@) _Figure :Population survival and environmental variance. Number of offspring
 set to `r no_off`. All generations included_
 
-But in contrast environmental variation has the expected effect on population
-survival, increased variation decreases populations survival time.
+Also it appears that surprisingly, increasing environmental variation does not seem to decrease population survival
 
 
 Percentage of colonies 
 ---
-```{r DispseralFreqVar, fig.height=12, fig.width=15}
+```{r DispseralFreqVar}
 
 ggplot(dis_subVar, aes(x = input_var, y = MeanPerColsDisp, colour = as.factor(Comp_meas))) + 
-		geom_point(size = 5) + 
-		geom_line(size = 2) + mytheme + ylab("Perc disp") + 
+		geom_point(size = pointSize) + 
+		geom_line(size = lineSize) + mytheme + ylab("Perc disp") + 
 		scale_colour_discrete("Competition") + xlab("Environmental variation") +
 		facet_wrap(~ad_dsp_fd) + scale_y_continuous(limits = c(0, 0.25))
 
