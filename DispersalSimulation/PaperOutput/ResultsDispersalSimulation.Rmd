@@ -218,7 +218,7 @@ nrow(dis_subVar)
 
 disaves_subVar <-  subset(dis_aves, max_no_off == no_off)
 disaves_subVar <- subset(disaves_subVar, ad_dsp_fd == set_ad_dsp_fd1 | ad_dsp_fd == set_ad_dsp_fd2)
-disaves_subVar <- subset(disaves_subVar, Comp_meas < 0.5)
+#disaves_subVar <- subset(disaves_subVar, Comp_meas < 0.5)
 
 ```
 
@@ -261,19 +261,14 @@ Also it appears that surprisingly, increasing environmental variation does not s
 
 ```{r DispersalAgainstPopSurvivalALL}
 	
-ggplot(dis_aves, aes(x = as.factor(any_disp), y = log10(pop_age), colour = as.factor(Comp_meas))) +
-		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
-		xlab("") + scale_colour_discrete("Competition")
+#ggplot(dis_aves, aes(x = as.factor(any_disp), y = log10(pop_age), colour = as.factor(Comp_meas))) +
+		#mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
+		#xlab("") + scale_colour_discrete("Competition")
 
 
 ggplot(disaves_subVar, aes(x = as.factor(any_disp), y = log10(pop_age), colour = as.factor(Comp_meas))) +
 		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
 		xlab("") + scale_colour_discrete("Competition")
-
-
-
-
-
 
 ```
 
