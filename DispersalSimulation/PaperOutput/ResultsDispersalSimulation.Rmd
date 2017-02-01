@@ -30,8 +30,10 @@ no_off <- 6
 
 dis_ply <- subset(dis_ply, Comp_meas != 0.5 )
 dis_sub <- subset(dis_ply, max_no_off == no_off & input_var == env1)
-nrow(dis_sub)
 
+
+all_sub <- subset(dis_aves, Comp_meas != 0.5 )
+all_sub <- subset(all_sub, max_no_off == no_off & input_var == env1)
 ```
 
 
@@ -146,16 +148,35 @@ Metapopulation survival and dispersal
 
 
 ```{r MetSurvTotNumDispersers}
-
+	
 ggplot(dis_sub, aes(x = dipBinary, y = log10(PopAge.Mean), colour = as.factor(Comp_meas))) +
 		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
 		xlab("") + scale_colour_discrete("Competition")
 
+```
+
+(@) _Figure : Comparing metapopulation survival to whether any populations produced dispersers_ 
+
+This shows how metapopulations have short survival if dispersal is restricted, but that metapopulations can survive no dispersal if competition within populations is contest like.
+
+
+
+
+
+What affects dispersal?
+---
+
+
+```{r WhatAfftsDispersal}
+
+ggplot(dis_sub, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = MeanMetapopDispBin))  + geom_tile() +
+		mytheme + ylab("Adult dispersal size") +  xlab("Competition") + scale_colour_continuous("Dispersal binary by metapopulation")
 
 ```
 
-(@) _Figure :_
+(@) _Figure : Comparing metapopulation survival to whether any populations produced dispersers_ 
 
+This shows how metapopulations have short survival if dispersal is restricted, but that metapopulations can survive no dispersal if competition within populations is contest like.
 
 Percentage of populations that go extinct without dispersing
 -----
@@ -195,6 +216,10 @@ dis_subVar <- subset(dis_subVar, Comp_meas < 0.5)
 #dis_subVar <- dis_sub <- subset(dis_ply, max_no_off == no_off)
 nrow(dis_subVar)
 
+disaves_subVar <-  subset(dis_aves, max_no_off == no_off)
+disaves_subVar <- subset(disaves_subVar, ad_dsp_fd == set_ad_dsp_fd1 | ad_dsp_fd == set_ad_dsp_fd2)
+disaves_subVar <- subset(disaves_subVar, Comp_meas < 0.5)
+
 ```
 
 ###TODO: could remove come layers of comp variables
@@ -231,6 +256,26 @@ ggplot(dis_subVar, aes(x = input_var, y = log10(survival_all.mean), colour = as.
 set to `r no_off`. All generations included_
 
 Also it appears that surprisingly, increasing environmental variation does not seem to decrease population survival
+
+
+
+```{r DispersalAgainstPopSurvivalALL}
+	
+ggplot(dis_aves, aes(x = as.factor(any_disp), y = log10(pop_age), colour = as.factor(Comp_meas))) +
+		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
+		xlab("") + scale_colour_discrete("Competition")
+
+
+ggplot(disaves_subVar, aes(x = as.factor(any_disp), y = log10(pop_age), colour = as.factor(Comp_meas))) +
+		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
+		xlab("") + scale_colour_discrete("Competition")
+
+
+
+
+
+
+```
 
 
 Percentage of colonies 

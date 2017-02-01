@@ -89,10 +89,22 @@ dis_ply<- ddply(dis_aves, .(Comp_slope, meanK, input_var, disp_rsk, ad_dsp_fd, C
 		MeanPerColsDisp = mean(perc_cols_disp, na.rm = TRUE),
 		MeanPerDieNoDsp = mean(perc_die_no_disp, na.rm = TRUE),
 		MeanPopSizeVar = mean(var_pop_size, na.rm = TRUE),
-		MeanPopSizeVarNoSig = mean(var_pop_size_noSig, na.rm = TRUE),
-		TotNumDispersingAll = mean(numIndsDispersing, na.rm = TRUE)
+		MeanPopSizeVarNoSig = mean(var_pop_size_noSig, na.rm = TRUE), 
+		TotNumDispersingAll = mean(numIndsDispersing, na.rm = TRUE),
+		MeanMetapopDispBin = mean(any_disp, na.rm = TRUE)
+
 )
 
 
 
 dis_ply$dipBinary <- ifelse(dis_ply$TotNumDispersingAll > 0, "SomeDispersers", "NoDispersers")
+
+
+
+
+
+
+
+
+
+
