@@ -1,9 +1,8 @@
-# TODO: Add comment
-# 
+
 # Author: Ruth
 ###############################################################################
 
-TalkDatesToProcess <- "17/01/2017"
+TalkDatesToProcess <- "31/01/2017"
 
 
 library(ggplot2)

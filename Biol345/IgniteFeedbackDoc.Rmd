@@ -1,5 +1,5 @@
 ---
-title: "`r student`: Draft Ignite Talk Feedback&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mark: `r mark` /10"
+title: "`r student`: Draft Ignite Talk Feedback&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mark: `r mark` /10"
 output:
   word_document:
     reference_docx: FormatReferenceDoc.docx
@@ -42,10 +42,8 @@ Flow_table <- data.frame(Flow_opt = as.factor(Flow_opt), Flow_results)
 
 ggplot(Flow_table, aes(x = Flow_opt, y =Flow_results, fill = Flow_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x = element_text(angle = 90, hjust = 1)) +
-		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 
-		#scale_x_continuous(expand = c(0, 0))
 		
 ```
 
@@ -62,9 +60,7 @@ Paper_table <- data.frame(Paper_opt = as.factor(Paper_opt), Paper_results)
 
 ggplot(Paper_table, aes(x = Paper_opt, y = Paper_results, fill = Paper_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
-
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 		
 ```
 
@@ -83,8 +79,7 @@ Topic_table <- data.frame(Topic_opt = as.factor(Topic_opt), Topic_results)
 
 ggplot(Topic_table, aes(x = Topic_opt, y = Topic_results, fill = Topic_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 		
 ```
 
@@ -101,8 +96,7 @@ Narration_table <- data.frame(Narration_opt = as.factor(Narration_opt), Narratio
 
 ggplot(Narration_table, aes(x = Narration_opt, y = Narration_results, fill = Narration_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 		
 ```
 
@@ -117,25 +111,22 @@ Slides_table <- data.frame(Slides_opt = as.factor(Slides_opt), Slides_results)
 
 ggplot(Slides_table, aes(x = Slides_opt, y = Slides_results, fill = Slides_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme
-		
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 ```
 
 
 ###Did you have time to read the information in each slide? 
-```{r SlideInfo, fig.height=4, fig.width=4}
+```{r SlideInfo, fig.height=4, fig.width=4.5}
 SlideInfo_opt <- c("Yes", "Most of them", "Only Some", "Irrelevant or\ndistracting")
 		
-SlideInfo_results <- c(data_table$Slide_Irrel[row_num], data_table$Info_yes[row_num], 
-data_table$Info_donotknow[row_num], data_table$Info_some[row_num])
+SlideInfo_results <- c(data_table$SlideInfo_yes[row_num], data_table$SlideInfo_most[row_num], 
+data_table$SlideInfo_some[row_num], data_table$SlideInfo_Irrel[row_num])
 
 SlideInfo_table <- data.frame(SlideInfo_opt = as.factor(SlideInfo_opt), SlideInfo_results)
 
 ggplot(SlideInfo_table, aes(x = SlideInfo_opt, y = SlideInfo_results, fill = SlideInfo_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme + theme(axis.text.x=element_text(angle=45, hjust= 1.1))
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 		
 ```
 
