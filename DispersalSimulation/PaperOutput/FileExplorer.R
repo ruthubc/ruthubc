@@ -1,0 +1,37 @@
+# TODO: Add comment
+# 
+# Author: user
+###############################################################################
+
+CompLookUp <- data.frame (Comp_slope = c(0, 0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.33, 2.5, 5, 10), 
+		Comp_meas = c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0))
+
+
+importDispFile <- read.csv("C:/Work/Dropbox/RuthSync/DispersalPaper/DataFiles/JulyDataCombined.csv")
+
+importDispFile <- merge(importDispFile, CompLookUp, by = "Comp_slope") # making new comp variable with more sensible numbering
+
+importDispFile$metPopAgeMax <- importDispFile$pop_age # changing the name to more sensible one
+
+importDispFile$any_disp <- ifelse(importDispFile$num_cols_disp > 0, 1, 0)
+
+
+#xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd + max_no_off,  data = importDispFile)
+
+
+
+
+
+
+
+no_off <- 6 
+
+subDispFile <- subset(importDispFile, max_no_off == no_off)
+
+nrow(subDispFile)
+
+#xtabs(~ input_var + Comp_slope + ad_dsp_fd,  data = subDispFile)
+
+
+
+
