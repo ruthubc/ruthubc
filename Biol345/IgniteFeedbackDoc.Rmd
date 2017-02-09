@@ -29,7 +29,7 @@ cat(data_table$StudentSumm[row_num])
 
 ###Did the talk flow logically and was the purpose of the talk achieved? 
 
-```{r Flow, fig.height=5, fig.width=6}
+```{r Flow, fig.height=4, fig.width=5}
 Flow_opt <-c("Yes", "Reordering the sections\nwould help", "Struggled to understand\nrelevance of some sections", 
 "Too much information", "Didn't understand the\npurpose of the talk",
 "Too much jargon")
@@ -50,7 +50,7 @@ ggplot(Flow_table, aes(x = Flow_opt, y =Flow_results, fill = Flow_opt)) + geom_b
 
 ###Question: Did you understand the significance of the main research paper?
 
-```{r Paper, fig.height=4, fig.width=4.5}
+```{r Paper, fig.height=3, fig.width=3.5}
 Paper_opt <- c("Yes", "Kinda", "No", "What research\npaper?")
 		
 Paper_results <- c(data_table$Paper_yes[row_num], data_table$Paper_Kinda[row_num], data_table$Paper_No[row_num],
@@ -68,7 +68,7 @@ ggplot(Paper_table, aes(x = Paper_opt, y = Paper_results, fill = Paper_opt)) + g
 
 ###How interesting and important did you find the topic?
 
-```{r Topic, fig.height=5, fig.width=5}
+```{r Topic, fig.height=3.5, fig.width=4}
 Topic_opt <- c("Very", " Important, but\ninformation not new", "Informative, but the\nimportance wasn't clear", 
 "Not very important\nor informative")
 		
@@ -86,7 +86,7 @@ ggplot(Topic_table, aes(x = Topic_opt, y = Topic_results, fill = Topic_opt)) + g
 
 ###Was the narration synchronized with the slides?
 
-```{r Narration, fig.height=4, fig.width=4.5}
+```{r Narration, fig.height=3, fig.width=3.5}
 Narration_opt <- c("Yes, nicely", "Yes, but rushed", "OK, except\nat the end", "Only at\nthe start")
 		
 Narration_results <- c(data_table$Talk_yes[row_num], data_table$Talk_rushed[row_num], data_table$Talk_OK[row_num],
@@ -102,7 +102,7 @@ ggplot(Narration_table, aes(x = Narration_opt, y = Narration_results, fill = Nar
 
 ###Did you understand the point of each slide and/or image?
 
-```{r Slides, fig.height=3, fig.width=4}
+```{r Slides, fig.height=3, fig.width=3}
 Slides_opt <- c("Clear", "Vague", "Not described")
 		
 Slides_results <- c(data_table$Slides_yes[row_num], data_table$Slides_most[row_num], data_table$Slides_some[row_num])
@@ -116,7 +116,7 @@ ggplot(Slides_table, aes(x = Slides_opt, y = Slides_results, fill = Slides_opt))
 
 
 ###Did you have time to read the information in each slide? 
-```{r SlideInfo, fig.height=4, fig.width=4.5}
+```{r SlideInfo, fig.height=3, fig.width=3.5}
 SlideInfo_opt <- c("Yes", "Most of them", "Only Some", "Irrelevant or\ndistracting")
 		
 SlideInfo_results <- c(data_table$SlideInfo_yes[row_num], data_table$SlideInfo_most[row_num], 

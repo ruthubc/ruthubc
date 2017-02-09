@@ -1,5 +1,5 @@
 ---
-title: "`r student`: Community Talk Feedback&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mark: `r mark` /10"
+title: "`r student`: Community Talk Feedback&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mark: `r mark` /10"
 output:
   word_document:
     reference_docx: FormatReferenceDoc.docx
@@ -7,7 +7,7 @@ output:
 
 
 ```{r docSettings, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=3, fig.width=5)
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=3, fig.width=4)
 
 ```
 
@@ -32,8 +32,7 @@ Goal_table <- data.frame(Goal_opt = as.factor(Goal_opt), Goal_results)
 
 ggplot(Goal_table, aes(x = Goal_opt, y = Goal_results, fill = Goal_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 
 		#scale_x_continuous(expand = c(0, 0))
 		
@@ -42,7 +41,7 @@ ggplot(Goal_table, aes(x = Goal_opt, y = Goal_results, fill = Goal_opt)) + geom_
 
 ###Project Ecological Info
 
-```{r Impact, fig.height=3, fig.width=3}
+```{r Impact, fig.height=3, fig.width=2.5}
 Impact_opt <- c("Explained", "Not Explained")
 		
 Impact_results <- c(data_table$Impact_Explained[row_num], data_table$Impact_Not[row_num])
@@ -51,8 +50,7 @@ Impact_table <- data.frame(Impact_opt = as.factor(Impact_opt), Impact_results)
 
 ggplot(Impact_table, aes(x = Impact_opt, y = Impact_results, fill = Impact_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 		
 ```
 
@@ -60,7 +58,7 @@ ggplot(Impact_table, aes(x = Impact_opt, y = Impact_results, fill = Impact_opt))
 
 ###Amount of Information
 
-```{r Info, fig.height=3, fig.width=4}
+```{r Info, fig.height=3, fig.width=3}
 Info_opt <- c("Just right", "Too much", "Too little")
 		
 Info_results <- c(data_table$Info_Right[row_num], data_table$Info_Much[row_num], data_table$Info_Little[row_num])
@@ -69,16 +67,15 @@ Info_table <- data.frame(Info_opt = as.factor(Info_opt), Info_results)
 
 ggplot(Info_table, aes(x = Info_opt, y = Info_results, fill = Info_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none",axis.text.x=element_text(angle=45, hjust= 1.1))
 		
 ```
 
 
 ###Potential Problems
 
-```{r Probs, fig.height=3, fig.width=4.5}
-Probs_opt <- c("Well prepared for", "Not considered enough", "Ignore")
+```{r Probs, fig.height=3, fig.width=3.5}
+Probs_opt <- c("Well prepared for", "Not considered\nenough", "Ignore")
 		
 Probs_results <- c(data_table$Probs_Prepared[row_num], data_table$Probs_Not[row_num], data_table$Probs_Ignored[row_num])
 
@@ -86,14 +83,13 @@ Probs_table <- data.frame(Probs_opt = as.factor(Probs_opt), Probs_results)
 
 ggplot(Probs_table, aes(x = Probs_opt, y = Probs_results, fill = Probs_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 		
 ```
 
 ###Community Involvement and Impact
 
-```{r Comm, fig.height=3, fig.width=4}
+```{r Comm, fig.height=3, fig.width=3.5}
 Comm_opt <- c("Clear", "Vague", "Not described")
 		
 Comm_results <- c(data_table$Com_Clear[row_num], data_table$Com_Vague[row_num], data_table$Com_Not[row_num])
@@ -102,8 +98,7 @@ Comm_table <- data.frame(Comm_opt = as.factor(Comm_opt), Comm_results)
 
 ggplot(Comm_table, aes(x = Comm_opt, y = Comm_results, fill = Comm_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 		
 ```
 
@@ -119,8 +114,7 @@ Pres_table <- data.frame(Pres_opt = as.factor(Pres_opt), Pres_results)
 
 ggplot(Pres_table, aes(x = Pres_opt, y = Pres_results, fill = Pres_opt)) + geom_bar(stat="identity") + 
 		xlab("") + ylab(ylabel) + theme_bw() + 
-		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none") +
-		mytheme
+		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line=element_line(), legend.position="none", axis.text.x=element_text(angle=45, hjust= 1.1))
 		
 ```
 

@@ -26,10 +26,12 @@ no_off <- 6
 
 subDispFile <- subset(importDispFile, Comp_meas != 0.5)
 subDispFile <- subset(subDispFile, max_no_off == no_off & input_var == env1)
+nrow(subDispFile)
+
+xtabs(~ Comp_slope + ad_dsp_fd + input_var,  data = subDispFile)
 
 
 ```
-
 
 
 
@@ -38,7 +40,6 @@ subDispFile <- subset(subDispFile, max_no_off == no_off & input_var == env1)
 
 
 ```{r metapop, , results = 'asis'}
-
 
 
 ggplot(subDispFile, aes(x = Comp_meas, y = log10(metPopAgeMax), colour = as.factor(ad_dsp_fd))) + 
@@ -109,8 +110,9 @@ Metapopulation survival against population survival
 
 ```{r MetSurvpopSurv}
 
-ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(Comp_meas), colour = as.factor(ad_dsp_fd))) +
-		mytheme + geom_line(size = 1, lty = 3, position = position_jitter(w = 0, h = 0.01)) + 
+ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax), colour = as.factor(ad_dsp_fd))) +
+		mytheme + 
+		geom_smooth(se = FALSE, size = 1, lty = 3) +
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
 		ylab("Log metapopulation survival") + 
 		xlab("Log population survival") +
@@ -158,7 +160,11 @@ What affects dispersal?
 
 ```{r WhatAfftsDispersal}
 
-ggplot(importDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = any_disp))  + geom_tile() +
+ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
+		N_all = length(!is.na(fileNum)),
+		meanDispBin = mean(any_disp, na.rm = FALSE))
+
+ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile() +
 		mytheme + ylab("Adult dispersal size") +  xlab("Competition") + scale_colour_continuous("Dispersal binary by metapopulation")
 
 ```
