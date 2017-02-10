@@ -140,7 +140,7 @@ Metapopulation survival and dispersal
 
 ```{r MetSurvTotNumDispersers}
 	
-ggplot(subDispFile, aes(x = any_disp, y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) +
+ggplot(subDispFile, aes(x = as.factor(any_disp), y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) +
 		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
 		xlab("") + scale_colour_discrete("Competition")
 
@@ -164,7 +164,7 @@ ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
 		N_all = length(!is.na(fileNum)),
 		meanDispBin = mean(any_disp, na.rm = FALSE))
 
-ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile() +
+ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile(colour = "white") +
 		mytheme + ylab("Adult dispersal size") +  xlab("Competition") + scale_colour_continuous("Dispersal binary by metapopulation")
 
 ```
@@ -207,9 +207,9 @@ Metapopulation Survival
 ---
 ```{r metapopVar}
 
-ggplot(importDispFile, aes(x = input_var, y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) + 
+ggplot(subDispFile, aes(x = input_var, y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
-		geom_line(size = lineSize, position = position_jitter(w = 0, h = 0.01)) + mytheme + ylab("Log max metapopulation age") + 
+		geom_smooth(se = FALSE) + mytheme + ylab("Log max metapopulation age") + 
 		scale_colour_discrete("Competition") + xlab("Environmental variation") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + facet_wrap(~ad_dsp_fd)
 ```
@@ -221,21 +221,53 @@ Intermediate environmental variance increases metapopulation survival for some
 competition measures when dispersal is restricted.
 
 
-Population Survival vs Metapopulation survival
+Population Survival vs Metapopulation survival by variance
 ---
 
-```{r MetSurvVsPopSurv, fig.height=8, fig.width=10}
+```{r MetSurvVsPopSurvVar, fig.height=8, fig.width=10}
 
-ggplot(importDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax), colour = as.factor(input_var))) + 
+ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax), colour = as.factor(input_var))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
 		mytheme + ylab("Log max metapopulation age") + 
-		geom_line(size = lineSize, position = position_jitter(w = 0, h = 0.01)) +
-		scale_colour_discrete("Variance") + xlab("Population Survival") +
-		facet_grid(ad_dsp_fd ~ Comp_meas)
+		geom_smooth(se= FALSE) +
+		scale_colour_discrete("Variance") + xlab("Population Survival")
+		#facet_grid(ad_dsp_fd ~ Comp_meas)
 ```
 
 
+Population Survival vs Metapopulation survival by competition
+---
+
+```{r MetSurvVsPopSurvComp, fig.height=8, fig.width=10}
+
+ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) + 
+		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+		mytheme + ylab("Log max metapopulation age") + 
+		geom_smooth(se= FALSE) +
+		scale_colour_discrete("Competition") + xlab("Population Survival")
+		#facet_grid(ad_dsp_fd ~ Comp_meas)
+```
 
 
+Population Survival vs Metapopulation survival by Adult Dispersal Size
+---
 
+```{r MetSurvVsPopSurvAdFd, fig.height=8, fig.width=10}
 
+ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax), colour = as.factor(ad_dsp_fd))) + 
+		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+		mytheme + ylab("Log max metapopulation age") + 
+		geom_smooth(se= FALSE) +
+		scale_colour_discrete("Adult Dispersal Limit") + xlab("Population Survival")
+		#facet_grid(ad_dsp_fd ~ Comp_meas)
+```
+
+# Binary dispersal 
+
+```{r MetSurvTotNumDispersers}
+	
+ggplot(subDispFile, aes(x = as.factor(any_disp), y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) +
+		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
+		xlab("") + scale_colour_discrete("Env Variance") + facet_wrap(~input_var)
+
+```
