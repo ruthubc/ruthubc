@@ -22,6 +22,9 @@ compName = platform.node()
 if compName == 'Sony-PC':
     print("This is work computer")
     savePath  = 'G:\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
+elif compName == 'MacPC':
+    savePath  = 'C:\\Users\\Ruth\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
+    print("this is the MacPC")    
 else:
     savePath  = 'C:\\Work\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
     print("this is the home computer")
@@ -33,10 +36,10 @@ indFile = "n"
 slopes = [0, 0.4, 0.8, 1, 1.25, 2.5, 10]
 dispersalRisks = [0.3]
 meanK = [300]
-Vars = [0.2, 0.3, 0.4]
+Vars = [0.5, 0.6]
 adDisSizes = [0.2, 0.6, 0.8, 1.2]
 off_list = [[4, 6]]
-F_Lns = [0.61]
+F_Lns = [0.61, 0.61]
 sim_len = 500
 comp_type = "N"
 

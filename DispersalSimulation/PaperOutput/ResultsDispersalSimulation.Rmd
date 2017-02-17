@@ -205,7 +205,7 @@ subDispFile <- subset(subDispFile, Comp_meas != 0.5)
 
 Metapopulation Survival
 ---
-```{r metapopVar}
+```{r metapopVar, fig.height=8, fig.width=10}
 
 ggplot(subDispFile, aes(x = input_var, y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
@@ -264,7 +264,7 @@ ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax), co
 
 # Binary dispersal 
 
-```{r MetSurvTotNumDispersers}
+```{r MetSurvTotNumDispersersEnv, fig.height=8, fig.width=10}
 	
 ggplot(subDispFile, aes(x = as.factor(any_disp), y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) +
 		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
