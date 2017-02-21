@@ -31,7 +31,7 @@ if (comp_name == "DELL-1545") {
 }
 
 
-importDispFile <- read.csv("DisperalSimulationOutput/SummaryCombine_17Feb2017.csv", na.strings = "NA")
+importDispFile <- read.csv("DisperalSimulationOutput/DispersalCombine.csv", na.strings = "NA")
 
 importDispFile <- merge(importDispFile, CompLookUp, by = "Comp_slope") # making new comp variable with more sensible numbering
 

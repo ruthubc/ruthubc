@@ -7,60 +7,40 @@ Created on Jan 22, 2016
 
 import matplotlib.pyplot as plt
 from matplotlib import animation
+import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
 #from matplotlib.animation import ArtistAnimation
 
+dataTitle = '13539_slp0.8_Rsk0.3_K300_var0_dslm0.8_maxOff6.py'
+
 
 data = pd.read_csv("AnimationDataOutput.csv", sep = ',') # import data
-
-
-
-
 # first set up fig, the axis and the plot element we want to animate
 
 maxColSize = max(data.num_adsB4_dispersal) # for y axis
 
-'''
-
-subData = data[data.pop_age == 1]
-
-plt.figure(figsize=(16,8)) # changes the size of the figure
-
-plt.bar(subData.col_space.values, subData.num_adsB4_dispersal.values)
-
-plt.xlim(1,201)
-plt.ylim(0, maxColSize)
-plt.subplots_adjust(left=0.03, right=0.99, top=0.99, bottom=0.03)
-
-plt.show()
-'''
-
-# Setting up formatting for movie files mp4 files
-#Writer = animation.writers['ffmpeg']
-#writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
-
 
 numBars = 200
 
-numFrames = max(data.pop_age.values)
+numFrames = max(data.pop_age.values+1)
 
 fig = plt.figure(figsize=(16,8))
 
+fig.suptitle(dataTitle, fontsize=14, fontweight='bold')
+
+black_patch = mpatches.Patch(color='black', label='dying')
+red_patch = mpatches.Patch(color = 'red', label = 'dispersing')
+yellow_patch = mpatches.Patch(color = 'yellow', label = 'dispersing, then dying')
+plt.legend(handles=[red_patch, black_patch, yellow_patch], fontsize = 11)
+
+ax = fig.add_subplot(111)
+
 position = np.arange(numBars)# + .5 # number of bars
 
-#plt.tick_params(axis = 'x', colors = '#072b57')
-#plt.tick_params(axis = 'y', colors = '#072b57')
-
-#speeds = [1, 2, 3, 4, 1, 2, 3]
 heights = [0]*numBars
 rects = plt.bar(position, heights, align = 'center', color = '#b8ff5c')
-#fig.annotate("text", xy = (100, 100))
-#plt.xticks(position, ('A', 'B', 'C', 'D', 'E', 'F'))
 
-#plt.xlabel('X Axis', color = '#072b57')
-#plt.ylabel('Y Axis', color = '#072b57')
-#plt.title('My Chart', color = '#072b57')
 
 plt.ylim((0,maxColSize))
 plt.xlim((0,numBars))
@@ -69,8 +49,12 @@ plt.grid(True)
 
 rs = [r for r in rects] # rects a BarContainer, rs is the same as rects except it is a list containing rectangle objects
 
+time_text = ax.text(0.83, 0.82, '', transform=ax.transAxes, fontsize=15)
 
 def init():
+    """initialize animation"""
+    #time_text.set_text('')
+    rs.append(time_text) 
     return rs
 
 def animate(i):
@@ -89,21 +73,20 @@ def animate(i):
     for h,r, c in zip(heights,rs, colours):
         r.set_height(h)
         r.set_facecolor(c)
+    time_text.set_text('generation = %.1f' % i)
+    rs.append(time_text)    
     return rs
+
 
 # to output to screen
 #anim = animation.FuncAnimation(fig, animate, init_func=init,frames=numFrames, interval=1, blit=True) # frames is the number of time to iteriate
 #plt.show()
 
+animFileName = dataTitle + '.mp4'
+print animFileName
 
 anim = animation.FuncAnimation(fig, animate, init_func = init, frames = numFrames, interval=1, blit=True)
-anim.save('DispSimOutput.mp4',  fps=3, extra_args=['-vcodec', 'libx264']) # min no of fps is 3
+anim.save(animFileName,  fps=3, extra_args=['-vcodec', 'libx264']) # min no of fps is 3
 
-#plt.show()
-
-
-# To ouput as gif
-#anim = animation.FuncAnimation(fig, animate, frames=10, interval=1)
-#anim.save('Animation.gif', writer='imagemagick')
 
 print "finished"

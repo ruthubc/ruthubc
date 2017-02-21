@@ -33,6 +33,7 @@ xtabs(~ Comp_slope + ad_dsp_fd + input_var,  data = subDispFile)
 
 ```
 
+# Metapopulation survival with no environmental variation
 
 
 ### Metapopulation Age Until Extinction
@@ -138,11 +139,11 @@ Metapopulation survival and dispersal
 ---
 
 
-```{r MetSurvTotNumDispersers}
+```{r MetSurvTotNumDispersers, fig.height=6, fig.width=7}
 	
 ggplot(subDispFile, aes(x = as.factor(any_disp), y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) +
 		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
-		xlab("") + scale_colour_discrete("Competition")
+		xlab("") + scale_colour_discrete("Competition") + facet_wrap(~ad_dsp_fd)
 
 ```
 
