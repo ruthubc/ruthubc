@@ -221,6 +221,23 @@ set to `r no_off`. All generations included_
 Intermediate environmental variance increases metapopulation survival for some
 competition measures when dispersal is restricted.
 
+Survival against environmental variation 
+---
+```{r poppopVar, fig.height=8, fig.width=10}
+
+ggplot(subDispFile, aes(x = input_var, y = log10(survivalMean_all), colour = as.factor(Comp_meas))) + 
+		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+		geom_smooth(se = FALSE) + mytheme + ylab("Log max metapopulation age") + 
+		scale_colour_discrete("Competition") + xlab("Environmental variation") +
+		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + facet_wrap(~ad_dsp_fd)
+```
+
+(@) _Figure :Metapopulation survival environmental variance. Number of offspring
+set to `r no_off`. All generations included_
+
+Intermediate environmental variance increases metapopulation survival for some
+competition measures when dispersal is restricted.
+
 
 Population Survival vs Metapopulation survival by variance
 ---
