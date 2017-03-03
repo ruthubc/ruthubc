@@ -2,7 +2,7 @@
 # Author: Ruth
 ###############################################################################
 
-TalkDatesToProcess <- "07/02/2017"
+TalkDatesToProcess <- "28/02/2017"
 
 
 library(ggplot2)
@@ -44,3 +44,4 @@ if (comp_name == "DELL-1545") {
 
 	
 }
+uy
