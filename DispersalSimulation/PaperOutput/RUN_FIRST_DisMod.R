@@ -42,6 +42,7 @@ importDispFile$any_disp <- ifelse(importDispFile$num_cols_disp > 0, 1, 0)
 
 xtabs(~ input_var + Comp_slope + meanK + disp_rsk + ad_dsp_fd + max_no_off,  data = importDispFile)
 
+print("Finished")
 
 
 

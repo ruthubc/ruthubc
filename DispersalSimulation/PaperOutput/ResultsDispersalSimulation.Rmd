@@ -36,8 +36,7 @@ xtabs(~ Comp_slope + ad_dsp_fd + input_var,  data = subDispFile)
 # Metapopulation survival with no environmental variation
 
 
-### Metapopulation Age Until Extinction
-
+### Interaction between intraspecific competition type and dispersal constraint
 
 
 ```{r metapop, , results = 'asis'}
@@ -77,32 +76,6 @@ get enough food to disperse, even if individuals have to be large to disperse.
 However if food is shared via contest competition then this is not the case.
 
 
-Population survival
----
-
-```{r popSurv}
-
-ggplot(subDispFile, aes(x = Comp_meas, y = log10(survivalMean_all), colour = as.factor(ad_dsp_fd))) + 
-		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
-		geom_line(size = lineSize, position = position_jitter(w = 0, h = 0.01)) + 
-		mytheme + ylab("Log average population survival") + 
-		scale_colour_discrete("Size needed to disperse") + xlab("Competition measure") +
-		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) 
-
-
-```
-
-(@) _Figure :Population survival against competition type, where competition
-type ranges from 0 to 1, with 0 being full scramble competition and 1 is full
-contest competition. Environmental variance is `r env1` and number of offspring
-set to `r no_off`. All generations included. Survival calculated from survival
-function_
-
-As competition increases the population survival time increases. But the size
-needed to disperse surprisingly does not have a massive effect on population
-survival esp compared to competition.
-
-**The main thing that affects population survival is compeition type, dispersal has little effect**
 
 
 Metapopulation survival against population survival
@@ -112,8 +85,7 @@ Metapopulation survival against population survival
 ```{r MetSurvpopSurv}
 
 ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax), colour = as.factor(ad_dsp_fd))) +
-		mytheme + 
-		geom_smooth(se = FALSE, size = 1, lty = 3) +
+		mytheme +
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
 		ylab("Log metapopulation survival") + 
 		xlab("Log population survival") +
@@ -141,9 +113,11 @@ Metapopulation survival and dispersal
 
 ```{r MetSurvTotNumDispersers, fig.height=6, fig.width=7}
 	
-ggplot(subDispFile, aes(x = as.factor(any_disp), y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) +
-		mytheme + geom_boxplot() + ylab("Log metapopulation survival") + 
-		xlab("") + scale_colour_discrete("Competition") + facet_wrap(~ad_dsp_fd)
+
+
+ggplot(subDispFile, aes(x = as.factor(any_disp), y = log10(metPopAgeMax), colour = as.factor(ad_dsp_fd))) +
+		mytheme + geom_point(size = pointSize, position = position_jitter(w = 0.05, h = 0.01)) + ylab("Log metapopulation survival") + 
+		xlab("Did any dispersal take place?") + scale_colour_discrete("Dispersal Min Size")
 
 ```
 
@@ -151,7 +125,7 @@ ggplot(subDispFile, aes(x = as.factor(any_disp), y = log10(metPopAgeMax), colour
 
 This shows how metapopulations have short survival if dispersal is restricted, but that metapopulations can survive no dispersal if competition within populations is contest like.
 
-
+x2 outliners 
 
 
 
@@ -207,12 +181,12 @@ subDispFile <- subset(subDispFile, Comp_meas != 0.5)
 Metapopulation Survival
 ---
 ```{r metapopVar, fig.height=8, fig.width=10}
-
+#geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2))
 ggplot(subDispFile, aes(x = input_var, y = log10(metPopAgeMax), colour = as.factor(Comp_meas))) + 
-		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
-		geom_smooth(se = FALSE) + mytheme + ylab("Log max metapopulation age") + 
+		geom_point(size = pointSize, position = position_jitter(w = 0.0, h = 0.01)) + 
+		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)) + mytheme + ylab("Log max metapopulation age") + 
 		scale_colour_discrete("Competition") + xlab("Environmental variation") +
-		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + facet_wrap(~ad_dsp_fd)
+		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) + facet_wrap(~ad_dsp_fd)
 ```
 
 (@) _Figure :Metapopulation survival environmental variance. Number of offspring
@@ -227,7 +201,7 @@ Survival against environmental variation
 
 ggplot(subDispFile, aes(x = input_var, y = log10(survivalMean_all), colour = as.factor(Comp_meas))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
-		geom_smooth(se = FALSE) + mytheme + ylab("Log max metapopulation age") + 
+		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)) + mytheme + ylab("Log max metapopulation age") + 
 		scale_colour_discrete("Competition") + xlab("Environmental variation") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + facet_wrap(~ad_dsp_fd)
 ```
