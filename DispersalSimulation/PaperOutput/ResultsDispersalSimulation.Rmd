@@ -17,7 +17,7 @@ mytheme <- theme_bw(base_size=10)  + theme(panel.grid.major = element_blank(), p
 		legend.background = element_rect(fill="white", size=0.7, linetype="solid", colour ="black"), legend.text=element_text(size=6), 
 		strip.background = element_rect(fill="white", size=0.7, linetype="solid", colour ="black"))
 
-pointSize <- 2
+pointSize <- 1
 lineSize <-0.5
 
 
@@ -50,7 +50,7 @@ aveFile <- ddply(subDispFile, .(ad_dsp_fd, Comp_meas), summarize,
 ggplot(aveFile, aes(x = Comp_meas, y = log10(metPopAgeMax))) + 
 		geom_point(size = pointSize, position = position_dodge(width = 0.02), aes(shape = as.factor(ad_dsp_fd))) + 
 		geom_line(size = lineSize, aes(linetype = as.factor(ad_dsp_fd))) + mytheme + ylab("Log metapopulation survival") + 
-		scale_shape_discrete("Size needed to disperse") + scale_linetype_discrete("Size needed to disperse") + 
+		scale_shape_discrete("Dispersal\nMin Size") + scale_linetype_discrete("Dispersal\nMin Size") + 
 		xlab("Competition measure") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0))
 
@@ -100,7 +100,7 @@ ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax), co
 		xlab("Log population survival") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) +
 		scale_x_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + 
-		scale_colour_discrete("Size needed to disperse")
+		scale_colour_discrete("Dispersal\nMin Sixe")
 
 
 ```
@@ -128,11 +128,11 @@ aveFile <- ddply(subDispFile, .(ad_dsp_fd, Comp_meas), summarize,
 
 
 ggplot(aveFile, aes(x = any_disp, y = log10(metPopAgeMax))) + 
-		stat_smooth(se = FALSE, color = "black") + 
+		stat_smooth(method = "lm",  formula  = y~exp(-x),se = FALSE, color = "black", size = 0.5) + 
 		mytheme + 
 		geom_point(size = pointSize, position = position_jitter(w = 0.07, h = 0.02),  aes(shape = as.factor(ad_dsp_fd))) + 
 		ylab("Log metapopulation survival") + 
-		xlab("Did any dispersal take place?") + scale_shape_discrete("Dispersal Min Size") + 
+		xlab("Did any dispersal take place?") + scale_shape_discrete("Dispersal\nMin Size") + 
 		scale_x_continuous(breaks=seq(0, 1.0, by=1), limits = c(-0.2, 1.2))
 
 
@@ -159,8 +159,8 @@ ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
 		meanDispBin = mean(any_disp, na.rm = FALSE))
 
 ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile(colour = "white", size=0.1) +
-		mytheme + ylab("Adult dispersal size") +  xlab("Competition") + 
-		scale_fill_gradient(low="grey83", high="grey18", guide = FALSE)
+		mytheme + ylab("Minimum Adult dispersal size") +  xlab("Competition") + 
+		scale_fill_gradient(low="grey70", high="grey18", guide = FALSE)
 
 ```
 
@@ -204,7 +204,7 @@ appender <- function(string, myText = "Dispersal Size:") paste0(myText, string)
 
 ggplot(subDispFile, aes(x = input_var, y = log10(survivalMean_all))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
-		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2), color = "black", size = 0.5, aes(linetype = as.factor(Comp_meas))) + 
+		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)+ exp(-x), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
 		mytheme + ylab("Log max metapopulation age") + 
 		scale_linetype_discrete("Competition") + 
 		scale_shape_discrete("Competition") + 
@@ -228,7 +228,7 @@ appender <- function(string, myText = "Dispersal Size:") paste0(myText, string)
 
 ggplot(subDispFile, aes(x = input_var, y = log10(metPopAgeMax))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
-		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2), color = "black", size = 0.5, aes(linetype = as.factor(Comp_meas))) + 
+		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)+ exp(-x), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
 		mytheme + ylab("Log max metapopulation age") + 
 		scale_linetype_discrete("Competition") + 
 		scale_shape_discrete("Competition") + 
@@ -253,7 +253,7 @@ Population Survival vs Metapopulation survival by Adult Dispersal Size
 ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05), aes(shape = as.factor(ad_dsp_fd))) + 
 		mytheme + ylab("Log max metapopulation age") + 
-		geom_smooth(se= FALSE, color = "black", aes(linetype = as.factor(ad_dsp_fd))) +
+		geom_smooth(se= FALSE, color = "black", aes(linetype = as.factor(ad_dsp_fd)), size = 0.4) +
 		scale_linetype_discrete("Adult Dispersal Limit") + 
 		scale_shape_discrete("Adult Dispersal Limit") +
 		xlab("Population Survival")
@@ -261,17 +261,19 @@ ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 
 # Binary dispersal faceted by competition
 
-```{r MetSurvTotNumDispersersEnv, fig.height=8, fig.width=10}
+```{r MetSurvTotNumDispersersEnv, fig.height=6, fig.width=10}
+
+appender <- function(string, myText = "Competition:") paste0(myText, string)
 
 
 ggplot(subDispFile, aes(x = any_disp, y = log10(metPopAgeMax))) + 
-		stat_smooth(se = FALSE, color = "black") + 
+		stat_smooth(se = FALSE, color = "black", size = 0.4, method = "lm", formula = y ~ x + I(x^2)+ exp(-x)) + 
 		mytheme + 
 		geom_point(size = pointSize, position = position_jitter(w = 0.07, h = 0.02),  aes(shape = as.factor(ad_dsp_fd))) + 
 		ylab("Log metapopulation survival") + 
-		xlab("Did any dispersal take place?") + scale_shape_discrete("Dispersal Min Size") + 
+		xlab("Did any dispersal take place?") + scale_shape_discrete("Dispersal\nMin Size") + 
 		scale_x_continuous(breaks=seq(0, 1.0, by=1), limits = c(-0.2, 1.2)) +
-		facet_wrap(~Comp_meas)
+		facet_wrap(~Comp_meas, labeller = as_labeller(appender))
 	
 
 
