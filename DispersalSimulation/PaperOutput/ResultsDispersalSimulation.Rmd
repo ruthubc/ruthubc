@@ -90,17 +90,16 @@ Metapopulation survival against population survival
 
 ```{r MetSurvpopSurv}
 
-
-
-
-ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax), colour = as.factor(ad_dsp_fd))) +
+ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 		mytheme +
-		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05)) + 
+		geom_smooth(se = FALSE, method = "lm", formula = y ~ x -I(x^2) + exp(x), color = "black", size = 0.4, aes(linetype = as.factor(ad_dsp_fd))) + 
+		geom_point(size = pointSize, color = "black", position = position_jitter(w = 0.01, h = 0.05), aes(shape = as.factor(ad_dsp_fd))) + 
 		ylab("Log metapopulation survival") + 
 		xlab("Log population survival") +
-		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) +
+		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) +
 		scale_x_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + 
-		scale_colour_discrete("Dispersal\nMin Sixe")
+		scale_linetype_discrete("Dispersal\nMin Size") + 
+		scale_shape_discrete("Dispersal\nMin Size")
 
 
 ```
@@ -150,7 +149,6 @@ x2 outliners
 
 What affects dispersal?
 ---
-### make summary file for this graph
 
 ```{r WhatAfftsDispersal, fig.height=3, fig.width=4}
 
@@ -160,7 +158,7 @@ ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
 
 ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile(colour = "white", size=0.1) +
 		mytheme + ylab("Minimum Adult dispersal size") +  xlab("Competition") + 
-		scale_fill_gradient(low="grey70", high="grey18", guide = FALSE)
+		scale_fill_gradient(low="black", high="grey80", guide = FALSE)
 
 ```
 
@@ -261,7 +259,7 @@ ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 
 # Binary dispersal faceted by competition
 
-```{r MetSurvTotNumDispersersEnv, fig.height=6, fig.width=10}
+```{r MetSurvTotNumDispersersEnv, fig.height=4, fig.width=10}
 
 appender <- function(string, myText = "Competition:") paste0(myText, string)
 
@@ -273,8 +271,58 @@ ggplot(subDispFile, aes(x = any_disp, y = log10(metPopAgeMax))) +
 		ylab("Log metapopulation survival") + 
 		xlab("Did any dispersal take place?") + scale_shape_discrete("Dispersal\nMin Size") + 
 		scale_x_continuous(breaks=seq(0, 1.0, by=1), limits = c(-0.2, 1.2)) +
-		facet_wrap(~Comp_meas, labeller = as_labeller(appender))
-	
-
+		facet_grid(~Comp_meas, labeller = as_labeller(appender)) +
+		theme(legend.position="bottom")
 
 ```
+
+
+What restricts dispersal?
+---
+
+```{r WhatRestrictsDispersal, fig.height=2.5, fig.width=4}
+
+
+ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
+		N_all = length(!is.na(fileNum)),
+		meanDispBin = mean(any_disp, na.rm = FALSE))
+
+ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile(colour = "white", size=0.1) +
+		mytheme + ylab("Minimum Adult dispersal size") +  xlab("Competition") + 
+		scale_fill_gradient(low="black", high="grey80", guide = FALSE) 
+		#facet_wrap(~input_var)
+
+```
+
+(@) _Figure : Comparing metapopulation survival to whether any populations produced dispersers_ 
+
+From comparing figure (above) to figure (other), we can see that disperal has gone from zero to some dispersal when size is 0.6 and competition is 0, size is 0.8, comp is zero,
+and when size os 0.8 and comp is 0.2.
+
+
+Disperal amount and environmental variation
+---
+
+```{r EnvVarDispersal, fig.height=3, fig.width=6}
+
+dispEnv <- subset(subDispFile, (ad_dsp_fd == 0.6 & Comp_meas == 0) | (ad_dsp_fd == 0.8 & Comp_meas == 0) | (ad_dsp_fd == 0.8 & Comp_meas == 0.2))
+
+
+dispEnv$all_ave_num_disp <- ifelse(is.na(dispEnv$all_ave_num_disp) == TRUE , 0, dispEnv$all_ave_num_disp)
+
+
+dispEnv$Legend <- ifelse(dispEnv$ad_dsp_fd == 0.6 & dispEnv$Comp_meas == 0, "Comp=0.0 + Size=0.6", 
+		ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0, "Comp=0.0 + Size=0.8", 
+				ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0.2, "Comp=0.2 + Size=0.8", "MISTAKE")))
+
+dispSum <- summarySE(dispEnv, measurevar="all_ave_num_disp", groupvars=c("input_var","Legend"))
+
+ggplot(dispSum, aes(x=input_var, y=all_ave_num_disp)) + 
+    geom_errorbar(aes(ymin=all_ave_num_disp-se, ymax=all_ave_num_disp+se), width=.03) +
+    geom_point(size = 2, aes(shape = Legend)) + mytheme +
+    geom_smooth(se = FALSE, color = "black", size = 0.4, method = "loess", span = 0.75) +
+    xlab("Environmental variation") + ylab("Number colonies dispersing")
+    
+ ```
+(@) _Figure : Average of log10 number of dispersers per time step_ 
+ 

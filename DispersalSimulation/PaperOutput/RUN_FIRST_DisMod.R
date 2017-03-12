@@ -5,6 +5,7 @@
 library(ggplot2)
 library(plyr)
 library(gridExtra)
+library(Rmisc)
 library(grid) # not sure if I need this or not.
 
 CompLookUp <- data.frame (Comp_slope = c(0, 0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.33, 2.5, 5, 10), 
