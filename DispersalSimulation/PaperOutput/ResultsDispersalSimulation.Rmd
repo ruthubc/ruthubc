@@ -34,13 +34,12 @@ xtabs(~ Comp_slope + ad_dsp_fd + input_var,  data = subDispFile)
 
 ```
 
-# Metapopulation survival with no environmental variation
+# No environmental variation
+
+## Metapopulation survival
 
 
-### Interaction between intraspecific competition type and dispersal constraint
-
-
-```{r metapop, , results = 'asis'}
+```{r metSurv, , results = 'asis'}
 
 aveFile <- ddply(subDispFile, .(ad_dsp_fd, Comp_meas), summarize, 
 		metPopAgeMax = mean(metPopAgeMax))
@@ -57,30 +56,10 @@ ggplot(aveFile, aes(x = Comp_meas, y = log10(metPopAgeMax))) +
 
 ```
 
-(@) _Figure :Metapopulation survival against competition type, where competition
-type ranges from 0 to 1, with 0 being full scramble competition and 1 is full
-contest competition. Environmental variance is `r env1` and number of offspring
-set to `r no_off`. No generations removed_
-
-
-As competition changes from scramble to contest competition the metapopulation
-age increases, but this interacts with the body size needed to disperse, unless
-the populations survive to 500 generations, in which cases obviously.
-
-**Both dipsersal and intraspecific compeition type affects metapopulation survival**
-
-
-#### Why dispersal increases metapopulation survival?
-
-The simulation only starts with x number of colonies, but there are ‘spaces’ for
-200. More dispersal means that these spaces get filled up. 
-
-#### How does this interact with competition? 
-
-If food is shared via contest competition then normally some individuals will
-get enough food to disperse, even if individuals have to be large to disperse. 
-However if food is shared via contest competition then this is not the case.
-
+(@) _Figure [MetSurv]:Metapopulation survival against competition type, where
+competition type ranges from 0 to 1, with 0 being full scramble competition and
+1 is full contest competition. Environmental variance is `r env1` and number of
+offspring set to `r no_off`. No generations removed_
 
 
 
@@ -88,7 +67,7 @@ Metapopulation survival against population survival
 ---
 
 
-```{r MetSurvpopSurv}
+```{r MetSurvPop}
 
 ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 		mytheme +
@@ -104,22 +83,18 @@ ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 
 ```
 
-(@) _Figure :Metapopulation against population survival. Environmental variance
-is `r env1` and number of offspring set to `r no_off`. All generations included.
-Survival calculated from survival function_
+(@) _Figure [MetSurvPop] :Metapopulation against population survival.
+Environmental variance is `r env1` and number of offspring set to `r no_off`.
+All generations included. Survival calculated from survival function_
 
-From this graph we can see that dispersal affects whether populations survival
-affects metapopulation survival. When the size needed to disperse is 0.2 (i.e.
-low) then the metapopulation survives to 500 generations regardless of the
-survival of the populations. The higher the disperal size is, the more the
-population survival affects the metapopulation survival.
+
 
 
 Metapopulation survival and dispersal
 ---
 
 
-```{r MetSurvTotNumDispersers}
+```{r MetDis}
 	
 aveFile <- ddply(subDispFile, .(ad_dsp_fd, Comp_meas), summarize, 
 		any_disp = mean(any_disp),
@@ -134,52 +109,36 @@ ggplot(aveFile, aes(x = any_disp, y = log10(metPopAgeMax))) +
 		xlab("Did any dispersal take place?") + scale_shape_discrete("Dispersal\nMin Size") + 
 		scale_x_continuous(breaks=seq(0, 1.0, by=1), limits = c(-0.2, 1.2))
 
-
-
-
 ```
  
-(@) _Figure : Comparing metapopulation survival to whether any populations produced dispersers_ 
+(@) _Figure [MetDis]: Comparing metapopulation survival to whether any populations produced dispersers_ 
 
-This shows how metapopulations have short survival if dispersal is restricted, but that metapopulations can survive no dispersal if competition within populations is contest like.
-
-x2 outliners 
 
 
 
 What affects dispersal?
 ---
 
-```{r WhatAfftsDispersal, fig.height=3, fig.width=4}
+```{r Disp, fig.height=3, fig.width=4}
 
 ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
 		N_all = length(!is.na(fileNum)),
 		meanDispBin = mean(any_disp, na.rm = FALSE))
 
-ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile(colour = "white", size=0.1) +
+ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + 
+		geom_tile(colour = "white", size=0.1) +
 		mytheme + ylab("Minimum Adult dispersal size") +  xlab("Competition") + 
-		scale_fill_gradient(low="black", high="grey80", guide = FALSE)
+		scale_fill_gradient(low="black", high="grey80", guide = FALSE) +
+		geom_rect(data = ave_subDispFile, aes(xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5), fill='grey25', colour = 'white', alpha=0.01)
 
 ```
 
-(@) _Figure : Comparing metapopulation survival to whether any populations produced dispersers_ 
-
-This shows how metapopulations have short survival if dispersal is restricted, but that metapopulations can survive no dispersal if competition within populations is contest like.
+(@) _Figure [Disp]: Comparing metapopulation survival to whether any populations produced dispersers_ 
 
 
+# With environmental variance
 
-Conclusion
----
-Competition affects population survival and therefore metapopulation survival,
-but low population survival is off-set by disperal to increase metapopulation
-survival.
-
-
-Metapopulation and population survival and environmental variance
-===
-
-
-```{r envFile, include = FALSE}
+```{r EnvMetPop, include = FALSE}
 
 set_ad_dsp_fd1 <- 0.8
 set_ad_dsp_fd2 <- 0.6
@@ -194,37 +153,16 @@ subDispFile <- subset(subDispFile, Comp_meas != 0.5)
 
 ```
 
-Population Survival against environmental variation 
----
-```{r poppopVar, fig.height=9}
+## Metapopulation Survival
 
-appender <- function(string, myText = "Dispersal Size:") paste0(myText, string)
-
-ggplot(subDispFile, aes(x = input_var, y = log10(survivalMean_all))) + 
-		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
-		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)+ exp(-x), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
-		mytheme + ylab("Log max metapopulation age") + 
-		scale_linetype_discrete("Competition") + 
-		scale_shape_discrete("Competition") + 
-		xlab("Environmental variation") +
-		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) + 
-		facet_grid(ad_dsp_fd~., labeller = as_labeller(appender))
-```
-
-(@) _Figure :Metapopulation survival environmental variance. Number of offspring
-set to `r no_off`. All generations included_
-
-How much environmental variation affects population survival depends on
-intraspecific competition form
-
-Metapopulation Survival
----
-```{r metapopVar, fig.height=9}
+```{r EnvMetSurv, fig.height=4}
 #geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2))
 
+subSubFile <- subset(subDispFile, ad_dsp_fd == 0.6 | ad_dsp_fd == 0.8)
+
 appender <- function(string, myText = "Dispersal Size:") paste0(myText, string)
 
-ggplot(subDispFile, aes(x = input_var, y = log10(metPopAgeMax))) + 
+ggplot(subSubFile, aes(x = input_var, y = log10(metPopAgeMax))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
 		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)+ exp(-x), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
 		mytheme + ylab("Log max metapopulation age") + 
@@ -235,18 +173,35 @@ ggplot(subDispFile, aes(x = input_var, y = log10(metPopAgeMax))) +
 		facet_grid(ad_dsp_fd~., labeller = as_labeller(appender))
 ```
 
-(@) _Figure :Metapopulation survival environmental variance. Number of offspring
+(@) _Figure [EnvMetSurv]:Metapopulation survival environmental variance. Number of offspring
 set to `r no_off`. All generations included_
 
-Intermediate environmental variance increases metapopulation survival for some
-competition measures when dispersal is restricted.
+
+## Population Survival
+
+```{r EnvPopSurv, fig.height=4}
+
+appender <- function(string, myText = "Dispersal Size:") paste0(myText, string)
+
+ggplot(subSubFile , aes(x = input_var, y = log10(survivalMean_all))) + 
+		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
+		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)+ exp(-x), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
+		mytheme + ylab("Log max metapopulation age") + 
+		scale_linetype_discrete("Competition") + 
+		scale_shape_discrete("Competition") + 
+		xlab("Environmental variation") +
+		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) + 
+		facet_grid(ad_dsp_fd~., labeller = as_labeller(appender))
+```
+
+(@) _Figure [EnvPopSurv]:Metapopulation survival environmental variance. Number of offspring
+set to `r no_off`. All generations included_
+
+## Metapopulation vs population survival by minimum disperal size
 
 
 
-Population Survival vs Metapopulation survival by Adult Dispersal Size
----
-
-```{r MetSurvVsPopSurvAdFd}
+```{r EnvMetSurvPop}
 
 ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0.05), aes(shape = as.factor(ad_dsp_fd))) + 
@@ -254,12 +209,16 @@ ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 		geom_smooth(se= FALSE, color = "black", aes(linetype = as.factor(ad_dsp_fd)), size = 0.4) +
 		scale_linetype_discrete("Adult Dispersal Limit") + 
 		scale_shape_discrete("Adult Dispersal Limit") +
-		xlab("Population Survival")
+		xlab("Population Survival") +
+		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) +
+		scale_x_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7))
 ```
 
-# Binary dispersal faceted by competition
+(@) _Figure [EnvMetSurvPop]_
 
-```{r MetSurvTotNumDispersersEnv, fig.height=4, fig.width=10}
+# Metapopulation survival and dispersal
+
+```{r EnvMetDisp, fig.height=3.5, fig.width=10}
 
 appender <- function(string, myText = "Competition:") paste0(myText, string)
 
@@ -276,11 +235,12 @@ ggplot(subDispFile, aes(x = any_disp, y = log10(metPopAgeMax))) +
 
 ```
 
+(@) _Figure [EnvMetDisp]_
 
 What restricts dispersal?
 ---
 
-```{r WhatRestrictsDispersal, fig.height=2.5, fig.width=4}
+```{r EnvDisp, fig.height=3, fig.width=4}
 
 
 ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
@@ -294,35 +254,38 @@ ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), 
 
 ```
 
-(@) _Figure : Comparing metapopulation survival to whether any populations produced dispersers_ 
-
-From comparing figure (above) to figure (other), we can see that disperal has gone from zero to some dispersal when size is 0.6 and competition is 0, size is 0.8, comp is zero,
-and when size os 0.8 and comp is 0.2.
+(@) _Figure [EnvDisp]: Comparing metapopulation survival to whether any
+populations produced dispersers. From comparing figure (above) to figure
+(other), we can see that disperal has gone from zero to some dispersal when size
+is 0.6 and competition is 0, size is 0.8, comp is zero, and when size is 0.8 and
+comp is 0.2_
 
 
 Disperal amount and environmental variation
 ---
 
-```{r EnvVarDispersal, fig.height=3, fig.width=6}
+```{r EnvVarDisp, fig.height=3, fig.width=6}
 
 dispEnv <- subset(subDispFile, (ad_dsp_fd == 0.6 & Comp_meas == 0) | (ad_dsp_fd == 0.8 & Comp_meas == 0) | (ad_dsp_fd == 0.8 & Comp_meas == 0.2))
 
-
 dispEnv$all_ave_num_disp <- ifelse(is.na(dispEnv$all_ave_num_disp) == TRUE , 0, dispEnv$all_ave_num_disp)
 
-
-dispEnv$Legend <- ifelse(dispEnv$ad_dsp_fd == 0.6 & dispEnv$Comp_meas == 0, "Comp=0.0 + Size=0.6", 
-		ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0, "Comp=0.0 + Size=0.8", 
-				ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0.2, "Comp=0.2 + Size=0.8", "MISTAKE")))
+dispEnv$Legend <- ifelse(dispEnv$ad_dsp_fd == 0.6 & dispEnv$Comp_meas == 0, "Comp=0.0, Size=0.6", 
+		ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0, "Comp=0.0, Size=0.8", 
+				ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0.2, "Comp=0.2, Size=0.8", "MISTAKE")))
 
 dispSum <- summarySE(dispEnv, measurevar="all_ave_num_disp", groupvars=c("input_var","Legend"))
 
 ggplot(dispSum, aes(x=input_var, y=all_ave_num_disp)) + 
     geom_errorbar(aes(ymin=all_ave_num_disp-se, ymax=all_ave_num_disp+se), width=.03) +
-    geom_point(size = 2, aes(shape = Legend)) + mytheme +
-    geom_smooth(se = FALSE, color = "black", size = 0.4, method = "loess", span = 0.75) +
-    xlab("Environmental variation") + ylab("Number colonies dispersing")
+    geom_point(size = 2, aes(shape = Legend)) + mytheme+
+	geom_line(aes(linetype = Legend)) +
+    xlab("Environmental variation") + ylab("Number colonies dispersing") +
+	scale_shape_manual(values=c(0, 2, 19)) +
+	scale_linetype_manual(values=c(6, 2, 1))
     
  ```
-(@) _Figure : Average of log10 number of dispersers per time step_ 
+
+(@) _Figure [EnvVarDisp]: Average of log10 number of dispersers per time
+step_ 
  
