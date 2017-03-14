@@ -10,7 +10,7 @@ output:
 ---
 
 ```{r docSettings, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=3, fig.width=6, dpi=300)
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=3, fig.width=6, dpi=400)
 
 mytheme <- theme_bw(base_size=10)  + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
     	panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 0.5), 
@@ -67,18 +67,22 @@ Metapopulation survival against population survival
 ---
 
 
-```{r MetSurvPop}
+```{r MetSurvPop, fig.height=4, fig.width=9}
+
+appender <- function(string, myText = "Dispersal Size:") paste0(myText, string)
 
 ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
-		mytheme +
-		geom_smooth(se = FALSE, method = "lm", formula = y ~ x -I(x^2) + exp(x), color = "black", size = 0.4, aes(linetype = as.factor(ad_dsp_fd))) + 
-		geom_point(size = pointSize, color = "black", position = position_jitter(w = 0.01, h = 0.05), aes(shape = as.factor(ad_dsp_fd))) + 
+		mytheme + 
+		geom_point(size = 2, color = "black", position = position_jitter(w = 0.05, h = 0.1), 
+				aes(shape = as.factor(Comp_meas))) + 
 		ylab("Log metapopulation survival") + 
 		xlab("Log population survival") +
+		geom_smooth(se = FALSE, method = "lm", formula = y ~ x/(exp(-x)), color = "black", size = 0.4) +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) +
-		scale_x_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0)) + 
-		scale_linetype_discrete("Dispersal\nMin Size") + 
-		scale_shape_discrete("Dispersal\nMin Size")
+		scale_x_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) + 
+		scale_shape_manual("Comp", values=c(0, 1, 2, 3, 18, 20)) + 
+		facet_grid(~ad_dsp_fd, scales = "fixed", labeller = as_labeller(appender)) +
+		theme(legend.position="bottom")
 
 
 ```
@@ -129,7 +133,8 @@ ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), 
 		geom_tile(colour = "white", size=0.1) +
 		mytheme + ylab("Minimum Adult dispersal size") +  xlab("Competition") + 
 		scale_fill_gradient(low="black", high="grey80", guide = FALSE) +
-		geom_rect(data = ave_subDispFile, aes(xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5), fill='grey25', colour = 'white', alpha=0.01)
+		geom_rect(data = ave_subDispFile, aes(xmin=2.525, xmax=3.475, ymin=2.52, ymax=3.48), fill='grey25', 
+				colour = 'black', alpha=0.01, size = 1, lty = 2)
 
 ```
 
@@ -186,7 +191,7 @@ appender <- function(string, myText = "Dispersal Size:") paste0(myText, string)
 ggplot(subSubFile , aes(x = input_var, y = log10(survivalMean_all))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
 		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)+ exp(-x), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
-		mytheme + ylab("Log max metapopulation age") + 
+		mytheme + ylab("Log population survival") + 
 		scale_linetype_discrete("Competition") + 
 		scale_shape_discrete("Competition") + 
 		xlab("Environmental variation") +
@@ -216,7 +221,7 @@ ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 
 (@) _Figure [EnvMetSurvPop]_
 
-# Metapopulation survival and dispersal
+## Metapopulation survival and dispersal
 
 ```{r EnvMetDisp, fig.height=3.5, fig.width=10}
 
