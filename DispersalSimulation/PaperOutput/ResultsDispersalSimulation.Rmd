@@ -56,11 +56,10 @@ ggplot(aveFile, aes(x = Comp_meas, y = log10(metPopAgeMax))) +
 
 ```
 
-(@) _Figure [MetSurv]:Metapopulation survival against competition type, where
-competition type ranges from 0 to 1, with 0 being full scramble competition and
-1 is full contest competition. Environmental variance is `r env1` and number of
-offspring set to `r no_off`. No generations removed_
-
+(@) _Figure [MetSurv]:Metapopulation survival against competition type by
+minimum dispersal size. Competition type ranges from 0 to 1, with 0 being
+full scramble competition and 1 is full contest competition. Individual size
+varies from 0 to 1. Environmental variance is `r env1`.
 
 
 Metapopulation survival against population survival
@@ -87,10 +86,10 @@ ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 
 ```
 
-(@) _Figure [MetSurvPop] :Metapopulation against population survival.
-Environmental variance is `r env1` and number of offspring set to `r no_off`.
-All generations included. Survival calculated from survival function_
-
+(@) _Figure [MetSurvPop]: Population survival against metapopulation survival,
+by minimum adult dispersal size and competition type. Competition type ranges
+from 0 to 1, with 0 being full scramble competition and 1 is full contest
+competition. There is no environmental variation._
 
 
 
@@ -115,7 +114,11 @@ ggplot(aveFile, aes(x = any_disp, y = log10(metPopAgeMax))) +
 
 ```
  
-(@) _Figure [MetDis]: Comparing metapopulation survival to whether any populations produced dispersers_ 
+(@) _Figure [MetDis]: Comparing metapopulation survival to a binary measure of
+whether any populations within the metapopulation produced dispersers at any
+time. 0 means no disperal took place, 1 disperal did take place. No
+environmental variation_
+
 
 
 
@@ -138,7 +141,13 @@ ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), 
 
 ```
 
-(@) _Figure [Disp]: Comparing metapopulation survival to whether any populations produced dispersers_ 
+(@) _Figure [Disp]: Showing how compeition type and minimum adult disperal
+size interact to affect whether any dispersal took place. Black squares
+indicate no disperal took place, light grey squares indicate disperal occured.
+The square with the black outline is the one combination of competition and
+minimum disperal size where disperal did take place, but the metapopulation
+did not surive to 500 generations.n Environmental variation is set to zero._
+
 
 
 # With environmental variance
@@ -178,8 +187,9 @@ ggplot(subSubFile, aes(x = input_var, y = log10(metPopAgeMax))) +
 		facet_grid(ad_dsp_fd~., labeller = as_labeller(appender))
 ```
 
-(@) _Figure [EnvMetSurv]:Metapopulation survival environmental variance. Number of offspring
-set to `r no_off`. All generations included_
+(@) _Figure [EnvMetSurv]:Comparing environmental variation to maximum
+metapopulation age by competition type, looking only at minimum adult disperal
+size 0.6 and 0.8_
 
 
 ## Population Survival
@@ -199,8 +209,66 @@ ggplot(subSubFile , aes(x = input_var, y = log10(survivalMean_all))) +
 		facet_grid(ad_dsp_fd~., labeller = as_labeller(appender))
 ```
 
-(@) _Figure [EnvPopSurv]:Metapopulation survival environmental variance. Number of offspring
-set to `r no_off`. All generations included_
+(@) _Figure [EnvPopSurv]:Population survival against environmental variance by
+competition type, looking only at minimum adult disperal size 0.6 and 0.8._
+
+
+What restricts dispersal?
+---
+
+```{r EnvDisp, fig.height=3, fig.width=4}
+
+
+ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
+		N_all = length(!is.na(fileNum)),
+		meanDispBin = mean(any_disp, na.rm = FALSE))
+
+ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile(colour = "white", size=0.1) +
+		mytheme + ylab("Minimum Adult dispersal size") +  xlab("Competition") + 
+		scale_fill_gradient(low="black", high="grey80", guide = FALSE) 
+		#facet_wrap(~input_var)
+
+```
+
+(@) _Figure [EnvDisp]: Showing how compeition type and minimum adult disperal
+size interact to affect whether any dispersal took place with environmental
+variation. Black squares indicate no disperal took place, light grey squares
+indicate disperal occured and intermediate greys indicate disperal took place
+in some metapopulations.  With environmetal variation disperal has gone from
+zero to some dispersal when size is 0.6 and competition is 0, size is 0.8, comp
+is zero, and when size is 0.8 and comp is 0.2_
+
+
+Disperal amount and environmental variation
+---
+
+```{r EnvVarDisp, fig.height=3, fig.width=6}
+
+dispEnv <- subset(subDispFile, (ad_dsp_fd == 0.6 & Comp_meas == 0) | (ad_dsp_fd == 0.8 & Comp_meas == 0) | (ad_dsp_fd == 0.8 & Comp_meas == 0.2))
+
+dispEnv$all_ave_num_disp <- ifelse(is.na(dispEnv$all_ave_num_disp) == TRUE , 0, dispEnv$all_ave_num_disp)
+
+dispEnv$Legend <- ifelse(dispEnv$ad_dsp_fd == 0.6 & dispEnv$Comp_meas == 0, "Comp=0.0, Size=0.6", 
+		ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0, "Comp=0.0, Size=0.8", 
+				ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0.2, "Comp=0.2, Size=0.8", "MISTAKE")))
+
+dispSum <- summarySE(dispEnv, measurevar="all_ave_num_disp", groupvars=c("input_var","Legend"))
+
+ggplot(dispSum, aes(x=input_var, y=all_ave_num_disp)) + 
+    geom_errorbar(aes(ymin=all_ave_num_disp-se, ymax=all_ave_num_disp+se), width=.03) +
+    geom_point(size = 2, aes(shape = Legend)) + mytheme+
+	geom_line(aes(linetype = Legend)) +
+    xlab("Environmental variation") + ylab("Number colonies dispersing") +
+	scale_shape_manual(values=c(0, 2, 19)) +
+	scale_linetype_manual(values=c(6, 2, 1))
+    
+ ```
+
+(@) _Figure [EnvVarDisp]: Average of log10 number of dispersering colonies per
+time step against environmental variation._ 
+
+
+# Graphs removed?
 
 ## Metapopulation vs population survival by minimum disperal size
 
@@ -242,55 +310,4 @@ ggplot(subDispFile, aes(x = any_disp, y = log10(metPopAgeMax))) +
 
 (@) _Figure [EnvMetDisp]_
 
-What restricts dispersal?
----
-
-```{r EnvDisp, fig.height=3, fig.width=4}
-
-
-ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
-		N_all = length(!is.na(fileNum)),
-		meanDispBin = mean(any_disp, na.rm = FALSE))
-
-ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile(colour = "white", size=0.1) +
-		mytheme + ylab("Minimum Adult dispersal size") +  xlab("Competition") + 
-		scale_fill_gradient(low="black", high="grey80", guide = FALSE) 
-		#facet_wrap(~input_var)
-
-```
-
-(@) _Figure [EnvDisp]: Comparing metapopulation survival to whether any
-populations produced dispersers. From comparing figure (above) to figure
-(other), we can see that disperal has gone from zero to some dispersal when size
-is 0.6 and competition is 0, size is 0.8, comp is zero, and when size is 0.8 and
-comp is 0.2_
-
-
-Disperal amount and environmental variation
----
-
-```{r EnvVarDisp, fig.height=3, fig.width=6}
-
-dispEnv <- subset(subDispFile, (ad_dsp_fd == 0.6 & Comp_meas == 0) | (ad_dsp_fd == 0.8 & Comp_meas == 0) | (ad_dsp_fd == 0.8 & Comp_meas == 0.2))
-
-dispEnv$all_ave_num_disp <- ifelse(is.na(dispEnv$all_ave_num_disp) == TRUE , 0, dispEnv$all_ave_num_disp)
-
-dispEnv$Legend <- ifelse(dispEnv$ad_dsp_fd == 0.6 & dispEnv$Comp_meas == 0, "Comp=0.0, Size=0.6", 
-		ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0, "Comp=0.0, Size=0.8", 
-				ifelse(dispEnv$ad_dsp_fd == 0.8 & dispEnv$Comp_meas == 0.2, "Comp=0.2, Size=0.8", "MISTAKE")))
-
-dispSum <- summarySE(dispEnv, measurevar="all_ave_num_disp", groupvars=c("input_var","Legend"))
-
-ggplot(dispSum, aes(x=input_var, y=all_ave_num_disp)) + 
-    geom_errorbar(aes(ymin=all_ave_num_disp-se, ymax=all_ave_num_disp+se), width=.03) +
-    geom_point(size = 2, aes(shape = Legend)) + mytheme+
-	geom_line(aes(linetype = Legend)) +
-    xlab("Environmental variation") + ylab("Number colonies dispersing") +
-	scale_shape_manual(values=c(0, 2, 19)) +
-	scale_linetype_manual(values=c(6, 2, 1))
-    
- ```
-
-(@) _Figure [EnvVarDisp]: Average of log10 number of dispersers per time
-step_ 
  
