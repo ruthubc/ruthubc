@@ -26,6 +26,7 @@ env1<- 0.0
 no_off <- 6 
 
 subDispFile <- subset(importDispFile, Comp_meas != 0.5)
+
 subDispFile <- subset(subDispFile, max_no_off == no_off & input_var == env1)
 nrow(subDispFile)
 
@@ -116,7 +117,7 @@ ggplot(aveFile, aes(x = any_disp, y = log10(metPopAgeMax))) +
  
 (@) _Figure [MetDis]: Comparing metapopulation survival to a binary measure of
 whether any populations within the metapopulation produced dispersers at any
-time. 0 means no disperal took place, 1 disperal did take place. No
+time. 0 means no disperal took place, 1 dispersal did take place. No
 environmental variation_
 
 
@@ -141,12 +142,12 @@ ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), 
 
 ```
 
-(@) _Figure [Disp]: Showing how compeition type and minimum adult disperal
+(@) _Figure [Disp]: Showing how competition type and minimum adult dispersal
 size interact to affect whether any dispersal took place. Black squares
-indicate no disperal took place, light grey squares indicate disperal occured.
+indicate no dispersal took place, light grey squares indicate dispersal occurred.
 The square with the black outline is the one combination of competition and
-minimum disperal size where disperal did take place, but the metapopulation
-did not surive to 500 generations.n Environmental variation is set to zero._
+minimum dispersal size where dispersal did take place, but the metapopulation
+did not survive to 500 generations.n Environmental variation is set to zero._
 
 
 
@@ -159,11 +160,14 @@ set_ad_dsp_fd2 <- 0.6
 
 subDispFile <- subset(importDispFile, max_no_off == no_off)
 
-subDispFile <- subset(subDispFile, Comp_meas != 0.5)
+subDispFile <- subset(subDispFile, Comp_meas != 0.5 & input_var != 0.05 & input_var != 0.15)
+
+nrow(subDispFile)
 
 #disaves_subVar <-  subset(dis_aves, max_no_off == no_off)
 #disaves_subVar <- subset(disaves_subVar, ad_dsp_fd == set_ad_dsp_fd1 | ad_dsp_fd == set_ad_dsp_fd2)
 
+xtabs(~ Comp_slope + ad_dsp_fd + input_var,  data = subDispFile)
 
 ```
 
@@ -210,7 +214,7 @@ ggplot(subSubFile , aes(x = input_var, y = log10(survivalMean_all))) +
 ```
 
 (@) _Figure [EnvPopSurv]:Population survival against environmental variance by
-competition type, looking only at minimum adult disperal size 0.6 and 0.8._
+competition type, looking only at minimum adult dispersal size 0.6 and 0.8._
 
 
 What restricts dispersal?
@@ -230,16 +234,16 @@ ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), 
 
 ```
 
-(@) _Figure [EnvDisp]: Showing how compeition type and minimum adult disperal
+(@) _Figure [EnvDisp]: Showing how competition type and minimum adult dispersal
 size interact to affect whether any dispersal took place with environmental
-variation. Black squares indicate no disperal took place, light grey squares
-indicate disperal occured and intermediate greys indicate disperal took place
-in some metapopulations.  With environmetal variation disperal has gone from
+variation. Black squares indicate no dispersal took place, light grey squares
+indicate dispersal occurred and intermediate greys indicate dispersal took place
+in some metapopulation.  With environmental variation dispersal has gone from
 zero to some dispersal when size is 0.6 and competition is 0, size is 0.8, comp
 is zero, and when size is 0.8 and comp is 0.2_
 
 
-Disperal amount and environmental variation
+Dispersal amount and environmental variation
 ---
 
 ```{r EnvVarDisp, fig.height=3, fig.width=6}
@@ -264,7 +268,7 @@ ggplot(dispSum, aes(x=input_var, y=all_ave_num_disp)) +
     
  ```
 
-(@) _Figure [EnvVarDisp]: Average of log10 number of dispersering colonies per
+(@) _Figure [EnvVarDisp]: Average of log10 number of dispersing colonies per
 time step against environmental variation._ 
 
 
