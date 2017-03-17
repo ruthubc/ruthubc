@@ -19,6 +19,8 @@ import os
 
 compName = platform.node()
 
+pbsNameList = ["5_arrayJob_2hrs", "5_arrayJob_20hrs", "5_arrayJob_35hrs", "5_arrayJob_72hrs"]
+
 if compName == 'Sony-PC':
     print("This is work computer")
     savePath  = 'G:\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
@@ -156,7 +158,7 @@ for i in range(0, len(combinations)):  # actually produces the files
     if ad_disFd_lmt > 1:
         runtime = "02:00:00"
         fileNameLst_2hrs.extend([filename])
-    elif ad_disFd_lmt == 0.6 and slope == 2.5 and off_list[1] == 6 and risk == 0.3:
+    elif (ad_disFd_lmt == 0.6 and slope == 2.5 and off_list[1] == 6 and risk == 0.3) or  (var > 0.6):
         runtime = "72:00:00"
         fileNameLst_72hrs.extend([filename])
     elif off_list[1] <= 6 or slope == 0.4:
@@ -196,7 +198,7 @@ writeArrayTxtFiles(fileNameLst_2hrs, "python_2hrs.txt")
 writeArrayTxtFiles(fileNameLst_35hrs, "python_35hrs.txt")
 writeArrayTxtFiles(fileNameLst_72hrs, "python_72hrs.txt")
 
-pbsNameList = ["5_arrayJob_2hrs", "5_arrayJob_20hrs", "5_arrayJob_35hrs", "5_arrayJob_72hrs"]
+
 
 writePBS(pbsNameList[0], "python_2hrs", "02:00:00", len(fileNameLst_2hrs))
 writePBS(pbsNameList[1], "python_20hrs", "20:00:00", len(fileNameLst_20hrs))
