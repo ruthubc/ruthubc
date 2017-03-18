@@ -87,6 +87,7 @@ def writePBS(PBSFileName, pyNameFile, runtime, numFiles):  # writes the PBS file
     file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated
     file.write("#PBS -l walltime=" + runtime + "\n")
     file.write("#PBS -l mem=300mb\n")
+    file.write("#PBS -l pmem=900mb\n")
     file.write('#PBS -l procs=1\n') 
     file.write("#PBS -t 1-" + str(numFiles) + "\n")
     file.write("module load python/2.7.2\n")# on grex: file.write("module load python/2.7.5.anaconda\n")

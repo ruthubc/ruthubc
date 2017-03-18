@@ -176,7 +176,7 @@ xtabs(~ Comp_slope + ad_dsp_fd + input_var,  data = subDispFile)
 ```{r EnvMetSurv, fig.height=4}
 #geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2))
 
-subSubFile <- subset(subDispFile, ad_dsp_fd == 0.6 | ad_dsp_fd == 0.8)
+subSubFile <- subset(subDispFile, ad_dsp_fd == 0.6 | ad_dsp_fd == 0.8 | ad_dsp_fd == 1.2)
 
 appender <- function(string, myText = "Dispersal Size:") paste0(myText, string)
 
