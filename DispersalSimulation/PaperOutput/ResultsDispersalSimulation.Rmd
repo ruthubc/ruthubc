@@ -60,7 +60,7 @@ ggplot(aveFile, aes(x = Comp_meas, y = log10(metPopAgeMax))) +
 (@) _Figure [MetSurv]:Metapopulation survival against competition type by
 minimum dispersal size. Competition type ranges from 0 to 1, with 0 being
 full scramble competition and 1 is full contest competition. Individual size
-varies from 0 to 1. Environmental variance is `r env1`.
+varies from 0 to 1. Environmental variance is `r env1`._
 
 
 Metapopulation survival against population survival
