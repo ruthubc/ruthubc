@@ -2,7 +2,7 @@
 # Author: Ruth
 ###############################################################################
 
-TalkDatesToProcess <- "14/03/2017"
+TalkDatesToProcess <- "28/03/2017"
 
 
 library(ggplot2)

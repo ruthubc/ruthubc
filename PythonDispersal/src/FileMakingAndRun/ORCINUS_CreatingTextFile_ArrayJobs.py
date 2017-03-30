@@ -18,10 +18,10 @@ import socket
 import os
 
 compName = platform.node()
-fileTxtName = "230hrs_grex.txt"
+fileTxtName = "100hrs_Orcinus.txt"
 
-pbsName = "230hrs_27Mar_Grex"
-runtime = 230
+pbsName = "100hrs_29Mar_Orcinus"
+runtime = 100
 
 
 if compName == 'Sony-PC':
@@ -38,10 +38,10 @@ else:
 indFile = "n"
 
 
-slopes = [0.4] * 8 # 8 reps
+slopes = [0.4] * 3 # 8 reps
 dispersalRisks = [0.3] 
 meanK = [300]
-Vars = [0.8]
+Vars = [0.7]
 adDisSizes = [0.6, 0.8]
 off_list = [[4, 6]]
 F_Lns = [0.61]
@@ -60,15 +60,15 @@ mySlope = 0
 myVariance = 0.8
 myDispSize = 0.6
 
-extraTup = tuple([mySlope, dispersalRisks[0], meanK[0],  myVariance, myDispSize, off_list[0], F_Lns[0]])
-combinations.extend([extraTup])
+#extraTup = tuple([mySlope, dispersalRisks[0], meanK[0],  myVariance, myDispSize, off_list[0], F_Lns[0]])
+#combinations.extend([extraTup])
 
 # extra combinations
-slopes = [0.8] * 7 # 7 reps
+slopes = [0] * 3 # 7 reps
 dispersalRisks = [0.3] 
 meanK = [300]
 Vars = [0.8]
-adDisSizes = [0.8]
+adDisSizes = [0.6]
 off_list = [[4, 6]]
 F_Lns = [0.61]
 
@@ -108,10 +108,11 @@ def writePBS(PBSFileName, pyNameFile, runtime, numFiles):  # writes the PBS file
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated
     file.write("#PBS -l walltime=" + runtime + "\n")
-    file.write("#PBS -l pmem=1gb\n")
-    file.write('#PBS -l procs=1\n') 
+    file.write("#PBS -l pmem=3gb\n")
+    file.write('#PBS -l procs=1\n')
+    file.write('#PBS -l partition=DDR\n') 
     file.write("#PBS -t 1-" + str(numFiles) + "\n")
-    file.write("module load python/2.7.5.anaconda\n")# on grex: file.write("module load python/2.7.5.anaconda\n")
+    file.write("module load python/2.7.3\n")# on grex: file.write("module load python/2.7.5.anaconda\n")
     file.write("cd $PBS_O_WORKDIR\n")
     file.write("""echo "Task index number : $PBS_ARRAYID"\n""")
     file.write("\n")
