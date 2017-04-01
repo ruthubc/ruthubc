@@ -18,10 +18,10 @@ import socket
 import os
 
 compName = platform.node()
-fileTxtName = "100hrs_Orcinus.txt"
+fileTxtName = "240hrs_Orcinus.txt"
 
-pbsName = "100hrs_29Mar_Orcinus"
-runtime = 100
+pbsName = "240hrs_31Mar_Orcinus"
+runtime = 240
 
 
 if compName == 'Sony-PC':
@@ -38,10 +38,10 @@ else:
 indFile = "n"
 
 
-slopes = [0.4] * 3 # 8 reps
+slopes = [0.4] * 9 #reps
 dispersalRisks = [0.3] 
 meanK = [300]
-Vars = [0.7]
+Vars = [0.8]
 adDisSizes = [0.6, 0.8]
 off_list = [[4, 6]]
 F_Lns = [0.61]
@@ -64,11 +64,11 @@ myDispSize = 0.6
 #combinations.extend([extraTup])
 
 # extra combinations
-slopes = [0] * 3 # 7 reps
+slopes = [0.8] * 8 #reps
 dispersalRisks = [0.3] 
 meanK = [300]
 Vars = [0.8]
-adDisSizes = [0.6]
+adDisSizes = [0.8]
 off_list = [[4, 6]]
 F_Lns = [0.61]
 
@@ -108,7 +108,7 @@ def writePBS(PBSFileName, pyNameFile, runtime, numFiles):  # writes the PBS file
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated
     file.write("#PBS -l walltime=" + runtime + "\n")
-    file.write("#PBS -l pmem=3gb\n")
+    file.write("#PBS -l mem=10gb\n")
     file.write('#PBS -l procs=1\n')
     file.write('#PBS -l partition=DDR\n') 
     file.write("#PBS -t 1-" + str(numFiles) + "\n")
