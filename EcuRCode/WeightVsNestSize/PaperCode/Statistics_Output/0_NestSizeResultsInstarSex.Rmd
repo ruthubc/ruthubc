@@ -6,6 +6,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
 ```{r docSettings, include = FALSE}
+## Make sure to run R code /CurrentPaperCode_9Aug/_RUNFIRST
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
 modelList <-  list(test = c(), fullModel = c())
 no_nest <- nlevels(spidersMul$NestID)

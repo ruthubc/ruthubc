@@ -2,7 +2,7 @@
 # Author: Ruth
 ###############################################################################
 
-TalkDatesToProcess <- "28/03/2017"
+TalkDatesToProcess <- "04/04/2017"
 
 
 library(ggplot2)
@@ -39,7 +39,7 @@ if (comp_name == "DELL-1545") {
 	print("You are using your school computer")
 	pathRMD <- "C:\\Users\\Ruth\\git\\" # work
 	pathOutput <- "C:\\Users\\Ruth\\Dropbox\\RuthSync\\Biol345_2017\\TalkFeedback\\"
-	source("C:/Users/Ruth/git/ruthubc/Biol345/RunCommunityFeedback.R", echo=FALSE, encoding="Cp1252") # work
+	#source("C:/Users/Ruth/git/ruthubc/Biol345/RunCommunityFeedback.R", echo=FALSE, encoding="Cp1252") # work
 	source("C:/Users/Ruth/git/ruthubc/Biol345/RunIgniteFeedback.R", echo=FALSE, encoding="Cp1252") # work
 
 	
