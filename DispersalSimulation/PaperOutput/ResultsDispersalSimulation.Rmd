@@ -6,6 +6,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   word_document:
     reference_docx: FormatReferenceDoc.docx
+    fig_caption: true
 
 ---
 
@@ -40,7 +41,7 @@ xtabs(~ Comp_slope + ad_dsp_fd + input_var,  data = subDispFile)
 ## Metapopulation survival
 
 
-```{r metSurv, , results = 'asis'}
+```{r metSurv, , results = 'asis', fig.cap = "This is a figure caption for the metsurv figure"}
 
 aveFile <- ddply(subDispFile, .(ad_dsp_fd, Comp_meas), summarize, 
 		metPopAgeMax = mean(metPopAgeMax))
@@ -62,6 +63,11 @@ minimum dispersal size. Competition type ranges from 0 to 1, with 0 being
 full scramble competition and 1 is full contest competition. Individual size
 varies from 0 to 1. Environmental variance is `r env1`._
 
+![This is a figure caption for the metsurv figure \label{figurelabel}]
+
+![This is a figure caption for the metsurv figure but number 2 \label{figurelabel2}]
+
+see figure \ref{figurelabel} or try the figure \ref{figurelabel2}
 
 Metapopulation survival against population survival
 ---
