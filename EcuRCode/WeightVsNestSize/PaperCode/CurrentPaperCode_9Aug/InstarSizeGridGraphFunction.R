@@ -7,8 +7,19 @@
 #		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 #
 
+InstarNameData <- c("Juv4", "Sub1", "Sub2", "Adult", "SubMale", "AdMale")
+
+InstarNameGraph <- c("Juvenile", "Sub1 Female", "Sub2 Female", "Adult Female", "Sub Male", "Adult Male")
+
+InstarNameDF <- data.frame(InstarNameData, InstarNameGraph, stringsAsFactors = FALSE)
+
+print(InstarNameDF)
+
+
 MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue, predictDF) { # function to make the graphs
 	current.Instar <- as.character(unique(data$Instar)) # get the Name of the current subset	
+	
+	InstarGraphTitle <- InstarNameDF$InstarNameGraph[InstarNameDF$InstarNameData == current.Instar]
 	
 	
 	if (num_rows > 300) {  # summarise data instead of plotting individual points
@@ -31,11 +42,13 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	}
 		
 	
-	p <- p + geom_point() + ggtitle(current.Instar) + 				
-			scale_x_log10(limits = c(minNstSz, 6000 )) + theme_classic(base_size=20) + 
+	p <- p + geom_point() + ggtitle(InstarGraphTitle) + 				
+			scale_x_log10(limits = c(minNstSz, 10000), breaks = c(10, 100, 1000, 10000),  labels=c("10", "100", "1000 ", "10000  ")) + 
+			theme_classic(base_size=20)+ 
 			theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
 			theme(panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1)) +
-			theme(panel.margin= unit(0.0, "lines")) + theme(plot.title = element_text(size=20))
+			theme(plot.title = element_text(size=20, hjust = 0.5))
+			#theme(panel.spacing= unit(1, "lines")) + 	
 	
 	
 	if (typeof(model) == "character") { # no model specified

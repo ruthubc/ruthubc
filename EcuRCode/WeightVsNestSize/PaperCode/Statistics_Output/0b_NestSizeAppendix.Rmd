@@ -1,0 +1,57 @@
+
+---
+title: "Weight Vs Colony Size Appendix"
+author: "Ruth Sharpe"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r docSettings, include = FALSE}
+## Make sure to run R code /CurrentPaperCode_9Aug/_RUNFIRST and NestSizeResults.RMD
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+no_nest <- nlevels(spidersMul$NestID)
+
+table(spiders$Instar)
+	
+```
+
+Count of number of spiders
+-----
+```{r CountOfSpiders}
+ 
+pander(table(spiders$Instar))
+
+```
+_Count of the
+number of spiders weighed and measured_
+
+Histogram of nest sizes measured 
+-----
+```{r NestSizeHistogram, fig.height=9, fig.width=11}
+
+Nests<- ddply(spidersMul, .(NestID), summarise, # need to discount trials where no feeding obs and eve
+		NumAds = mean(CountFemales),
+		logCtFm = mean(logCtFm)
+
+)
+
+
+ggplot(Nests, aes(x= NumAds)) + geom_histogram(colour = "white") + theme_bw() + mytheme + xlab("Colony Size (# Adult Females)") +
+		ylab("Number measured")
+
+```
+		
+(@) _Figure :Histogram of the size of colonies investigated_
+
+List of full models used
+-----------------------
+
+_Table 1:  The full models used for each test. Varibles printed as (1|*****)
+indicate random factors. Colony represents the colony from which each individual
+spider was collected._
+
+```{r ModelTableForLA, results = 'asis'}
+
+modelDF <- as.data.frame(modelList)
+colnames(modelDF) <- c("Test", "Full Model")
+pander(modelDF, split.cell = 70, split.table = Inf)
+```

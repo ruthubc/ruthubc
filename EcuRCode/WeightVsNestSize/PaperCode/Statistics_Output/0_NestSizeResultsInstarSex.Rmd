@@ -7,7 +7,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 
 ```{r docSettings, include = FALSE}
 ## Make sure to run R code /CurrentPaperCode_9Aug/_RUNFIRST
-knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE)
 modelList <-  list(test = c(), fullModel = c())
 no_nest <- nlevels(spidersMul$NestID)
 
@@ -15,34 +15,8 @@ table(spiders$Instar)
 	
 ```
 
-Count of number of spiders
------
-```{r CountOfSpiders}
- 
-pander(table(spiders$Instar))
-
-```
-_Count of the number of spiders weighed and measured_
-
-Histogram of nest sizes measured 
------
-```{r NestSizeHistogram, fig.height=9, fig.width=11}
-
-Nests<- ddply(spidersMul, .(NestID), summarise, # need to discount trials where no feeding obs and eve
-		NumAds = mean(CountFemales),
-		logCtFm = mean(logCtFm)
-
-)
-
-
-ggplot(Nests, aes(x= NumAds)) + geom_histogram(colour = "white") + theme_bw() + mytheme + xlab("Colony Size (# Adult Females)") +
-		ylab("Number measured")
-
-```
-
-(@) _Figure :Histogram of the size of colonies investigated_
-
-
+Remember Note: If line on graph is blue R could not plot the lmer, plotting a
+simple lm instead[1] 
 
 Leg length against colony size
 --------------------
@@ -221,23 +195,8 @@ InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", Fu
 superimposed. Overall condition decreases with colony size (p =
 `r NSResults[[4]]` `r NSResults[[5]]`), with  a significant interaction with
 instar age (p = `r InstarResults[[4]]` `r InstarResults[[5]]`), but not
-instar sex._
+instar sex. Gradient increases from juv4 to adult. _
 
-```{r PredictedInstarConditionInteractionGraph, fig.height=6, fig.width=7, dpi=300}
-#nest size by condition - instar interaction graph
-a_predictDF <- expand.grid(logCtFm = seq(min(spidersMul$logCtFm), max(spidersMul$logCtFm), by = 0.1), 
-		InstarNumber = c(4, 5, 6, 7), NestID = c("44.4EX12"))
-a_predictDF$lmrPrd <- predict(FullModel, a_predictDF)
-ggplot(data = a_predictDF, aes(x = logCtFm, y = lmrPrd, colour = as.factor(InstarNumber))) + geom_line(size =0.5) +
-		ylab("Predicted Condition") + xlab("Log Count Females") + scale_colour_discrete(name = "Instar Age") + theme_bw(base_size=11) + mytheme
-
-
-
-```
-
-(@)  _Figure : The predicted slopes per instar of the regression of individual condition against 
-colony size. As instar age increases, the gradient of the line increases. n = `r no_nest`
-colonies._
 
 
 
@@ -422,15 +381,4 @@ nOriginalNests <- nlevels(props$nestID)
 `r nOriginalNests` source colonies. Grey shading represents the 95% confidence
 interval._
 
-List of full models used
------------------------
 
-_Table 1:  The full models used for each test. Varibles printed as (1|*****)
-indicate random factors. Colony represents the colony from which each individual spider was collected._
-
-```{r ModelTableForLA, results = 'asis'}
-
-modelDF <- as.data.frame(modelList)
-colnames(modelDF) <- c("Test", "Full Model")
-pander(modelDF, split.cell = 70, split.table = Inf)
-```
