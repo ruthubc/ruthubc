@@ -112,10 +112,10 @@ instars, but not significantly so in the younger ones
 `r figNumLookup$Table_InstarLeg[1]` and   
 `r figNumLookup$Fig_LegLengthVsColonySize[1]`.
 
-*Table 2: Results of sepearate analysis of leg length against colony size for
+_TABLE: Results of sepearate analysis of leg length against colony size for
 each instar and the two sexes. Leg length increases with colony size in the
 overall model (p = `r NSResults[[4]]` `r NSResults[[5]]` ). When tested
-individually the relationship is only significant for the older instars.*
+individually the relationship is only significant for the older instars._
 
 
 | Instar and sex   | Instar Age    | $\chi$^2^ |  p value| 
@@ -134,12 +134,12 @@ individually the relationship is only significant for the older instars.*
 InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", FullModelLeg)
 ```
   
-(@) _Figure:  Leg length (tiba plus patella) as a function of colony size with
-the full linear model, which contains a significant interaction
+_FIGURE:  Leg length (tiba plus patella) as a function of colony size
+with the full linear model, which contains a significant interaction
 with colony size, superimposed. Overall, leg length increased with_ _colony size
 (p = `r NSResults[[4]]` `r NSResults[[5]]`), but with a significant
 interaction between colony size and instar,. When tested
-individually, only the older instars exhibited a significant relationship (`r figNumLookup$InstarLeg[1]`). 
+individually, only the older instars exhibited a significant relationship. 
 n= `r no_nest` colonies._
 
 
@@ -191,7 +191,7 @@ decreased significantly with colony size (lmer; $\chi$^2^~`r AdultResults[[1]]`,
 InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", FullModel, "y")
 ```
   
-(@)  _Figure : Individual condition against colony size, with the linear model
+_FIGURE : Individual condition against colony size, with the linear model
 superimposed. Overall condition decreases with colony size (p =
 `r NSResults[[4]]` `r NSResults[[5]]`), with  a significant interaction with
 instar age (p = `r InstarResults[[4]]` `r InstarResults[[5]]`), but not
@@ -271,8 +271,8 @@ InstarGridGraph(condBootVar, "bootVarTrans", "Variance in Condition (arcsin tran
 
 ```
   
-(@)  _Figure : Within-colony condition variance against colony size with the results of the generalized linear model 
-for individual instars superimposed.
+ _FIGURE : Within-colony condition variance against colony size with the
+results of the generalized linear model for individual instars superimposed.
 Colony size had a significant effect on condition variance
 (p `r NSCondRes$pValue` `r NSCondRes$stars`)._
 
@@ -296,8 +296,9 @@ plot + geom_boxplot(data = condBootVar, aes(x = InstarNumber, y = bootVarTrans, 
 
 ```
 
-(@) _Figure :Within-colony condition variance as a function of instar age and sex. Overlaid
-is the generalized linear model, which has the square of instar age as a significant term._
+ _FIGURE :Within-colony condition variance as a function of instar age and
+sex. Overlaid is the generalized linear model, which has the square of instar
+age as a significant term._
 
 
 Size and condition of dispersers against philopatric conspecifics
@@ -348,10 +349,10 @@ p2 <- ggplot(nestsToTestSig, aes(x=type, y=logLeg)) + geom_boxplot() + xlab("Col
 grid.arrange(p2, p1, ncol = 2)
 ```
   
-(@) _Figure: Leg length and individual condition of adult females in propagules compared to
-adult females in their natal colony following dispersal. There was a significant difference
-between the two for both variables (leg lengh: stats, condition: stats), n source colonies
-= 2, n propagules = `r nprops`_
+_FIGURE: Leg length and individual condition of adult females in propagules
+compared to adult females in their natal colony following dispersal. There was a
+significant difference between the two for both variables (leg lengh: stats,
+condition: stats), n source colonies = 2, n propagules = `r nprops`_
 
 
 Single female colony survival
@@ -377,7 +378,7 @@ nOriginalNests <- nlevels(props$nestID)
 
 ```
   
-(@) _Figure:  The survival function of `r nProps` propagules from
+_FIGURE:  The survival function of `r nProps` propagules from
 `r nOriginalNests` source colonies. Grey shading represents the 95% confidence
 interval._
 
