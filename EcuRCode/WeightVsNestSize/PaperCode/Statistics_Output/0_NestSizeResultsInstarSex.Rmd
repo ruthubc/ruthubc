@@ -18,8 +18,8 @@ table(spiders$Instar)
 Remember Note: If line on graph is blue R could not plot the lmer, plotting a
 simple lm instead[1] 
 
-Leg length against colony size
---------------------
+### Leg length against colony size
+
 
 ```{r LegInstarNumber, results='asis',  echo = FALSE}
 ##### Leg length vs instar
@@ -112,10 +112,7 @@ instars, but not significantly so in the younger ones
 `r figNumLookup$Table_InstarLeg[1]` and   
 `r figNumLookup$Fig_LegLengthVsColonySize[1]`.
 
-_TABLE: Results of sepearate analysis of leg length against colony size for
-each instar and the two sexes. Leg length increases with colony size in the
-overall model (p = `r NSResults[[4]]` `r NSResults[[5]]` ). When tested
-individually the relationship is only significant for the older instars._
+
 
 
 | Instar and sex   | Instar Age    | $\chi$^2^ |  p value| 
@@ -128,23 +125,32 @@ individually the relationship is only significant for the older instars._
 |Adult Male |6| `r (AdMaleRes[[3]])` |`r AdMaleRes[[4]]` `r AdMaleRes[[5]]` | 
 
 
+`r figNumLookup$Table_InstarLeg[1]`
+
+_TABLE: Results of separate analysis of leg length against colony size for
+each instar and the two sexes. Leg length increases with colony size in the
+overall model (p = `r NSResults[[4]]` `r NSResults[[5]]` ). When tested
+individually the relationship is only significant for the older instars._
 
 
 ```{r LegInstarGridGraph, fig.height=9, fig.width=14}
 InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", FullModelLeg)
+
+figNumLookup$Fig_LegLengthVsColonySize
+
 ```
   
 _FIGURE:  Leg length (tiba plus patella) as a function of colony size
 with the full linear model, which contains a significant interaction
-with colony size, superimposed. Overall, leg length increased with_ _colony size
+with colony size, superimposed. Overall, leg length increased with colony size
 (p = `r NSResults[[4]]` `r NSResults[[5]]`), but with a significant
 interaction between colony size and instar,. When tested
 individually, only the older instars exhibited a significant relationship. 
 n= `r no_nest` colonies._
 
 
-Individual condition against colony size
---------------------
+### Individual condition against colony size
+
 
 ```{r CondNS, results='asis',  echo = FALSE}
 ##### conditionh vs colony size
@@ -173,7 +179,7 @@ There was a significant interaction between instar age
  and colony size (lmer; $\chi$^2^~`r IntResults[[1]]`, `r IntResults[[2]]`~ =
 `r IntResults[[3]]`, p = `r IntResults[[4]]` `r IntResults[[5]]`), with condition appearing to decrease at a faster rate 
 with colony size as the instar age 
-increases `r figNumLookup$Fig_PredictedConditionByInstar`.
+increases.
 
 ```{r ConditionAdultOnly, results='asis',  echo = FALSE}
 # Only adult significant post-hoc
@@ -189,6 +195,9 @@ decreased significantly with colony size (lmer; $\chi$^2^~`r AdultResults[[1]]`,
 
 ```{r ConditionInstarGridGraph, fig.height=9, fig.width=14}
 InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", FullModel, "y")
+
+figNumLookup$Fig_ConditionVsColSize
+
 ```
   
 _FIGURE : Individual condition against colony size, with the linear model
@@ -200,10 +209,9 @@ instar sex. Gradient increases from juv4 to adult. _
 
 
 
-Within-colony variance against colony size
---------------------
+### Within-colony variance against colony size
 
-### Within-colony Leg length variance
+#### Leg length
 
 
 ```{r LegVariacne, echo = FALSE}
@@ -215,7 +223,7 @@ SELegBootVar  <- round(sd(legBootVar$bootSD_var)/sqrt(length(legBootVar$bootSD_v
 There was no significant effect of nest size on within-colony variance in leg length. However, before transformation, the average leg variance was
 `r meanLegBootVar` $\pm$ `r SELegBootVar`, which is small given that the range of possible values is between zero and one.
 
-### Within-colony condition variance
+#### Variance
 
 ```{r CondVariance, results='asis',  echo = FALSE, message = FALSE, warning = FALSE}
 # mean and SD
@@ -269,6 +277,8 @@ in condition peaked at intermediate instar ages and was higher for males
 ```{r ConditionVarianceInstarGridGraph, fig.height=9, fig.width=14}
 InstarGridGraph(condBootVar, "bootVarTrans", "Variance in Condition (arcsin transformed)", "n", "", varBootCondMod, "y")
 
+figNumLookup$Fig_ConditionVarianceVsColSize
+
 ```
   
  _FIGURE : Within-colony condition variance against colony size with the
@@ -291,9 +301,9 @@ predictDF$lmrPrd <- predict(InstarOnlyModel, predictDF, type = "response")
 plot <- ggplot(data = predictDF, aes(x = InstarNumber, y= lmrPrd, colour = InstarSex)) + geom_line(size = 1) + 
 		scale_x_continuous(breaks=c(3,4,5,6,7, 8)) 
 plot + geom_boxplot(data = condBootVar, aes(x = InstarNumber, y = bootVarTrans, group = Instar, fill = InstarSex), outlier.shape = 20, color = "black") +
-		xlab("Instar Age") + ylab("Variance in Condition (arcsin transformed)") + theme_bw(base_size=10)	+ mytheme
+		xlab("Instar Age") + ylab("Variance in Condition (arcsin transformed)") + theme_bw(base_size=10)	+ mytheme + scale_fill_grey() + scale_colour_grey()
 
-
+figNumLookup$Fig_CondVarByInstarBoxplot
 ```
 
  _FIGURE :Within-colony condition variance as a function of instar age and
@@ -301,8 +311,7 @@ sex. Overlaid is the generalized linear model, which has the square of instar
 age as a significant term._
 
 
-Size and condition of dispersers against philopatric conspecifics
--------------------
+### Size and condition of dispersers
 
 ```{r LegSingle, results='asis',  echo = FALSE}
 ##### Leg length vs colony type
@@ -347,6 +356,8 @@ p2 <- ggplot(nestsToTestSig, aes(x=type, y=logLeg)) + geom_boxplot() + xlab("Col
 		mytheme
 
 grid.arrange(p2, p1, ncol = 2)
+
+figNumLookup$Fig_DispersalCondLeg
 ```
   
 _FIGURE: Leg length and individual condition of adult females in propagules
@@ -355,8 +366,8 @@ significant difference between the two for both variables (leg lengh: stats,
 condition: stats), n source colonies = 2, n propagules = `r nprops`_
 
 
-Single female colony survival
---------------------
+### Single female colony survival
+
 
 We found that propagules established by single females had a very low survival rate, 
 with a mid-life of xx days and only a ~15% surviving to 50 days after establishment  
@@ -375,6 +386,8 @@ print(p1)
 
 nProps <- nlevels(props$propID)
 nOriginalNests <- nlevels(props$nestID)
+
+figNumLookup$Fig_progSurvival
 
 ```
   
