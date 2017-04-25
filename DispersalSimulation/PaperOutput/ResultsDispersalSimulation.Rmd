@@ -64,11 +64,6 @@ minimum dispersal size. Competition type ranges from 0 to 1, with 0 being
 full scramble competition and 1 is full contest competition. Individual size
 varies from 0 to 1. Environmental variance is `r env1`._
 
-![This is a figure caption for the metsurv figure \label{figurelabel}]
-
-![This is a figure caption for the metsurv figure but number 2 \label{figurelabel2}]
-
-see figure \ref{figurelabel} or try the figure \ref{figurelabel2}
 
 Metapopulation survival against population survival
 ---
@@ -80,13 +75,14 @@ appender <- function(string, myText = "dispersal size:") paste0(myText, string)
 
 png(filename = "MetSurvPop.png", width = 1300, height = 750, units = "px", res = 200, pointsize = 10)
 
+
 ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 		mytheme + 
 		geom_point(size = 2, color = "black", position = position_jitter(w = 0.05, h = 0.1), 
 				aes(shape = as.factor(Comp_meas))) + 
 		ylab("metapopulation survival") + 
 		xlab("population survival") +
-		geom_smooth(se = FALSE, method = "lm", formula = y ~ x/(exp(-x)), color = "black", size = 0.4) +
+		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2),  color = "black", size = 0.4) +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) +
 		scale_x_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) + 
 		scale_shape_manual("competition\nmeasure", values=c(0, 1, 2, 3, 18, 20)) + 
@@ -116,7 +112,7 @@ aveFile <- ddply(subDispFile, .(ad_dsp_fd, Comp_meas), summarize,
 png(filename = "MetDis.png", width = 900, height = 550, units = "px", res = 200, pointsize = 10)
 
 ggplot(aveFile, aes(x = any_disp, y = log10(metPopAgeMax))) + 
-		stat_smooth(method = "lm",  formula  = y~exp(-x),se = FALSE, color = "black", size = 0.5) + 
+		stat_smooth(method = "lm",  formula  = y~ x + I(x^2),se = FALSE, color = "black", size = 0.5) + 
 		mytheme + 
 		geom_point(size = pointSize, position = position_jitter(w = 0.07, h = 0.02),  aes(shape = as.factor(ad_dsp_fd))) + 
 		ylab("metapopulation survival ") + 
@@ -197,16 +193,20 @@ subSubFile <- subset(subDispFile, ad_dsp_fd == 0.6 | ad_dsp_fd == 0.8 | ad_dsp_f
 appender <- function(string, myText = "dispersal size:") paste0(myText, string)
 
 png(filename = "EnvMetSurv.png", width = 1100, height = 750, units = "px", res = 200, pointsize = 10)
+#formula = y ~ x + I(x^2)+ exp(-x)
+
+# how to use nls to fit formual
+# https://github.com/tidyverse/ggplot2/issues/1510
 
 ggplot(subSubFile, aes(x = input_var, y = log10(metPopAgeMax))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
-		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)+ exp(-x), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
+		geom_smooth(se = FALSE, method = "lm",  formula = y ~ x + I(x^2), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
 		mytheme + ylab("metapopulation survival ") + 
 		scale_linetype_discrete("competition\nmeasure") + 
 		scale_shape_discrete("competition\nmeasure") + 
-		xlab("environmental variation") +
-		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) + 
-		facet_grid(ad_dsp_fd~., labeller = as_labeller(appender))
+		xlab("environmental variation")+ facet_grid(ad_dsp_fd~., labeller = as_labeller(appender)) + 
+		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.9))
+		
 
 dev.off()
 
@@ -226,12 +226,12 @@ png(filename = "EnvPopSurv.png", width = 1100, height = 750, units = "px", res =
 
 ggplot(subSubFile , aes(x = input_var, y = log10(survivalMean_all))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
-		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2)+ exp(-x), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
+		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
 		mytheme + ylab("population survival ") + 
 		scale_linetype_discrete("competition\nmeasure") + 
 		scale_shape_discrete("competition\nmeasure") + 
 		xlab("environmental variation") +
-		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) + 
+		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.9)) + 
 		facet_grid(ad_dsp_fd~., labeller = as_labeller(appender))
 
 dev.off()
