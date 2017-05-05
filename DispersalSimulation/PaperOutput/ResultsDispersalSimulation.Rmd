@@ -13,6 +13,20 @@ output:
 ```{r docSettings, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, fig.height=3, fig.width=6, dpi=400)
 
+Label_compLegend <- "degree of\ncontest\ncompetition"
+Label_compAxis <- "degree of contest competition"
+Label_dspSizeLegend <- "minimum\nindividual\ndispersal size"
+Label_dspSizeAxis <- "minimum individual dispersal size"
+Label_Met <- "metapopulation survival time"
+Label_pop <- "population survival time"
+
+
+disBreaks <- c("0.2","0.6","0.8", "1.2")
+disNewLab <- c("0.2","0.6","0.8", "no dispersal")
+
+appenderDisSize <- function(string) ifelse(string == "1.2", "no dispersal", paste("dispersal size:", string))
+	
+
 mytheme <- theme_bw(base_size=10)  + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
     	panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 0.5), 
 		legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="black"), legend.text=element_text(size=8), 
@@ -41,7 +55,7 @@ xtabs(~ Comp_slope + ad_dsp_fd + input_var,  data = subDispFile)
 ## Metapopulation survival
 
 
-```{r metSurv, , results = 'asis', fig.cap = "This is a figure caption for the metsurv figure"}
+```{r metSurv, , results = 'asis'}
 
 aveFile <- ddply(subDispFile, .(ad_dsp_fd, Comp_meas), summarize, 
 		metPopAgeMax = mean(metPopAgeMax))
@@ -50,9 +64,9 @@ png(filename = "MetSurv.png", width = 1000, height = 650, units = "px", res = 20
 
 ggplot(aveFile, aes(x = Comp_meas, y = log10(metPopAgeMax))) + 
 		geom_point(size = pointSize, position = position_dodge(width = 0.02), aes(shape = as.factor(ad_dsp_fd))) + 
-		geom_line(size = lineSize, aes(linetype = as.factor(ad_dsp_fd))) + mytheme + ylab("metapopulation survival ") + 
-		scale_shape_discrete("dispersal\nminimum\nsize") + scale_linetype_discrete("dispersal\nminimum\nsize") + 
-		xlab("competition measure") +
+		geom_line(size = lineSize, aes(linetype = as.factor(ad_dsp_fd))) + mytheme + ylab(Label_Met) + 
+		scale_shape_discrete(Label_dspSizeLegend, breaks = disBreaks, labels = disNewLab) + scale_linetype_discrete(Label_dspSizeLegend, breaks = disBreaks, labels = disNewLab) + 
+		xlab(Label_compAxis) +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0))
  
 dev.off()
@@ -69,30 +83,30 @@ Metapopulation survival against population survival
 ---
 
 
-```{r MetSurvPop, fig.height=4, fig.width=9}
+```{r MetSurvPop, fig.height=4, fig.width=10.5}
 
-appender <- function(string, myText = "dispersal size:") paste0(myText, string)
 
-png(filename = "MetSurvPop.png", width = 1300, height = 750, units = "px", res = 200, pointsize = 10)
+
+png(filename = "MetSurvPop.png", width = 1600, height = 750, units = "px", res = 200, pointsize = 10)
 
 
 ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 		mytheme + 
 		geom_point(size = 2, color = "black", position = position_jitter(w = 0.05, h = 0.1), 
 				aes(shape = as.factor(Comp_meas))) + 
-		ylab("metapopulation survival") + 
-		xlab("population survival") +
+		ylab(Label_Met) + 
+		xlab(Label_pop) +
 		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2),  color = "black", size = 0.4) +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) +
 		scale_x_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.7)) + 
-		scale_shape_manual("competition\nmeasure", values=c(0, 1, 2, 3, 18, 20)) + 
-		facet_grid(~ad_dsp_fd, scales = "fixed", labeller = as_labeller(appender)) +
+		scale_shape_manual(Label_compAxis, values=c(0, 1, 2, 3, 18, 20)) + 
+		facet_grid(~ad_dsp_fd, scales = "fixed", labeller = as_labeller(appenderDisSize)) +
 		theme(legend.position="bottom")
  dev.off()
 
 ```
 
-(@) _Figure [MetSurvPop]: Population survival against metapopulation survival,
+(@) _Figure [MetSurvPop]: Population survival against metapopulation survival time,
 by minimum adult dispersal size and competition type. Competition type ranges
 from 0 to 1, with 0 being full scramble competition and 1 is full contest
 competition. There is no environmental variation._
@@ -115,8 +129,8 @@ ggplot(aveFile, aes(x = any_disp, y = log10(metPopAgeMax))) +
 		stat_smooth(method = "lm",  formula  = y~ x + I(x^2),se = FALSE, color = "black", size = 0.5) + 
 		mytheme + 
 		geom_point(size = pointSize, position = position_jitter(w = 0.07, h = 0.02),  aes(shape = as.factor(ad_dsp_fd))) + 
-		ylab("metapopulation survival ") + 
-		xlab("dispersal within metapopulation") + scale_shape_discrete("dispersal\nminimum\nsize") + 
+		ylab(Label_Met) + 
+		xlab("dispersal within metapopulation") + scale_shape_discrete(Label_dspSizeLegend, breaks = disBreaks, labels = disNewLab) + 
 		scale_x_continuous(breaks=c(0, 1), limits = c(-0.2, 1.2), labels = c("no", "yes"))
 
 dev.off()
@@ -145,7 +159,7 @@ png(filename = "Disp.png", width = 800, height = 700, units = "px", res = 200, p
 
 ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + 
 		geom_tile(colour = "white", size=0.1) +
-		mytheme + ylab("dispersal minimum size") +  xlab("competition measure") + 
+		mytheme + ylab(Label_dspSizeAxis) +  xlab(Label_compAxis) + 
 		scale_fill_gradient(low="black", high="grey80", guide = FALSE) +
 		geom_rect(data = ave_subDispFile, aes(xmin=2.525, xmax=3.475, ymin=2.52, ymax=3.48), fill='grey25', 
 				colour = 'black', alpha=0.01, size = 1, lty = 2)
@@ -190,8 +204,6 @@ xtabs(~ Comp_slope + ad_dsp_fd + input_var,  data = subDispFile)
 
 subSubFile <- subset(subDispFile, ad_dsp_fd == 0.6 | ad_dsp_fd == 0.8 | ad_dsp_fd == 1.2)
 
-appender <- function(string, myText = "dispersal size:") paste0(myText, string)
-
 png(filename = "EnvMetSurv.png", width = 1100, height = 750, units = "px", res = 200, pointsize = 10)
 #formula = y ~ x + I(x^2)+ exp(-x)
 
@@ -201,10 +213,10 @@ png(filename = "EnvMetSurv.png", width = 1100, height = 750, units = "px", res =
 ggplot(subSubFile, aes(x = input_var, y = log10(metPopAgeMax))) + 
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
 		geom_smooth(se = FALSE, method = "lm",  formula = y ~ x + I(x^2), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
-		mytheme + ylab("metapopulation survival ") + 
-		scale_linetype_discrete("competition\nmeasure") + 
-		scale_shape_discrete("competition\nmeasure") + 
-		xlab("environmental variation")+ facet_grid(ad_dsp_fd~., labeller = as_labeller(appender)) + 
+		mytheme + ylab(Label_Met) + 
+		scale_linetype_discrete(Label_compLegend) + 
+		scale_shape_discrete(Label_compLegend) + 
+		xlab("environmental variation")+ facet_grid(ad_dsp_fd~., labeller = as_labeller(appenderDisSize)) + 
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.9))
 		
 
@@ -228,11 +240,11 @@ ggplot(subSubFile , aes(x = input_var, y = log10(survivalMean_all))) +
 		geom_point(size = pointSize, position = position_jitter(w = 0, h = 0), aes(shape = as.factor(Comp_meas))) + 
 		geom_smooth(se = FALSE, method = "lm", formula = y ~ x + I(x^2), color = "black", size = 0.4, aes(linetype = as.factor(Comp_meas))) + 
 		mytheme + ylab("population survival ") + 
-		scale_linetype_discrete("competition\nmeasure") + 
-		scale_shape_discrete("competition\nmeasure") + 
+		scale_linetype_discrete(Label_compLegend) + 
+		scale_shape_discrete(Label_compLegend) + 
 		xlab("environmental variation") +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 2.9)) + 
-		facet_grid(ad_dsp_fd~., labeller = as_labeller(appender))
+		facet_grid(ad_dsp_fd~., labeller = as_labeller(appenderDisSize))
 
 dev.off()
 
@@ -255,7 +267,7 @@ ave_subDispFile<- ddply(subDispFile, .(Comp_meas, ad_dsp_fd), summarise,
 png(filename = "EnvDisp.png", width = 800, height = 700, units = "px", res = 200, pointsize = 10)
 
 ggplot(ave_subDispFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = meanDispBin))  + geom_tile(colour = "white", size=0.1) +
-		mytheme + ylab("minimum dispersal size") +  xlab("competition measure") + 
+		mytheme + ylab(Label_dspSizeAxis) +  xlab(Label_compAxis) + 
 		scale_fill_gradient(low="black", high="grey80", guide = FALSE) 
 		#facet_wrap(~input_var)
 
@@ -293,7 +305,7 @@ ggplot(dispSum, aes(x=input_var, y=all_ave_num_disp)) +
     geom_errorbar(aes(ymin=all_ave_num_disp-se, ymax=all_ave_num_disp+se), width=.03) +
     geom_point(size = 2, aes(shape = Legend)) + mytheme+
 	geom_line(aes(linetype = Legend)) + theme(legend.title=element_blank()) + 
-    xlab("environmental variation") + ylab("mean count of dispersers per generation") +
+    xlab("environmental variation") + ylab("count of dispersing colonies / generation") +
 	scale_shape_manual(values=c(0, 2, 19)) +
 	scale_linetype_manual(values=c(6, 2, 1))
 
@@ -334,7 +346,7 @@ ggplot(subDispFile, aes(x = log10(survivalMean_all), y = log10(metPopAgeMax))) +
 
 ```{r EnvMetDisp, fig.height=3.5, fig.width=10}
 
-appender <- function(string, myText = "Competition:") paste0(myText, string)
+appenderComp <- function(string, myText = "Competition:") paste0(myText, string)
 
 
 ggplot(subDispFile, aes(x = any_disp, y = log10(metPopAgeMax))) + 
@@ -344,7 +356,7 @@ ggplot(subDispFile, aes(x = any_disp, y = log10(metPopAgeMax))) +
 		ylab("Log metapopulation survival") + 
 		xlab("Did any dispersal take place?") + scale_shape_discrete("Dispersal\nMin Size") + 
 		scale_x_continuous(breaks=seq(0, 1.0, by=1), limits = c(-0.2, 1.2)) +
-		facet_grid(~Comp_meas, labeller = as_labeller(appender)) +
+		facet_grid(~Comp_meas, labeller = as_labeller(appenderComp)) +
 		theme(legend.position="bottom")
 
 ```

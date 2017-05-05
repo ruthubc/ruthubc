@@ -5,16 +5,17 @@
 
 library(survival)
 
-set_ad_dsp_fd1 <- 0.8
-set_ad_dsp_fd2 <- 0.6
 
+
+no_off <- 6 
 subDispFile <- subset(importDispFile, max_no_off == no_off)
 
 subDispFile <- subset(subDispFile, Comp_meas != 0.5)
 
 dataFrame <- subDispFile
 
-metSurv_df <- data.frame(time = numeric(), metPopCond = factor(), Comp_slope = factor())
+
+metSurv_df <- data.frame(time = numeric(), metPopCond = factor(), Comp_slope = factor(), ad_dsp_fd = factor())
 
 
 for(i in 1:nrow(dataFrame)) {
@@ -25,7 +26,9 @@ for(i in 1:nrow(dataFrame)) {
 	
 	comp_slope <- row$Comp_slope
 	
-	df <- data.frame(time = 1:maxAge , metPopCond = 0, Comp_slope = comp_slope) # 0 = alive 1 = dead
+	Ad_Dsp_Fd <- row$ad_dsp_fd
+	
+	df <- data.frame(time = 1:maxAge , metPopCond = 0, Comp_slope = comp_slope, ad_dsp_fd = Ad_Dsp_Fd) # 0 = alive 1 = dead
 	
 	df$metPopCond[which(df$time == maxAge)] <- 1
 	
