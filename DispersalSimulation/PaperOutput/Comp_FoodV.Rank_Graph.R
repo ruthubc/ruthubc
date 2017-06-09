@@ -53,6 +53,6 @@ png(filename = "CompGraph.png", width = 900, height = 550, units = "px", res = 2
 
 ggplot(df, aes(x = rank, y = food, linetype = as.factor(Comp_meas))) +
 		geom_line() + mytheme + ylab("Individual food allocation") + xlab("Rank of individual") +
-		scale_linetype_discrete(name = "Competition\nmeasure")
+		scale_linetype_discrete(name = "degree of\ncontest\ncompetition")
 
 dev.off()
