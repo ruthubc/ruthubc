@@ -11,6 +11,14 @@ from scipy.stats import cumfreq
 import numpy as np
 import os
 
+
+#os.chdir('C:/Work/Dropbox/')
+os.chdir('G:/Dropbox/RuthEcuador2013/NestSize/')
+
+
+fileOutputName = "bootSamplesDolph.csv"
+
+
 #ln leg length max and min adults  0.88 and 1.33
 
 # sample size 1-25
@@ -19,19 +27,40 @@ minValuePos = 0.88
 
 maxValuePos = 1.33
 
-sampleSizes = range(1, 26)
+numSampleSets = 2
 
+maxSmpSz = 26
 
+sampleSizes = range(1, maxSmpSz + 1)
 
+sampleSzLst = sampleSizes * numSampleSets
 
+print sampleSzLst
 
-i = 0
+COUNT = 0
 
 columns = ['SampleID','SampleSize', 'Value']
 df = pd.DataFrame(columns = columns)
 
-def createRanSmpFun(smpSize, minVal, maxVal, df):    
-    i = i + 1
-    sampID = [i] * smpSize
-    sampSize = [smpSize] * smpSize
-    ranList =[uniform(minVal, maxVal) for p in range(0,(smpSize))]
+def createRanSmpFun(smpSize, minVal, maxVal, df, columns):    
+    global COUNT
+    COUNT = COUNT+1
+    sampID = [COUNT] * smpSize
+    sampSizeRep = [smpSize] * smpSize
+    ranList =[uniform(minVal, maxVal) for p in range(0,(smpSize))] 
+       
+    dfNew  = pd.DataFrame(np.column_stack((sampID, sampSizeRep, ranList)), columns = columns) 
+    
+    df = df.append(dfNew)
+    return df
+
+    
+while (COUNT < (maxSmpSz * numSampleSets)):
+    sampleSize = sampleSzLst[COUNT]
+    print 
+    print COUNT
+    df = createRanSmpFun(sampleSize, minValuePos, maxValuePos, df, columns)
+    
+df.to_csv(fileOutputName, index=False, encoding='utf-8')
+
+print ("file exported")
