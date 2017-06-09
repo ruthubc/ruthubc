@@ -5,6 +5,7 @@ Created on Jul 15, 2014
 '''
 
 import csv
+import os
 from core.StartColsClass import StartCols
 from core.PopulationClass import Poplt
 from core.Functions import export_rownames
@@ -12,6 +13,11 @@ from core.Functions import export_rownames
 
 def disperal_run(indFile, sim_len, filename, comp_slp, disp_risk, K, amt_var, min_juv_size, off_list, ad_disFd_lmt, F_Ln, compType):
     #(1) write rownames to csv fileh
+    
+    try:
+        os.remove(filename)
+    except OSError:
+            pass
 
     export_rownames(filename + ".csv") # creating file with rownames 
 

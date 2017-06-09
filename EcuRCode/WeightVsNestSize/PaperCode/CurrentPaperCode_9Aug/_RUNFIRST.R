@@ -41,9 +41,13 @@ if (comp_name == "DELL-1545") {
 	path <- "C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
 	
 }else{
-	print("You are using your school computer")
-	setwd("G:/Dropbox/")
-	path <- "G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
+	print("You are using your school macpc")
+	setwd("~/Dropbox")
+	path <- "C:/Users/Ruth/git/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
+	
+	
+	#setwd("G:/Dropbox/")
+	#path <- "G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
 
 }
 

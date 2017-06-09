@@ -18,11 +18,10 @@ import socket
 import os
 
 compName = platform.node()
+fileTxtName = "240hrs_Orcinus.txt"
 
-pbsName = "_27March_array"
-
-pbsNameList = [s + pbsName for s in ["2hrs", "20hrs", "35hrs", "72hrs"]]
-
+pbsName = "240hrs_31Mar_Orcinus"
+runtime = 240
 
 
 if compName == 'Sony-PC':
@@ -35,34 +34,53 @@ else:
     savePath  = 'C:\\Work\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
     print("this is the home computer")
 
-#savePath  = 'C:\\Work\\Dropbox\\RuthSync\\SimulationFiles\\RunFiles\\'
 
 indFile = "n"
 
 
-slopes = [0, 0.4, 0.8, 1.25, 2.5, 10] # 10 is full contest competition
-dispersalRisks = [0.3]
+slopes = [0.4] * 9 #reps
+dispersalRisks = [0.3] 
 meanK = [300]
-Vars = [0.1]
-adDisSizes = [0.2, 0.6, 0.8, 1.2]
+Vars = [0.8]
+adDisSizes = [0.6, 0.8]
 off_list = [[4, 6]]
 F_Lns = [0.61]
 
 
+sim_len = 500
+
+comp_type = "N"
+
+runs = [slopes, dispersalRisks, meanK, Vars, adDisSizes, off_list, F_Lns]
+combinations = list(itertools.product(*runs))
+
+
+## Adding an individual extra combination
+mySlope = 0
+myVariance = 0.8
+myDispSize = 0.6
+
+#extraTup = tuple([mySlope, dispersalRisks[0], meanK[0],  myVariance, myDispSize, off_list[0], F_Lns[0]])
+#combinations.extend([extraTup])
+
+# extra combinations
+slopes = [0.8] * 8 #reps
+dispersalRisks = [0.3] 
+meanK = [300]
+Vars = [0.8]
+adDisSizes = [0.8]
+off_list = [[4, 6]]
+F_Lns = [0.61]
 
 
 sim_len = 500
 
-
-
 comp_type = "N"
 
-
-
-
-#runs = [[0 - slope], [1- risk of dispersal], [2- meanK], [3- Var], [4- ad dispersal limit], [5- min off], [6- max off], [7- F_ln]]
 runs = [slopes, dispersalRisks, meanK, Vars, adDisSizes, off_list, F_Lns]
-combinations = list(itertools.product(*runs))
+combinations.extend(list(itertools.product(*runs)))
+
+
 
 
 def run_numbers(numbersFile):  # Assigns a unique number to each run
@@ -90,15 +108,15 @@ def writePBS(PBSFileName, pyNameFile, runtime, numFiles):  # writes the PBS file
     file.write("#PBS -M rvsharpe.ubc@gmail.com\n")
     file.write("#PBS -m ea\n")  # only send email when job is aborted or terminated
     file.write("#PBS -l walltime=" + runtime + "\n")
-    file.write("#PBS -l mem=300mb\n")
-    file.write("#PBS -l pmem=900mb\n")
-    file.write('#PBS -l procs=1\n') 
+    file.write("#PBS -l mem=10gb\n")
+    file.write('#PBS -l procs=1\n')
+    file.write('#PBS -l partition=DDR\n') 
     file.write("#PBS -t 1-" + str(numFiles) + "\n")
-    file.write("module load python/2.7.2\n")# on grex: file.write("module load python/2.7.5.anaconda\n")
+    file.write("module load python/2.7.3\n")# on grex: file.write("module load python/2.7.5.anaconda\n")
     file.write("cd $PBS_O_WORKDIR\n")
     file.write("""echo "Task index number : $PBS_ARRAYID"\n""")
     file.write("\n")
-    file.write("file=`sed -n ''${PBS_ARRAYID}'p' " + pyNameFile + ".txt`\n")
+    file.write("file=`sed -n ''${PBS_ARRAYID}'p' " + pyNameFile + "`\n")
     file.write("""echo "file is: $file"\n""")
     file.write("python $file\n")
     file.write("""echo "Program "$0" finished with exit code $? at: `date`"\n""")
@@ -132,13 +150,7 @@ def writePythonRun(FileName, comp_slp, disp_risk, K, amt_var, min_juv_size, off_
 ## making file name lists
 fileNameLst = []  # for all files
 runTimeList = []
-
-fileNameLst_2hrs = []
-fileNameLst_20hrs = []
-fileNameLst_35hrs = []
-fileNameLst_72hrs = []
-
-
+fileName_forTxt = []
 
 for i in range(0, len(combinations)):  # actually produces the files
     number = run_numbers("RunNumbers.csv")
@@ -153,27 +165,13 @@ for i in range(0, len(combinations)):  # actually produces the files
     F_Ln = tup[6]
 
     filename =  str(number) + "_" + 'slp' + str(slope) + "_Rsk" + str(risk) + "_K" + str(K) + "_var" + str(var) +  "_dslm" + str(ad_disFd_lmt) + "_maxOff" + str(off_list[1])
-    #print "tup", tup
     print filename
 
     writePythonRun(filename, slope, risk, K, var, min_juv_size, off_list,
                    ad_disFd_lmt, F_Ln, sim_len, comp_type) # writes the .py file for each run
 
-    ### runtime if statement, getting correct runtime 
-    if ad_disFd_lmt > 1:
-        runtime = "02:00:00"
-        fileNameLst_2hrs.extend([filename])
-    elif (ad_disFd_lmt == 0.6 and slope == 2.5 and off_list[1] == 6 and risk == 0.3) or  (var > 0.6):
-        runtime = "72:00:00"
-        fileNameLst_72hrs.extend([filename])
-    elif off_list[1] <= 6 or slope == 0.4:
-        runtime = "35:00:00"
-        fileNameLst_35hrs.extend([filename])
-    else:
-        runtime = "20:00:00"
-        fileNameLst_20hrs.extend([filename])
-
-
+    fileName_forTxt.extend([filename])
+    
     fileNameLst.extend([(filename, runtime)])
     runTimeList.extend([runtime])
 
@@ -194,40 +192,16 @@ for name in fileNameLst: # writes the names of the files created to csv file for
 def writeArrayTxtFiles(listName, fileName):
     completeName = os.path.join( savePath, "ForCluster", fileName)
     file = open(completeName, "wb")
-    for name in listName:
+    for name in fileName_forTxt:
         file.write(name + ".py")
         file.write("\n")
 
-writeArrayTxtFiles(fileNameLst_20hrs, "python_20hrs.txt")
-writeArrayTxtFiles(fileNameLst_2hrs, "python_2hrs.txt")
-writeArrayTxtFiles(fileNameLst_35hrs, "python_35hrs.txt")
-writeArrayTxtFiles(fileNameLst_72hrs, "python_72hrs.txt")
+writeArrayTxtFiles(fileNameLst, fileTxtName)
 
 
+writePBS(pbsName, fileTxtName, str(runtime) + ":00:00", len(fileName_forTxt))
 
-writePBS(pbsNameList[0], "python_2hrs", "02:00:00", len(fileNameLst_2hrs))
-writePBS(pbsNameList[1], "python_20hrs", "20:00:00", len(fileNameLst_20hrs))
-writePBS(pbsNameList[2], "python_35hrs", "35:00:00", len(fileNameLst_35hrs))
-writePBS(pbsNameList[3], "python_72hrs", "72:00:00", len(fileNameLst_72hrs))
-
-
-fileLenList = [len(fileNameLst_2hrs), len(fileNameLst_20hrs), len(fileNameLst_35hrs), len(fileNameLst_72hrs) ]
-indexList = [index for index, value in enumerate(fileLenList) if value > 0] # getting the list index for populated files
-pbs_full = [pbsNameList[i] for i in indexList] # picking only the populated ones to put in the sh file
-
-# making .sh file
-completeName = os.path.join( savePath, "ForCluster", "run.sh")
-file = open(completeName, "w+")
-file.write("for i in")
-
-
-for name in pbs_full:
-    file.write(" " + name + ".pbs")
-file.write ("; do qsub $i; done")
 
 print "Total number of combinations", len(combinations)
-print "Number 2 hours: ", len(fileNameLst_2hrs)
-print "Number 20 hours: ", len(fileNameLst_20hrs)
-print "Number 35 hours: ", len(fileNameLst_35hrs)
-print "Number 72 hours: ", len(fileNameLst_72hrs)
+
 print "end"

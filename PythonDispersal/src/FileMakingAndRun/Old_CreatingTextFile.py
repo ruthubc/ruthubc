@@ -16,12 +16,12 @@ import time
 
 indFile = "n"
 
-slopes = [10] #[0, 0.4, 0.8, 1, 1.25, 2.5, 10] # 10 is full contest competition
+slopes = [0, 0.4, 0.8, 1.25, 2.5, 10] # 10 is full contest competition
 dispersalRisks = [0.3]
 meanK = [300]
-Vars = [0, 0.1, 0.2]
+Vars = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 adDisSizes = [0.2]
-off_list = [[2,4]]
+off_list = [[4, 6]]
 F_Lns = [0.61]
 
 sim_len = 500
