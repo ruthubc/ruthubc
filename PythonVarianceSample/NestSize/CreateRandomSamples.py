@@ -7,16 +7,16 @@ Created on Aug 14, 2016
 
 import pandas as pd
 from random import uniform
-from scipy.stats import cumfreq
+#from scipy.stats import cumfreq
 import numpy as np
 import os
 
 
 #os.chdir('C:/Work/Dropbox/')
-os.chdir('G:/Dropbox/RuthEcuador2013/NestSize/')
+#os.chdir('G:/Dropbox/RuthEcuador2013/NestSize/')
+os.chdir('C:/Users/Ruth/Dropbox/RuthEcuador2013/NestSize/')
 
-
-fileOutputName = "bootSamplesDolph.csv"
+fileOutputName = "bootSamplesDolph_9June.csv"
 
 
 #ln leg length max and min adults  0.88 and 1.33
@@ -27,11 +27,11 @@ minValuePos = 0.88
 
 maxValuePos = 1.33
 
-numSampleSets = 2
+numSampleSets = 100
 
 maxSmpSz = 26
 
-sampleSizes = range(1, maxSmpSz + 1)
+sampleSizes = range(2, maxSmpSz + 1)
 
 sampleSzLst = sampleSizes * numSampleSets
 
@@ -55,7 +55,7 @@ def createRanSmpFun(smpSize, minVal, maxVal, df, columns):
     return df
 
     
-while (COUNT < (maxSmpSz * numSampleSets)):
+while (COUNT < ((maxSmpSz -1) * numSampleSets)):
     sampleSize = sampleSzLst[COUNT]
     print 
     print COUNT
