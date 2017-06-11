@@ -11,7 +11,6 @@ from random import uniform
 #from scipy.stats import cumfreq
 import numpy as np
 import os
-import time
 
 os.chdir('C:/Users/Ruth/Dropbox/RuthEcuador2013/NestSize/')
 
