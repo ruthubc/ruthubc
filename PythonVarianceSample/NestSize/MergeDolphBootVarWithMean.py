@@ -4,7 +4,8 @@ Created on Aug 14, 2016
 @author: Ruth check
 '''
 
-
+import matplotlib as mpl
+mpl.use('Agg')
 
 import pandas as pd
 from random import uniform
@@ -15,12 +16,22 @@ import time
 
 os.chdir('C:/Users/Ruth/Dropbox/RuthEcuador2013/NestSize/')
 
-inputFileName = "Dolph_bootVars.csv"
+inputFileName = "Summary_bootSamplesDolph_9June.csv"
 
-fileOutputName = "Dolph_bootVarsWithMeans.csv"
+fileOutputName = "Dolph_bootVars.csv"
+
+numBoots = 10000
+numBins = 1000
 
 
-bootSamps = pd.read_csv(inputFileName)
+columns = ['SampleID','SampleSize', 'boot_SD']
+df = pd.DataFrame(columns)
+
+df = df.transpose()
+print df
+df.to_csv(fileOutputName, mode='a', header=False)
+
+randSamps = pd.read_csv(inputFileName)
 
 
 
