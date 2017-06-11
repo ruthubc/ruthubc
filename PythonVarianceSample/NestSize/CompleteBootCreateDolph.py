@@ -14,9 +14,9 @@ import os
 from scipy.stats import cumfreq
 
 
-#os.chdir('C:/Users/Ruth/Dropbox/RuthEcuador2013/NestSize/')
+os.chdir('C:/Users/Ruth/Dropbox/RuthEcuador2013/NestSize/')
 
-os.chdir('G:/Dropbox/RuthEcuador2013/NestSize/')
+#os.chdir('G:/Dropbox/RuthEcuador2013/NestSize/')
 
 inputFileName = "Summary_bootSamplesDolph_9June.csv"
 
@@ -140,8 +140,6 @@ for rowNum in range(numRows): # getting the necessary varibles from the data fil
         result = (sd_data -minList) / freq_interval
         myIndex = int(round(result)) -1
         print "myIndex:", myIndex
-        
-        print countValues
         
         if myIndex < 0:
             output = 0.00
