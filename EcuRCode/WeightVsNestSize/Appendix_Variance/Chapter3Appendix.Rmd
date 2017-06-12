@@ -1,0 +1,55 @@
+---
+title: "Chapter "
+author: "Ruth Sharpe"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r docSettings, include = FALSE}
+## Make sure to run R code /CurrentPaperCode_9Aug/_RUNFIRST
+library(ggplot2)
+library(plyr)
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE)
+
+
+bootSamples <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSamplesDolph_9June.csv")
+
+bootSummy <- ddply(bootSamples, .(SampleID, SampleSize), summarise,
+		N    = sum(!is.na(Value)),
+		mean = mean(Value, na.rm=TRUE),
+		sd   = sd(Value, na.rm=TRUE),
+		sampVar = var(Value),
+		cv = sd/mean,
+		cv_coor = (1+ (1/4*N) * cv)
+
+)
+
+
+
+mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2, size = 10), panel.margin= unit(0.75, "lines"),  
+		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1), 
+		panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+```
+
+
+
+```{r graphSmplSizevsCV}
+
+# N vs cv
+
+ggplot(bootSummy, aes(x = N, y = cv)) + geom_point(size = 0.1) + geom_smooth(method='lm',formula=y~x, se = FALSE ) + mytheme
+
+```
+
+figure x: sample size against cv
+
+```{r graphMeanevsCV}
+
+# mean vs cv
+
+ggplot(bootSummy, aes(x = mean, y = cv)) + geom_point(size = 0.1) + geom_smooth(method='lm',formula=y~x + I(x^2), se = FALSE) + mytheme
+
+
+```
+
+figure x: mean against cv
