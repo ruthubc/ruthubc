@@ -26,8 +26,7 @@ bootSummy <- ddply(bootSamples, .(SampleID, SampleSize), summarise,
 
 
 mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2, size = 10), panel.margin= unit(0.75, "lines"),  
-		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1), 
-		panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1), panel.grid.minor = element_blank())
 
 ```
 
@@ -37,7 +36,8 @@ mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2, siz
 
 # N vs cv
 
-ggplot(bootSummy, aes(x = N, y = cv)) + geom_point(size = 0.1) + geom_smooth(method='lm',formula=y~x, se = FALSE ) + mytheme
+ggplot(bootSummy, aes(x = N, y = cv)) + geom_point(size = 0.1) + geom_smooth(method='lm',formula=y~x, se = FALSE ) + mytheme +
+		xlab("sample size") + ylab("coefficient of variation")
 
 ```
 
@@ -47,9 +47,37 @@ figure x: sample size against cv
 
 # mean vs cv
 
-ggplot(bootSummy, aes(x = mean, y = cv)) + geom_point(size = 0.1) + geom_smooth(method='lm',formula=y~x + I(x^2), se = FALSE) + mytheme
+ggplot(bootSummy, aes(x = mean, y = cv)) + geom_point(size = 0.1) + geom_smooth(method='lm',formula=y~x + I(x^2), se = FALSE) + mytheme +
+		xlab("sample mean") + ylab("coefficient of variation")
+
 
 
 ```
 
 figure x: mean against cv
+
+
+
+```{r bootVarN}
+boot_var <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/Dolph_bootVars.csv")
+
+# N vs cv
+
+ggplot(boot_var, aes(x = N, y = bootSD_var)) + geom_point(size = 0.1) +
+geom_smooth(method='lm',formula=y~x, se = FALSE) + mytheme +
+xlab("sample size") + ylab("boot variance")
+
+
+```
+figure x: my boot variance against sample size
+
+```{r bootVarMean}
+
+ggplot(boot_var, aes(x = data_mean, y = bootSD_var)) + geom_point(size = 0.1) +
+geom_smooth(method='lm',formula=y~x, se = FALSE)  + mytheme +
+xlab("sample mean") + ylab("boot variance")
+
+
+```
+
+figure x: my boot variance against mean of sample

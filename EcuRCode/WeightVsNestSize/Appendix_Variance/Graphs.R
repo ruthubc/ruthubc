@@ -10,6 +10,8 @@ library(ggplot2)
 
 setwd("C:/Users/Ruth/Dropbox/RuthEcuador2013/NestSize/")
 
+setwd("G:/Dropbox/RuthEcuador2013/NestSize")
+
 bootSamples <- read.csv("bootSamplesDolph_9June.csv")
 
 bootSummy <- ddply(bootSamples, .(SampleID, SampleSize), summarise,
@@ -34,3 +36,15 @@ ggplot(bootSummy, aes(x = N, y = cv_coor)) + geom_point() + geom_smooth(method='
 # mean vs cv
 
 ggplot(bootSummy, aes(x = mean, y = cv)) + geom_point() + geom_smooth(method='lm',formula=y~x)
+
+
+boot_var <- read.csv("Dolph_bootVars.csv")
+
+# N vs cv
+
+ggplot(boot_var, aes(x = N, y = bootSD_var)) + geom_point() + geom_smooth(method='lm',formula=y~x)
+
+
+# mean vs cv
+
+ggplot(boot_var, aes(x = data_mean, y = bootSD_var)) + geom_point() + geom_smooth(method='lm',formula=y~x)
