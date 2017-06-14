@@ -8,10 +8,13 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 ## Make sure to run R code /CurrentPaperCode_9Aug/_RUNFIRST
 library(ggplot2)
 library(plyr)
+library(lme4)
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE)
 
 
-bootSamples <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSamplesDolph_9June.csv")
+#bootSamples <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/bootSamplesDolph_9June.csv")
+
+bootSamples <- read.csv("C:/Users/Ruth/Dropbox/RuthEcuador2013/NestSize/bootSamplesDolph_9June.csv")
 
 bootSummy <- ddply(bootSamples, .(SampleID, SampleSize), summarise,
 		N    = sum(!is.na(Value)),
@@ -25,8 +28,9 @@ bootSummy <- ddply(bootSamples, .(SampleID, SampleSize), summarise,
 
 
 
-mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2, size = 10), panel.margin= unit(0.75, "lines"),  
-		plot.margin=unit(c(1,1,1.5,1.2),"cm"), panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1), panel.grid.minor = element_blank())
+mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2, size = 8), 
+		panel.border = element_rect(fill = NA, colour = "grey", linetype=1, size = 1), 
+		panel.grid.minor = element_blank())
 
 ```
 
@@ -36,8 +40,14 @@ mytheme <-theme_bw(base_size=15)  + theme(plot.title = element_text(vjust=2, siz
 
 # N vs cv
 
-ggplot(bootSummy, aes(x = N, y = cv)) + geom_point(size = 0.1) + geom_smooth(method='lm',formula=y~x, se = FALSE ) + mytheme +
+ggplot(bootSummy, aes(x = N, y = cv)) + geom_point(size = 1, shape = "a") + 
+		geom_smooth(method='lm',formula=y~x, se = FALSE, colour = "black", size = 0.5 ) + mytheme +
 		xlab("sample size") + ylab("coefficient of variation")
+
+lmTest <- lm(cv ~ N, data = bootSummy)
+
+anova(lmTest)
+
 
 ```
 
@@ -47,10 +57,14 @@ figure x: sample size against cv
 
 # mean vs cv
 
-ggplot(bootSummy, aes(x = mean, y = cv)) + geom_point(size = 0.1) + geom_smooth(method='lm',formula=y~x + I(x^2), se = FALSE) + mytheme +
-		xlab("sample mean") + ylab("coefficient of variation")
+ggplot(bootSummy, aes(x = mean, y = cv)) + 
+		xlab("sample mean") + ylab("coefficient of variation") +
+		geom_point(size = 1, shape = "a") + 
+		geom_smooth(method='lm',formula=y~x + I(x^2), se = FALSE, colour = "black", size = 0.5 ) + mytheme
 
+lmTest <- lm(cv ~ mean + I(mean ^ 2) + N, data = bootSummy)
 
+anova(lmTest)
 
 ```
 
@@ -59,23 +73,33 @@ figure x: mean against cv
 
 
 ```{r bootVarN}
-boot_var <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/Dolph_bootVars.csv")
+#boot_var <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/Dolph_bootVars.csv")
+
+boot_var <- read.csv("C:/Users/Ruth/Dropbox/RuthEcuador2013/NestSize/Dolph_bootVars.csv")
 
 # N vs cv
 
-ggplot(boot_var, aes(x = N, y = bootSD_var)) + geom_point(size = 0.1) +
-geom_smooth(method='lm',formula=y~x, se = FALSE) + mytheme +
-xlab("sample size") + ylab("boot variance")
+ggplot(boot_var, aes(x = N, y = bootSD_var)) +  xlab("sample size") + ylab("boot variance") +
+		geom_point(size = 1, shape = "a") + 
+		geom_smooth(method='lm',formula=y~x, se = FALSE, colour = "black", size = 0.5 ) + mytheme
 
+
+lmTest <- lm(bootSD_var ~ N, data = boot_var)
+
+anova(lmTest)
 
 ```
 figure x: my boot variance against sample size
 
 ```{r bootVarMean}
 
-ggplot(boot_var, aes(x = data_mean, y = bootSD_var)) + geom_point(size = 0.1) +
-geom_smooth(method='lm',formula=y~x, se = FALSE)  + mytheme +
-xlab("sample mean") + ylab("boot variance")
+ggplot(boot_var, aes(x = data_mean, y = bootSD_var)) + geom_point(size = 1, shape = "a") + 
+		xlab("sample mean") + ylab("boot variance") +
+		geom_smooth(method='lm',formula=y~x, se = FALSE, colour = "black", size = 0.5 ) + mytheme
+
+lmTest <- lm(bootSD_var ~ data_mean + N, data = boot_var)
+
+anova(lmTest)	
 
 
 ```
