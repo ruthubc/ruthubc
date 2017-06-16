@@ -40,14 +40,17 @@ if (comp_name == "DELL-1545") {
 	setwd("C:/Work/Dropbox/")
 	path <- "C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
 	
+}else if (comp_name == "SONY-PC"){
+	setwd("G:/Dropbox/")
+	path <- "G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
+
 }else{
 	print("You are using your school macpc")
 	setwd("~/Dropbox")
 	path <- "C:/Users/Ruth/git/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
 	
 	
-	#setwd("G:/Dropbox/")
-	#path <- "G:/EclipseNeonWorkspace/R_Code/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
+
 
 }
 

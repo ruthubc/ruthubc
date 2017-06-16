@@ -21,7 +21,10 @@ mytheme <-theme_bw(base_size=10)  + theme(plot.title = element_text(vjust=2), pl
 				panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +  theme(strip.background = element_rect(fill = 'white'))
 
 
-Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv", na.strings = NA)
+setwd("G:/Dropbox/")
+
+#Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv", na.strings = NA)
+Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/TrailsWithOrgNest.csv", na.strings = NA)
 Feeding <-read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv", na.strings = NA)
 Weights <-read.csv("RuthEcuador2013/BoxFeedingTrials/Weights.csv", na.strings = NA)
 
@@ -31,7 +34,7 @@ Weights <-read.csv("RuthEcuador2013/BoxFeedingTrials/Weights.csv", na.strings = 
 #only keeping a few fields
 Feeding<-subset(Feeding, select=c("TrialID", "OverallID", "SpiderID", "TotalTimeEating", 
 				"IndCapture"))
-Trials<- subset(Trials, select = c("TrialID", "Day", "TimeOfDay", "SheetNo", "DateTrial", 
+Trials<- subset(Trials, select = c("OrgNest", "TrialID", "Day", "TimeOfDay", "SheetNo", "DateTrial", 
 				"BoxAtePrey", "BoxCapture"))
 Weights<-subset(Weights, select=c("IndBoxID", "SpiderID", "Instar", "Treatment", "DateCol",
 				"Poke.1", "Weight.1", "LegLen.mm", "AbdmLen.mm", "BodyLen.mm", "HeadLen.mm", 
@@ -179,7 +182,7 @@ BoxComboMorn <- subset(BoxCombo, BoxCombo$TimeOfDay == "morn")
 ######## Averages table combining different trials on same box    ###################
 #####################################################################################
 
-BoxComboAve<- ddply(BoxComboMorn, .(SpiderID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, Rank.Legs, IndBoxID,  Moulted., 
+BoxComboAve<- ddply(BoxComboMorn, .(SpiderID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, Rank.Legs, IndBoxID,  OrgNest, Moulted., 
 				AveBoldness, AvePokeRating, Treatment, Hunger, WeightDiffPer, Cond.Scal ), summarise, # need to discount trials where no feeding obs and eve
 		N = length(!is.na(SpiderID)),
 		IndEatDur.Mean = mean(TotalTimeEating, na.rm = TRUE),
@@ -216,7 +219,7 @@ BoxComboAve$Cap <- factor(BoxComboAve$Cap, levels = c("y", "n") )
 
 ## only include day time boxes
 
-AveByTrial <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, Treatment, Instar, PJEven, AsinPJEven, IndBoxID ), summarise, 
+AveByTrial <- ddply(subset(BoxCombo, TimeOfDay == "morn"), .(TrialID, OrgNest, Treatment, Instar, PJEven, AsinPJEven, IndBoxID ), summarise, 
 		N = sum(!is.na(IndFeed)),
 		noFeed=sum(!is.na(SpiderID[IndFeed== "y"])),
 		noCap = sum(!is.na(SpiderID[IndCapture== "y"])),
@@ -236,7 +239,7 @@ AveByTrial <- subset(AveByTrial, feedDur > 0)
 BoxMornFeedOnly<- subset(BoxComboMorn, IndFeed == "y" & CaptureIndPos != "NA" )
 
 #averaging by spider as can't have spider as a random in lmer
-BoxFeedAve<- ddply(BoxMornFeedOnly, .(SpiderID, TrialID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, IndBoxID, 
+BoxFeedAve<- ddply(BoxMornFeedOnly, .(SpiderID, OrgNest, TrialID, Rank.Hunger, RelHun,RelCond, Rank.Cond, LogHunger, LogCond, Instar, IndBoxID, 
 				Treatment, Hunger), summarise, 
 		AveFeed = mean(IndFeedNum, na.rm=TRUE),
 		AveCap = mean(IndCapNum, na.rm= TRUE)

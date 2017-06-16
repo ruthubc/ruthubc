@@ -65,7 +65,8 @@ png(filename = "MetSurv.png", width = 1000, height = 650, units = "px", res = 20
 ggplot(aveFile, aes(x = Comp_meas, y = log10(metPopAgeMax))) + 
 		geom_point(size = pointSize, position = position_dodge(width = 0.02), aes(shape = as.factor(ad_dsp_fd))) + 
 		geom_line(size = lineSize, aes(linetype = as.factor(ad_dsp_fd))) + mytheme + ylab(Label_Met) + 
-		scale_shape_discrete(Label_dspSizeLegend, breaks = disBreaks, labels = disNewLab) + scale_linetype_discrete(Label_dspSizeLegend, breaks = disBreaks, labels = disNewLab) + 
+		scale_shape_discrete(Label_dspSizeLegend, breaks = disBreaks, labels = disNewLab) + 
+		scale_linetype_discrete(Label_dspSizeLegend, breaks = disBreaks, labels = disNewLab) + 
 		xlab(Label_compAxis) +
 		scale_y_continuous(breaks=seq(0, 3.0, by=0.5), limits = c(0, 3.0))
  

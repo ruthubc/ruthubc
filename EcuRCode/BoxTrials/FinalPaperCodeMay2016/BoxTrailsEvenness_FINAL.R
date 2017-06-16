@@ -28,7 +28,7 @@ print("")
 
 print("Model without Interaction")
 
-PJMod <-  lmer(AsinPJEven ~ Treatment +Instar+ (1|IndBoxID), AveByTrial, REML = FALSE)
+PJMod <-  lmer(AsinPJEven ~ Treatment +Instar+ (1|IndBoxID) + (1|OrgNest), AveByTrial, REML = FALSE)
 formula(PJMod)
 anova(PJMod)
 print("")
