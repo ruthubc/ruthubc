@@ -42,6 +42,7 @@ RedVsFull_fun("Testing Treatment", PJMod, PJModTreat)
 PJModInstar <-  lmer(AsinPJEven ~ Treatment + (1|IndBoxID), AveByTrial, REML = FALSE)
 RedVsFull_fun("Testing Instar", PJMod, PJModInstar)
 
+
 print("")
 print("model AIC's")
 model_list <- c(PJMod, PJModInstar, PJModInteraction, PJModTreat)
