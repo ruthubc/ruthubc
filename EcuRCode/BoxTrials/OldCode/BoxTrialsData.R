@@ -23,6 +23,8 @@ mytheme <-theme_bw(base_size=10)  + theme(plot.title = element_text(vjust=2), pl
 
 setwd("G:/Dropbox/")
 
+setwd("C:/Users/Ruth/Dropbox/")
+
 #Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv", na.strings = NA)
 Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/TrailsWithOrgNest.csv", na.strings = NA)
 Feeding <-read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv", na.strings = NA)
