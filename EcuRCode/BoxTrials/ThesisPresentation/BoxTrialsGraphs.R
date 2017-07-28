@@ -3,6 +3,15 @@
 # Author: Ruth
 ###############################################################################
 
+mytheme <-theme_bw(base_size=10)  + theme(plot.title = element_text(vjust=2), plot.margin=unit(c(0.08, 0.08, 0.0, 0.08),"cm"), 
+				axis.title.y = element_text(vjust=0.50),
+				axis.line = element_line(colour = "grey6", linetype=1, size = 0.3), 
+				panel.border = element_blank(), 
+				panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +  
+		theme(strip.background = element_rect(fill = 'white'))
+
+
+
 
 colorList <- c("orangered2", "dodgerblue1")
 
