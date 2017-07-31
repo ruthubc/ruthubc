@@ -10,7 +10,7 @@ library(nlshelper)
 
 
 
-mytheme <- theme_bw(base_size=10)  + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+mytheme <- theme_bw(base_size=15)  + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
 		panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 0.5), 
 		legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="black"), legend.text=element_text(size=8), 
 		strip.background = element_rect(fill="white", size=0.7, linetype="solid", colour ="black"))
@@ -32,7 +32,7 @@ subDispFile <- subset(subDispFile, max_no_off == no_off & input_var == env1)
 aveFile <- ddply(subDispFile, .(ad_dsp_fd, Comp_meas), summarize, 
 		metPopAgeMax = mean(metPopAgeMax))
 
-png("RuthSync/Thesis/Presentation/3_compdispNoEnv.png", width = 1300, height = 950, units = "px", res = 200)
+png("RuthSync/Thesis/Presentation/3_compdispNoEnv.png", width = 1550, height = 950, units = "px", res = 200)
 
 
 
@@ -50,6 +50,12 @@ dev.off()
 ########### With environmental variation #################################
 
 
+Label_compLegend <- "degree of\ncontest\ncompetition"
+Label_compAxis <- "degree of contest competition"
+Label_dspSizeLegend <- "minimum\nindividual\ndispersal size"
+Label_dspSizeAxis <- "minimum individual dispersal size"
+Label_Met <- "metapopulation survival time"
+Label_pop <- "population survival time"
 
 set_ad_dsp_fd1 <- 0.8
 set_ad_dsp_fd2 <- 0.6
@@ -65,16 +71,16 @@ nrow(subDispFile)
 
 sub_adDsp1.2 <- subset(subDispFile, ad_dsp_fd == 1.2)
 
-png("RuthSync/Thesis/Presentation/3_compdispNoEnv_adDsp1pt2.png", width = 1800, height = 600, units = "px", res = 200)
+png("RuthSync/Thesis/Presentation/3_compdispNoEnv_adDsp1pt2.png", width = 1750, height = 600, units = "px", res = 200)
 
 ggplot(sub_adDsp1.2 , aes(x = input_var, y =  (metPopAgeMax), color = as.factor(Comp_meas))) + 
 		geom_point(size = 1, position = position_jitter(w = 0.002, h = 0), pch = 18) + 
-		mytheme + ylab("Metapopulation survival (generations)") + 
+		mytheme + ylab("Metapopulation survival") + 
 		scale_color_discrete(Label_compLegend) + 
 		scale_shape_discrete(Label_compLegend) + 
 		xlab("environmental variation")+ 
 		scale_y_log10(breaks = c(5, 10, 30, 100, 500)) +
-		stat_smooth(method = 'nls', se = FALSE, formula = y ~ a * log(x+0.1) + b)
+		stat_smooth(method = "lm",  formula = y ~ x + I(x^2), se = FALSE)
 		
 dev.off()
 
@@ -96,13 +102,13 @@ plot(x = seq(0, 0.8, by = 0.001), pdt_nls, pch = ".")
 
 
 
-png("RuthSync/Thesis/Presentation/3_compdispNoEnv_adDsp0pt8.png", width = 1800, height = 600, units = "px", res = 200)
+png("RuthSync/Thesis/Presentation/3_compdispNoEnv_adDsp0pt8.png", width = 1950, height = 600, units = "px", res = 200)
 
 
 
 ggplot(sub_adDsp0.8 , aes(x = input_var, y =  metPopAgeMax, color = as.factor(Comp_meas))) + 
 		geom_point(size = 2, position = position_jitter(w = 0.002, h = 0), pch = 18) + 
-		mytheme + ylab("Metapopulation survival (generations)") + 
+		mytheme + ylab("Metapopulation survival") + 
 		xlab("environmental variation")+ 
 		scale_y_log10(breaks = c(5, 10, 30, 100, 500)) +
 		geom_smooth(se = FALSE, method = "lm",  formula = y ~ x + I(x^2))
@@ -144,10 +150,11 @@ png("RuthSync/Thesis/Presentation/3_compDispIncreaes.png", width = 1500, height 
 ggplot(dispSum, aes(x=input_var, y=all_ave_num_disp, color = Legend)) + 
 		geom_errorbar(aes(ymin=all_ave_num_disp-se, ymax=all_ave_num_disp+se), width=.03) +
 		geom_point(size = 2) + mytheme+
-		geom_line() + theme(legend.title=element_blank()) + 
-		xlab("Environmental variation") + ylab("Number of dispersing colonies per generation") +
+		geom_line()  + 
+		xlab("Environmental variation") + ylab("Number of dispersing colonies") +
 		scale_shape_manual(values=c(0, 2, 19)) +
-		scale_linetype_manual(values=c(6, 2, 1))
+		scale_color_discrete("Competition and\ndispersal size") + 
+		scale_shape_discrete("Competition and\ndispersal size")
 
 dev.off()
 
