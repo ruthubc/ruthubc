@@ -22,7 +22,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	InstarGraphTitle <- InstarNameDF$InstarNameGraph[InstarNameDF$InstarNameData == current.Instar]
 	
 	
-	if (num_rows > 300) {  # summarise data instead of plotting individual points
+	if (num_rows > 300000) {  # summarise data instead of plotting individual points
 		#24th August changed from dataSummary
 		dataSummary<- ddply(data, .(NestID, CountFemales), summarise, mean = mean(variable, na.rm = TRUE))
 
@@ -78,7 +78,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	
 
 
-InstarGridGraph <- function(spiderData, variable, yaxisLabel, export ="n",  fileName = "", model = "noModel", same_y_axis = "n" ) {	
+InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01", export ="n",  fileName = "", model = "noModel", same_y_axis = "n" ) {	
 	cat("Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead")
 	# whether or not to export the data
 	if (export == "y") {
@@ -128,7 +128,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export ="n",  file
 				}else{
 					print("lmer")
 					predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
-							InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c("44.4EX12"))
+							InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c(nestID))
 					
 					predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
 					
@@ -147,7 +147,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, export ="n",  file
 	
 	
 	
-	if (no_rows > 300) {
+	if (no_rows > 300000) {
 	
 		dataSum<- ddply(spiderData, .(NestID, CountFemales, Instar), summarise, mean = mean(variable, na.rm = TRUE))
 		

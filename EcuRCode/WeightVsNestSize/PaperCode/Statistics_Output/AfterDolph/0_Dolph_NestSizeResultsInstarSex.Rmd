@@ -134,7 +134,7 @@ individually the relationship is only significant for the older instars._
 
 
 ```{r LegInstarGridGraph, fig.height=9, fig.width=14}
-InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", "n", "", FullModelLeg)
+InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", nestID = "44.4EX03", "n", "", FullModelLeg)
 
 figNumLookup$Fig_LegLengthVsColonySize
 
@@ -194,7 +194,7 @@ decreased significantly with colony size (lmer; $\chi$^2^~`r AdultResults[[1]]`,
 `r AdultResults[[5]]`).
 
 ```{r ConditionInstarGridGraph, fig.height=9, fig.width=14}
-InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", "n", "", FullModel, "y")
+InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", nestID ="44.4EX12", "n", "", FullModel, "y")
 
 figNumLookup$Fig_ConditionVsColSize
 
