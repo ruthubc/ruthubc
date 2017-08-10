@@ -8,7 +8,7 @@ setwd("C:/Users/Ruth/Dropbox/")
 nestsList <- levels(spidersMul$NestID)
 
 
-pdf("RuthSync/Thesis/legGraphs.pdf")
+pdf("RuthSync/Thesis/legGraphs.pdf", width = 10, height = 6)
 
 for (i in 1:length(nestsList)) {
 	
@@ -29,3 +29,6 @@ for (i in 1:length(nestsList)) {
 }
 
 dev.off()
+
+
+write.csv(spidersMul, "RuthSync/Thesis/NestSizeDateLA.csv")
