@@ -134,7 +134,7 @@ individually the relationship is only significant for the older instars._
 
 
 ```{r LegInstarGridGraph, fig.height=9, fig.width=14}
-InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", nestID = "44.4EX03", "n", "", FullModelLeg)
+InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", nestID = "45.1EXa05", "n", "", FullModelLeg)
 
 figNumLookup$Fig_LegLengthVsColonySize
 

@@ -22,7 +22,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	InstarGraphTitle <- InstarNameDF$InstarNameGraph[InstarNameDF$InstarNameData == current.Instar]
 	
 	
-	if (num_rows > 300000) {  # summarise data instead of plotting individual points
+	if (num_rows > 300) {  # summarise data instead of plotting individual points
 		#24th August changed from dataSummary
 		dataSummary<- ddply(data, .(NestID, CountFemales), summarise, mean = mean(variable, na.rm = TRUE))
 
@@ -147,7 +147,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01
 	
 	
 	
-	if (no_rows > 300000) {
+	if (no_rows > 300) {
 	
 		dataSum<- ddply(spiderData, .(NestID, CountFemales, Instar), summarise, mean = mean(variable, na.rm = TRUE))
 		
