@@ -6,6 +6,8 @@ library(lmerTest)
 library(ggplot2)
 require(tigerstats)
 
+setwd("C:/Users/Ruth/Dropbox/")
+
 Trials <- read.csv("RuthEcuador2013/BoxFeedingTrials/Trials.csv", na.strings = NA)
 Feeding <-read.csv("RuthEcuador2013/BoxFeedingTrials/Feeding.csv", na.strings = NA)
 Weights <-read.csv("RuthEcuador2013/BoxFeedingTrials/Weights.csv", na.strings = NA)

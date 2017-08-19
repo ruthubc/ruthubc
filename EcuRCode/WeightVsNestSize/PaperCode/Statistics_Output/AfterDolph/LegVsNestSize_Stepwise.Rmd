@@ -1,0 +1,82 @@
+
+
+
+---
+title: "Leg Length vs Nest Size Stepwise model regression"
+author: "Ruth Sharpe"
+date: "Run on `r format(Sys.time(), '%d %B, %Y')` at `r Sys.time()`"
+geometry: margin=1cm
+header-includes:
+    - \usepackage{float}
+---
+
+```{r dataImport,  include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+options(xtable.comment = FALSE, xtable.table.placement="H")
+
+dataset <- spidersMul
+
+
+
+```
+
+Model Reduction
+=====================
+
+
+```{r kable, results='asis',  echo = FALSE, warning = FALSE, message = FALSE, comment = FALSE}
+#pander options http://rapporter.github.io/pander/#general-options
+
+
+
+myFormula <- logLeg ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
+		I(logCtFm^2) + I(logCtFm^2):InstarNumber + I(logCtFm^2):InstarNumber:InstarSex + (1|NestID)
+
+
+
+
+modelOutput <- stepWiseRedLmerFn(myFormula, dataset, 'y')
+
+
+cat("\nFinal Model is: ", as.character(simplify.formula(modelOutput)))
+
+
+finalModel <- lmer(modelOutput, dataset, REML = FALSE)
+
+pdfAnovaOutput(finalModel, forPDF = "y")
+
+
+
+# fix checkConv https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html
+
+	
+```
+
+\pagebreak
+
+Checking full model fit
+--------------------
+
+
+```{r ModelFit, fig.height=4, fig.width=4} 
+
+model_Check(finalModel)
+
+
+```
+\pagebreak
+
+
+Graph with full model superimposed
+====================
+ 
+
+```{r Graph, fig.height=7, fig.width=13}
+
+
+cat("Model:", as.character(modelOutput), sep = '\n')
+
+InstarGridGraph(dataset, "logLeg", "Leg Length - log transformed", model = finalModel)
+
+```
+
