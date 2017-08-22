@@ -16,6 +16,35 @@ InstarNameDF <- data.frame(InstarNameData, InstarNameGraph, stringsAsFactors = F
 print(InstarNameDF)
 
 
+make_predictDF <- function(myData){
+	
+	nest_list <- levels(myData$NestID)
+	
+	predictDF <- data.frame(Date=as.Date(character()),
+			File=character(), 
+			User=character(), 
+			stringsAsFactors=FALSE) 
+	
+	for (i in seq(along = vector)) {
+		
+		predictDF <- expand.grid(logCtFm = seq(min(myData$logCtFm), max(myData$logCtFm), by = 0.1), 
+				InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c(nestID))
+		
+		predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
+		
+		predictDF$lmrPrd <- predict(model, predictDF)
+		
+		predictDF <- cbind(predictDF, )
+		
+	}
+	
+
+	
+	return(predictDF)
+	
+}
+
+
 MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue, predictDF) { # function to make the graphs
 	current.Instar <- as.character(unique(data$Instar)) # get the Name of the current subset	
 	
@@ -127,13 +156,11 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01
 					
 				}else{
 					print("lmer")
-					predictDF <- expand.grid(logCtFm = seq(min(spiderData$logCtFm), max(spiderData$logCtFm), by = 0.1), 
-							InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c(nestID))
 					
-					predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
+					predictDF <- make_predictDF
 					
-					predictDF$lmrPrd <- predict(model, predictDF)
 					
+
 				}			
 				
 				
