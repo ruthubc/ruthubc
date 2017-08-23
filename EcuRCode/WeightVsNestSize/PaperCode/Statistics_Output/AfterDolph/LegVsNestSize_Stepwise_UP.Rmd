@@ -1,0 +1,35 @@
+
+
+
+---
+title: "Leg Length vs Nest Size Up Step model addition"
+author: "Ruth Sharpe"
+date: "Run on `r format(Sys.time(), '%d %B, %Y')` at `r Sys.time()`"
+geometry: margin=1cm
+header-includes:
+    - \usepackage{float}
+---
+
+```{r dataImport,  include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+options(xtable.comment = FALSE, xtable.table.placement="H")
+
+dataset <- spidersMul
+
+
+
+```
+
+Model Addition
+=====================
+
+
+```{r kable, results='asis',  echo = FALSE, warning = FALSE, message = FALSE, comment = FALSE}
+#pander options http://rapporter.github.io/pander/#general-options
+
+upStepWiseLmer(spidersMul, "logLeg", forPDF = "y")
+
+	
+```
+
+
