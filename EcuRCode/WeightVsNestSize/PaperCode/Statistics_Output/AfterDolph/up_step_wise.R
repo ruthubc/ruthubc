@@ -3,7 +3,9 @@
 # Author: Ruth
 ###############################################################################
 
-source("RunLMER_stepwise.R")
+#source("RunLMER_stepwise.R")
+
+
 
 addStars_anovaTwoModel <- function(inputAnova){
 	
@@ -19,19 +21,25 @@ addStars_anovaTwoModel <- function(inputAnova){
 	
 	binded <- cbind(inputAnova, stars)
 	
-	format(binded, digits = 3)
+	format(binded, digits = 4)
+	
+	if (binded$`Pr(>Chisq)`[2] < 0.051) {
+		cat("\r\n SIGNIFICANT \r\n")
+	} else {
+		
+		cat("\r\n *****************NOT SIGNIFICANT --- STOP HERE ************** \r\n")
+	}
+
+	
 
 	
 	return(binded)
-	
 	
 }
 
 printAnovaTable <- function(formula1, formula2, inputData,  forPDF ='n'){
 	
-	cat(as.character(formula1))
-	cat("vs")
-	cat(as.character(formula2))
+	cat(as.character(rhs(formula1)), "\r\n vs \r\n", as.character(rhs(formula2)))
 	
 	
 	lm1 <- lmer(formula1, data = inputData, REML = FALSE)
@@ -59,23 +67,29 @@ printAnovaTable <- function(formula1, formula2, inputData,  forPDF ='n'){
 
 upStepWiseLmer <- function(data, yVar, forPDF = 'n'){
 	
+	parameter_order <- c( ~ logCtFm:InstarNumber, 
+			~ InstarNumber:InstarSex , 
+			~ logCtFm:InstarNumber:InstarSex, 
+			~ I(logCtFm ^2))
+	
 	stringFmla <- paste(yVar, " ~ logCtFm + InstarNumber + (1|NestID)")	
 	
 	base_formula <- as.formula(stringFmla)	
 	
-	scnd_formula <- update(base_formula,    ~ . + InstarNumber:InstarSex )
+	scnd_formula <- merge.formula(base_formula, parameter_order[[1]])
+
 	
 	printAnovaTable(base_formula, scnd_formula, data, forPDF)
 	
-	thrd_formula <-  update(scnd_formula, ~. + I(logCtFm^2) )
+	thrd_formula <- merge.formula(scnd_formula, parameter_order[[2]])
 	
 	printAnovaTable(scnd_formula, thrd_formula, data, forPDF)
 	
-	forth_formula <- update(thrd_formula, ~. + logCtFm:InstarNumber)
+	forth_formula <- merge.formula(thrd_formula, parameter_order[[3]])
 	
 	printAnovaTable(thrd_formula, forth_formula, data, forPDF)
 	
-	fift_formula <- update(forth_formula, ~. + logCtFm:InstarNumber:InstarSex)
+	fift_formula <- merge.formula(forth_formula, parameter_order[[4]])
 	
 	printAnovaTable(forth_formula, fift_formula, data, forPDF)
 	
