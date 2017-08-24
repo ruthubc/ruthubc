@@ -29,7 +29,7 @@ Model Addition
 
 upStepWiseLmer(spidersMul, "condResiduals", forPDF = "y")
 
-finalModel <- "condResiduals ~ logCtFm + InstarNumber + logCtFm:InstarNumber + InstarNumber:InstarSex + (1 | NestID)"
+finalModel <- "condResiduals ~ logCtFm + InstarNumber + (1 | NestID)"
 
 cat("Final model is ", finalModel)
 
