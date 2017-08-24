@@ -29,10 +29,11 @@ Model Reduction
 
 
 
+#myFormula <- logLeg ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
+		#I(logCtFm^2) + I(logCtFm^2):InstarNumber + I(logCtFm^2):InstarNumber:InstarSex + (1|NestID)
+
 myFormula <- logLeg ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + 
-		I(logCtFm^2) + I(logCtFm^2):InstarNumber + I(logCtFm^2):InstarNumber:InstarSex + (1|NestID)
-
-
+	I(logCtFm^2) + (1|NestID)
 
 
 modelOutput <- stepWiseRedLmerFn(myFormula, dataset, 'y')

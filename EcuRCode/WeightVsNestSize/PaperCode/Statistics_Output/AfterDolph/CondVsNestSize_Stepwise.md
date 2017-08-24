@@ -4,7 +4,7 @@
 ---
 title: "Cond vs Nest Size Stepwise model regression"
 author: "Ruth Sharpe"
-date: "Run on 18 August, 2017 at 2017-08-18 13:47:41"
+date: "Run on 23 August, 2017 at 2017-08-23 17:31:15"
 geometry: margin=1cm
 header-includes:
     - \usepackage{float}
@@ -26,102 +26,62 @@ Model Reduction
   \hline
  & Sum Sq & Mean Sq & NumDF & DenDF & F.value & p\_value \\ 
   \hline
-logCtFm & 0.03 & 0.03 &   1 & 437.76 & 2.33 & 0.128  \\ 
-  InstarNumber & 0.02 & 0.02 &   1 & 1202.85 & 2.31 & 0.129  \\ 
-  I(logCtFm\verb|^|2) & 0.03 & 0.03 &   1 & 394.10 & 2.39 & 0.123  \\ 
-  InstarNumber:InstarSex & 0.01 & 0.01 &   1 & 1256.26 & 0.90 & 0.342  \\ 
-  logCtFm:InstarNumber & 0.03 & 0.03 &   1 & 1221.90 & 2.65 & 0.104  \\ 
-  InstarNumber:I(logCtFm\verb|^|2) & 0.03 & 0.03 &   1 & 1235.97 & 2.46 & 0.117  \\ 
-  logCtFm:InstarNumber:InstarSex & 0.01 & 0.01 &   1 & 1255.59 & 0.63 & 0.427  \\ 
-  InstarNumber:InstarSex:I(logCtFm\verb|^|2) & 0.00 & 0.00 &   1 & 1254.97 & 0.38 & 0.535 RMVD \\ 
-   \hline
-\end{tabular}
-\end{table}
-[1] "term with highest p value is: InstarNumber:InstarSex:I(logCtFm^2)"
-[1] "number of terms"
-[1] 8
-[1] "pvalue"
-[1] 0.5350013
-\begin{table}[H]
-\centering
-\begin{tabular}{rrrrrrl}
-  \hline
- & Sum Sq & Mean Sq & NumDF & DenDF & F.value & p\_value \\ 
-  \hline
-logCtFm & 0.03 & 0.03 &   1 & 435.07 & 2.41 & 0.121  \\ 
-  InstarNumber & 0.03 & 0.03 &   1 & 1170.80 & 3.15 & 0.076. \\ 
-  I(logCtFm\verb|^|2) & 0.03 & 0.03 &   1 & 391.94 & 2.47 & 0.117  \\ 
-  InstarNumber:InstarSex & 0.02 & 0.02 &   1 & 1255.21 & 1.81 & 0.179 RMVD \\ 
-  logCtFm:InstarNumber & 0.04 & 0.04 &   1 & 1196.47 & 3.56 & 0.059. \\ 
-  InstarNumber:I(logCtFm\verb|^|2) & 0.04 & 0.04 &   1 & 1216.41 & 3.33 & 0.068. \\ 
-  logCtFm:InstarNumber:InstarSex & 0.02 & 0.02 &   1 & 1254.22 & 2.16 & 0.142  \\ 
-   \hline
-\end{tabular}
-\end{table}
-[1] "term with highest p value is: InstarNumber:InstarSex"
-[1] "number of terms"
-[1] 7
-[1] "pvalue"
-[1] 0.1786378
-\begin{table}[H]
-\centering
-\begin{tabular}{rrrrrrl}
-  \hline
- & Sum Sq & Mean Sq & NumDF & DenDF & F.value & p\_value \\ 
-  \hline
-logCtFm & 0.03 & 0.03 &   1 & 434.37 & 2.52 & 0.113  \\ 
-  InstarNumber & 0.04 & 0.04 &   1 & 1163.55 & 3.71 & 0.054. \\ 
-  I(logCtFm\verb|^|2) & 0.03 & 0.03 &   1 & 391.59 & 2.56 & 0.110  \\ 
-  logCtFm:InstarNumber & 0.04 & 0.04 &   1 & 1193.32 & 3.91 & 0.048* \\ 
-  InstarNumber:I(logCtFm\verb|^|2) & 0.04 & 0.04 &   1 & 1215.21 & 3.49 & 0.062. \\ 
-  logCtFm:InstarNumber:InstarSex & 0.01 & 0.01 &   1 & 1252.45 & 0.50 & 0.479 RMVD \\ 
-   \hline
-\end{tabular}
-\end{table}
-[1] "term with highest p value is: logCtFm:InstarNumber:InstarSex"
-[1] "number of terms"
-[1] 6
-[1] "pvalue"
-[1] 0.4789467
-\begin{table}[H]
-\centering
-\begin{tabular}{rrrrrrl}
-  \hline
- & Sum Sq & Mean Sq & NumDF & DenDF & F.value & p\_value \\ 
-  \hline
-logCtFm & 0.03 & 0.03 &   1 & 434.34 & 2.51 & 0.114 RMVD \\ 
-  InstarNumber & 0.04 & 0.04 &   1 & 1163.59 & 3.69 & 0.055. \\ 
-  I(logCtFm\verb|^|2) & 0.03 & 0.03 &   1 & 391.56 & 2.55 & 0.111  \\ 
-  logCtFm:InstarNumber & 0.04 & 0.04 &   1 & 1193.37 & 3.91 & 0.048* \\ 
-  InstarNumber:I(logCtFm\verb|^|2) & 0.04 & 0.04 &   1 & 1215.25 & 3.47 & 0.063. \\ 
+logCtFm & 0.00 & 0.00 &   1 & 30.83 & 0.07 & 0.788  \\ 
+  InstarNumber & 0.00 & 0.00 &   1 & 1265.35 & 0.00 & 0.958 RMVD \\ 
+  I(logCtFm\verb|^|2) & 0.00 & 0.00 &   1 & 23.40 & 0.05 & 0.819  \\ 
+  InstarNumber:InstarSex & 0.02 & 0.02 &   1 & 1255.44 & 1.97 & 0.161  \\ 
+  logCtFm:InstarNumber & 0.00 & 0.00 &   1 & 1266.84 & 0.37 & 0.545  \\ 
+  logCtFm:InstarNumber:InstarSex & 0.02 & 0.02 &   1 & 1254.44 & 2.32 & 0.128  \\ 
    \hline
 \end{tabular}
 \end{table}
 [1] "i = 1"
 [1] "term with highest p value is: I(logCtFm^2)"
 [1] "number of terms"
-[1] 5
+[1] 6
 [1] "pvalue"
-[1] 0.1109188
+[1] 0.8190608
 \begin{table}[H]
 \centering
 \begin{tabular}{rrrrrrl}
   \hline
  & Sum Sq & Mean Sq & NumDF & DenDF & F.value & p\_value \\ 
   \hline
-logCtFm & 0.00 & 0.00 &   1 & 205.88 & 0.00 & 0.983 RMVD \\ 
-  InstarNumber & 0.01 & 0.01 &   1 & 50.67 & 1.21 & 0.276  \\ 
-  logCtFm:InstarNumber & 0.02 & 0.02 &   1 & 34.44 & 1.61 & 0.214  \\ 
-  InstarNumber:I(logCtFm\verb|^|2) & 0.01 & 0.01 &   1 & 33.75 & 1.00 & 0.325  \\ 
+logCtFm & 0.00 & 0.00 &   1 & 263.83 & 0.03 & 0.862  \\ 
+  InstarNumber & 0.00 & 0.00 &   1 & 1252.59 & 0.01 & 0.938 RMVD \\ 
+  InstarNumber:InstarSex & 0.02 & 0.02 &   1 & 1256.03 & 1.98 & 0.160  \\ 
+  logCtFm:InstarNumber & 0.00 & 0.00 &   1 & 1259.96 & 0.40 & 0.528  \\ 
+  logCtFm:InstarNumber:InstarSex & 0.03 & 0.03 &   1 & 1254.91 & 2.33 & 0.127  \\ 
    \hline
 \end{tabular}
 \end{table}
 [1] "i = 1"
-[1] "term with highest p value is: InstarNumber:I(logCtFm^2)"
+[1] "i = 2"
+[1] "term with highest p value is: InstarNumber:InstarSex"
+[1] "number of terms"
+[1] 5
+[1] "pvalue"
+[1] 0.1596441
+\begin{table}[H]
+\centering
+\begin{tabular}{rrrrrrl}
+  \hline
+ & Sum Sq & Mean Sq & NumDF & DenDF & F.value & p\_value \\ 
+  \hline
+logCtFm & 0.00 & 0.00 &   1 & 262.63 & 0.02 & 0.894 RMVD \\ 
+  InstarNumber & 0.00 & 0.00 &   1 & 1238.96 & 0.25 & 0.617  \\ 
+  logCtFm:InstarNumber & 0.01 & 0.01 &   1 & 1251.53 & 1.13 & 0.288  \\ 
+  logCtFm:InstarNumber:InstarSex & 0.01 & 0.01 &   1 & 1252.31 & 0.48 & 0.488  \\ 
+   \hline
+\end{tabular}
+\end{table}
+[1] "i = 1"
+[1] "i = 2"
+[1] "term with highest p value is: logCtFm:InstarNumber:InstarSex"
 [1] "number of terms"
 [1] 4
 [1] "pvalue"
-[1] 0.3251061
+[1] 0.4882743
 \begin{table}[H]
 \centering
 \begin{tabular}{rrrrrrl}
@@ -158,7 +118,7 @@ Checking full model fit
 
 
 ```
-Condition=log(ColonySize) + InstarAge + InstarAge:InstarSex + log(ColonySize):InstarAge + log(ColonySize):InstarAge:InstarSex + Ilog(ColonySize)2 + Ilog(ColonySize)2:InstarAge + Ilog(ColonySize)2:InstarAge:InstarSex + (1|Colony)-InstarAge:InstarSex:Ilog(ColonySize)2-InstarAge:InstarSex-log(ColonySize):InstarAge:InstarSex-Ilog(ColonySize)2-InstarAge:Ilog(ColonySize)2-log(ColonySize):InstarAge
+Condition=log(ColonySize) + InstarAge + InstarAge:InstarSex + log(ColonySize):InstarAge + log(ColonySize):InstarAge:InstarSex + Ilog(ColonySize)2 + (1|Colony)-Ilog(ColonySize)2-InstarAge:InstarSex-log(ColonySize):InstarAge:InstarSex-log(ColonySize):InstarAge
 ```
 
 ![plot of chunk ModelFit](figure/ModelFit-1.png)![plot of chunk ModelFit](figure/ModelFit-2.png)
@@ -172,11 +132,19 @@ Graph with full model superimposed
 
 ```
 Model:
-condResiduals ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + I(logCtFm^2) + I(logCtFm^2):InstarNumber + I(logCtFm^2):InstarNumber:InstarSex + (1 | NestID) - InstarNumber:InstarSex:I(logCtFm^2) - InstarNumber:InstarSex - logCtFm:InstarNumber:InstarSex - I(logCtFm^2) - InstarNumber:I(logCtFm^2) - logCtFm:InstarNumber
+condResiduals ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + logCtFm:InstarNumber:InstarSex + I(logCtFm^2) + (1 | NestID) - I(logCtFm^2) - InstarNumber:InstarSex - logCtFm:InstarNumber:InstarSex - logCtFm:InstarNumber
 ```
 
 ```
 Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead[1] "lmer"
+```
+
+```
+Warning: Removed 1 rows containing missing values (geom_point).
+
+Warning: Removed 1 rows containing missing values (geom_point).
+
+Warning: Removed 1 rows containing missing values (geom_point).
 ```
 
 ![plot of chunk Graph](figure/Graph-1.png)

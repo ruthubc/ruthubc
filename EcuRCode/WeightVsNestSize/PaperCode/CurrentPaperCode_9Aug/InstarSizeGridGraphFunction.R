@@ -15,43 +15,33 @@ InstarNameDF <- data.frame(InstarNameData, InstarNameGraph, stringsAsFactors = F
 
 print(InstarNameDF)
 
+maxRowsSummary <- 30000
+
 
 make_predictDF <- function(myData){
 	
 	nest_list <- levels(myData$NestID)
-	
-	predictDF <- data.frame(Date=as.Date(character()),
-			File=character(), 
-			User=character(), 
-			stringsAsFactors=FALSE) 
-	
-	for (i in seq(along = vector)) {
-		
-		predictDF <- expand.grid(logCtFm = seq(min(myData$logCtFm), max(myData$logCtFm), by = 0.1), 
-				InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = c(nestID))
-		
-		predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
-		
-		predictDF$lmrPrd <- predict(model, predictDF)
-		
-		predictDF <- cbind(predictDF, )
-		
-	}
-	
 
-	
+	predictDF <- expand.grid(logCtFm = seq(min(myData$logCtFm), max(myData$logCtFm), by = 0.1), 
+				InstarNumber = c(4, 5, 6, 7), InstarSex = c("M", "F"), NestID = nest_list)
+		
+	predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
+		
+	predictDF$lmrPrd <- predict(model, predictDF)
+		
 	return(predictDF)
 	
 }
 
 
-MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue, predictDF) { # function to make the graphs
+MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, maxVarValue, predictDF, maxNumRowsforSum = maxRowsSummary) { # function to make the graphs
 	current.Instar <- as.character(unique(data$Instar)) # get the Name of the current subset	
 	
 	InstarGraphTitle <- InstarNameDF$InstarNameGraph[InstarNameDF$InstarNameData == current.Instar]
+
 	
 	
-	if (num_rows > 300) {  # summarise data instead of plotting individual points
+	if (num_rows > maxNumRowsforSum) {  # summarise data instead of plotting individual points
 		#24th August changed from dataSummary
 		dataSummary<- ddply(data, .(NestID, CountFemales), summarise, mean = mean(variable, na.rm = TRUE))
 
@@ -71,7 +61,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	}
 		
 	
-	p <- p + geom_point() + ggtitle(InstarGraphTitle) + 				
+	p <- p + geom_point(size = 0.5) + ggtitle(InstarGraphTitle) + 				
 			scale_x_log10(limits = c(minNstSz, 10000), breaks = c(10, 100, 1000, 10000),  labels=c("10", "100", "1000 ", "10000  ")) + 
 			theme_classic(base_size=20)+ 
 			theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
@@ -81,6 +71,8 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	
 	
 	if (typeof(model) == "character") { # no model specified
+		
+		print("no or incorrect model specified")
 		
 		p <- p + stat_smooth(method = "lm", formula = y~x, se = FALSE)
 		
@@ -92,9 +84,11 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 					#Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
 					#Vis_fit <- subset(Vis_fit, Instar == current.Instar)
 					fit <- subset(predictDF, Instar == current.Instar)
-					p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd))
+					p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd, group = NestID), size = 0.1) +
+							theme(legend.position="none") # 10^locCtFm because plotting count females with scale axis
 				},
 				error=function(cond) {
+					print("error plotting model")
 					return(p + stat_smooth(method = "lm", formula = y~x, se = FALSE))
 				})
 		
@@ -107,7 +101,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	
 
 
-InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01", export ="n",  fileName = "", model = "noModel", same_y_axis = "n" ) {	
+InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01", export ="n",  fileName = "", model = "noModel", same_y_axis = "n", maxNumRowsforSum  = maxRowsSummary) {	
 	cat("Note: If line on graph is blue R could not plot the lmer, plotting a simple lm instead")
 	# whether or not to export the data
 	if (export == "y") {
@@ -157,10 +151,8 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01
 				}else{
 					print("lmer")
 					
-					predictDF <- make_predictDF
+					predictDF <- make_predictDF(spiderData)
 					
-					
-
 				}			
 				
 				
@@ -174,7 +166,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01
 	
 	
 	
-	if (no_rows > 300) {
+	if (no_rows > maxNumRowsforSum) {
 	
 		dataSum<- ddply(spiderData, .(NestID, CountFemales, Instar), summarise, mean = mean(variable, na.rm = TRUE))
 		

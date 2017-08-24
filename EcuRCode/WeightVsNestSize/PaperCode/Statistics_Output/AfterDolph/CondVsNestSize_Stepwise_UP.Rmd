@@ -2,7 +2,7 @@
 
 
 ---
-title: "Leg Length vs Nest Size Up Step model addition"
+title: "Condition vs Nest Size Up Step model addition"
 author: "Ruth Sharpe"
 date: "Run on `r format(Sys.time(), '%d %B, %Y')` at `r Sys.time()`"
 geometry: margin=1cm
@@ -27,9 +27,9 @@ Model Addition
 ```{r kable, results='asis',  echo = FALSE, warning = FALSE, message = FALSE, comment = FALSE}
 #pander options http://rapporter.github.io/pander/#general-options
 
-upStepWiseLmer(spidersMul, "logLeg", forPDF = "y")
+upStepWiseLmer(spidersMul, "condResiduals", forPDF = "y")
 
-finalModel <- "logLeg ~ logCtFm + InstarNumber + logCtFm:InstarNumber + InstarNumber:InstarSex + (1 | NestID)"
+finalModel <- "condResiduals ~ logCtFm + InstarNumber + logCtFm:InstarNumber + InstarNumber:InstarSex + (1 | NestID)"
 
 cat("Final model is ", finalModel)
 
@@ -66,7 +66,7 @@ Graph with full model superimposed
 
 cat("Model:", finalModel, sep = '\n')
 
-InstarGridGraph(dataset, "logLeg", "Leg Length - log transformed", model = final_lmer)
+InstarGridGraph(dataset, "condResiduals", "Condition", model = final_lmer)
 
 ```
 
