@@ -1,0 +1,143 @@
+
+
+
+---
+title: "Variance in Condition vs Nest Size Instar As Number"
+author: "Ruth Sharpe"
+date: "Run on `r format(Sys.time(), '%d %B, %Y')` at `r Sys.time()`"
+geometry: margin=1cm
+header-includes:
+    - \usepackage{float}
+---
+
+```{r dataImport,  include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE)
+options(xtable.comment = FALSE, xtable.table.placement="H")
+
+condBootVar$condUniform <- 1- condBootVar$bootSD_var
+
+totSpis<- sum(condBootVar$N)
+condBootVar$lmrWgts <- condBootVar$N/totSpis
+#condBootVar$bootVarTrans <- asin(sqrt(condBootVar$condUniform))
+#condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100 # Making variance a percentage
+#condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1 # have to add a small amount or glmer "can't find starting values"
+
+condBootVar$bootVarTrans <- asin(condBootVar$condUniform)
+
+dataset <- condBootVar
+
+ggplot(dataset, aes(condUniform)) + geom_histogram()
+
+ggplot(dataset, aes(log(condUniform))) + geom_histogram()
+
+ggplot(dataset, aes(exp(condUniform))) + geom_histogram()
+ggplot(dataset, aes(1/(condUniform))) + geom_histogram()
+
+ggplot(dataset, aes(asin(condUniform))) + geom_histogram()
+
+ggplot(dataset, aes(bootVarTrans)) + geom_histogram()
+
+
+
+```
+
+glmmPRQ model - not able to get AIC value
+=====================
+
+```{r kable, results='asis',  echo = FALSE, warning = FALSE, message = FALSE, comment = FALSE}
+#pander options http://rapporter.github.io/pander/#general-options
+
+
+
+myFormula <- bootVarTrans ~ logCtFm + InstarNumber + InstarNumber:InstarSex + logCtFm:InstarNumber + 
+		logCtFm:InstarNumber:InstarSex + 
+		I(InstarNumber^2)
+
+outputModel<- glmmPQL(myFormula, ~1|NestID, family = gaussian(link = "log") ,
+		data = DataSetGLMMRPQRFn, weights = lmrWgts, niter = 10)	
+
+Anova(outputModel)
+
+aov(outputModel)
+
+pVal <- 1
+while(pVal > 0.01){
+	
+	modelOutput <- runGLMMPQR(myFormula, dataset, "y" )
+	myFormula <- reduceFormula(myFormula, modelOutput[[2]])
+	pVal <- modelOutput[[3]]
+	
+	
+}
+
+
+cat("\nFinal Model is: ", as.character(simplify.formula(myFormula)))
+
+
+
+finalModel <- modelOutput[[1]]
+# fix checkConv https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html
+	
+```
+
+\pagebreak
+
+Graph
+====================
+ 
+note: blue line just lm model
+```{r, fig.height=8, fig.width=12, echo = FALSE}
+
+
+InstarGridGraph(dataset, "bootVarTrans", "Variance in Condition", "n", "", finalModel, "y")
+
+
+```
+
+
+Testing Individual Instars
+--------------------
+
+
+###As the three way interaction is significant testing instar individually
+
+
+
+```{r IndInstars,  results='asis', echo = FALSE, comment = "", tab.cap = NULL, message = FALSE, warning = FALSE, hold = TRUE}
+
+GLM_fun <- function(myData) { # function to test individual instars 	
+    glm <- glm(bootVarTrans ~ logCtFm, data = myData,  family = gaussian(link = log), weights = lmrWgts)
+    Anova(glm)
+	
+    }
+
+instarGLM <- dlply(dataset, .(Instar),        
+		function(x) GLM_fun(x))
+
+sig <- lapply(instarGLM, FUN = function(x) ifelse(x$`Pr(>Chisq)` <= 0.05, " * SIGNIFICANT *", "not significant"))
+
+
+kable(instarGLM$Adult, caption = paste("Adult", sig$Adult))
+
+kable(instarGLM$Sub2, caption = paste("Sub2", sig$Sub2))
+
+kable(instarGLM$Sub1, caption = paste("Sub1", sig$Sub1))
+
+kable(instarGLM$Juv4, caption = paste("Juv4", sig$Juv4))
+
+kable(instarGLM$AdMale, caption = paste("AdMale", sig$AdMale))
+
+kable(instarGLM$SubMale, caption = paste("SubMale", sig$SubMale))
+```
+
+
+Graph of condition variance against instar
+====================
+
+```{r, fig.height=6, fig.width=8, echo = FALSE}
+
+
+ggplot(data = dataset, aes(x = as.factor(InstarNumber), y = myIndex, fill = InstarSex)) +
+	labs(x = "Instar") + labs(y = "Variance in Condition") + geom_boxplot() + mytheme
+
+```

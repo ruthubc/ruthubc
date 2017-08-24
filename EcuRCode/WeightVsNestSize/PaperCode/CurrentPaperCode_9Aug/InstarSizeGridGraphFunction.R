@@ -18,7 +18,7 @@ print(InstarNameDF)
 maxRowsSummary <- 30000
 
 
-make_predictDF <- function(myData){
+make_predictDF <- function(myData, model){
 	
 	nest_list <- levels(myData$NestID)
 
@@ -84,7 +84,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 					#Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
 					#Vis_fit <- subset(Vis_fit, Instar == current.Instar)
 					fit <- subset(predictDF, Instar == current.Instar)
-					p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd, group = NestID), size = 0.1) +
+					p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd, group = NestID, colour = "gray48"), size = 0.1) +
 							theme(legend.position="none") # 10^locCtFm because plotting count females with scale axis
 				},
 				error=function(cond) {
@@ -151,7 +151,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01
 				}else{
 					print("lmer")
 					
-					predictDF <- make_predictDF(spiderData)
+					predictDF <- make_predictDF(spiderData, model)
 					
 				}			
 				

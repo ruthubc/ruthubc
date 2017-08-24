@@ -4,18 +4,18 @@
 ###############################################################################
 
 
-condBootFormula <-  bootVarTrans ~ logCtFm + InstarNumber:InstarSex + InstarSex:I(InstarNumber^2)
-varBootCondMod <- glmmPQL(bootVarTrans ~ logCtFm + InstarNumber:InstarSex + InstarSex:I(InstarNumber^2), ~1|NestID, family = gaussian(link = "log"), 
+condBootFormula <-  logCtFm + InstarNumber + InstarNumber:InstarSex
+varBootCondMod <- glmmPQL(bootVarTrans ~ logCtFm + InstarNumber + InstarNumber:InstarSex, ~1|NestID, family = gaussian(link = "log"), 
 		data = condBootVar, weights = lmrWgts, niter = 10)
 
 summary(varBootCondMod)
 
-varBootCondMod2 <- glmmPQL(bootVarTrans ~ logCtFm + InstarNumber:InstarSex , ~1|NestID, family = gaussian(link = "log"), 
+varBootCondMod2 <- glmmPQL(bootVarTrans ~ InstarNumber + InstarNumber:InstarSex , ~1|NestID, family = gaussian(link = "log"), 
 		data = condBootVar, weights = lmrWgts, niter = 10)
 
-Anova(varBootCondMod)
+Anova(varBootCondMod, test.statistic=c("Wald", "LR"))
 
-aov(varBootCondMod, type=c("II","III"))
+aov(varBootCondMod, test.statistic=c("Wald"))
 
 anova(varBootCondMod)
 

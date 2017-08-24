@@ -70,11 +70,13 @@ runGLMMPQR <- function(input_formula, myDataSet, forPDF = "n"){
 	
 	if (forPDF == "n") {
 		
-		print(summary(outputModel))
+		print(results)
 		
 	} else {
 		results_stars <- addStars_anova(results)
-		print(xtable(results_stars,  summary = FALSE, title = "Anova of full model alone", latex.environments = "left", align = 'llll'))
+		print(xtable(results_stars,  summary = FALSE, 
+						title = "Anova of full model alone", 
+						latex.environments = "left", align = 'llll'))
 		#x <- gsub("cccc", "lccc", x)
 		#print("text")
 		#x
@@ -87,10 +89,40 @@ runGLMMPQR <- function(input_formula, myDataSet, forPDF = "n"){
 	
 	highTerm <- results[which(results$`Pr(>Chisq)` == max(results$`Pr(>Chisq)`)), ]$names # gets the variable with the highest pvalue
 	
+	maxP_val <- max(results$`Pr(>Chisq)`)
+	
+	i = 0
+	
+	while(highTerm == "logCtFm" | highTerm == "InstarNumber"){	
+		
+		i <- i + 1
+		
+		print(paste("i =", i))
+		
+		maxPValue <- max(results$`Pr(>Chisq)`)
+		
+		x <- results$`Pr(>Chisq)`
+		
+		n <- length(x)
+		
+		newMax <- sort(x,partial=n-1)[n-i]
+		
+		#newMax <- max( x[x!=max(x)] )
+		
+		highTerm <- results[which(results$`Pr(>Chisq)` == newMax), ]$names
+		
+		maxP_val <- newMax
+		
+		
+	}
+	
+	
+	
+	
 	print(paste("term with highest p value is:", highTerm))
 	
 	
-	return(list(outputModel, highTerm, max(results$`Pr(>Chisq)`)))
+	return(list(outputModel, highTerm, maxP_val))
 
 }
 

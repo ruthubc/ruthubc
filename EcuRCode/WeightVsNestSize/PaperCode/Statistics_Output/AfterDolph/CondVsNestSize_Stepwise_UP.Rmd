@@ -37,7 +37,7 @@ final_lmer <- lmer(as.formula(finalModel),
 		dataset, REML = FALSE)
 
 
-
+#anova(final_lmer)
 	
 ```
 
