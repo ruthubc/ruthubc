@@ -10,9 +10,6 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE)
 modelList <-  list(test = c(), fullModel = c())
 no_nest <- nlevels(spidersMul$NestID)
-condBootVar$condUniform <- 1- condBootVar$bootSD_var
-legBootVar$legUniform <- 1- legBootVar$bootSD_var
-
 
 table(spiders$Instar)
 	
@@ -191,8 +188,6 @@ In addition, instar was significant (lmer; $\chi$^2^~`r IntResults[[1]]`,
 ```{r ConditionInstarGridGraph, fig.height=9, fig.width=14}
 InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", model = FullModel, same_y_axis = "y")
 
-InstarGridGraph
-
 figNumLookup$Fig_ConditionVsColSize
 
 ```
@@ -211,8 +206,8 @@ superimposed. Overall condition decreases with colony size (p =
 
 ```{r LegVariacne, echo = FALSE}
 
-meanLegBootVar <- round(mean(legBootVar$legUniform),2)
-SELegBootVar  <- round(sd(legBootVar$legUniform)/sqrt(length(legBootVar$legUniform)), 2)
+meanLegBootVar <- round(mean(legBootVar$bootSD_var),2)
+SELegBootVar  <- round(sd(legBootVar$bootSD_var)/sqrt(length(legBootVar$bootSD_var)), 2)
 
 ```
 There was no significant effect of nest size on within-colony variance in leg length. 
@@ -223,56 +218,80 @@ However, the average within-colony uniformity in leg length
 
 ```{r CondVariance, results='asis',  echo = FALSE, message = FALSE, warning = FALSE}
 # mean and SD
-meanCondBootVar <- round(mean(condBootVar$condUniform), 2)
-SECondBootVar  <- round(sd(condBootVar$condUniform)/sqrt(length(legBootVar$condUniform)),2)
+meanCondBootVar <- round(mean(condBootVar$bootSD_var), 2)
+SECondBootVar  <- round(sd(condBootVar$bootSD_var)/sqrt(length(legBootVar$bootSD_var)),2)
 
 # formatting the data
 totSpis<- sum(condBootVar$N)
 condBootVar$lmrWgts <- condBootVar$N/totSpis
-condBootVar$bootVarTrans <- asin(sqrt(condBootVar$condUniform))
+condBootVar$bootVarTrans <- asin(sqrt(condBootVar$bootSD_var))
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100 # Making variance a percentage
-#condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1 # have to add a small amount or glmer "can't find starting values"
+condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1 # have to add a small amount or glmer "can't find starting values"
 
 # running the model
-condBootFormula <-  bootVarTrans ~ logCtFm + InstarNumber:InstarSex + InstarSex:I(InstarNumber^2)
+condBootFormula <-  bootVarTrans ~ logCtFm + InstarNumber:InstarSex + I(InstarNumber^2) + 
+		InstarNumber:InstarSex:I(InstarNumber^2)
 varBootCondMod <- glmmPQL(condBootFormula, ~1|NestID, family = gaussian(link = "log"), data = condBootVar, 
 		weights = lmrWgts, niter = 10)		
-varBootCondAnova <- addStarsOnly_anova(varBootCondMod)
-modelList$test <- c(modelList$test, "Condition Variance vs. colony size")
-modelList$fullModel <- c(modelList$fullModel, docxFmula(condBootFormula))
 
-# seperating the results for easier printing below
-NSCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "logCtFm"),]
-InstarSexCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarNumber:InstarSex"),]
-InstarSexSqrCondRes <- varBootCondAnova[which(varBootCondAnova$parameters == "InstarSex:I(InstarNumber^2)"),]
+#modelList$test <- c(modelList$test, "Condition Variance vs. colony size")
+#modelList$fullModel <- c(modelList$fullModel, docxFmula(condBootFormula))
+
+# testing with wald test
+
+
+NSCondRes <- waldDoc_fun(varBootCondMod, 2)
+
+
+
 ```
 
 The average within-colony condition variance was also small at `r meanCondBootVar` $\pm$ `r SECondBootVar`. However, there were
-significant fixed effects. The model with the lowest AIC included colony size, the two-way interaction instar age by
-sex and the two-way interaction instar age squared by instar sex
+significant fixed effects. 
+
+The model .....
 `r figNumLookup$Table_models`.
 
 Colony size had a significant effect (glmmPQR; 
-$\chi$^2^~`r NSCondRes$Df`~ =
-`r NSCondRes$Chisq`, p `r NSCondRes$pValue`
-`r NSCondRes$stars`) as within-colony condition variance decreased with
+$\chi$^2^~`r NSCondRes[['df']]`~ =
+`r NSCondRes[['chi2']]`, p `r NSCondRes[['P']]`
+`r NSCondRes[['stars']]`) as within-colony condition variance decreased with
 increasing colony size `r figNumLookup$Fig_ConditionVarianceVsColSize[1]`.
+
+
+```{r CondVarianceInt, results='asis',  echo = FALSE, message = FALSE, warning = FALSE}
+
+InstarSexCondRes <- waldDoc_fun(varBootCondMod, 4:5)
+
+
+
+```
 Interactions of instar age or sex with colony size were not significant.
 
 
 The interaction instar age by sex was significant (glmmPQR;
-$\chi$^2^~`r InstarSexCondRes$Df`~ = `r InstarSexCondRes$Chisq`, p
-`r InstarSexCondRes$pValue` `r InstarSexCondRes$stars`), as was instar
-age squared crossed with sex (glmmPQR; $\chi$^2^~`r InstarSexSqrCondRes$Df`~ =
-`r InstarSexSqrCondRes$Chisq`, p `r InstarSexSqrCondRes$pValue`
-`r InstarSexSqrCondRes$stars`
+$\chi$^2^~`r InstarSexCondRes[['df']]`~ = `r InstarSexCondRes[['chi2']]`, p
+`r InstarSexCondRes[['P']]` `r InstarSexCondRes[['stars']]`), 
+
+
+
+```{r CondVarianceInt2, results='asis',  echo = FALSE, message = FALSE, warning = FALSE}
+
+InstarSexSqrCondRes <-  waldDoc_fun(varBootCondMod, 6:7)
+
+```
+
+as was instar
+age squared crossed with sex (glmmPQR; $\chi$^2^~`r InstarSexSqrCondRes[['df']]`~ =
+`r InstarSexSqrCondRes[['chi2']]`, p `r InstarSexSqrCondRes[['P']]`
+`r InstarSexSqrCondRes[['stars']]`
 `r figNumLookup$Fig_ConditionVarianceVsColSize[1]`. Within-colony variance
 in condition peaked at intermediate instar ages and was higher for males 
 `r figNumLookup$Fig_CondVarByInstarBoxplot[1]`.
 
 
 ```{r ConditionVarianceInstarGridGraph, fig.height=9, fig.width=14}
-InstarGridGraph(condBootVar, "bootVarTrans", "Variance in Condition (arcsin transformed)", "n", "", varBootCondMod, "y")
+InstarGridGraph(condBootVar, "bootSD_var", "Variance in Condition", model = varBootCondMod, "y")
 
 figNumLookup$Fig_ConditionVarianceVsColSize
 
@@ -281,7 +300,7 @@ figNumLookup$Fig_ConditionVarianceVsColSize
  _FIGURE : Within-colony condition variance against colony size with the
 results of the generalized linear model for individual instars superimposed.
 Colony size had a significant effect on condition variance
-(p `r NSCondRes$pValue` `r NSCondRes$stars`)._
+(p `r NSCondRes[['P']]` `r NSCondRes[['stars']]`)._
 
 
 ```{r instarCondVarianceGraph, fig.height=5, fig.width=7, echo = FALSE, dpi=300}
