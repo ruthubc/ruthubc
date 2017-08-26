@@ -37,10 +37,11 @@ library(aod)
 comp_name <- Sys.info()["nodename"]
 
 
-if (comp_name == "DELL-1545") {
-	print("You are using your home computer")
-	setwd("C:/Work/Dropbox/")
-	path <- "C:/Work/EclipseNeonWorkspace/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
+if (comp_name == "RUTHSMNG") {
+	print("You are using your home samsang computer")
+	setwd("C:/Users/Ruth/Dropbox")
+	path <- "C:/Users/Ruth/Work/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
+	
 	
 }else if (comp_name == "SONY-PC"){
 	setwd("G:/Dropbox/")

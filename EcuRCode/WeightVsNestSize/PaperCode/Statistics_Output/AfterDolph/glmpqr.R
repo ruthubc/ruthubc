@@ -20,10 +20,5 @@ Anova(varBootCondMod, test.statistic=c("Wald", "LR"))
 
 waldTest <- wald.test(vcov(varBootCondMod),fixef(varBootCondMod), Terms = 2)
 
-library(aod)
 
-library(survey)
-
-regTermTest(varBootCondMod, "logCtFm")
-
-waldtest()
+myPredict <- predict(varBootCondMod, condBootVar)

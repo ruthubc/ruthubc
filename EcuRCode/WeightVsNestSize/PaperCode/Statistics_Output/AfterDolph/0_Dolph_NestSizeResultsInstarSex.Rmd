@@ -291,9 +291,15 @@ in condition peaked at intermediate instar ages and was higher for males
 
 
 ```{r ConditionVarianceInstarGridGraph, fig.height=9, fig.width=14}
-InstarGridGraph(condBootVar, "bootSD_var", "Variance in Condition", model = varBootCondMod, "y")
+
+condBootVar$bootSD_varProp <- condBootVar$bootSD_var/100
+
+InstarGridGraph(condBootVar, "bootSD_varProp", "Variance in Condition", model = varBootCondMod, "y")
 
 figNumLookup$Fig_ConditionVarianceVsColSize
+
+
+
 
 ```
   

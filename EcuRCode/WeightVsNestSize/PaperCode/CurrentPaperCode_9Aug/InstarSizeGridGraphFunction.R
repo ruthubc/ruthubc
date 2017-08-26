@@ -146,7 +146,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01
 					
 					predictDF <- make_predictDF(condBootVar, varBootCondMod)
 					
-					predictDF$lmrPrd <- sin( (predictDF$lmrPrd/ 100))^2
+					predictDF$lmrPrd <- predictDF$lmrPrd/100
 					
 					#If want to plot untransformed boot variance values with model, put the untransformed variable into the function as the variable
 					#predictDF$lmrPrdBack <- (predictDF$lmrPrd-1)/100
