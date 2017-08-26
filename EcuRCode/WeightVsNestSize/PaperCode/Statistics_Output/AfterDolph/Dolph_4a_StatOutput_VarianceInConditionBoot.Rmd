@@ -19,6 +19,7 @@ condBootVar$condUniform <- 1- condBootVar$bootSD_var
 totSpis<- sum(condBootVar$N)
 condBootVar$lmrWgts <- condBootVar$N/totSpis
 #condBootVar$bootVarTrans <- asin(sqrt(condBootVar$condUniform))
+#condBootVar$bootVarTrans <- asin(sqrt(condBootVar$condUniform))
 #condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100 # Making variance a percentage
 #condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1 # have to add a small amount or glmer "can't find starting values"
 

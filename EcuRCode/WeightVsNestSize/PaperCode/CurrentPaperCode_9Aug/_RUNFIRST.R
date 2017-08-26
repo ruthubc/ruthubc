@@ -28,6 +28,7 @@ library(MuMIn)
 library(car)
 library(texreg)
 library(lasso2)
+library(aod)
 
 
 

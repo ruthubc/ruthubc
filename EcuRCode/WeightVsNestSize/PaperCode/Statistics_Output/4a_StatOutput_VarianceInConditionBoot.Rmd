@@ -41,7 +41,7 @@ myFormula <- bootVarTrans ~ logCtFm + InstarNumber + InstarNumber:InstarSex + lo
 pVal <- 1
 while(pVal > 0.01){
 	
-	modelOutput <- runGLMMPQR(myFormula, dataset, "n" )
+	modelOutput <- runGLMMPQR(myFormula, dataset, "y" )
 	myFormula <- reduceFormula(myFormula, modelOutput[[2]])
 	pVal <- modelOutput[[3]]
 	

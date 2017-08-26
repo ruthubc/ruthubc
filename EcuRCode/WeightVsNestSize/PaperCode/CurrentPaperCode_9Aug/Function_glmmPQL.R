@@ -136,3 +136,37 @@ reduceFormula <- function(oldFormula, varToRemove){
 	
 }
 
+waldDoc_fun <- function(model, terms){
+	
+	waldTest <- wald.test(vcov(model),fixef(model), Terms = terms)
+	
+	cat("\r\n")
+	
+	print(kable(waldTest$L))
+	
+	cat("\r\n")
+	
+	output <- waldTest$result$chi2
+	
+	
+	pval <- waldTest$result$chi2[3]
+	
+	output <- round(output, 3)
+	
+# Use the symnum function to produce the symbols
+	sigSymbols <- symnum(pval, na = FALSE, 
+			cutpoints = c(0, 0.001, 0.01, 0.05, 1), 
+			symbols = c("***", "**", "*", ""), legend = FALSE)
+	
+	stars <- as.matrix(unclass(sigSymbols))
+	
+	output['stars'] <- stars
+	
+	return(output)
+	
+	
+}
+
+
+
+

@@ -61,8 +61,9 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	}
 		
 	
-	p <- p + geom_point(size = 0.5) + ggtitle(InstarGraphTitle) + 				
-			scale_x_log10(limits = c(minNstSz, 10000), breaks = c(10, 100, 1000, 10000),  labels=c("10", "100", "1000 ", "10000  ")) + 
+	p <- p + geom_point(size = 0.7) + ggtitle(InstarGraphTitle) + 				
+			scale_x_log10(limits = c(minNstSz, 10000), breaks = c(10, 100, 1000, 10000),  
+					labels=c("10", "100", "1000 ", "10000  ")) + 
 			theme_classic(base_size=20)+ 
 			theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
 			theme(panel.border = element_rect(fill = NA, colour = "black", linetype=1, size = 1)) +
@@ -84,7 +85,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 					#Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
 					#Vis_fit <- subset(Vis_fit, Instar == current.Instar)
 					fit <- subset(predictDF, Instar == current.Instar)
-					p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd, group = NestID, colour = "gray48"), size = 0.1) +
+					p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd, group = NestID), size = 0.1, colour = "grey") +
 							theme(legend.position="none") # 10^locCtFm because plotting count females with scale axis
 				},
 				error=function(cond) {
@@ -137,14 +138,22 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01
 					
 					print("glmmpql")
 					
-					predictDF <- spiderData
+					#predictDF <- spiderData
 					
-					predictDF$lmrPrd <- predict(model, predictDF, type = "response")
+					#predictDF$lmrPrd <- predict(model, predictDF, type = "response")
+					
+					predictDF <- make_predictDF(spiderData, model)
+					
+					predictDF <- make_predictDF(condBootVar, varBootCondMod)
+					
+					predictDF$lmrPrd <- sin( (predictDF$lmrPrd/ 100))^2
 					
 					#If want to plot untransformed boot variance values with model, put the untransformed variable into the function as the variable
 					#predictDF$lmrPrdBack <- (predictDF$lmrPrd-1)/100
 					#predictDF$lmrPrdBack <- sin(predictDF$lmrPrdBack^2)
 					#predictDF$lmrPrd <- predictDF$lmrPrdBack
+				
+				
 					
     				
 					
