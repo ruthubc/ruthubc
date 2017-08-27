@@ -12,11 +12,10 @@ modelList <-  list(test = c(), fullModel = c())
 no_nest <- nlevels(spidersMul$NestID)
 
 table(spiders$Instar)
+
+rndGraphExp <- "The points represent each individuals measurement and the superimposed lines is the predicted values of full linear model for each random factor i.e. Nest ID"
 	
 ```
-
-Remember Note: If line on graph is blue R could not plot the lmer, plotting a
-simple lm instead[1] 
 
 ### Leg length against colony size
 
@@ -28,7 +27,6 @@ FullModelLeg <- lmer(logLeg ~ logCtFm + InstarNumber + logCtFm:InstarNumber + In
     			(1 | NestID), data = spidersMul, REML = FALSE)
 modelList$test <- c(modelList$test, "Leg length vs. colony size")
 modelList$fullModel <- c(modelList$fullModel, docxFmula(FullModelLeg))
-
 #testing against instar
 InstarModel <- update(FullModelLeg , .~. - InstarNumber -logCtFm:InstarNumber - InstarNumber:InstarSex)
 InstarResults <- outputResultsWord(FullModelLeg, InstarModel)
@@ -67,7 +65,7 @@ Instar2IntModel <- update(FullModelLeg , .~. - logCtFm:InstarNumber)
 Instar2IntResults <- outputResultsWord(FullModelLeg , Instar2IntModel)	
 ```
 
-but with a significant interaction with instar
+but, with a significant interaction with instar
 age 
 
 (lmer; $\chi$^2^~`r Instar2IntResults[[1]]` ,`r Instar2IntResults[[2]]`~=
@@ -135,16 +133,16 @@ ones `r figNumLookup$Table_InstarLeg[1]` and
 
 `r figNumLookup$Table_InstarLeg[1]`
 
-_TABLE: Results of separate analysis of leg length against colony size for
+TABLE: Results of separate analysis of leg length against colony size for
 each instar age. Leg length increases with colony size in the
-overall model_
+overall model
 
-_( $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~= `r NSResults[[3]]`, 
-p = `r NSResults[[4]]` `r NSResults[[5]]` )._
+( $\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~= `r NSResults[[3]]`, 
+p = `r NSResults[[4]]` `r NSResults[[5]]` ).
 
 
-_When tested individually the
-relationship is only significant for the older instars._
+When tested individually the
+relationship is only significant for the older instars.
 
 
 ```{r LegInstarGridGraph, fig.height=9, fig.width=14}
@@ -152,22 +150,26 @@ InstarGridGraph(spidersMul, "logLeg", "Leg Length - log transformed", model = Fu
 
 figNumLookup$Fig_LegLengthVsColonySize
 
+#class(FullModelLeg)[1]
+
 ```
   
-FIGURE:  Leg length (tiba plus patella) as a function of colony size
-with the full linear model, which contains a significant interaction
-with colony size, superimposed. Overall, leg length increased with colony size
+FIGURE:  Leg length (tiba plus patella) as a function of colony size.
+
+`r rndGraphExp`
+
+Overall, leg length increased with colony size
 
 
-(p = `r NSResults[[4]]` `r NSResults[[5]]`), 
-
+()$\chi$^2^~`r NSResults[[1]]` ,`r NSResults[[2]]`~=
+`r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`), 
 
 but with a significant
-interaction between colony size and instar
+interaction between colony size and instar age
 
-$\chi$^2^~`r Instar2IntResults[[1]]` ,`r Instar2IntResults[[2]]`~=
+()$\chi$^2^~`r Instar2IntResults[[1]]` ,`r Instar2IntResults[[2]]`~=
 `r Instar2IntResults[[3]]`, p = `r Instar2IntResults[[4]]`
-`r Instar2IntResults[[5]]`
+`r Instar2IntResults[[5]]`)
 
 . When tested
 individually, only the older instars exhibited a significant relationship. 
@@ -187,7 +189,9 @@ NSModel <- update(FullModel, ~ . - logCtFm)
 NSResults <- outputResultsWord(FullModel, NSModel)
 
 ```
-The final model only included instar age and colony size. No interaction terms were included.
+
+The final linear model for individual condition did not include any interaction
+effects. 
 
 
 The effect of colony size was significant 
@@ -204,9 +208,9 @@ IntModel <- update(FullModel, . ~ . - InstarNumber)
 IntResults <- outputResultsWord(FullModel, IntModel)		
 ```
 
-In addition, instar was significant (lmer; $\chi$^2^~`r IntResults[[1]]`,
+, as was instar age (lmer; $\chi$^2^~`r IntResults[[1]]`,
 `r IntResults[[2]]`~ = `r IntResults[[3]]`, p = `r IntResults[[4]]`
-`r IntResults[[5]]`), with ......
+`r IntResults[[5]]`), with condition decreasing slighly as instar age increases.
 
 
 
@@ -216,20 +220,21 @@ InstarGridGraph(spidersMul, "condResiduals", "Individual Condition", model = Ful
 
 figNumLookup$Fig_ConditionVsColSize
 
+#ggplot(spidersMul, aes(as.factor(InstarNumber), condResiduals)) + geom_boxplot()
 ```
   
-_FIGURE : Individual condition against colony size, with the linear model
-superimposed. Overall condition decreases with colony size 
+FIGURE : Individual condition against colony size. `r cat(rndGraphExp)`.
+Overall condition decreases with colony size 
 
-(p =`r NSResults[[4]]` `r NSResults[[5]]`) _
+( $\chi$^2^~`r NSResults[[1]]`, `r NSResults[[2]]`~ = `r NSResults[[3]]`, 
+p =`r NSResults[[4]]` `r NSResults[[5]]`)
 
 
 
 
 ### Within-colony variance against colony size
 
-#### Leg length variance
-
+#### Leg length size disparity
 
 ```{r LegVariacne, echo = FALSE}
 
@@ -237,16 +242,17 @@ meanLegBootVar <- round(mean(legBootVar$bootSD_var),2)
 SELegBootVar  <- round(sd(legBootVar$bootSD_var)/sqrt(length(legBootVar$bootSD_var)), 2)
 
 ```
-There was no significant effect of nest size on within-colony variance in leg length. 
-However, the average within-colony uniformity in leg length
+There was no significant effect of nest size on within-colony disparity in leg length. 
+However, the average within-colony disparity in leg length was
 
 
 `r meanLegBootVar` $\pm$ `r SELegBootVar`, 
 
 
-which is large given that the range of possible values is between zero and one.
+which is small given that the range of possible values is between zero and one,
+where zero means complete uniformity in leg length.
 
-#### Condition variance
+#### Body condition disparity
 
 ```{r CondVariance, results='asis',  echo = FALSE, message = FALSE, warning = FALSE}
 # mean and SD
@@ -261,10 +267,11 @@ condBootVar$bootVarTrans <- condBootVar$bootVarTrans*100 # Making variance a per
 condBootVar$bootVarTrans <- condBootVar$bootVarTrans +1 # have to add a small amount or glmer "can't find starting values"
 
 # running the model
-condBootFormula <-  bootVarTrans ~ logCtFm + InstarNumber:InstarSex + I(InstarNumber^2) + 
-		InstarNumber:InstarSex:I(InstarNumber^2)
+condBootFormula <-  bootVarTrans ~ logCtFm + InstarNumber + 
+		InstarNumber:InstarSex + I(InstarNumber^2)
 varBootCondMod <- glmmPQL(condBootFormula, ~1|NestID, family = gaussian(link = "log"), data = condBootVar, 
-		weights = lmrWgts, niter = 10)		
+		weights = lmrWgts, niter = 10)
+
 
 #modelList$test <- c(modelList$test, "Condition Variance vs. colony size")
 #modelList$fullModel <- c(modelList$fullModel, docxFmula(condBootFormula))
@@ -276,13 +283,15 @@ NSCondRes <- waldDoc_fun(varBootCondMod, 2)
 
 ```
 
-The average within-colony condition variance was also small at 
+The average within-colony condition disparity was also small at 
 
 `r meanCondBootVar` $\pm$ `r SECondBootVar`. 
 
 However, there were
 significant fixed effects. 
 
+The final model included the square of instar age and the two way the
+interaction instar age by instar.
 
 
 Colony size had a significant effect 
@@ -290,41 +299,40 @@ Colony size had a significant effect
 
 (glmmPQR; 
 $\chi$^2^~`r NSCondRes[['df']]`~ =
-`r NSCondRes[['chi2']]`, p `r NSCondRes[['P']]`
+`r NSCondRes[['chi2']]`, p = `r NSCondRes[['P']]`
 `r NSCondRes[['stars']]`) 
 
 
-as within-colony condition variance decreased with
+as within-colony body condition disparity decreased with
 increasing colony size `r figNumLookup$Fig_ConditionVarianceVsColSize[1]`.
 
 
 ```{r CondVarianceInt, results='asis',  echo = FALSE, message = FALSE, warning = FALSE}
 
-InstarSexCondRes <- waldDoc_fun(varBootCondMod, 4:5)
+InstarSexCondRes <- waldDoc_fun(varBootCondMod, 5)
 
 ```
-Interactions of instar age or sex with colony size were not significant.
+
 
 
 The interaction instar age by sex was significant 
 
 (glmmPQR; $\chi$^2^~`r InstarSexCondRes[['df']]`~ =
-`r InstarSexCondRes[['chi2']]`, p `r InstarSexCondRes[['P']]`
+`r InstarSexCondRes[['chi2']]`, p = `r InstarSexCondRes[['P']]`
 `r InstarSexCondRes[['stars']]`), 
 
 
 
 ```{r CondVarianceInt2, results='asis',  echo = FALSE, message = FALSE, warning = FALSE}
 
-InstarSexSqrCondRes <-  waldDoc_fun(varBootCondMod, 6:7)
+InstarSexSqrCondRes <-  waldDoc_fun(varBootCondMod, 4)
 
 ```
 
-as was instar
-age squared crossed with sex 
+as was instar age squared
 
 (glmmPQR; $\chi$^2^~`r InstarSexSqrCondRes[['df']]`~ =
-`r InstarSexSqrCondRes[['chi2']]`, p `r InstarSexSqrCondRes[['P']]`
+`r InstarSexSqrCondRes[['chi2']]`, p = `r InstarSexSqrCondRes[['P']]`
 `r InstarSexSqrCondRes[['stars']]`
 `r figNumLookup$Fig_ConditionVarianceVsColSize[1]`). 
 
@@ -338,16 +346,34 @@ in condition peaked at intermediate instar ages and was higher for males
 
 condBootVar$bootSD_varProp <- condBootVar$bootVarTrans/100
 
-InstarGridGraph(condBootVar, "bootSD_varProp", "Variance in Condition", model = varBootCondMod, same_y_axis = "y")
+
+condBootFormula <-  bootVarTrans ~ logCtFm + InstarNumber + 
+		InstarNumber:InstarSex + I(InstarNumber^2) + I(InstarNumber^2):InstarNumber +
+		I(InstarNumber^2):InstarNumber:InstarSex
+		
+
+
+varBootCondMod <- glmmPQL(condBootFormula, ~1|NestID, family = gaussian(link = "log"), data = condBootVar, 
+		weights = lmrWgts, niter = 10)
+
+InstarGridGraph(condBootVar, "bootSD_varProp", "Body condition disparity", model = varBootCondMod, same_y_axis = "y")
+
+
+
+#condBootVar$lmrPrd <- predict(varBootCondMod, condBootVar, type = "response")
+
+#ggplot(condBootVar, aes(logCtFm, lmrPrd/100, colour = Instar)) + geom_point()
+
+#lmrPrd/100
 
 figNumLookup$Fig_ConditionVarianceVsColSize
 
 ```
   
- _FIGURE : Within-colony condition variance against colony size with the
+ _FIGURE : Within-colony condition disparity (asin transformed) against colony size with the
 results of the generalized linear model for individual instars superimposed.
 Colony size had a significant effect on condition variance
-(p `r NSCondRes[['P']]` `r NSCondRes[['stars']]`)._
+(p = `r NSCondRes[['P']]` `r NSCondRes[['stars']]`)._
 
 
 ```{r instarCondVarianceGraph, fig.height=5, fig.width=7, echo = FALSE, dpi=300}
@@ -364,14 +390,19 @@ predictDF$lmrPrd <- predict(InstarOnlyModel, predictDF, type = "response")
 plot <- ggplot(data = predictDF, aes(x = InstarNumber, y= lmrPrd, colour = InstarSex)) + geom_line(size = 1) + 
 		scale_x_continuous(breaks=c(3,4,5,6,7, 8)) 
 plot + geom_boxplot(data = condBootVar, aes(fill = InstarSex, x = InstarNumber, y = bootVarTrans, group = Instar), outlier.shape = 20, color = "black") +
-		xlab("Instar Age") + ylab("Variance in Condition (arcsin transformed)") + theme_bw(base_size=10)	+ mytheme + scale_fill_grey() + scale_colour_grey()
+		xlab("Instar Age") + ylab("Body condition disparity") + theme_bw(base_size=10)	+ mytheme + scale_fill_grey() + scale_colour_grey()
 
 figNumLookup$Fig_CondVarByInstarBoxplot
 ```
 
  _FIGURE :Within-colony condition variance as a function of instar age and
 sex. Overlaid is the generalized linear model, which has the square of instar
-age as a significant term._
+age as a significant term  $\chi$^2^~`r InstarSexSqrCondRes[['df']]`~ =
+`r InstarSexSqrCondRes[['chi2']]`, p = `r InstarSexSqrCondRes[['P']]`
+`r InstarSexSqrCondRes[['stars']]`
+`r figNumLookup$Fig_ConditionVarianceVsColSize[1]`.
+
+
 
 
 ### Size and condition of dispersers
@@ -403,8 +434,10 @@ nprops <- nlevels(nestsToTestSig$NestID) - nlevels(nestsToTestSig$OrigNest)
 ```
 
 and their individual condition greater
+
 (lmer; $\chi$^2^~`r NSResults[[1]]`,`r NSResults[[2]]`~=
 `r NSResults[[3]]`, p = `r NSResults[[4]]` `r NSResults[[5]]`),
+
 when dispersed in propagules compared to 
 adult females in their natal colonies `r figNumLookup$Fig_DispersalCondLeg[1]`.
 
@@ -471,7 +504,8 @@ ggplot(data = a_predictDF, aes(x = 10^logCtFm, y = lmrPrd, linetype = as.factor(
 
 
 We found that propagules established by single females had a very low survival rate, 
-with a mid-life of xx days and only a ~15% surviving to 50 days after establishment  
+with a mid-life of 37 days and only a ~15% surviving to 50 days after
+establishment  
 `r figNumLookup$Fig_progSurvival`.
 
 ```{r PropaguleSurvivalGraph, fig.height=3, fig.width=5, dpi=300}
@@ -480,7 +514,10 @@ p1 <- ggsurvplot(prop.survfit, break.time.by = 5,
 		xlab = "Days from propagule establishment", ylab = "Propagule survival probability",  censor = FALSE, 
 		font.tickslab = c(8),
 		font.x = c(10),
-		font.y = c(10))
+		font.y = c(10),
+		palette = "gray",
+		colour = "black",
+		legend = "none")
 
 
 print(p1)

@@ -67,7 +67,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	}
 		
 	
-	p <- p + geom_point(size = 0.7) + ggtitle(InstarGraphTitle) + 				
+	p <- p + geom_point(size = 0.8) + ggtitle(InstarGraphTitle) + 				
 			scale_x_log10(limits = c(minNstSz, 10000), breaks = c(10, 100, 1000, 10000),  
 					labels=c("10", "100", "1000 ", "10000  ")) + 
 			theme_classic(base_size=20)+ 
@@ -93,7 +93,7 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 					fit <- subset(predictDF, Instar == current.Instar)
 					
 					if (class(model)[1] == "glmmPQL") {
-						p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd), size = 0.1, colour = "grey23") +
+						p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd), size = 0.5, colour = "grey20") +
 								theme(legend.position="none")
 						
 					} else {
@@ -172,7 +172,7 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01
 					
     				
 					
-				}else{
+				}else if (class(model)[1] == "merModLmerTest"){
 					print("lmer")
 					
 					predictDF <- make_predictDF(spiderData, model)
