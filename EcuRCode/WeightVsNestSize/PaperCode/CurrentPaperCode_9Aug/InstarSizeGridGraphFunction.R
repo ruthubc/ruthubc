@@ -27,7 +27,7 @@ make_predictDF <- function(myData, model){
 		
 	predictDF <- merge(predictDF, InstarLookUp, by = c("InstarNumber", "InstarSex"))
 		
-	predictDF$lmrPrd <- predict(model, predictDF)
+	predictDF$lmrPrd <- predict(model, predictDF, type = "response")
 		
 	return(predictDF)
 	
@@ -51,9 +51,15 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 	}
 	
 
-	if (same_y_axis != "n") {
+	if (same_y_axis == "y") {
 
 		p <- p + scale_y_continuous(limits = c(minVarValue, maxVarValue))
+		
+	} else if (same_y_axis == "leg") {
+		
+		maxLeg <- max(data$logLeg)
+		
+		p <- p + scale_y_continuous(limits = c((maxLeg - 0.3), maxLeg))		
 		
 	} else {
 		p
@@ -85,8 +91,17 @@ MyPlots <- function(data, num_rows, model, minNstSz, same_y_axis, minVarValue, m
 					#Vis_fit <- (visreg(model, "logCtFm", by = "Instar", plot = FALSE))$fit						
 					#Vis_fit <- subset(Vis_fit, Instar == current.Instar)
 					fit <- subset(predictDF, Instar == current.Instar)
-					p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd, group = NestID), size = 0.1, colour = "grey") +
+					
+					if (class(model)[1] == "glmmPQL") {
+						p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd), size = 0.1, colour = "grey23") +
+								theme(legend.position="none")
+						
+					} else {
+					p <- p +  geom_line(data = fit, aes(x = (10^logCtFm), y= lmrPrd, group = NestID), size = 0.1, colour = "grey45") +
 							theme(legend.position="none") # 10^locCtFm because plotting count females with scale axis
+					}
+					
+
 				},
 				error=function(cond) {
 					print("error plotting model")
@@ -138,13 +153,13 @@ InstarGridGraph <- function(spiderData, variable, yaxisLabel, nestID = "16.2EX01
 					
 					print("glmmpql")
 					
-					#predictDF <- spiderData
+					predictDF <- spiderData
 					
-					#predictDF$lmrPrd <- predict(model, predictDF, type = "response")
+					predictDF$lmrPrd <- predict(model, predictDF, type = "response")
 					
-					predictDF <- make_predictDF(spiderData, model)
-					
-					predictDF <- make_predictDF(condBootVar, varBootCondMod)
+					#predictDF <- make_predictDF(spiderData, model)
+	
+					#predictDF <- make_predictDF(condBootVar, varBootCondMod)
 					
 					predictDF$lmrPrd <- predictDF$lmrPrd/100
 					
