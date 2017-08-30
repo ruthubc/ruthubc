@@ -385,11 +385,12 @@ InstarOnlyModel <- glmmPQL(condBootIntFormula, ~1|NestID, family = gaussian(link
 # calculating the model values
 predictDF <- expand.grid(InstarSex = c("F", "M"), InstarNumber = seq(4, 7, by = 0.1),  NestID = c("44.4EX12"))
 predictDF$lmrPrd <- predict(InstarOnlyModel, predictDF, type = "response")
+predictDF$lmrPrd <- predictDF$lmrPrd/100
 
 # plotting
 plot <- ggplot(data = predictDF, aes(x = InstarNumber, y= lmrPrd, colour = InstarSex)) + geom_line(size = 1) + 
 		scale_x_continuous(breaks=c(3,4,5,6,7, 8)) 
-plot + geom_boxplot(data = condBootVar, aes(fill = InstarSex, x = InstarNumber, y = bootVarTrans, group = Instar), outlier.shape = 20, color = "black") +
+plot + geom_boxplot(data = condBootVar, aes(fill = InstarSex, x = InstarNumber, y = bootVarTrans/100, group = Instar), outlier.shape = 20, color = "black") +
 		xlab("Instar Age") + ylab("Body condition disparity") + theme_bw(base_size=10)	+ mytheme + scale_fill_grey() + scale_colour_grey()
 
 figNumLookup$Fig_CondVarByInstarBoxplot

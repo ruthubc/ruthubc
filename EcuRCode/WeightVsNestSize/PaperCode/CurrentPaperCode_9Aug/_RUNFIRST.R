@@ -40,7 +40,7 @@ comp_name <- Sys.info()["nodename"]
 if (comp_name == "RUTHSMNG") {
 	print("You are using your home samsang computer")
 	setwd("C:/Users/Ruth/Dropbox")
-	path <- "C:/Users/Ruth/Work/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
+	path <- "C:/Users/Ruth/git/ruthubc/EcuRCode/WeightVsNestSize/PaperCode/CurrentPaperCode_9Aug/"
 	
 	
 }else if (comp_name == "SONY-PC"){
