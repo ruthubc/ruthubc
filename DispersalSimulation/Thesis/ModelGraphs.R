@@ -35,15 +35,49 @@ aveFile <- ddply(subDispFile, .(ad_dsp_fd, Comp_meas), summarize,
 png("RuthSync/Thesis/Presentation/3_compdispNoEnv.png", width = 1550, height = 950, units = "px", res = 200)
 
 
-
+'''
 
 ggplot(aveFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = (metPopAgeMax)))  + 
 		geom_tile(colour = "gray50", size=0.5) +
 		mytheme + xlab("Degree of contest competition") +  ylab("Minimum dispersal size") + 
 		scale_fill_gradient(trans = "log", low="lightcyan", high="navyblue", 
 				name = "Metapopulation\nsurvival (generations)", breaks = c(5, 10, 30, 100, 500))
+'''
+
+ggplot(aveFile, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = (metPopAgeMax)))  + 
+		geom_tile(colour = "gray50", size=0.5) +
+		mytheme + xlab("Degree of contest competition") +  ylab("Minimum dispersal size") + 
+		scale_fill_gradient(low="white", high="grey2", guide = FALSE, breaks = c(5, 10, 30, 100, 500))
+
 
 dev.off()
+
+
+
+
+# with environmental variation
+
+no_off <- 6 
+
+subDispFile <- subset(importDispFile, Comp_meas != 0.5)
+
+subDispFile_noise <- subset(subDispFile, max_no_off == no_off & input_var > 0.6)
+
+
+aveFile_noise <- ddply(subDispFile_noise, .(ad_dsp_fd, Comp_meas), summarize, 
+		metPopAgeMax = mean(metPopAgeMax))
+
+png("RuthSync/Thesis/Presentation/3_compdispWithNoise.png", width = 1550, height = 950, units = "px", res = 200)
+
+ggplot(aveFile_noise, aes(x = as.factor(Comp_meas), y = as.factor(ad_dsp_fd), fill = (metPopAgeMax)))  + 
+		geom_tile(colour = "gray50", size=0.5) +
+		mytheme + xlab("Degree of contest competition") +  ylab("Minimum dispersal size") + 
+		scale_fill_gradient(trans = "log", low="lightcyan", high="navyblue", 
+				name = "Metapopulation\nsurvival", breaks = c(5, 10, 30, 100, 500)) +
+		theme(legend.position="bottom")
+
+dev.off()
+
 
 
 

@@ -48,7 +48,7 @@ pdf("RuthEcuador2013/BoxFeedingTrials/Graphs/ModelGraph.pdf", width =10, height 
 ggplot(data.frame(x=c(0, 1.55)), aes(x)) +  annotate("rect", xmin = pMin, xmax= pMax, ymin = 0, ymax = 1.32, fill = "light grey") +
 		stat_function(fun=CostFun, aes(linetype = "Cost"), size = 0.4) + 
 		stat_function(fun = BenFun, aes(linetype = "Benefit"), size = 0.4) +
-		xlab("Prey volume") + ylab("Fitness (benefits - costs)") + ModGraphTheme  +
+		xlab("Prey volume") + ylab("Energy gain (benefits - costs)") + ModGraphTheme  +
 		scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
 		annotate("text", x = 0.60, y = 0.70, label = "Costs", fontface = "bold", size = anTxSz +0.2) + 
 		annotate("text", x = 0.064, y = 0.52, label = "tiny\nprey", size = anTxSz, fontface= 'italic') + 

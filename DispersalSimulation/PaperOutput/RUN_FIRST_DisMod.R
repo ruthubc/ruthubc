@@ -14,8 +14,8 @@ CompLookUp <- data.frame (Comp_slope = c(0, 0.2, 0.4, 0.6, 0.8, 1, 1.25, 1.33, 2
 # importing the data
 comp_name <- Sys.info()["nodename"]
 
-if (comp_name == "DELL-1545") {
-	print("You are using your home computer")
+if (comp_name == "RUTHSMNG") {
+	print("You are using your samsung computer")
 	setwd("C:/Work/ownCloud/")
 	
 }else if (comp_name == "MACPC") {

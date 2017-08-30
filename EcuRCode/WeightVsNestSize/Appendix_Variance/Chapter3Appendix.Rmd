@@ -44,9 +44,11 @@ ggplot(bootSummy, aes(x = N, y = cv)) + geom_point(size = 1, shape = "a") +
 		geom_smooth(method='lm',formula=y~x, se = FALSE, colour = "black", size = 0.5 ) + mytheme +
 		xlab("sample size") + ylab("coefficient of variation")
 
-lmTest <- lm(cv ~ N, data = bootSummy)
+lmTest <- lm(cv ~ mean + I(mean ^ 2) + N, data = bootSummy)
 
-anova(lmTest)
+lmRed <- lm(cv ~ mean + I(mean ^ 2), data = bootSummy)
+
+anova(lmTest, lmRed)
 
 
 ```
@@ -62,9 +64,11 @@ ggplot(bootSummy, aes(x = mean, y = cv)) +
 		geom_point(size = 1, shape = "a") + 
 		geom_smooth(method='lm',formula=y~x + I(x^2), se = FALSE, colour = "black", size = 0.5 ) + mytheme
 
-lmTest <- lm(cv ~ mean + I(mean ^ 2) + N, data = bootSummy)
 
-anova(lmTest)
+
+lmRed <- lm(cv ~  N, data = bootSummy)
+
+anova(lmTest, lmRed)
 
 ```
 
@@ -76,17 +80,20 @@ figure x: mean against cv
 #boot_var <- read.csv("G:/Dropbox/RuthEcuador2013/NestSize/Dolph_bootVars.csv")
 
 boot_var <- read.csv("C:/Users/Ruth/Dropbox/RuthEcuador2013/NestSize/Dolph_bootVars.csv")
-
+v
 # N vs cv
 
-ggplot(boot_var, aes(x = N, y = bootSD_var)) +  xlab("sample size") + ylab("boot variance") +
+ggplot(boot_var, aes(x = N, y = bootSD_var)) +  xlab("sample size") + ylab("Bootstrap disparity index") +
 		geom_point(size = 1, shape = "a") + 
 		geom_smooth(method='lm',formula=y~x, se = FALSE, colour = "black", size = 0.5 ) + mytheme
 
 
-lmTest <- lm(bootSD_var ~ N, data = boot_var)
+lmTest <- lm(bootSD_var ~ N + data_mean, data = boot_var)
 
-anova(lmTest)
+lmRed <- lm(bootSD_var ~ data_mean, data = boot_var)
+
+anova(lmTest, lmRed)
+
 
 ```
 figure x: my boot variance against sample size
@@ -94,12 +101,16 @@ figure x: my boot variance against sample size
 ```{r bootVarMean}
 
 ggplot(boot_var, aes(x = data_mean, y = bootSD_var)) + geom_point(size = 1, shape = "a") + 
-		xlab("sample mean") + ylab("boot variance") +
+		xlab("sample mean") + ylab("Bootstrap disparity index") +
 		geom_smooth(method='lm',formula=y~x, se = FALSE, colour = "black", size = 0.5 ) + mytheme
 
 lmTest <- lm(bootSD_var ~ data_mean + N, data = boot_var)
 
-anova(lmTest)	
+lmRed <- lm(bootSD_var ~ N, data = boot_var)
+
+anova(lmTest, lmRed)
+
+
 
 
 ```
